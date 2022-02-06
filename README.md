@@ -14,4 +14,4 @@ sed 'y/�
 
 
 
-![](Images/standard galactic alphabet.png?raw=true)
+![](Images/sga-frontpage.png?raw=true)

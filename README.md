@@ -15,6 +15,13 @@ sed 'y/�
 
 
 ![](Images/sga-frontpage.png?raw=true)
+![](Images/.jpg?raw=true)
+![](Images/sga dictionary profile.png?raw=true)
+![](Images/standard galactic alphabet.png?raw=true)
+![](Images/ruby-sga.jpg?raw=true)
+
+
+
 
 ᔑ ﬧׅ〒ŀ ᑑ⚍╎ᓵꖌ ʖ።フ∴リ ⎓フ ̇/ ፧⚍ᒲ¡!ነ フ⍊ŀ። ﬧׅ〒ŀ ꖎᔑΛ॥ ↸フㅓ.
 

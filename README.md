@@ -18,7 +18,6 @@ sed 'y/�
 
 ![](Images/sga-frontpage.png?raw=true)
 ![](Images/.jpg?raw=true)
-![](Images/sga-dictionary-profile.png?raw=true)
 ![](Images/ruby-sga.jpg?raw=true)
 ![](Images/sympy-sga.png)
 ![](Images/jupyter-sga.png)

@@ -21,7 +21,7 @@ sed 'y/�
 ![](Images/ruby-sga.jpg?raw=true)
 ![](Images/sympy-sga.png)
 ![](Images/jupyter-sga.png)
-![](Images/sga1.png)
+
 ![](Images/sga2.png)
 ![](Images/sga3.png)
 ![](Images/sga4.png)

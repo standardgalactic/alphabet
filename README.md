@@ -25,7 +25,7 @@ sed 'y/�
 ![](Images/sga2.png)
 ![](Images/sga3.png)
 ![](Images/sga4.png)
-![](Images/sga5.png)
+
 ![](Images/sga6.png)
 ![](Images/sga7.png)
 ![](Images/sga9.png)

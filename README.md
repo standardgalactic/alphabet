@@ -1,11 +1,10 @@
 #   
 
-Standard Galactic Alphabet
-
-
 <p align="center">
   <img src="Images/click-allow.png" width="749px"/>
 </p>
+
+Standard Galactic Alphabet
 
 <p align="center">
   <img src="Images/sga-regular.png" width="749px"/>

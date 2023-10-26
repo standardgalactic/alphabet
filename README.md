@@ -4,18 +4,15 @@ Standard Galactic Alphabet
 
 
 <p align="center">
-  <img src="Images/click-allow.png" width="700px"/>
-  <p align="center"><i>Click Allow</i></p>
+  <img src="Images/click-allow.png" width="749px"/>
 </p>
 
 <p align="center">
-  <img src="Images/sga-regular.png" width="700px"/>
-  <p align="center"><i>Sga-Regular</i></p>
+  <img src="Images/sga-regular.png" width="749px"/>
 </p>
 
 <p align="center">
-  <img src="Images/biography.pngg" width="700px"/>
-  <p align="center"><i>Biography</i></p>
+  <img src="Images/biography.png" width="749px"/>
 </p>
 
 See also:

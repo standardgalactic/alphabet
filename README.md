@@ -1,5 +1,9 @@
 #   
 
+<p align="left">
+  <img src="Images/sample-03.png" width="749px"/>
+</p>
+
 Standard Galactic Alphabet
 
 <p align="center">
@@ -10,6 +14,16 @@ Personal Biography
 
 <p align="center">
   <img src="Images/biography.png" width="749px"/>
+</p>
+
+All-Caps
+<p align="left">
+  <img src="Images/sample-01.png" width="749px"/>
+</p>
+
+Unicode
+<p align="left">
+  <img src="Images/sample-02.png" width="749px"/>
 </p>
 
 See also:

@@ -33,6 +33,8 @@ See also:
   <img src="Images/click-allow.png" width="749px"/>
 </p>
 
+# History of Standard Galactic
+
 ![](/Images/heading-01.png)
 ![](/Images/wiki-01.png)
 ![](/Images/wiki-02.png)

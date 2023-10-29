@@ -4,13 +4,12 @@
   <img src="Images/sample-03.png" width="749px"/>
 </p>
 
-Standard Galactic Alphabet
+Standard Galactic Alphabet [Live Demo](https://standardgalactic.github.io/) (Press the "z" key to toggle SGA font)
 
 <p align="center">
   <img src="Images/sga-regular.png" width="749px"/>
 </p>
 
-[Live Demo](https://standardgalactic.github.io/)
 
 Personal Biography
 

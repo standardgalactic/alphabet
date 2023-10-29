@@ -10,6 +10,8 @@ Standard Galactic Alphabet
   <img src="Images/sga-regular.png" width="749px"/>
 </p>
 
+![Live Demo](https://standardgalactic.github.io/)
+
 Personal Biography
 
 <p align="center">

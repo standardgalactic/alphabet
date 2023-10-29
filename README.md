@@ -4,7 +4,7 @@
   <img src="Images/sample-03.png" width="749px"/>
 </p>
 
-Standard Galactic Alphabet 
+Standard Galactic Alphabet <br>
 [Live Demo](https://standardgalactic.github.io/) (Press the "z" key to toggle SGA font)
 
 <p align="center">

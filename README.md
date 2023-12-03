@@ -1,10 +1,10 @@
 #   
 
-![>> START HERE <<](peak-end-rule.pdf)
-
 <p align="left">
   <img src="Images/sample-03.png" width="749px"/>
 </p>
+
+![>> START HERE <<](peak-end-rule.pdf)
 
 <p align="left">
   <img src="Images/planetary-brake.png" width="749px"/>

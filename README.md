@@ -4,7 +4,7 @@
   <img src="Images/sample-03.png" width="749px"/>
 </p>
 
-![>> START HERE <<](peak-end-rule.pdf)
+![START HERE](peak-end-rule.pdf)
 
 <p align="left">
   <img src="Images/planetary-brake.png" width="749px"/>
@@ -17,6 +17,7 @@ Standard Galactic Alphabet <br>
   <img src="Images/sga-regular.png" width="749px"/>
 </p>
 
+![](cheat-sheet.png)
 
 Personal Biography
 

@@ -71,3 +71,10 @@ See also:
 ![](/Images/wiki-16.png)
 
 From [Keen Wiki](https://keenwiki.shikadi.net/wiki/Standard_Galactic_Alphabet)
+
+# Extracurricular Activities
+
+<!-- ![](sample-screen-1.png) --> 
+<!-- ![](sample-screen-2.png) -->
+![](file-warning.png)
+![](whisper.jpg)

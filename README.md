@@ -6,12 +6,12 @@
 
 ## Cistercian Numerals
 
-![](1.png)
-![](2.png)
-![](3.png)
-![](4.png)
+![](cistercian/1.png)
+![](cistercian/2.png)
+![](cistercian/3.png)
+![](cistercian/4.png)
 
-![START HERE](peak-end-rule.pdf)
+![START HERE](https://standardgalactic.github.io/alphabet)
 
 <p align="left">
   <img src="Images/planetary-brake.png" width="749px"/>

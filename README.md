@@ -11,7 +11,13 @@
 ![](cistercian/3.jpg)
 ![](cistercian/4.jpg)
 
-![START HERE](https://standardgalactic.github.io/alphabet)
+## Dactyl
+
+![](dactyl.gif)
+
+Digital Analog Clock  <br>
+
+![](dactyl/example.png)
 
 <p align="left">
   <img src="Images/planetary-brake.png" width="749px"/>
@@ -85,3 +91,5 @@ From [Keen Wiki](https://keenwiki.shikadi.net/wiki/Standard_Galactic_Alphabet)
 <!-- ![](sample-screen-2.png) -->
 ![](file-warning.png)
 ![](whisper.jpg)
+
+This page is live [here.](https://standardgalactic.github.io/alphabet)

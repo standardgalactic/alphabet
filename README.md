@@ -6,10 +6,10 @@
 
 ## Cistercian Numerals
 
-![](cistercian/1.png)
-![](cistercian/2.png)
-![](cistercian/3.png)
-![](cistercian/4.png)
+![](cistercian/1.jpg)
+![](cistercian/2.jpg)
+![](cistercian/3.jpg)
+![](cistercian/4.jpg)
 
 ![START HERE](https://standardgalactic.github.io/alphabet)
 

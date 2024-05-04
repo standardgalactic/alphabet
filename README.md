@@ -34,6 +34,8 @@ Digital Analog Clock  <br>
 Standard Galactic Alphabet <br>
 [Live Demo](https://standardgalactic.github.io/) (Press the "z" key to toggle SGA font)
 
+Try the [Galactic Translator](https://standardgalactic.github.io/sga-converter.html)
+
 <p align="center">
   <img src="Images/sga-regular.png" width="749px"/>
 </p>

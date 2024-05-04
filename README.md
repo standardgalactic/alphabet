@@ -4,13 +4,14 @@
   <img src="Images/sample-03.png" width="749px"/>
 </p>
 
+<!--
 ## Cistercian Numerals
 
 ![](cistercian/1.jpg)
 ![](cistercian/2.jpg)
 ![](cistercian/3.jpg)
 ![](cistercian/4.jpg)
-
+-->
 ## Dactyl
 
 ![](dactyl.gif)

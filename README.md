@@ -8,6 +8,10 @@
 
 ![](cistercian.png)
 <!--
+## Cromulant vs. Non-Cromulant Numbers
+
+![](cistercian.jpg)
+
 ## Cistercian Numerals
 
 ![](cistercian/1.jpg)

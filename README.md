@@ -36,6 +36,8 @@ Standard Galactic Alphabet <br>
 
 Try the [Galactic Translator](https://standardgalactic.github.io/sga-converter.html)
 
+Also available [as an android app](https://github.com/standardgalactic/standardgalactic.github.io/blob/main/Galactic-Translator.apk)
+
 <p align="center">
   <img src="Images/sga-regular.png" width="749px"/>
 </p>

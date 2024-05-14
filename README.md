@@ -7,18 +7,7 @@
 ## A Minimal Set of Rules for Learning Cistercian Numbers
 
 ![](cistercian.png)
-<!--
-## Cromulant vs. Non-Cromulant Numbers
 
-![](cistercian.jpg)
-
-## Cistercian Numerals
-
-![](cistercian/1.jpg)
-![](cistercian/2.jpg)
-![](cistercian/3.jpg)
-![](cistercian/4.jpg)
--->
 ## Dactyl
 
 ![](dactyl.gif)
@@ -67,41 +56,7 @@ See also:
   <img src="Images/click-allow.png" width="749px"/>
 </p>
 
-# History of Standard Galactic
-
-![](/Images/heading-01.png)
-![](/Images/wiki-01.png)
-![](/Images/wiki-02.png)
-![](/Images/wiki-03.png)
-![](/Images/heading-02.png)
-![](/Images/wiki-04.png)
-![](/Images/heading-03.png)
-![](/Images/wiki-05.png)
-![](/Images/heading-04.png)
-![](/Images/wiki-06.png)
-![](/Images/wiki-07.png)
-![](/Images/heading-05.png)
-![](/Images/wiki-08.png)
-![](/Images/heading-06.png)
-![](/Images/wiki-09.png)
-![](/Images/wiki-10.png)
-![](/Images/wiki-11.png)
-![](/Images/wiki-12.png)
-![](/Images/wiki-12b.png)
-![](/Images/wiki-13.png)
-![](/Images/wiki-14.png)
-![](/Images/heading-07.png)
-![](/Images/wiki-15.png)
-![](/Images/heading-08.png)
-![](/Images/wiki-16.png)
-
-From [Keen Wiki](https://keenwiki.shikadi.net/wiki/Standard_Galactic_Alphabet)
-
-# Extracurricular Activities
-
-<!-- ![](sample-screen-1.png) --> 
-<!-- ![](sample-screen-2.png) -->
-![](file-warning.png)
-![](whisper.jpg)
+## SGA Unicode
+![](sga-unicode-inverted.png)
 
 This page is live [here.](https://standardgalactic.github.io/alphabet)

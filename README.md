@@ -49,14 +49,21 @@ Unicode
   <img src="Images/sample-02.png" width="749px"/>
 </p>
 
-See also:
-[Commander Keen](https://en.m.wikipedia.org/wiki/Commander_Keen#Standard_Galactic_Alphabet)
+# Youtronium Apocalypse
+
+Part One (𝘈 𝘴𝘱𝘰𝘰𝘯𝘧𝘶𝘭 𝘰𝘧 𝘴𝘶𝘨𝘢𝘳)
+
+![](music-of-hedonia.png)
+[𝘔𝘶𝘴𝘪𝘤 𝘰𝘧 𝘏𝘦𝘥𝘰𝘯𝘪𝘢](https://suno.com/playlist/98e38102-8927-4dba-ba5b-2db0127c36ec)
+
+Part Two (𝘛𝘢𝘬𝘦 𝘸𝘪𝘵𝘩 𝘢 𝘨𝘳𝘢𝘪𝘯 𝘰𝘧 𝘴𝘢𝘭𝘵)
 
 <p align="center">
-  <img src="Images/click-allow.png" width="749px"/>
+  <img src="under-construction.gif" alt="Under Construction" width="50" />
+  <img src="under-construction.gif" alt="Under Construction" width="50" />
+  <img src="under-construction.gif" alt="Under Construction" width="50" />
+  <img src="under-construction.gif" alt="Under Construction" width="50" />
+  <img src="under-construction.gif" alt="Under Construction" width="50" />
+  <img src="under-construction.gif" alt="Under Construction" width="50" />
+  <img src="under-construction.gif" alt="Under Construction" width="50" />
 </p>
-
-## SGA Unicode
-![](sga-unicode-inverted.png)
-
-This page is live [here.](https://standardgalactic.github.io/alphabet)

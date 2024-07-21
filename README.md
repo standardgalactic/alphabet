@@ -4,6 +4,10 @@
   <img src="Images/sample-03.png" width="749px"/>
 </p>
 
+## Dvorak Keyboard
+
+![](dvorak-sga.png)
+
 ## A Minimal Set of Rules for Learning Cistercian Numbers
 
 ![](cistercian.png)

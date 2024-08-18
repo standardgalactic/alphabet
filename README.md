@@ -65,52 +65,6 @@ and vorticon-restore.reg to return it to normal.
 
 May need to restart Windows for it to take effect.
 
-# For your web browser 
 
-Use FOUT (Flash Of Unstyled Text)
-
-Adjust the designated font settings for your browser and add  the following CSS Style Sheet in order to override webpage defaults.
-
-/* Apply your custom font globally */
-* {
-    font-family: 'SGA Regular' !important;
-}
-
-/* Specific styling for web page titles (usually h1 tags) */
-h1, .title, .heading {
-    font-family: 'SGA Regular' !important;
-}
-
-/* Specific styling for page subtitles (usually h2 tags) */
-h2, .subtitle {
-    font-family: 'SGA Regular' !important;
-}
-
-/* Apply custom font to links */
-a {
-    font-family: 'SGA Regular' !important;
-}
-
-/* Apply custom font to navigation menus */
-nav, .navbar, .menu {
-    font-family: 'SGA Regular' !important;
-}
-
-/* Apply custom font to buttons */
-button, .btn {
-    font-family: 'SGA Regular' !important;
-}
-
-/* Apply custom font to form elements */
-input, textarea, select {
-    font-family: 'SGA Regular' !important; }
-
-/* Additional elements that might need custom styling */
-p, span, div, li {
-    font-family: 'SGA Regular' !important; }
-
-/* Attempt to style browser-specific elements (experimental) */
-.titlebar, .tab-title {
-    font-family: 'SGA Regular' !important;}
 
 This page is live at https://standardgalactic.github.io/alphabet

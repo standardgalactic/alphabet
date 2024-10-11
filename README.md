@@ -5,7 +5,14 @@
   <img src="Images/sample-03.png" width="749px"/>
 </p>
 
-## Dvorak Keyboard
+## A New Arabic Keyboard
+
+![](Arabic-keyboard.jpg)
+
+[The Anak keyboard uses the upper case for the pharyngealized and emphatic letters.](https://github.com/standardgalactic/alphabet/blob/core/tosga.ahk)
+
+
+## Dvorak
 
 ![](dvorak-sga.png)
 

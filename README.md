@@ -58,6 +58,17 @@ Unicode
   <img src="Images/sample-02.png" width="749px"/>
 </p>
 
+# Other Ciphers
+
+## Aurebesh
+
+![](aurebesh-chart-dark.png)
+
+## Klingon
+
+![](klingon-chart-dark.png)
+
+
 # How to Use
 
 Install SGA-Regular.ttf 

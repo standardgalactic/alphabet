@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <title>Arabic Puzzle with Multi-Letter Mappings</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* BASIC RESET */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* COLOR THEMES */
+    body.green-theme {
+      background: black;
+      color: #00ff00;
+    }
+    body.cyan-theme {
+      background: black;
+      color: #00ffff;
+    }
+    body.amber-theme {
+      background: black;
+      color: #ffaa00;
+    }
+
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+
+      /* Default color = green-theme */
+      background: black;
+      color: #00ff00;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 900px;
+      text-align: center;
+    }
+
+    h1, h2, p {
+      margin-bottom: 1em;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5em;
+    }
+
+    /* PUZZLE (Arabic) */
+    .puzzleText {
+      font-size: 1.6rem;
+      border: 1px dashed currentColor;
+      padding: 1em;
+      margin-bottom: 1em;
+      line-height: 1.6;
+      min-height: 2em;
+      white-space: pre-wrap;
+      direction: rtl; /* Arabic typically right-to-left */
+    }
+
+    /* DECODED LINE (underscores for each letter) */
+    .decodedText {
+      font-family: monospace;
+      border: 1px dashed currentColor;
+      padding: 1em;
+      margin-bottom: 2em;
+      line-height: 1.6;
+      min-height: 2em;
+      white-space: pre-wrap;
+      direction: ltr; /* typed Latin from left to right */
+    }
+
+    /* LEGEND */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      border: 1px solid currentColor;
+      padding: 1em;
+      margin-bottom: 2em;
+      justify-content: center;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .legend-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 70px;
+    }
+    .legend-item label {
+      font-size: 1.4rem;
+      margin-bottom: 5px;
+      direction: rtl; /* keep Arabic label right-to-left */
+    }
+    .legend-item input {
+      width: 60px;
+      text-align: center;
+      background: #002200;
+      border: 1px solid currentColor;
+      color: inherit;
+      font-family: monospace;
+      font-size: 1rem;
+      padding: 5px;
+    }
+
+    /* BUTTONS */
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 2em;
+    }
+button {
+  background: transparent;          /* No fixed background color */
+  color: inherit;                   /* Matches the current theme color */
+  border: 1px solid currentColor;   /* Border matches theme */
+  padding: 10px 20px;
+  cursor: pointer;
+  font-family: sans-serif;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* Hover styles for each theme */
+body.green-theme button:hover {
+  background: #00ff00;
+  color: black;
+}
+body.cyan-theme button:hover {
+  background: #00ffff;
+  color: black;
+}
+body.amber-theme button:hover {
+  background: #ffaa00;
+  color: black;
+}
+
+    /* SOLVED FLASH ANIMATION */
+    .solved {
+      animation: solved-flash 1.5s ease-in-out;
+    }
+    @keyframes solved-flash {
+      0%   { box-shadow: 0 0 0px currentColor inset; }
+      25%  { box-shadow: 0 0 30px currentColor inset; }
+      50%  { box-shadow: 0 0 60px currentColor inset; }
+      75%  { box-shadow: 0 0 30px currentColor inset; }
+      100% { box-shadow: 0 0 0px currentColor inset; }
+    }
+  </style>
+</head>
+
+<body class="green-theme">
+  <div class="container">
+    <h1>Arabic Puzzle with Multi-Letter Mappings</h1>
+    <p>
+      Each Arabic letter may need <strong>one or more</strong> Latin letters. 
+      For example, <em>ث</em> could be “th.” Type your guess to replace each set 
+      of underscores in the decoded line. Use “Hint” to clear any wrong guesses.
+    </p>
+    <p>
+      This puzzle is based on the <em>Anak keyboard</em>, 
+      which closely aligns with the familiar QWERTY layout 
+      and uses uppercase letters for pharyngealized, emphatic, 
+      and voiced letters. By keeping frequently used letters near 
+      the home row in a more <em>phonetic</em> mapping, it aims to 
+      speed up Arabic typing and reduce the learning curve.
+    </p>
+
+    <!-- BUTTONS: placed ABOVE the puzzle -->
+    <div class="button-row">
+      <button onclick="hint()">Hint (Clear Wrong Guesses)</button>
+      <button onclick="newWord()">New Word</button>
+      <button onclick="toggleColor()">Toggle Color</button>
+    </div>
+
+    <!-- ARABIC PUZZLE TEXT -->
+    <div id="puzzleText" class="puzzleText"></div>
+    <!-- DECODED LINE (Latin guesses) -->
+    <div id="decodedText" class="decodedText"></div>
+
+    <!-- LEGEND -->
+    <div id="legendContainer" class="legend"></div>
+
+<footer style="text-align: center; margin-top: 2em; color: inherit;">
+  <img
+    src="arabic-keyboard.jpg"
+    alt="Arabic Keyboard Layout"
+    style="max-width: 100%; height: auto; filter: invert(1); border: 2px solid currentColor;"
+  >
+  <p style="margin-top: 1em; line-height: 1.4; color: inherit;">
+    <strong>The Anak Keyboard</strong><br>
+    <a
+      href="https://github.com/standardgalactic/alphabet/blob/core/toarabic.ahk"
+      target="_blank"
+      style="color: inherit; text-decoration: none;"
+    >
+      AutoHotkey Script Prototype
+    </a>
+  </p>
+</footer>
+
+
+
+  </div>
+  <script>
+    /************************************************************
+     * 1) MULTIPLE WORDS (letter-by-letter) + MAPPINGS
+     *    We'll pick from puzzleList at random. Then we parse
+     *    each letter individually, showing underscores for each.
+     ************************************************************/
+    const puzzleList = [
+      "كيف حالك",
+      "اليوم طويل",
+      "ثوب جيد",
+      "احب ثلاجة",
+      "امتحان كبير",
+      "شبح اثري",
+      "حرف صعب",
+      "سؤال ثقيل",
+      "زرت مكة",
+      "لا تخف"
+    ];
+
+    /* Example Arabic => multi-letter mapping
+       'ث' -> 'th', 'ح' -> 'H', etc. 
+       Adjust or expand as needed. */
+   const arabicToLatin = {
+  "ا": "a",
+  "ع": "A",
+  "ب": "b",
+  "ض": "c",
+  "ظ": "C",
+  "د": "d",
+  "ذ": "D",
+  "ث": "e",
+  "ف": "f",
+  "غ": "g",
+  "ه": "h",
+  "ح": "H",
+  "ء": "i",
+  "ج": "j",
+  "ك": "k",
+  "ل": "l",
+  "م": "m",
+  "ن": "n",
+  "خ": "o",
+  "لأ": "p",
+  "ق": "q",
+  "ر": "r",
+  "س": "s",
+  "ص": "S",
+  "ت": "t",
+  "ط": "T",
+  "و": "u",
+  "آ": "v",
+  "ؤ": "w",
+  "ئ": "W",
+  "ش": "x",
+  "ي": "y",
+  "ى": "Y",
+  "ز": "z"
+};
+
+
+    // We'll store the puzzle data in puzzleData[] for each letter
+    let puzzleData = [];
+
+    // DOM references
+    const puzzleTextEl = document.getElementById("puzzleText");
+    const decodedTextEl = document.getElementById("decodedText");
+    const legendContainer = document.getElementById("legendContainer");
+
+    /************************************************************
+     * 2) PICK A RANDOM PUZZLE, PARSE LETTER BY LETTER
+     ************************************************************/
+    function newWord() {
+      // pick a random puzzle from puzzleList
+      const puzzlePhrase = puzzleList[Math.floor(Math.random() * puzzleList.length)];
+      buildPuzzleData(puzzlePhrase);
+      renderPuzzle();
+      // clear all legend guesses
+      legendContainer.querySelectorAll("input").forEach(inp => inp.value = "");
+    }
+
+    // Parse the puzzle letter by letter
+    function buildPuzzleData(phrase) {
+      puzzleData = [];
+      for (let char of phrase) {
+        if (arabicToLatin[char]) {
+          puzzleData.push({
+            arabic: char,
+            correctKey: arabicToLatin[char],
+            guess: ""
+          });
+        } else {
+          // if space/punctuation or unmapped letter
+          puzzleData.push({
+            arabic: char,
+            correctKey: char,
+            guess: char
+          });
+        }
+      }
+    }
+
+    // Render puzzle in puzzleText + underscores in decodedText
+    function renderPuzzle() {
+      puzzleTextEl.textContent = puzzleData.map(x => x.arabic).join("");
+      renderDecoded();
+    }
+
+    // For multi-letter mappings, we show underscores of length = correctKey.length
+    function renderDecoded() {
+      let output = "";
+      puzzleData.forEach(item => {
+        if (arabicToLatin[item.arabic]) {
+          // if guess is empty, show underscores
+          if (!item.guess) {
+            const underscoreCount = item.correctKey.length + 1; 
+            // e.g. if correctKey="th" => length=2, plus 1 => 3 underscores 
+            // to "extend it a bit"
+            output += "‾".repeat(underscoreCount);
+          } else {
+            output += item.guess;
+          }
+        } else {
+          // space or unhandled letter => show as-is
+          output += item.arabic;
+        }
+      });
+      decodedTextEl.textContent = output;
+    }
+
+    // Shuffle helper for legend
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    // Make a random legend from arabicToLatin keys
+    function createLegend() {
+      // clear old
+      legendContainer.innerHTML = "";
+      const keys = Object.keys(arabicToLatin);
+      shuffle(keys);
+      keys.forEach((arabicLetter) => {
+        const legendItem = document.createElement("div");
+        legendItem.classList.add("legend-item");
+
+        const label = document.createElement("label");
+        label.textContent = arabicLetter;
+        legendItem.appendChild(label);
+
+        const input = document.createElement("input");
+        // multiple letters possible => maxLength ~ 4
+        input.maxLength = 4;
+        input.addEventListener("input", () => {
+          const typed = input.value;
+          // update puzzleData
+          puzzleData.forEach(pd => {
+            if (pd.arabic === arabicLetter) {
+              pd.guess = typed;
+            }
+          });
+          renderDecoded();
+          checkIfSolved();
+        });
+
+        legendItem.appendChild(input);
+        legendContainer.appendChild(legendItem);
+      });
+    }
+
+    // Check if solved
+    function checkIfSolved() {
+      const allCorrect = puzzleData.every(pd => {
+        if (arabicToLatin[pd.arabic]) {
+          return pd.guess === pd.correctKey;
+        }
+        return true; 
+      });
+      if (allCorrect) {
+        decodedTextEl.classList.add("solved");
+        setTimeout(() => {
+          decodedTextEl.classList.remove("solved");
+        }, 1500);
+      }
+    }
+
+    // Hint => clear any wrong guesses
+    function hint() {
+      puzzleData.forEach(pd => {
+        if (arabicToLatin[pd.arabic]) {
+          if (pd.guess && pd.guess !== pd.correctKey) {
+            pd.guess = "";
+          }
+        }
+      });
+      // reflect changes in legend inputs
+      const inputs = legendContainer.querySelectorAll("input");
+      inputs.forEach(inp => {
+        const letter = inp.parentElement.querySelector("label").textContent;
+        // check puzzleData for correctness
+        let isCorrect = false;
+        puzzleData.forEach(data => {
+          if (data.arabic === letter && data.guess === data.correctKey) {
+            isCorrect = true;
+          }
+        });
+        if (!isCorrect) {
+          inp.value = "";
+        }
+      });
+      renderDecoded();
+    }
+
+    // 3-way color toggle (Green -> Cyan -> Amber)
+    let colorCycle = ["green-theme", "cyan-theme", "amber-theme"];
+    let colorIndex = 0;
+    function toggleColor() {
+      document.body.classList.remove("green-theme", "cyan-theme", "amber-theme");
+      colorIndex = (colorIndex + 1) % colorCycle.length;
+      document.body.classList.add(colorCycle[colorIndex]);
+    }
+
+    // On load: create legend, pick initial word
+    createLegend();
+    newWord();
+
+    // Expose to window
+    window.hint = hint;
+    window.newWord = newWord;
+    window.toggleColor = toggleColor;
+  </script>
+</body>
+</html>

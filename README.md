@@ -60,6 +60,10 @@ Unicode
 
 # Other Ciphers
 
+## Logico Philosophicus
+
+[Cryptographic Puzzle](https://standardgalactic.github.io/alphabet/cipher.html)
+
 ## Aurebesh
 
 ![](aurebesh-chart-dark.png)

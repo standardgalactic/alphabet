@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Logico Philosophicus Cipher Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Optional fallback font for buttons, etc. -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- 1) LOGICO PHILOSOPHICUS & SGA FONT FACE -->
+  <style>
+    @font-face {
+      font-family: 'Logico Philosophicus';
+      src: url('fonts/Logico_philosophicus-Regular.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Sga Regular';
+      src: url('fonts/Sga-Regular.ttf') format('truetype');
+    }
+  </style>
+
+  <style>
+    /* BASIC RESET */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: black;
+      color: #00ff00;
+      font-family: 'Logico Philosophicus', Courier, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+      transition: background 0.5s;
+    }
+    .container {
+      width: 90%;
+      max-width: 900px;
+    }
+
+    h1, h2, p {
+      margin-bottom: 1em;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    /* INVERT IMAGES FOR DARK MODE */
+    img.dark-invert {
+      filter: invert(1);
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 1em;
+    }
+
+    /* The puzzle text in Logico font (appears as symbols) */
+    .puzzleText {
+      font-family: 'Logico Philosophicus', monospace;
+      border: 1px dashed #00ff00;
+      padding: 1em;
+      margin-bottom: 1em;
+      line-height: 1.6;
+      min-height: 2em;
+      white-space: pre-wrap;
+    }
+
+    /* The "decoded" line in Courier */
+    .decodedText {
+      font-family: 'Courier New', Courier, monospace;
+      border: 1px dashed #00ff00;
+      padding: 1em;
+      margin-bottom: 2em;
+      line-height: 1.6;
+      min-height: 2em;
+      white-space: pre-wrap;
+    }
+
+    /* LEGEND (A-Z) */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      border: 1px solid #00ff00;
+      padding: 1em;
+      justify-content: center;
+      margin-bottom: 2em;
+    }
+    .legend-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 60px;
+    }
+    /* Label in Logico => so the letter itself looks like a symbol */
+    .legend-item label {
+      font-family: 'Logico Philosophicus', monospace;
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+    /* Input in Courier => user sees normal typed text */
+    .legend-item input {
+      width: 50px;
+      text-align: center;
+      background: #002200;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 5px;
+    }
+
+    /* BUTTONS */
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 2em;
+    }
+    button {
+      background: #005500;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-family: 'Roboto', sans-serif;
+    }
+    button:hover {
+      background: #008000;
+    }
+
+    /* Font toggle classes */
+    .logico-font {
+      font-family: 'Logico Philosophicus', monospace;
+    }
+    .sga-font {
+      font-family: 'Sga Regular', monospace;
+    }
+    .courier-font {
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    /* SOLVED FLASH ANIMATION */
+    .solved {
+      animation: solved-flash 1.5s ease-in-out;
+    }
+    @keyframes solved-flash {
+      0%   { box-shadow: 0 0 0px #00ff00 inset; }
+      25%  { box-shadow: 0 0 30px #00ff00 inset; }
+      50%  { box-shadow: 0 0 60px #00ff00 inset; }
+      75%  { box-shadow: 0 0 30px #00ff00 inset; }
+      100% { box-shadow: 0 0 0px #00ff00 inset; }
+    }
+
+    /* BOTTOM LINKS STYLES */
+    .links-section {
+      margin-top: 2em;
+      text-align: left;
+    }
+    .links-section h3 {
+      margin-bottom: 0.5em;
+    }
+    .links-section ul {
+      margin-bottom: 1.5em;
+      padding-left: 1.2em;
+    }
+    .links-section ul li {
+      margin-bottom: 0.5em;
+    }
+    .links-section a {
+      color: #00ff00;
+      text-decoration: none;
+    }
+    .links-section a:hover {
+      text-decoration: underline;
+    }
+    .audio-player {
+      margin-top: 1em;
+      margin-bottom: 3em;
+    }
+  </style>
+</head>
+
+<body class="logico-font">
+  <div class="container">
+    <h1>Logico Philosophicus Cipher Demo</h1>
+    <p>
+      Each puzzle's text is displayed in
+      <strong>Logico Philosophicus</strong> (thus looking like symbols).
+      Below it is a “decoded” line in <strong>Courier</strong>. Fill out the
+      legend guesses, and see if you can solve it!
+    </p>
+
+    <!-- TOP BUTTON ROW (font toggles) -->
+    <div class="button-row">
+      <button onclick="toggleFont('logico')">Logico</button>
+      <button onclick="toggleFont('sga')">SGA</button>
+      <button onclick="toggleFont('courier')">Courier</button>
+    </div>
+
+    <!-- The puzzle text in Logico font -->
+    <p id="puzzleText" class="puzzleText"></p>
+    <!-- The "decoded" line in Courier -->
+    <p id="decodedText" class="decodedText"></p>
+
+    <!-- Legend (A-Z) -->
+    <div class="legend" id="legendContainer"></div>
+
+    <!-- BOTTOM BUTTON ROW (hint, new puzzle) -->
+    <div class="button-row">
+      <button onclick="hint()">Hint (Clear Wrong Guesses)</button>
+      <button onclick="nextPuzzle()">New Puzzle</button>
+    </div>
+
+    <!-- LINKS AND AUDIO AT THE BOTTOM -->
+    <div class="links-section">
+      <h3>Logico Philosophicus:</h3>
+      <ul>
+        <li>
+          <strong>Download the font:</strong>
+          <a href="https://standardgalactic.github.io/alphabet/fonts/Logico_philosophicus-Regular.ttf" target="_blank"><br>
+            https://standardgalactic.github.io/alphabet/fonts/Logico_philosophicus-Regular.ttf
+          </a>
+        </li>
+        <li>
+          <strong>Edit the font (FontForge):</strong>
+          <a href="https://fontforge.org/" target="_blank"><br>
+            https://fontforge.org/
+          </a>
+        </li>
+        <li>
+          <strong>Namesake (Tractatus Logico-Philosophicus):</strong>
+          <a href="https://en.wikipedia.org/wiki/Tractatus_Logico-Philosophicus" target="_blank"><br>
+            https://en.wikipedia.org/wiki/Tractatus_Logico-Philosophicus
+          </a>
+        </li>
+      </ul>
+
+      <h3>“The Lie of the Discipline of Symbolic Logic” by John-Michael Kuczynski</h3>
+           <div class="audio-player">
+        <audio controls>
+          <source src="The Lie of the Discipline of Symbolic Logic.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+
+   </div>
+
+<p>This is Audible.</p>
+
+<p>The Lie of the Discipline of Symbolic Logic, written by John-Michael Kuczynski, narrated by Trevor Klinger.</p>
+
+<p>The Lie of the Discipline of Symbolic Logic.</p>
+
+<p>I used to be a professor, and one of the disciplines I taught was symbolic logic.</p>
+
+<p>I have long since stopped being a professor, since it was obviously a total crock.</p>
+
+<p>But now, I run a tutoring business that involves me helping other people with their homework, including symbolic logic homework.</p>
+
+<p>Back when I was a philosophy professor and grad student, I really tried to see legitimacy in the discipline of symbolic logic and actually generated some meaningful results in it.</p>
+
+<p>But there was always something off about it, but I couldn't quite put my finger on the problem.</p>
+
+<p>And then, just a moment ago, when I was finishing up a round of logic homework, for some poor sap, it hit me.</p>
+
+<p>What they call logic in universities is the ultimate bureaucrat discipline.</p>
+
+<p>There I was, doing utterly time-consuming and generally wasteful exercises for some client, who, like all my clients, knew that it simply wasn't in his interest to jump through more bureaucratic hoops than he had to.</p>
+
+<p>There I was, as I was saying, and I had just spent thirty minutes putting in a lot of little idiot notations, along the lines of Modus Tollens, lines two, five, and double negation, line one.</p>
+
+<p>Monkey idiot, fake math bullshit.</p>
+
+<p>Another thing I had done was complete some truth-table-based proof, another favorite of logic professors.</p>
+
+<p>Eighty-five percent of what I was doing had no substance.</p>
+
+<p>It was purely procedural.</p>
+
+<p>Purely bureaucratic.</p>
+
+<p>And, this time, I saw it with the requisite simplicity and clarity.</p>
+
+<p>I looked back at the people I knew, during undergraduate and graduate school, who were into logic, and they were all broken, empty husk bureaucrats.</p>
+
+<p>Quasi-smart, but not actually smart.</p>
+
+<p>Maybe a little bit actually smart.</p>
+
+<p>But what they had in the way of intelligence was more about what they didn't have.</p>
+
+<p>In other words, they lacked so much in terms of intellect, or if not intellect, then personality, that the only part of them that was still functional was the logic part, which, for that reason, predominated.</p>
+
+<p>They all ended up becoming cipher lawyers.</p>
+
+<p>The other thing is that the term logic is a serious misnomer in this context.</p>
+
+<p>What they call logic in college isn't logic.</p>
+
+<p>Real logic is about organizing statement sets in a way that exposes dependence relations.</p>
+
+<p>What they call logic at universities is about rooting through the leavings of some long-gone and only semi-successful attempts on some person's part to organize some statement set.</p>
+
+<p>What they call logic, in other words, is the study of someone else's attempt to construct a particular system of logic, which is not logic.</p>
+
+<p>Once the statement set in question has been duly logicized, there is quite trivially nothing left for the logician to do, since all the intelligence involving work has at that point been automated away.</p>
+
+<p>Whatever work there is left, it's for the robots, and that's just who does it, except that in this context, the robots are human robots, bureaucrats, in other words.</p>
+
+<p>There was a computer program designed around twenty years ago called Tarski's World, which was an attempt to automate logic.</p>
+
+<p>It was the worst conceivable failure in the history of automation.</p>
+
+<p>It was far more difficult to learn how to use their cantankerous software than it was to do the problems the old-fashioned way.</p>
+
+<p>And what they were automating had already been automated, since to construct a logic is to automate the making of inferences.</p>
+
+<p>So the very idea of automating logic is absurd.</p>
+
+<p>What the authors of this program were doing was automating the automating of making inferences, which meant that the student spent hours learning some junk program that insulated him from logic, instead of instructing him in it.</p>
+
+<p>Second, it wasn't even logic that was being automated.</p>
+
+<p>It was some fragment of some specific logic, which as it turns out was a total bust.</p>
+
+<p>But these philosophy professors kept on lingering over that unburied carcass because they couldn't come up with anything else.</p>
+
+<p>Also the algorithms of which that particular system of logic availed humanity were useless.</p>
+
+<p>Not in the sense that they gave the wrong answer, but in the sense that applying them took far heftier resources of intellect and energy than simply solving the target problems directly.</p>
+
+<p>Plus, they only apply to artifacts, and the process of converting a statement set into the requisitely artificial form is far more involved intellectually than whatever it is one supposedly figures out by using the algorithms in question.</p>
+
+<p>Try using truth tables to evaluate some actual argument.</p>
+
+<p>It's not worth it.</p>
+
+<p>It's easier to do it by longhand, so to speak.</p>
+
+<p>Plus on the rare occasions that truth tables can be applied, what they tell you is Mickey Mouse.</p>
+
+<p>And by using them, you will simply divert your attention from matters of substance.</p>
+
+<p>Such is the very definition of mathematical failure.</p>
+
+<p>If an algorithm makes it harder to solve the problem that it solves, then there is no use for it.</p>
+
+<p>It is mathematical garbage.</p>
+
+<p>The discipline stuck around partly because a bunch of pencil pushing geeks posing as thinkers were in the comfort zone with it.</p>
+
+<p>Because it's not a real discipline.</p>
+
+<p>It's just a collection of bureaucrat geek protocols masquerading as one.</p>
+
+<p>This has been The Lie of the Discipline of Symbolic Logic, written by John-Michael Kuczynski, narrated by Trevor Klinger.</p>
+
+<p>Copyright 2020 by John-Michael Kuczynski.</p>
+
+<p>Audible hopes you have enjoyed this program.</p>
+
+
+<!-- BOTTOM IMAGES (INVERTED) -->
+    <img src="logico-sample.png" alt="Logico Sample" class="dark-invert" />
+    <img src="logico-font-test.png" alt="Logico Font Test" class="dark-invert" />
+
+
+</div>
+  <script>
+    /********************************************************
+     * 1) ARRAY OF PUZZLES
+     ********************************************************/
+    const puzzlePhrases = [
+      "LOGICO PHILOSOPHICUS IS A FUN PUZZLE",
+      "PHILOSOPHY OF LANGUAGE",
+      "SYMBOLIC LOGIC IS BEAUTIFUL",
+      "CRYPTIC CROSSWORDS ARE FUN",
+      "OBFUSCATION BRINGS MYSTERY"
+    ];
+
+    let puzzleIndex = 0;
+
+    /********************************************************
+     * 2) GLOBALS FOR CURRENT PUZZLE
+     ********************************************************/
+    let puzzleData = []; // array of { char, guess }
+    let puzzleTextEl, decodedTextEl, legendContainer;
+
+    // We'll store userMapping[letter] = guess
+    let userMapping = {};
+
+    /********************************************************
+     * 3) INIT / LOAD DOM
+     ********************************************************/
+    document.addEventListener("DOMContentLoaded", () => {
+      // Grab references
+      puzzleTextEl = document.getElementById("puzzleText");
+      decodedTextEl = document.getElementById("decodedText");
+      legendContainer = document.getElementById("legendContainer");
+
+      // Create the A-Z legend UI once (randomized)
+      createLegend();
+      // Load the first puzzle
+      loadPuzzle(puzzlePhrases[puzzleIndex]);
+    });
+
+    /********************************************************
+     * 4) SHUFFLE UTILITY
+     ********************************************************/
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    /********************************************************
+     * 5) CREATE LEGEND (A-Z in a random order!)
+     *    We'll do this ONCE. For new puzzles, we just reset inputs.
+     ********************************************************/
+    function createLegend() {
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+      shuffleArray(alphabet);
+
+      alphabet.forEach((letter) => {
+        userMapping[letter] = ""; // start empty
+
+        const legendItem = document.createElement("div");
+        legendItem.classList.add("legend-item");
+
+        // Label in Logico => looks symbolic
+        const label = document.createElement("label");
+        label.textContent = letter;
+        legendItem.appendChild(label);
+
+        // Input in Courier => user sees normal typed text
+        const input = document.createElement("input");
+        input.type = "text";
+        input.maxLength = 1;
+
+        // On input, update userMapping + puzzleData
+        input.addEventListener("input", () => {
+          const guess = input.value.toUpperCase();
+          userMapping[letter] = guess;
+
+          // Update puzzleData
+          puzzleData.forEach((item) => {
+            if (item.char === letter) {
+              item.guess = guess;
+            }
+          });
+          renderDecoded();
+          checkIfSolved();
+        });
+
+        legendItem.appendChild(input);
+        legendContainer.appendChild(legendItem);
+      });
+    }
+
+    /********************************************************
+     * 6) LOAD A NEW PUZZLE
+     ********************************************************/
+    function loadPuzzle(phrase) {
+      // Build puzzleData
+      puzzleData = Array.from(phrase).map((ch) => {
+        if (/[A-Za-z]/.test(ch)) {
+          const upper = ch.toUpperCase();
+          return { char: upper, guess: "" };
+        } else {
+          return { char: ch, guess: ch };
+        }
+      });
+
+      // Show the puzzle text in Logico font (looks like symbols)
+      puzzleTextEl.textContent = phrase;
+
+      // Clear all user guesses in the legend inputs
+      resetLegendInputs();
+      // Render the decoded line
+      renderDecoded();
+    }
+
+    function resetLegendInputs() {
+      // Clear userMapping
+      for (let key in userMapping) {
+        userMapping[key] = "";
+      }
+      // Clear all input fields
+      const inputs = legendContainer.querySelectorAll("input");
+      inputs.forEach((inp) => {
+        inp.value = "";
+      });
+    }
+
+    /********************************************************
+     * 7) RENDER THE DECODED LINE
+     ********************************************************/
+    function renderDecoded() {
+      let output = "";
+      puzzleData.forEach((item) => {
+        if (/[A-Z]/.test(item.char)) {
+          output += item.guess ? item.guess : "_";
+        } else {
+          output += item.char; // space or punctuation
+        }
+      });
+      decodedTextEl.textContent = output;
+    }
+
+    /********************************************************
+     * 8) CHECK IF SOLVED
+     *    If every letter's guess == char, puzzle is solved.
+     *    => flash / glow effect
+     ********************************************************/
+    function checkIfSolved() {
+      // If we have at least one letter in puzzle:
+      const lettersInPuzzle = puzzleData.filter((x) => /[A-Z]/.test(x.char));
+      if (lettersInPuzzle.length === 0) return;
+
+      // Check if all guessed
+      const allCorrect = lettersInPuzzle.every(
+        (x) => x.guess && x.guess === x.char
+      );
+      if (allCorrect) {
+        // Trigger a short flash animation
+        document.body.classList.add("solved");
+        // Remove it after 1.5s to revert
+        setTimeout(() => {
+          document.body.classList.remove("solved");
+        }, 1500);
+      }
+    }
+
+    /********************************************************
+     * 9) HINT BUTTON => CLEAR WRONG GUESSES
+     *    - For each letter in puzzleData, if guess != char, reset guess
+     *    - Also reset the corresponding input in legend
+     ********************************************************/
+    function hint() {
+      puzzleData.forEach((item) => {
+        if (/[A-Z]/.test(item.char)) {
+          // If there's a guess and it's wrong, remove it
+          if (item.guess && item.guess !== item.char) {
+            // Clear puzzle guess
+            item.guess = "";
+          }
+        }
+      });
+
+      // Now reflect that in userMapping as well:
+      for (let letter in userMapping) {
+        let letterIsCorrectSomewhere = false;
+        // Check puzzle data to see if any puzzle position with char=letter is guessed right
+        for (let i = 0; i < puzzleData.length; i++) {
+          if (puzzleData[i].char === letter && puzzleData[i].guess === letter) {
+            letterIsCorrectSomewhere = true;
+            break;
+          }
+        }
+        // If we found no correct usage for this letter, clear it from userMapping
+        if (!letterIsCorrectSomewhere) {
+          userMapping[letter] = "";
+        }
+      }
+
+      // Re-render puzzle
+      renderDecoded();
+
+      // Update legend input fields to remove guesses that are not correct
+      const inputs = legendContainer.querySelectorAll("input");
+      inputs.forEach((inp) => {
+        const parentLetter = inp.parentElement.querySelector("label").textContent;
+        if (!userMapping[parentLetter]) {
+          inp.value = "";
+        }
+      });
+    }
+
+    /********************************************************
+     * 10) NEXT PUZZLE => LOAD NEXT OR RANDOM
+     ********************************************************/
+    function nextPuzzle() {
+      // either go sequential or random
+      puzzleIndex = (puzzleIndex + 1) % puzzlePhrases.length;
+      loadPuzzle(puzzlePhrases[puzzleIndex]);
+    }
+
+    /********************************************************
+     * 11) OPTIONAL: TOGGLE THE ENTIRE PAGE'S FONT
+     ********************************************************/
+    function toggleFont(which) {
+      const bodyEl = document.body;
+      bodyEl.classList.remove("logico-font", "sga-font", "courier-font");
+
+      if (which === "logico") {
+        bodyEl.classList.add("logico-font");
+      } else if (which === "sga") {
+        bodyEl.classList.add("sga-font");
+      } else {
+        bodyEl.classList.add("courier-font");
+      }
+    }
+  </script>
+</body>
+</html>

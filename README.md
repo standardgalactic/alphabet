@@ -14,6 +14,7 @@
 
 ## Dvorak
 
+![](dvorak-space-keyboard.png)
 ![](dvorak-sga.png)
 
 ## A Minimal Set of Rules for Learning Cistercian Numbers

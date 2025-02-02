@@ -5,6 +5,10 @@
   <img src="Images/sample-03.png" width="749px"/>
 </p>
 
+## Arabic Phonetic English
+
+![](arabic-phonetic-english-dark-mode.png)
+
 ## A New Arabic Keyboard
 
 ![](Arabic-keyboard.jpg)

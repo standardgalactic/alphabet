@@ -1,0 +1,572 @@
+Proceedings of the 17th Conference of the European Chapter of the Association for Computational Linguistics, pages 1404–1409
+May 2-6, 2023 ©2023 Association for Computational Linguistics
+Metaphor Detection with Effective Context Denoising
+Shun Wang1∗, Yucheng Li2∗, Chenghua Lin1†, Loïc Barrault1,3 , Frank Guerin2
+1 Department of Computer Science, University of Sheffield, UK
+2 Department of Computer Science, University of Surrey, UK
+3 Meta AI
+{swang209, c.lin}@sheffield.ac.uk
+{yucheng.li, f.guerin}@surrey.ac.uk
+loicbarrault@meta.com
+Abstract
+We propose a novel RoBERTa-based model,
+RoPPT, which introduces a target-oriented
+parse tree structure in metaphor detection.
+Compared to existing models, RoPPT fo-
+cuses on semantically relevant information and
+achieves the state-of-the-art on several main
+metaphor datasets. We also compare our ap-
+proach against several popular denoising and
+pruning methods, demonstrating the effective-
+ness of our approach in context denoising.
+Our code and dataset can be found at https:
+//github.com/MajiBear000/RoPPT.
+1
+Introduction
+Metaphor is a pervasive linguistic device, which
+attracts attention from both the fields of psycholin-
+guistics and computational linguistics due to the
+key role it plays in the cognitive and communica-
+tive functions of language (Wilks, 1978; Lakoff
+and Johnson, 1980; Lakoff, 1993). Linguistically,
+metaphor is defined as a figurative expression that
+uses one or several words to represent another con-
+cept given the context, rather than taking the lit-
+eral meaning of the expression (Fass, 1991). For
+instance, in the sentence “This project is such a
+headache!”, the contextual meaning of headache
+is “a thing or person that causes worry or trouble”,
+different from its literal meaning, “a continuous
+pain in the head”.1
+Metaphor detection is challenging, as it requires
+understanding the nuanced relationships between
+abstract concepts embodied by the metaphoric ex-
+pression and its surrounding context. Recent stud-
+ies on this direction show its potential in benefit-
+ing a wide range of NLP applications, including
+sentiment analysis (Li et al., 2022a), metaphor gen-
+eration (Li et al., 2022b,c) and mental healthcare
+(Abd Yusof et al., 2017; Gutiérrez et al., 2017).
+∗The two authors contributed equally to this work.
+† Corresponding author
+1https://www.oxfordlearnersdictionaries.com
+When modelling relevant context for metaphor
+detection, various strategies have been proposed.
+These range from using highly restricted forms of
+linguistic context such as subject-verb and verb-
+direct object word pairs (Gutiérrez et al., 2016), to
+a wider context accounting for a fixed window sur-
+rounding the target word (Do Dinh and Gurevych,
+2016; Mao et al., 2018), and modelling the full sen-
+tential context (Gao et al., 2018; Choi et al., 2021).
+While it has been argued that modelling a wider
+context is beneficial (Cheng et al., 2021), it has also
+been noted that a wider context is likely to intro-
+duce noise into the representations, and hence hin-
+der model’s performance in metaphor detection (Le
+et al., 2020).
+Some recent efforts (Le et al., 2020; Song et al.,
+2021a) attempt to improve context modelling by
+explicitly leveraging the syntactic structure (e.g.,
+dependency parse tree) of a sentence in order to cap-
+ture important context words, where the parse trees
+are typically encoded with graph convolutional neu-
+ral networks. MelBERT (Choi et al., 2021) em-
+ploys a simple chunking method which separates
+sub-sentences by commas. The sub-sentence that
+contains a target word is then marked with a special
+token type, signalling its contextual importance to
+the target. However, these strategies are either dif-
+ficult to apply to batch optimisation due to their
+tree-dependent encoding process, or have limited
+effectiveness for context denosing. For instance,
+the simple chunking mechanism misses the syn-
+tactic structure, and thus can neither determine the
+degree of importance of context words, nor connect
+information across different subsentences.
+In this paper, we propose a novel metaphor de-
+tection model RoPPT: RoBERTa with Pruning on
+target-oriented Parse Tree. RoPPT introduces a
+flat, target-oriented tree structure by reshaping and
+pruning the ordinary parse trees to extract seman-
+tically relevant neighbours of a target word. The
+resulting tree representation allows the model to
+1404
+
+focus on syntactically relevant information of a tar-
+get word, and ignore irrelevant parts despite their
+position. It thus retains more relevant context for
+metaphor detection.
+Extensive experiments conducted on three pub-
+lic benchmark datasets (i.e., VUA, MOH-X,
+TroFi) show that RoPPT can significantly improve
+metaphor detection on all datasets against sev-
+eral popular denoising and pruning methods. Our
+model also yields better or comparable perfor-
+mance to the state-of-the-art models (Choi et al.,
+2021; Song et al., 2021a) in Micro F1 measure.
+To further validate our approach, we conducted
+an additional investigation to assess the effect of
+sentence length on the performance of our model.
+Experimental results demonstrate a positive corre-
+lation between the increase in the performance of
+RoPPT and the length of the input sentence.
+In summary, our paper makes three contribu-
+tions: (1) we propose a flat, target word-oriented
+tree structure by reshaping and pruning the ordi-
+nary parse trees to retain the most relevant con-
+text for a target word; (2) we propose RoPPT, a
+RoBERTa-based model which can effectively en-
+code the target-oriented parse tree for metaphor de-
+tection, achieving state-of-the-art results on three
+bench mark datasets; (3) we compare and evaluate
+a range of context denoising methods for metaphor
+detection, demonstrating the effectiveness of our
+proposed tree structure in context denoising.
+2
+Method
+The overall architecture of RoPPT is shown in Fig-
+ure 1, which can be divided into two parts: a target-
+oriented parse tree pruning module and a RoBERTa
+(Liu et al., 2019) contextual encoder.
+2.1
+Target-oriented Dependency Parse Tree
+Connecting target words with their most relevant
+context words is crucial for metaphor detection and
+comprehension. While there have been attempts
+to employ dependency parse trees in graph convo-
+lutional neural networks to improve context mod-
+elling (Wang et al., 2020), it raises challenges of
+how to effectively encode and leverage such syn-
+tactic structure information for transformer-based
+mask language models for metaphor detection.
+We tackle this challenge by introducing a target-
+oriented parse tree generated by three steps: 1)
+reshape the original parse tree from existing parsers
+such as spaCy (Honnibal and Montani, 2017) and
+Biaffine (Dozat and Manning, 2016); 2) root the
+tree at the target word; 3) prune the tree according
+to the distance between leaves and root, coined as
+neighbor range. The rationale behind is that the
+target word is the focus of the task rather than the
+original root. So the re-rooting allows us to focus
+on the connections between target words and their
+relevant context. The resulting flat, target-oriented
+tree structure also enables simple encoding process
+into the model. Figure 1 shows an example of our
+reshaped tree, which retrains words with neighbor
+range con = 1 to the root ‘bogged’.
+2.2
+RoBERTa-based Context Encoder
+We employ two metaphor identification theories in
+our model, i.e., Metaphor Identification Procedure
+(Steen, 2010, MIP) and Selectional Preference Vio-
+lation (Wilks, 1978, SPV). In MIP, a metaphor is
+detected when there is a contrast between target
+word’s contextual and literal meanings, whereas
+in SPV a metaphorical word is identified by the
+semantic difference from its surrounding words.
+Therefore, we model three types of semantic rep-
+resentations for implementing MIP and SPV, i.e.,
+the literal meaning and the contextual meaning of
+a target word, and the context meaning.
+Formally, given a sentence S = (w0, ..., wn),
+we first employ the RoBERTa network to produce
+representations for each word.
+H = RoBERTa_Enc(embcls, ..., embn)
+(1)
+Here CLS is a special token indicating the start of
+an input, H = (hcls, h0, ..., hn) the output hidden
+states, and embi the input embedding for word
+wi. Specifically, embi = embw + embpos, where
+embw is the word embedding, and embpos the po-
+sition encoding.
+Context denoising with the target-oriented parse
+tree. When modelling sentence representation, ex-
+isting works directly employed the CLS embedding
+as a common practice (Choi et al., 2021; Song
+et al., 2021b). In contrast, RoPPT employs the
+target-oriented parse tree to retain the most rele-
+vant context for a target word when computing the
+sentence embedding. Specifically, our sentence
+embedding is computed as follows.
+vS = 1
+n
+X
+hi, i ∈Cn
+(2)
+Here vS is the sentence representation; Cn repre-
+sents the n neighbour words within the neighbour
+1405
+
+Figure 1: The overall framework of RoPPT. The parse tree of a sentence is reshaped to a target-oriented tree, and
+the context is pruned with a pre-set threshold. The sentence embedding is the average pooling result of hidden states
+for pruned context from RoBERTa. L denotes concatenation.
+range of the target-oriented parse tree, and hi is the
+hidden state of wi. In other words, we do average
+pooling on the most relevant context words as the
+sentence representation and ignore other words in
+the sentence. We also design an alternative strategy
+by directly masking the original input sentence to
+the encoder according to the pruned parse tree. We
+denote this intuitive solution as RoPPT with Input
+Mask (RoPPT_IM) and discuss the performance
+difference between these two variants in §4.
+Similar to Choi et al. (2021), we use the hid-
+den state of target word wt as the contextual target
+word embedding (i.e. vS,t = ht), and the literal
+target word embedding vt is obtained by feeding
+the single target word wt to the RoBERTa network.
+vt = RoBERTa_Enc(embt)
+(3)
+We then model SPV (hSPV) by concatenating
+the sentence embedding vS and contextual target
+embedding vS,t, and MIP (hMIP) by concatenat-
+ing the contextual and literal target embeddings vt,
+followed by a MLP layer (i.e. f1(·) and f2(·)).
+hSPV = f1([vS, vS,t])
+(4)
+hMIP = f2([vS,t, vt])
+(5)
+Finally, we combine two hidden vectors hMIP
+and hSPV to compute a prediction score ˆy, and use
+binary cross entropy loss to train the overall frame-
+work for metaphor prediction.
+ˆy = σ(W ⊤[hMIP; hSPV] + b)
+(6)
+L = −
+N
+X
+i=1
+[yi log ˆyi + (1 −yi) log(1 −ˆyi)] (7)
+3
+Experimental Setup
+Dataset. We conduct experiments on four public
+benchmark datasets. VUA-18 (Leong et al., 2018)
+and VUA-20 (Leong et al., 2020) are the largest
+available datasets, released in the metaphor detec-
+tion shared tasks in 2018 and 2020. VUA-20 ex-
+tends VUA-18 with about 12K sentences for train-
+ing set and 3.6K sentences for test and validation
+sets. The MOH-X dataset is constructed by sam-
+pling sentences from WordNet (Miller, 1998). Only
+a single target verb in each sentence is annotated.
+The average sentence length is 8 tokens, the short-
+est of our three datasets. TroFi (Birke and Sarkar,
+2006) consists of sentences from the 1987-89 Wall
+Street Journal Corpus (Charniak et al., 2000), with
+an average length of 28.3 tokens per sentence.
+Baselines. RoBERTa_SEQ (Leong et al., 2020) is
+a fine-tuned RoBERTa sequence labeling model for
+metaphor detection. MelBERT (Choi et al., 2021)
+1406
+
+Model
+VUA18
+VUA20
+Prec
+Rec
+F1
+Prec
+Rec
+F1
+RNN_ELMo
+71.6
+73.6
+72.6
+-
+-
+-
+RoBERTa_SEQ
+80.1
+74.4
+77.1
+75.1
+67.1
+70.9
+MrBERT
+82.7
+72.5
+77.2
+-
+-
+-
+MelBERT*
+79.6
+76.4
+77.9
+76.3
+68.6
+72.2
+MelBERT
+80.1
+76.9
+78.5
+75.9
+69.0
+72.3
+RoBERTa_tree
+78.9
+76.1
+77.4
+74.8
+68.6
+71.6
+RoChunk
+76.6
+80.0
+78.2
+73.9
+70.0
+71.9
+RoWindow
+78.0
+78.1
+78.0
+75.0
+68.8
+71.8
+RoPPT_IM
+73.4
+74.3
+73.9
+67.7
+66.8
+67.2
+RoPPT
+80.0
+78.2
+79.1
+75.9
+70.0
+72.8
+Table 1: Performance comparison on VUA dataset (best
+is in bold). NB: * indicates the reproduced results of
+MelBERT using the original source code and setting of
+(Choi et al., 2021). RNN_ELMo and MrBERT have no
+results on VUA20 in their original paper. Popular de-
+noising methods are also compared. RoChunk means
+chunk sentence by comma on RoBERTa input, RoWin-
+dow means denoising by a context window (size=4).
+RoPPT_IM represent masking sentence before input to
+transformer encoder.
+Models
+TroFi
+MOH-X
+Prec
+Rec
+F1
+Prec
+Rec
+F1
+RoBERTa_SEQ
+53.6
+70.1
+60.7
+80.6
+77.7
+78.7
+DeepMet
+53.7
+72.9
+61.7
+79.9
+76.5
+77.9
+MrBERT
+53.8
+75.0
+62.7
+75.9
+84.1
+79.8
+MelBERT*
+53.1
+73.2
+61.6
+78.0
+79.5
+78.8
+MelBERT
+53.4
+74.1
+62.0
+79.3
+79.7
+79.2
+RoBERTa_tree
+50.3
+77.8
+61.1
+76.9
+83.5
+79.3
+RoPPT
+54.2
+76.2
+63.3
+77.0
+83.5
+80.1
+Table 2: Performance comparison on TroFi and MOH-X
+datasets (NB: bold denotes the best result).
+realises MIP and SPV theories via a RoBERTa
+based model. MrBERT (Song et al., 2021b) is the
+recent SOTA on verb metaphor detection based on
+BERT with verb relations encoded.
+Hyperparameter. We set the hyperparameter
+neighbour range con = 4 based on the validation
+set results. All the parser results are based on spaCy
+as it performs better than Biaffine empirically (see
+§4 for more discussion).
+4
+Experimental Results
+Overall results.
+Table 1 shows a comparison of
+the performance of our models against the baseline
+models on VUA18 and VUA20, respectively. It
+is clear that our RoPPT outperforms all baselines
+on VUA18 and VUA20, including the state-of-the-
+art model MelBERT. A two-tailed t-test was con-
+ducted based on 10 paired results from RoPPT and
+the strongest baseline MelBERT* on both VUA-18
+(p = 0.014) and VUA-20 (p = 0.019).
+We also compared our method against sev-
+eral common denoising strategies.
+The results
+show that our tree-based denoising method is
+more effective than other popular denoising ap-
+proaches such as RoChunk and RoWindow, which
+are sequence-based methods. We also apply our
+target-oriented tree to RoBERTa_SEQ, denoted as
+the RoBERTa_tree model. The improvement of
+RoBERTa_tree over RoBERTa_SEQ on two VUA
+datasets (i.e. 0.3% and 0.7%) further demonstrates
+the utility of our tree-based denoising method.
+Following the setup of Choi et al. (2021), we
+also conducted a zero-shot transfer learning experi-
+ment shown in Table 2. Specifically, our model is
+trained on the training set of VUA20 and directly
+tested on the entire Trofi and MOH-X datasets.
+This is intended to test the generalisation power
+of trained models. RoPPT shows the best perfor-
+mance on both datasets (significant test on RoPPT
+against MelBERT*: TroFi p = 0.0001; MOH-X
+p = 0.021; we cannot compare with MrBERT as
+the code is unavailable). It can be observed that
+our model gives a larger margin of improvement
+over the baselines on TroFi (i.e., 1.3% gain over
+MelBERT and 0.6% over MrBERT) than MoH-
+X (i.e., 0.9% gain over MelBRTT and 0.3% over
+MrBERT).
+Model performance vs. Sentence length. As the
+averaged sentences length of TroFi (28.3 tokens)
+is significantly longer than that of MoH-X (8 to-
+kens), it is worth investigating whether our model
+gives more performance boost on data with longer
+context as it is likely to be noisier. To verify this
+hypothesis, we evaluated the performance boost of
+our RoPPT against the SOTA baseline MelBERT.
+Table 3 shows the results of VUA18 with the testset
+splitted into 3 different groups based on sentence
+length. The results demonstrate a clear positive cor-
+relation between performance boost and sentence
+length.
+Impact of Parsers.
+We also investigated how the
+choice of parsers impacts the metaphor detection
+performance of our model. Specifically, we tested
+two parsers for constructing the target-oriented
+dependency parse trees, namely, the CNN-based
+parser Biaffine and the RoBERTa-based parser
+spaCy.
+When tested on the validation set, our
+model achieves 78.0% with spaCy and 77.7% with
+Biaffine in F1 for metaphor detection, respectively.
+This shows that the impact of the parse choice is
+relatively small for our model.
+Case Studies. RoPPT shows its strength in the fol-
+lowing example with the target word far away from
+1407
+
+Sent.
+RoPPT
+MelBERT*
+F1
+Pruning
+# of
+len.
+Prec
+Rec
+F1
+Prec
+Rec
+F1
+diff.
+comp.
+Sent.
+<20
+76.4
+74.8
+75.6
+75.0
+75.2
+75.1
+0.5
+10.7 / 12.3
+18,515
+20-40
+81.8
+79.9
+80.8
+79.2
+79.1
+79.2
+1.6
+16.4 / 29.4
+17,729
+>40
+82.3
+80.0
+81.1
+78.5
+76.8
+77.6
+3.5
+19.5 / 53.6
+7,703
+Table 3: RoPPT and MelBERT* performance comparison on sentences with different length range from VUA18.
+‘Pruning comp.’ is the comparison of the average length of (pruned) / (original) sentences.
+its subject, which is correctly labeled by RoPPT but
+incorrectly by baseline models. For the instance
+with metaphorical target word bogged, "a routine
+exercise in extending the government’s borrowing
+power to $3.1 thousand billion became bogged
+down.", the target word bogged is separated from
+its subject by a long phrase, which causes baselines
+(including MelBERT) to fail to detect the metaphor.
+Thanks to the parse tree, RoPPT links exercise di-
+rectly to the target and produces the right label.
+5
+Conclusion
+In this paper, we proposed, RoPPT, an effective ap-
+proach to extract contextual information for target
+words for metaphor detection based on a target-
+oriented parse tree structure. Extensive experi-
+ments show that our model can yield better perfor-
+mance compared to the state-of-the-art. In addition,
+our method is particularly effective in denoising
+long sentences, despite its simplicity.
+6
+Limitations
+Empirical experiments show that our method is
+more effective in denoising long sentences with
+the proposed target-oriented parse tree. While this
+is somewhat expected as shorter sentences tend to
+have cleaner context, it raises a question or limita-
+tion of how can we improve the proposed method
+to better deal with short sentences and improve its
+performance in these cases. One possibility is to
+exploit external knowledge (e.g. ConceptNet) to
+support the detection of the most important contex-
+tual words.

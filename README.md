@@ -149,7 +149,10 @@ By following these steps, you can use the Stylus extension to apply custom fonts
 
 ## Dvorak
 
+![](dvorak-keyboard.png)
+
 ![](dvorak-space-keyboard.png)
+
 ![](dvorak-sga.png)
 
 ## A Minimal Set of Rules for Learning Cistercian Numbers

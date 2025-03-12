@@ -4,7 +4,7 @@
 <p align="left">
   <img src="Images/sample-03.png" width="749px"/>
 </p>
-# How to Use Stylus Extension with Custom Font and Better YouTube Subtitles
+#How to Use Stylus Extension with Custom Font and Better YouTube Subtitles
 
 ## Using the Stylus Extension for Custom Fonts
 

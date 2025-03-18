@@ -5,6 +5,8 @@
   <img src="Images/sample-03.png" width="749px"/>
 </p>
 
+![](fun-visualization.png)
+
 # How to Use Stylus Extension with Custom Font and Better YouTube Subtitles
 
 ## Using the Stylus Extension for Custom Fonts

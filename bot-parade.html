@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bot Parade</title>
+  <style>
+    /*************************************************************
+     * 1) Custom SGA Font (optional)
+     *************************************************************/
+    @font-face {
+      src: url('fonts/Sga-Regular.woff2') format('woff2'),
+           url('fonts/Sga-Regular.woff') format('woff'),
+           url('fonts/Sga-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-family: 'Sga Regular';
+    }
+
+    /*************************************************************
+     * 2) Base Body Styling (Green on Black + Fullscreen)
+     *************************************************************/
+    body {
+      margin: 0;
+      background: #000;
+      color: #00ff00; /* retro green */
+      font-family: 'Sga Regular', Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden; /* hide scrollbars, starfield covers entire BG */
+    }
+
+    /*************************************************************
+     * 3) The Starfield Canvas (fullscreen in background)
+     *************************************************************/
+    #starfield {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    /*************************************************************
+     * 4) Audio Panel + Hover Behavior
+     *************************************************************/
+    .audio-panel {
+      position: relative;
+      z-index: 1; /* in front of starfield */
+      background-color: rgba(0, 0, 0, 0.8);
+      width: 80%;
+      max-width: 600px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 20px #00ff00;
+      border: 2px solid #00ff00;
+      transition: font-family 0.3s ease; /* smooth font swap */
+      cursor: pointer; /* indicate clickable on mobile/desktop */
+    }
+
+    /*
+      On desktop hover, switch to Courier.
+      We’ll revert automatically when the mouse leaves.
+    */
+    .audio-panel:hover {
+      font-family: "Courier New", monospace;
+      font-size: 0.75em;
+    }
+
+    /* Headings, paragraphs, etc. are automatically affected by .audio-panel's font-family */
+
+    audio {
+      width: 100%;
+      max-width: 300px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fullscreen flying starfield canvas -->
+  <canvas id="starfield"></canvas>
+
+  <!-- Main panel with song title + audio controls -->
+  <div class="audio-panel" id="audioPanel">
+    <h1>Bot Parade</h1>
+    <h2>By Flyxion</h1>
+    <audio controls>
+      <source src="bot-parade.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+   
+  </div>
+
+  <script>
+    /*************************************************************
+     * A) STARFIELD ANIMATION
+     *************************************************************/
+    const starCanvas = document.getElementById('starfield');
+    const starCtx = starCanvas.getContext('2d');
+
+    function resizeCanvas() {
+      starCanvas.width = window.innerWidth;
+      starCanvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas(); // initial setup
+
+    let stars = [];
+    const numStars = 600;
+    const starSpeed = 0.05;
+
+    // Generate random star positions
+    for (let i = 0; i < numStars; i++) {
+      stars.push({
+        x: Math.random() * starCanvas.width,
+        y: Math.random() * starCanvas.height,
+        z: Math.random() * starCanvas.width
+      });
+    }
+
+    function updateStars() {
+      for (let star of stars) {
+        star.z -= starSpeed;
+        if (star.z <= 0) {
+          star.x = Math.random() * starCanvas.width;
+          star.y = Math.random() * starCanvas.height;
+          star.z = starCanvas.width;
+        }
+      }
+    }
+
+    function drawStars() {
+      starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+
+      for (let star of stars) {
+        const perspective = starCanvas.width / star.z;
+        const x = (star.x - starCanvas.width / 2) * perspective + starCanvas.width / 2;
+        const y = (star.y - starCanvas.height / 2) * perspective + starCanvas.height / 2;
+        const size = perspective * 1.5;
+
+        starCtx.beginPath();
+        starCtx.arc(x, y, size, 0, Math.PI * 2);
+        starCtx.fillStyle = "#ffffff";
+        starCtx.fill();
+      }
+    }
+
+    function animateStarfield() {
+      updateStars();
+      drawStars();
+      requestAnimationFrame(animateStarfield);
+    }
+    animateStarfield();
+
+    /*************************************************************
+     * B) FONT TOGGLE ON MOBILE (tap)
+     *************************************************************/
+    const audioPanel = document.getElementById('audioPanel');
+    let fontToggled = false; 
+    /*
+      We’ll use a click listener to handle touch/click:
+      - On mobile: tapping toggles the font.
+      - On desktop: you still get the CSS hover effect automatically.
+    */
+    audioPanel.addEventListener('click', () => {
+      // If we’re in default SGA font, switch to Courier.
+      // Otherwise, revert to SGA + fallback.
+      if (!fontToggled) {
+        audioPanel.style.fontFamily = '"Courier New", monospace';
+        fontToggled = true;
+      } else {
+        audioPanel.style.fontFamily = '"Sga Regular", Arial, sans-serif';
+        fontToggled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Genius, Prodigy, and Talent</title>
+  <style>
+    /*************************************************************
+     * 1) Custom SGA Font (optional)
+     *************************************************************/
+    @font-face {
+      src: url('fonts/Sga-Regular.woff2') format('woff2'),
+           url('fonts/Sga-Regular.woff') format('woff'),
+           url('fonts/Sga-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+      font-family: 'Sga Regular';
+    }
+
+    /*************************************************************
+     * 2) Base Body Styling (Green on Black)
+     *************************************************************/
+    body {
+      margin: 0;
+      background: #000;
+      color: #00ff00; /* retro green */
+      font-family: 'Sga Regular', Arial, sans-serif;
+      min-height: 100vh;
+      /* Remove fixed height and overflow to allow page scrolling */
+      padding: 20px; /* some padding for comfortable scrolling */
+    }
+
+    /*************************************************************
+     * 3) The Starfield Canvas (fixed background)
+     *************************************************************/
+    #starfield {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1; /* behind everything */
+    }
+
+    /*************************************************************
+     * 4) Audio Panel + Hover Behavior
+     *************************************************************/
+    .audio-panel {
+      background-color: rgba(0, 0, 0, 0.8);
+      width: 80%;
+      max-width: 600px;
+      margin: 0 auto; /* center horizontally */
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 20px #00ff00;
+      border: 2px solid #00ff00;
+      transition: font-family 0.3s ease;
+      cursor: pointer; /* indicate clickable on mobile/desktop */
+    }
+
+    /*
+      On desktop hover, switch to Courier.
+      We’ll revert automatically when the mouse leaves.
+    */
+    .audio-panel:hover {
+      font-family: "Courier New", monospace;
+      font-size: 0.75em;
+    }
+
+    /* Styling for the audio element */
+    audio {
+      width: 100%;
+      max-width: 300px;
+      margin-top: 20px;
+    }
+
+    /* Styling for the lyrics section without its own scrollbar */
+    .lyrics {
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px solid #00ff00;
+      text-align: left;
+      font-size: 0.9em;
+      /* Remove max-height and overflow so the full text is displayed */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed starfield background -->
+  <canvas id="starfield"></canvas>
+
+  <!-- Main panel with song title, audio controls, and lyrics -->
+  <div class="audio-panel" id="audioPanel">
+    <h1>Genius, Prodigy, and Talent</h1>
+    <h2>By Flyxion</h2>
+    <audio controls>
+      <source src="Genius, Prodigy, and Talent.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    
+    <!-- Lyrics Section -->
+    <div class="lyrics">
+      <h3>Debunking GPT — Genius, Prodigy, and Talent</h3>
+      <p>
+        This book critically examines myths about child geniuses and prodigies, emphasizing the significant role of deliberate practice and complex interactions between young learners and adults. It challenges the belief that extraordinary abilities are solely due to innate talent and explores how adult interactions can subtly influence children’s perceived abilities.
+      </p>
+      <p>
+        Illustrating this point, the book delves into historical anecdotes like Clever Hans, the horse believed to perform arithmetic tasks by tapping his hoof. Investigations revealed that Hans was actually responding to involuntary cues from his observers, not understanding mathematics. Similarly, Akhfash's Goat was thought to nod in agreement to questions, but this behavior was orchestrated via a hidden mechanism, not any cognitive processing by the goat.
+      </p>
+      <p>
+        These cases parallel how adults can unwittingly cue children to give expected responses, potentially distorting assessments of a child’s true capabilities and overshadowing the importance of consistent, focused practice.
+      </p>
+      <p>
+        The text further explores how socioeconomic factors critically shape access to educational resources and social capital, which profoundly affect a child’s development. It advocates for monotonically increasing non-hierarchical learning environments, where education is tailored to the child’s pace and interests, promoting natural growth and exploration without predefined benchmarks.
+      </p>
+      <p>
+        Additionally, the book discusses the psychological strategies of "liking" and "blocking" — fostering engagement through positive emotional responses and focusing efforts by limiting distractions. These strategies are crucial for maintaining motivation and directing efforts towards meaningful skill development.
+      </p>
+      <p>
+        By challenging prevailing myths and proposing a nuanced understanding of talent development, this book seeks to influence educational practices and parenting strategies, advocating for environments that foster a balanced, purpose-driven learning experience aligned with each child’s unique needs and potential.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    /*************************************************************
+     * A) STARFIELD ANIMATION
+     *************************************************************/
+    const starCanvas = document.getElementById('starfield');
+    const starCtx = starCanvas.getContext('2d');
+
+    function resizeCanvas() {
+      starCanvas.width = window.innerWidth;
+      starCanvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas(); // initial setup
+
+    let stars = [];
+    const numStars = 600;
+    const starSpeed = 0.05;
+
+    // Generate random star positions
+    for (let i = 0; i < numStars; i++) {
+      stars.push({
+        x: Math.random() * starCanvas.width,
+        y: Math.random() * starCanvas.height,
+        z: Math.random() * starCanvas.width
+      });
+    }
+
+    function updateStars() {
+      for (let star of stars) {
+        star.z -= starSpeed;
+        if (star.z <= 0) {
+          star.x = Math.random() * starCanvas.width;
+          star.y = Math.random() * starCanvas.height;
+          star.z = starCanvas.width;
+        }
+      }
+    }
+
+    function drawStars() {
+      starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+
+      for (let star of stars) {
+        const perspective = starCanvas.width / star.z;
+        const x = (star.x - starCanvas.width / 2) * perspective + starCanvas.width / 2;
+        const y = (star.y - starCanvas.height / 2) * perspective + starCanvas.height / 2;
+        const size = perspective * 1.5;
+
+        starCtx.beginPath();
+        starCtx.arc(x, y, size, 0, Math.PI * 2);
+        starCtx.fillStyle = "#ffffff";
+        starCtx.fill();
+      }
+    }
+
+    function animateStarfield() {
+      updateStars();
+      drawStars();
+      requestAnimationFrame(animateStarfield);
+    }
+    animateStarfield();
+
+    /*************************************************************
+     * B) FONT TOGGLE ON MOBILE (tap)
+     *************************************************************/
+    const audioPanel = document.getElementById('audioPanel');
+    let fontToggled = false; 
+
+    audioPanel.addEventListener('click', () => {
+      // Toggle between the custom font and Courier New on tap/click.
+      if (!fontToggled) {
+        audioPanel.style.fontFamily = '"Courier New", monospace';
+        fontToggled = true;
+      } else {
+        audioPanel.style.fontFamily = '"Sga Regular", Arial, sans-serif';
+        fontToggled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
+

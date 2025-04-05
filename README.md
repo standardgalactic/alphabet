@@ -5,8 +5,10 @@
   <img src="Images/sample-03.png" width="749px"/>
 </p>
 
-![](fun-visualization.png)
+![](mindmap-inverted.png)
 
+![](fun-visualization.png)
+<!--
 # How to Use Stylus Extension with Custom Font and Better YouTube Subtitles
 
 ## Using the Stylus Extension for Custom Fonts
@@ -137,7 +139,18 @@ Better YouTube Subtitles allows you to customize the appearance of subtitles on 
 
 Your customized subtitle settings should now be applied to YouTube videos.
 
-By following these steps, you can use the Stylus extension to apply custom fonts globally and configure Better YouTube Subtitles for an improved viewing experience.
+By following these steps, you can use the Stylus extension to apply custom fonts globally and configure Better YouTube Subtitles for an improved viewing experience. -->
+
+## Coming Attractions
+
+![](teaser-cover.png)
+
+![](milk-making-machine.png)
+
+<img src="milk-synthesizer.gif" width="1024" />
+
+<!-- ![](milk-synthesizer.gif) -->
+
 ## Arabic Phonetic English
 
 ![](arabic-phonetic-english-dark-mode.png)
@@ -228,6 +241,6 @@ and vorticon-restore.reg to return it to normal.
 
 May need to restart Windows for it to take effect.
 
-
+![](key.png)
 
 This page is live at https://standardgalactic.github.io/alphabet

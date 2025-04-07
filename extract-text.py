@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """
-A script to extract plain text from PDF, EPUB, and MHTML files in the current directory or from specified files.
-It processes each file, removes tags using BeautifulSoup if necessary, and writes the results to separate .txt files.
+A script to extract plain text from PDF, EPUB, and MHTML files.
+It can process specific files passed as arguments, or scan the current directory.
 
-Usage: 
-    python extract_text.py [file1 file2 ...]
-    
-Ensure you have installed the required libraries (e.g., pip install PyMuPDF ebooklib beautifulsoup4)
+Usage:
+    python extract-text.py file1.pdf file2.epub
+    python extract-text.py                 # processes all PDF, EPUB, and MHTML in current dir
+
+Dependencies:
+    pip install PyMuPDF ebooklib beautifulsoup4
 """
 
 import os
 import sys
-import glob
 import fitz  # PyMuPDF
 import ebooklib
 from ebooklib import epub
@@ -19,70 +20,29 @@ from bs4 import BeautifulSoup
 from email import policy
 from email.parser import BytesParser
 
-def extract_text_from_pdfs_and_epubs(directory):
-    """Extracts text from all PDFs, EPUBs, and MHTMLs in the given directory."""
-    for filename in os.listdir(directory):
-        if filename.lower().endswith(".pdf"):
-            file_path = os.path.join(directory, filename)
-            process_pdf(file_path)
-        elif filename.lower().endswith(".epub"):
-            file_path = os.path.join(directory, filename)
-            process_epub(file_path)
-        elif filename.lower().endswith(".mhtml"):
-            file_path = os.path.join(directory, filename)
-            process_mhtml(file_path)
-
-def process_pdf(pdf_path):
-    """Extracts text from a single PDF file and saves it as a .txt file."""
-    if not os.path.isfile(pdf_path):
-        print(f"Error: File not found - {pdf_path}")
-        return
-    
-    text = extract_text_from_pdf(pdf_path)
-    if not text.strip():
-        print(f"Warning: No text extracted from {pdf_path}")
-        return
-    
-    output_file = pdf_path.rsplit(".", 1)[0] + ".txt"
-    try:
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(text)
-        print(f"Extracted text saved to: {output_file}")
-    except Exception as e:
-        print(f"Error saving text file for {pdf_path}: {e}")
+def normalize_quotes(text):
+    """Replace smart quotes, dashes, and other problematic characters."""
+    replacements = {
+        "\u2018": "'", "\u2019": "'",  # Single quotes
+        "\u201c": '"', "\u201d": '"',  # Double quotes
+        "\u2014": "—", "\u2013": "-",  # Dashes
+        "\u2026": "...", "\u00a0": " "  # Ellipsis, non-breaking space
+    }
+    for smart, plain in replacements.items():
+        text = text.replace(smart, plain)
+    return text
 
 def extract_text_from_pdf(pdf_path):
-    """Extracts text from a single PDF file."""
     text = ""
     try:
         doc = fitz.open(pdf_path)
         for page in doc:
             text += page.get_text("text") + "\n"
     except Exception as e:
-        print(f"Error extracting text from {pdf_path}: {e}")
-    return text
-
-def process_epub(epub_path):
-    """Extracts text from a single EPUB file and saves it as a .txt file."""
-    if not os.path.isfile(epub_path):
-        print(f"Error: File not found - {epub_path}")
-        return
-    
-    text = extract_text_from_epub(epub_path)
-    if not text.strip():
-        print(f"Warning: No text extracted from {epub_path}")
-        return
-    
-    output_file = epub_path.rsplit(".", 1)[0] + ".txt"
-    try:
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(text)
-        print(f"Extracted text saved to: {output_file}")
-    except Exception as e:
-        print(f"Error saving text file for {epub_path}: {e}")
+        print(f"[!] Error extracting text from {pdf_path}: {e}")
+    return normalize_quotes(text)
 
 def extract_text_from_epub(epub_path):
-    """Extracts text from an EPUB file."""
     text = ""
     try:
         book = epub.read_epub(epub_path)
@@ -91,66 +51,86 @@ def extract_text_from_epub(epub_path):
                 soup = BeautifulSoup(item.get_content(), "html.parser")
                 text += soup.get_text() + "\n"
     except Exception as e:
-        print(f"Error extracting text from {epub_path}: {e}")
-    return text
-
-def process_mhtml(mhtml_path):
-    """Extracts text from a single MHTML file and saves it as a .txt file."""
-    if not os.path.isfile(mhtml_path):
-        print(f"Error: File not found - {mhtml_path}")
-        return
-    
-    text = extract_text_from_mhtml(mhtml_path)
-    if not text.strip():
-        print(f"Warning: No text extracted from {mhtml_path}")
-        return
-    
-    output_file = mhtml_path.rsplit(".", 1)[0] + ".txt"
-    try:
-        with open(output_file, "w", encoding="utf-8") as f:
-            f.write(text)
-        print(f"Extracted text saved to: {output_file}")
-    except Exception as e:
-        print(f"Error saving text file for {mhtml_path}: {e}")
+        print(f"[!] Error extracting text from {epub_path}: {e}")
+    return normalize_quotes(text)
 
 def extract_text_from_mhtml(mhtml_path):
-    """Extracts plain text from an MHTML file by parsing its MIME structure. It processes both HTML parts (removing tags) and plain text parts."""
     text_parts = []
     try:
         with open(mhtml_path, 'rb') as f:
             msg = BytesParser(policy=policy.default).parse(f)
 
+        def decode_part(part):
+            charset = part.get_content_charset() or 'utf-8'
+            try:
+                return part.get_payload(decode=True).decode(charset, errors='replace')
+            except Exception as e:
+                print(f"[!] Decode error in {mhtml_path}: {e}")
+                return ''
+
         if msg.is_multipart():
             for part in msg.walk():
-                content_type = part.get_content_type()
-                if content_type == 'text/html':
-                    html_content = part.get_content()
-                    soup = BeautifulSoup(html_content, 'html.parser')
+                ctype = part.get_content_type()
+                if ctype == 'text/html':
+                    html = decode_part(part)
+                    soup = BeautifulSoup(html, 'html.parser')
                     text_parts.append(soup.get_text(separator="\n", strip=True))
-                elif content_type == 'text/plain':
-                    text_parts.append(part.get_content())
+                elif ctype == 'text/plain':
+                    text_parts.append(decode_part(part))
         else:
-            content_type = msg.get_content_type()
-            if content_type == 'text/html':
-                soup = BeautifulSoup(msg.get_content(), 'html.parser')
+            content = decode_part(msg)
+            ctype = msg.get_content_type()
+            if ctype == 'text/html':
+                soup = BeautifulSoup(content, 'html.parser')
                 text_parts.append(soup.get_text(separator="\n", strip=True))
             else:
-                text_parts.append(msg.get_content())
+                text_parts.append(content)
     except Exception as e:
-        print(f"Error extracting text from {mhtml_path}: {e}")
+        print(f"[!] Error reading MHTML {mhtml_path}: {e}")
     
-    return "\n\n".join(text_parts)
+    return normalize_quotes("\n\n".join(text_parts))
+
+def save_text(text, original_path):
+    output_file = os.path.splitext(original_path)[0] + ".txt"
+    try:
+        with open(output_file, "w", encoding="utf-8") as f:
+            f.write(text)
+        print(f"[✓] Text saved to: {output_file}")
+    except Exception as e:
+        print(f"[!] Error writing to {output_file}: {e}")
+
+def process_file(file_path):
+    if not os.path.isfile(file_path):
+        print(f"[!] File not found: {file_path}")
+        return
+
+    ext = file_path.lower()
+    print(f"[•] Processing {file_path}...")
+    
+    if ext.endswith(".pdf"):
+        text = extract_text_from_pdf(file_path)
+    elif ext.endswith(".epub"):
+        text = extract_text_from_epub(file_path)
+    elif ext.endswith((".mhtml", ".mht")):
+        text = extract_text_from_mhtml(file_path)
+    else:
+        print(f"[!] Unsupported file type: {file_path}")
+        return
+
+    if text.strip():
+        save_text(text, file_path)
+    else:
+        print(f"[!] No text extracted from: {file_path}")
+
+def process_directory(directory):
+    for filename in os.listdir(directory):
+        if filename.lower().endswith((".pdf", ".epub", ".mhtml", ".mht")):
+            process_file(os.path.join(directory, filename))
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         for file in sys.argv[1:]:
-            if file.lower().endswith(".pdf"):
-                process_pdf(file)
-            elif file.lower().endswith(".epub"):
-                process_epub(file)
-            elif file.lower().endswith(".mhtml"):
-                process_mhtml(file)
-            else:
-                print(f"Unsupported file type: {file}")
+            process_file(file)
     else:
-        extract_text_from_pdfs_and_epubs(os.getcwd())
+        print("[i] No files specified. Processing current directory...")
+        process_directory(os.getcwd())

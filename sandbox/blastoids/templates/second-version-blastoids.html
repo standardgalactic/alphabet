@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blastoids</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let asteroids = [];
+let particles = [];
+let lastSpawn = 0;
+let crosshair = { x: canvas.width / 2, y: canvas.height / 2 };
+
+// Audio
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playShootSound() {
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = 'square';
+  osc.frequency.value = 500;
+  gain.gain.value = 0.1;
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.1);
+}
+
+// Vector-style glow
+function glowStroke(fn) {
+  ctx.save();
+  ctx.shadowColor = '#0f0';
+  ctx.shadowBlur = 12;
+  ctx.strokeStyle = '#0f0';
+  ctx.lineWidth = 1;
+  fn();
+  ctx.stroke();
+  ctx.restore();
+}
+
+function spawnAsteroid() {
+  let angle = (Math.random() - 0.5) * Math.PI / 6;
+  let offsetX = (Math.random() - 0.5) * canvas.width;
+  let offsetY = (Math.random() - 0.5) * canvas.height;
+  asteroids.push({
+    x: canvas.width/2 + offsetX,
+    y: canvas.height/2 + offsetY,
+    z: 1000,
+    speed: 2 + Math.random() * 2,
+    size: 20 + Math.random() * 20
+  });
+}
+
+function update() {
+  let now = Date.now();
+  if (now - lastSpawn > 500) {
+    spawnAsteroid();
+    lastSpawn = now;
+  }
+
+  asteroids = asteroids.filter(a => a.z > 0);
+  for (let a of asteroids) {
+    a.z -= a.speed;
+    let scale = 300 / (a.z + 1);
+    a.sx = (a.x - canvas.width / 2) * scale + canvas.width / 2;
+    a.sy = (a.y - canvas.height / 2) * scale + canvas.height / 2;
+    a.r = a.size * scale;
+  }
+
+  particles = particles.filter(p => p.life-- > 0);
+}
+
+function draw() {
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for (let a of asteroids) {
+    glowStroke(() => {
+      ctx.beginPath();
+      ctx.arc(a.sx, a.sy, a.r, 0, Math.PI * 2);
+    });
+  }
+
+  for (let p of particles) {
+    ctx.fillStyle = '#0f0';
+    ctx.fillRect(p.x, p.y, 2, 2);
+  }
+
+  // HUD crosshair
+  glowStroke(() => {
+    ctx.beginPath();
+    ctx.moveTo(crosshair.x - 10, crosshair.y);
+    ctx.lineTo(crosshair.x + 10, crosshair.y);
+    ctx.moveTo(crosshair.x, crosshair.y - 10);
+    ctx.lineTo(crosshair.x, crosshair.y + 10);
+  });
+
+  requestAnimationFrame(() => {
+    update();
+    draw();
+  });
+}
+
+// Shoot logic
+window.addEventListener('click', () => {
+  playShootSound();
+  for (let i = 0; i < asteroids.length; i++) {
+    const a = asteroids[i];
+    if (Math.hypot(crosshair.x - a.sx, crosshair.y - a.sy) < a.r) {
+      asteroids.splice(i, 1);
+      for (let j = 0; j < 10; j++) {
+        particles.push({
+          x: a.sx,
+          y: a.sy,
+          vx: (Math.random() - 0.5) * 4,
+          vy: (Math.random() - 0.5) * 4,
+          life: 30 + Math.random() * 30
+        });
+      }
+      break;
+    }
+  }
+});
+
+// Reticle follows mouse
+window.addEventListener('mousemove', e => {
+  crosshair.x = e.clientX;
+  crosshair.y = e.clientY;
+});
+
+draw();
+</script>
+</body>
+</html>
+

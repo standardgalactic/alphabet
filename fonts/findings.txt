@@ -1,0 +1,37 @@
+Findings
+FontForge reads all these fonts without error.
+
+The “corrupted TTF” issue you encountered earlier is likely due to the way fonts are constructed or exported by your scripts, not the original fonts.
+
+Metadata varies:
+Some fonts have very generic names (e.g., "Untitled1" for shapeform.ttf), which can confuse some apps.
+
+Glyph counts:
+Some fonts are huge (Sga-Regular.ttf: 14,208 glyphs!).
+
+Some are minimal (e.g., Lingojam_cipher-Regular.ttf: 35 glyphs).
+
+First glyphs are always .notdef, .null, and control chars—this is standard and good.
+
+Character sets:
+Most fonts use UnicodeBmp (Basic Multilingual Plane, 0x0000–0xFFFF).
+
+A few use UnicodeFull (full Unicode range).
+
+Possible Issues for "Corrupted" TTFs
+Missing Metadata:
+Fonts without proper fontname, familyname, or fullname may be rejected by some font renderers.
+
+(e.g., "Untitled1" is not a good font name.)
+
+Unusual Encodings:
+Rare, but some apps require UnicodeFull or at least a consistent encoding.
+
+
+Glyph Table Gaps:
+If you export a font with only a few glyphs and miss .notdef or space, some systems will treat it as invalid.
+
+
+Export Bugs:
+FontForge scripting is powerful but requires carefully copying all necessary font-level data, not just glyphs.
+

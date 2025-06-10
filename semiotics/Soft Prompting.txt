@@ -1,0 +1,268 @@
+ID-SPAM Soft Prompting
+Skip to content
+Open sidebar
+ChatGPT
+Saved memory full
+Saved memory full
+Get Plus
+ChatGPT
+Share
+You said:
+arXiv:2506.05629v1 [cs.CL] 5 Jun 2025
+Leveraging Self-Attention for Input-Dependent Soft Prompting in LLMs
+Ananth Muppidi
+*
+IIIT Hyderabad
+India
+ananth.muppidi21@gmail.com
+Abhilash Nandy
+*
+IIT Kharagpur
+India
+nandyabhilash@gmail.com
+Sambaran Bandyopadhyay
+Adobe Research
+India
+samb.bandyo@gmail.com
+Abstract
+The performance of large language mod-
+els in domain-specific tasks necessitates fine-
+tuning, which is computationally expensive and
+technically challenging. This paper focuses
+on parameter-efficient fine-tuning using soft
+prompting, a promising approach that adapts
+pre-trained models to downstream tasks by
+learning a small set of parameters. We pro-
+pose a novel Input Dependent Soft Prompting
+technique with a self-Attention Mechanism (ID-
+SPAM) that generates soft prompts based on
+the input tokens and attends different tokens
+with varying importance. Our method is simple
+and efficient, keeping the number of trainable
+parameters small. We show the merits of the
+proposed approach compared to state-of-the-
+art techniques on various tasks and show the
+improved zero shot domain transfer capability.
+1 Introduction
+Large language models (LLMs) have made signifi-
+cant advancements in natural language processing
+tasks, such as generation, translation and summa-
+rization (Yeo et al., 2023; Zhang et al., 2023a). De-
+spite their success, LLMs' performance in domain-
+specific tasks is limited, and fine-tuning on task-
+oriented datasets is crucial. As models from BERT (Devlin et al., 2019) to GPT-3 (Brown et al., 2020)
+have millions to billions of parameters, fine-tuning
+becomes computationally expensive and challeng-
+ing. Therefore, parameter efficient fine-tuning (Han et al., 2024) research aims to adapt pre-trained
+models to downstream tasks by fixing most param-
+eters and only learning a small subset.
+Soft prompting is a promising direction for fine-
+tuning large models. Without changing the core
+architecture of an LLM, soft prompt methods gen-
+erally introduce a small trainable vector (known as
+a 'soft prompt') at the beginning of one or more *Equal contribution. Work done during the internship at
+Adobe Research.
+transformer layers' inputs within the LLM. During
+fine tuning, only the soft prompt is trained to adapt
+to the downstream task keeping the parameters of
+the base LLM frozen. Lester et al.
+(2021) propose
+Prompt Tuning by prepending the trainable soft
+prompt vector before the embeddings of the text
+input, just after the embedding layer of the base
+LLM. On similar lines, Li and Liang
+(2021) intro-
+duce Prefix Tuning by prepending a soft prompt at
+every transformer layer and Liu et al.
+(2021) come
+up with P-tuning by interleaving learnable prompts
+with input embeddings. Contrary to text prompt en-
+gineering (Wei et al., 2022) or optimizing discrete
+token representations via in-context learning (Dai
+et al.
+, 2023), Petrov et al.
+(2023) suggest that the
+continuous embedding space of soft prompts inher-
+ently possesses a greater amount of information.
+Recent literature introduces several variants of
+soft prompt techniques such as removing the repa-
+rameterization module (Liu et al., 2022b), hierar-
+chical structured pruning (Ma et al., 2022), intro-
+ducing an adaptive gate mechanism to control the
+prefix importance in each transformer layer (Zhang
+et al.
+, 2023b), diving the soft prompt into query,
+key and value prompts (Wang et al.
+, 2023), learning
+multiple short soft prompts and a gating mechanism
+to route an input to a specific soft prompt (Choi
+et al.
+, 2023), and decomposing the soft prompt into
+low rank matrices (Shi and Lipani
+, 2024).
+Many of these methods keep the soft prompt in-
+dependent of the actual input given to the LLM.
+However, this limits the soft prompt to adjust based
+on the actual input during the inference time. It
+is unlikely that a unified prompt would lead to a
+performance improvement across different input
+instances. It also makes the training difficult by
+increasing the convergence time. To address this,
+a few recent approaches leverage input dependent
+soft prompts. But they need to concatenate the soft
+prompts either at every transformer layer of the
+base LLM (Wu et al.
+, 2022) or all the layers after an
+1
+ChatGPT said:
+Here's an enhanced summary of
+arXiv:2506.05629v1
+(submitted 5 Jun 2025), which introduces
+ID‑SPAM
+: Input‑Dependent Soft Prompting with a Self‑Attention Mechanism:
+🔍 Core Idea
+Traditional
+soft prompting
+prepends a fixed trainable vector to inputs or intermediate layers of an LLM while freezing the rest.
+ID‑SPAM
+instead dynamically generates soft prompts conditioned on each input's token context, using a lightweight self‑attention + MLP module. The prompt is then prepended to a
+single
+transformer layer.
+x.com
++5
+arxiv.org
++5
+arxiv.org
++5
+arxiv.org
+🛠️ Architecture Highlights
+Attention over input token embeddings
+produces a learned context vector.
+Bottleneck MLP (down → ReLU → up)
+reshapes into the prompt token embeddings.
+The resulting
+input‑dependent soft prompt
+is prefixed to a transformer layer input.
+arxiv.org
++1
+huggingface.co
++1
+📊 Experimental Results
+GLUE (RoBERTa-large backbone)
+ID‑SPAM outperforms other parameter-efficient prompting methods (Prompt/P‑tuning, SMoP, LPT, DePT) on 4/6 tasks and beats LoRA on average across 6.
+arxiv.org
++1
+arxiv.org
++1
+SuperGLUE
+With RoBERTa-large, ID‑SPAM tops on 3/4 SuperGLUE tasks and has the highest mean score.
+arxiv.org
++8
+arxiv.org
++8
+arxiv.org
++8
+GPT‑2 backbone
+Even on GPT‑2 variants, ID‑SPAM matches or outperforms SOTA prompt methods, showing strong transfer to generative settings.
+Zero‑Shot Domain + Task Transfer
+ID‑SPAM shows better generalization than fixed‑prompt baselines on cross-task/domain evaluations (e.g., QQP→MRPC, SST→IMDB).
+arxiv.org
++1
+arxiv.org
++1
+⏱️ Efficiency Benefits
+Comparable or fewer trainable params vs. LoRA & LPT.
+Faster training convergence and quicker inference overall.
+arxiv.org
++9
+arxiv.org
++9
+arxiv.org
++9
+✳️ Analysis & Ablation
+Ablations show self-attention for prompt generation helps significantly compared to mean pooling (e.g., +5-6% absolute gain on MRPC / RTE / QQP).
+arxiv.org
++1
+arxiv.org
++1
+Prompt effectiveness peaks when prepended mid‑network rather than only at input layer.
+✅ Takeaways
+ID‑SPAM
+delivers a
+context-aware, input-specific prompting
+framework that is both
+lightweight and effective
+, improving across standard benchmarks.
+It excels in
+domain/task generalization
+, and maintains or surpasses SOTA prompt-based and lightweight tuning strategies.
+Accepted at
+ACL 2025 Main
+, signaling strong peer validation.
+x.com
++5
+huggingface.co
++5
+arxiv.org
++5
+Would you like to dive deeper into implementation details, performance charts, or explore how it can be integrated into your RSVP/alignment research workflows?
+Sources
+You said:
+Explain how it might work using analogies
+ChatGPT said:
+Here's an analogy-rich explanation of how
+ID‑SPAM
+(Input-Dependent Soft Prompting with Attention Mechanism) works — made intuitive without sacrificing precision:
+🧠 Big Picture Analogy:
+Dynamic Cue Cards for a Stage Actor
+Imagine an actor (the LLM) performing in different plays (tasks). Traditionally, you'd give the actor a
+static cue card
+(a fixed soft prompt) before every scene, regardless of the scene's content. Sometimes it helps, but often it's generic and doesn't match the situation.
+ID‑SPAM
+is like assigning a
+personalized cue card
+generated
+on the fly
+, based on the script for that specific scene (input text). Better cues, better performance — with less effort.
+⚙️ Component Analogies:
+1.
+Self-Attention as a Spotlight Director
+Think of the input text as a crowded stage full of actors (tokens). The self-attention mechanism is like a lighting technician who decides
+which actors (words) deserve the spotlight
+— based on their relevance to the prompt you want to generate. Not all words are equally important; attention highlights the ones that matter most.
+🔦
+"This phrase about medical symptoms? Highlight it — it'll help us tune the model for a diagnosis task."
+2.
+MLP as a Prompt Sculptor
+After spotlighting key parts of the input, a neural network (MLP) acts like a sculptor who takes that focus and
+reshapes it into a custom cue
+— a short vector of distilled meaning that can influence the LLM's deeper reasoning.
+🧱
+"Here's a custom-shaped block based on your input — inject this into the model mid-way and let it steer the interpretation."
+3.
+Soft Prompt as a Shortcut Key
+You can think of the soft prompt as a
+hotkey configuration
+. Instead of retraining the whole LLM (the entire operating system), you just assign shortcut keys that quickly adapt it for a new domain — like a gaming profile that loads custom macros for different characters.
+🎮
+"Input suggests this is legal text — here's the 'legal hotkey' with nuances for contract analysis."
+⛽ Efficiency Analogy:
+Remote Control, Not Rebuilding the Engine
+Where full fine-tuning is like taking apart and rebuilding your car's engine for each destination, ID‑SPAM is more like using a
+universal remote control
+with smart presets that adjust behavior based on where you're headed — without touching the engine.
+🏎️
+"We don't need to rebuild GPT-2 for sentiment analysis — just give it a 'mood-sensitive prompt' crafted on the fly."
+💡 Why It's Smarter than Static Soft Prompts
+Static soft prompts are like
+prewritten instructions in a book
+. Useful, but they can't adapt.
+ID‑SPAM's dynamic prompts are like
+personalized advice generated in real time by reading your question
+— always more relevant, always more nimble.
+Let me know if you'd like visual metaphors, diagrams, or to explore RSVP-aligned metaphors (like vector fields modulated by local entropic gradients).
+Tools
+ChatGPT can make mistakes. Check important info. See
+Cookie Preferences
+.
+

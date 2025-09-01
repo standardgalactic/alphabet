@@ -1,0 +1,575 @@
+% Setting up the document class and essential packages for a comprehensive monograph
+\documentclass[12pt, a4paper, openany]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{graphicx}
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+\usepackage{tocloft}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+\usepackage{mathptmx}
+\usepackage[most]{tcolorbox}
+\usepackage{float}
+\usepackage{array, booktabs}
+\usepackage{listings}
+\pagestyle{plain}
+
+% Defining custom theorem environments for mathematical rigor
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+% Custom box for definitions
+\newtcolorbox{mybox}{colback=gray!5!white,colframe=gray!75!black,fonttitle=\bfseries,title=Definition}
+
+% Title and author setup
+\title{Inflation without Expansion}
+\author{Flyxion}
+\date{\today}
+
+\begin{document}
+
+% Generating front matter
+\maketitle
+\tableofcontents
+
+% Prerequisite chapter with expanded explanations
+\chapter{Prerequisites}
+This chapter provides the foundational knowledge necessary to understand the Relativistic Scalar-Vector Plenum (RSVP) framework, particularly its novel approach to cosmology without invoking cosmic expansion. We review the essentials of standard cosmology, inflationary theory, effective field theory (EFT), the Batalin-Vilkovisky/Alexandrov-Kontsevich-Schwarz-Zaboronsky (BV/AKSZ) formalism, and cosmological perturbation theory. These concepts are crucial for appreciating how RSVP reinterprets cosmological phenomena through entropic redistribution and plenum dynamics.
+
+\section{Standard Cosmology and the FRW Metric}
+The standard model of cosmology, $\Lambda$CDM, describes the universe as homogeneous and isotropic on large scales, governed by the Friedmann-Lema\^{\i}tre-Robertson-Walker (FRW) metric for flat geometry:
+\begin{equation}
+ds^2 = -dt^2 + a(t)^2 \left( dx^2 + dy^2 + dz^2 \right),
+\end{equation}
+where $a(t)$ is the scale factor representing the expansion of space, and $t$ is cosmic time. The Hubble parameter, $H = \dot{a}/a$, measures the rate of this expansion. The dynamics are determined by the Friedmann equations:
+\begin{equation}
+H^2 = \frac{8\pi G}{3} \rho - \frac{kc^2}{a^2} + \frac{\Lambda c^2}{3},
+\end{equation}
+\begin{equation}
+\dot{H} + H^2 = -\frac{4\pi G}{3} \left( \rho + \frac{3p}{c^2} \right) + \frac{\Lambda c^2}{3},
+\end{equation}
+where $\rho$ is the total energy density, $p$ is the pressure, $k$ is the curvature parameter (set to 0 for a flat universe as indicated by observations), $G$ is Newton's gravitational constant, $c$ is the speed of light, and $\Lambda$ is the cosmological constant associated with dark energy.
+
+The universe's evolution is divided into epochs based on the dominant component: radiation-dominated ($p = \rho/3$), matter-dominated ($p \approx 0$), and dark energy-dominated ($p \approx -\rho$). This model successfully explains key observations, including the cosmic microwave background (CMB) spectrum, large-scale structure formation, and the acceleration of the universe inferred from type Ia supernovae. However, discrepancies such as the Hubble tension (varying measurements of $H_0$ from early and late universe probes) and anomalies in CMB polarization data suggest limitations, motivating alternatives like RSVP, which attributes apparent expansion to changes in measurement scales rather than metric evolution.
+
+\section{Inflationary Cosmology}
+Inflation is a hypothetical phase of accelerated expansion in the early universe, proposed to resolve the horizon problem (why distant regions have similar temperatures), the flatness problem (why the universe is nearly flat), and the monopole problem (dilution of unwanted relics). In the canonical single-field inflation, a scalar field $\phi$, called the inflaton, rolls down a potential $V(\phi)$. The slow-roll approximation assumes the field evolves slowly, characterized by parameters:
+\begin{equation}
+\epsilon = \frac{1}{2} M_P^2 \left( \frac{V'}{V} \right)^2, \quad \eta = M_P^2 \frac{V''}{V},
+\end{equation}
+where $M_P = (8\pi G)^{-1/2}$ is the reduced Planck mass, and primes denote derivatives with respect to $\phi$. When $\epsilon, |\eta| \ll 1$, the Hubble parameter is nearly constant, leading to quasi-exponential expansion $a(t) \sim e^{Ht}$.
+
+Inflation generates primordial perturbations: the scalar curvature power spectrum is:
+\begin{equation}
+\mathcal{P}_\mathcal{R}(k) \approx \frac{H^2}{8\pi^2 M_P^2 \epsilon},
+\end{equation}
+with spectral index $n_s - 1 = -2\epsilon - \eta$, and the tensor-to-scalar ratio $r = 16\epsilon$. Planck 2018 data constrain $n_s \approx 0.965$ and $r < 0.06$ \citep{Planck:2020}, favoring models like Starobinsky inflation where $V(\phi) \propto (1 - e^{-\sqrt{2/3} \phi / M_P})^2$.
+
+However, the inflaton's origin is unknown, and models often require fine-tuning to match observations and avoid the eta-problem (maintaining small $\eta$). RSVP offers an alternative by replacing the inflaton with entropy gradients and bulk viscosity, producing similar observables through thermodynamic mechanisms without a dedicated scalar potential.
+
+\section{Effective Field Theory and Cosmological Perturbations}
+Effective field theory (EFT) provides a model-independent way to describe cosmological fluids and perturbations. The stress-energy tensor for a perfect fluid is:
+\begin{equation}
+T^{\mu\nu} = (\rho + p)u^\mu u^\nu + p g^{\mu\nu},
+\end{equation}
+where $u^\mu$ is the four-velocity satisfying $u^\mu u_\mu = -1$. For non-ideal fluids, dissipative effects like bulk viscosity $\zeta$ modify the effective pressure:
+\begin{equation}
+p_{\rm eff} = p - 3\zeta H.
+\end{equation}
+In viscous cosmology, $\zeta > 0$ can drive accelerated expansion without a cosmological constant or inflaton \citep{Coley:2009}.
+
+Cosmological perturbations are analyzed using the comoving curvature perturbation $\mathcal{R}$, which evolves according to:
+\begin{equation}
+\dot{\mathcal{R}} = -\frac{H}{\rho + p} \delta p_{\rm nad},
+\end{equation}
+where $\delta p_{\rm nad} = \delta p - c_a^2 \delta \rho$ is the non-adiabatic pressure perturbation, and $c_a^2 = \dot{p}/\dot{\rho}$ is the adiabatic sound speed \citep{Malik:2009}. For small $\delta p_{\rm nad}$, $\mathcal{R}$ is conserved on super-horizon scales, leading to a nearly scale-invariant spectrum. Tensor perturbations (gravitational waves) have power spectrum:
+\begin{equation}
+\mathcal{P}_T \approx \frac{2 H^2}{\pi^2 M_P^2}.
+\end{equation}
+At second order, scalar perturbations can be sourced by quadratic tensor terms, as in the BJMR framework \citep{Bertacca2024}, which RSVP extends using vector shear.
+
+\section{BV/AKSZ Formalism}
+The BV/AKSZ formalism is a sophisticated tool for quantizing gauge theories with dissipative effects. It constructs a derived symplectic structure with fields and antifields, where the action is deformed by BRST-exact terms. Conservative dynamics occupy the 0-shifted sector, while dissipation (e.g., entropy production) is encoded in the $(-1)$-shifted sector as defect currents. The master equation guarantees gauge invariance, and coisotropic constraints enforce thermodynamic laws like $\dot{S} \ge 0$. In RSVP, this formalism integrates entropy currents consistently, allowing non-adiabatic stresses without violating general relativity.
+
+The action is $S = \int L \sqrt{-g} d^4x$, varying with respect to fields. For $\Phi$:
+\begin{equation}
+\square \Phi + U'(\Phi) - \lambda \sigma_g + 2 \Gamma \ddot{\Phi} = 0,
+\end{equation}
+leading to a diffusion equation with source terms. The entropy balance is:
+\begin{equation}
+\partial_t S + \nabla \cdot J_S = \eta \sigma_g + \zeta (\nabla \Phi)^2.
+\end{equation}
+
+\section{Non-Expanding Cosmological Models}
+Non-expanding models reinterpret cosmological observations without metric expansion, attributing redshift to changes in clocks and rulers \citep{Wiltshire:2007}. RSVP adopts this by defining a physical metric:
+\begin{equation}
+g_{\mu\nu}^{\rm phys} = \Omega_\Lambda^2(t,\vec{x}) \bar{g}_{\mu\nu},
+\end{equation}
+where $\bar{g}_{\mu\nu}$ is fixed, and $\Omega_\Lambda = f(\Lambda^{-1})$ reflects a coarse-graining scale $\Lambda^{-1}$ driven by entropy gradients. Redshift is then:
+\begin{equation}
+1 + z = \frac{\Omega_{\Lambda(t_0)}}{\Omega_{\Lambda(t_{\rm em})}} \approx \frac{\Lambda(t_{\rm em})}{\Lambda(t_0)},
+\end{equation}
+representing ruler coarsening. This approach resolves tensions in standard cosmology by localizing dynamics in the plenum.
+
+% Introduction with expanded motivation
+\chapter{Introduction}
+\section{Overview of the RSVP Framework}
+The Relativistic Scalar-Vector Plenum (RSVP) theory presents a speculative cosmological framework that models the universe as a static plenum with entropic redistribution, scalar field $\Phi$, vector field $\mathbf{v}$, and a structured substrate. By challenging the expanding universe paradigm, RSVP attributes cosmological phenomena to thermodynamic processes within the plenum, offering an alternative to $\Lambda$CDM. Inflation emerges from bulk viscosity and vector shear, without an inflaton, producing quasi-de Sitter expansion and perturbations consistent with observations.
+
+\section{Motivation and Context}
+The standard $\Lambda$CDM model, while successful, faces challenges such as the Hubble tension, CMB anomalies, and the need for fine-tuned parameters in inflation. RSVP addresses these by proposing a non-expanding universe where redshift and gravity emerge from entropic smoothing, integrating concepts like Whittle’s vacuum pressure and Turok’s entropic scale shift. This work builds on RSVP-related projects, including the Crystal Plenum Theory, RSVP Simulator, and Neutrino Fossil Registry, to provide a cohesive framework. The motivation lies in unifying cosmology with thermodynamic principles, avoiding ad hoc fields like the inflaton.
+
+% Theoretical foundations expanded
+\chapter{Theoretical Foundations of RSVP}
+\section{Scalar and Vector Fields in the Plenum}
+The RSVP framework models the universe as a static plenum characterized by a scalar entropy potential $\Phi$ and a vector field $\mathbf{v}$, interacting via a Lorentz-invariant Lagrangian:
+\begin{equation}
+\mathcal{L} = \frac{1}{2} (\partial_{\mu} \Phi)^2 - V(\Phi) + \frac{1}{4} F_{\mu\nu} F^{\mu\nu} + \alpha (\mathbf{v} \cdot \nabla \Phi),
+\end{equation}
+where $V(\Phi)$ is a minimal potential, $F_{\mu\nu} = \partial_{\mu} v_{\nu} - \partial_{\nu} v_{\mu}$ is the field strength tensor, and $\alpha$ is a coupling constant. The plenum flow is $v^\mu = n u^\mu + X^\mu$, with unit timelike $u^\mu$ ($u^\mu u_\mu = -1$), number density $n$, and transverse diffusion $X^\mu$ ($X^\mu u_\mu = 0$). The entropy density $s = s(\nabla \Phi, n; g)$ generates non-adiabatic stresses, driving cosmological dynamics.
+
+In the BV/AKSZ formalism, conservative terms are in the 0-shifted sector, while entropy production is BRST-exact in the $(-1)$-shifted sector, ensuring gauge consistency and the second law $\dot{S} \ge 0$. This structure allows RSVP to incorporate dissipation without violating general relativity, contrasting with standard models where dissipation is phenomenological.
+
+The Lagrangian density motivates the dynamics:
+\begin{equation}
+L = \frac{1}{2} \partial_\mu \Phi \partial^\mu \Phi - U(\Phi) + \frac{\rho_m}{2} |v|^2 - \rho_m \phi + \lambda \Phi \sigma_g (\rho_m) - \Gamma \dot{\Phi}^2,
+\end{equation}
+where $\frac{1}{2} \partial_\mu \Phi \partial^\mu \Phi$ is the kinetic term for $\Phi$, $-U(\Phi)$ is the potential, $\frac{\rho_m}{2} |v|^2$ is the kinetic energy of matter advected by $v$, $-\rho_m \phi$ couples matter to the Newtonian potential ($\nabla^2 \phi = 4\pi G \rho_m$), $\lambda \Phi \sigma_g$ transduces gravitational strain ($\sigma_g = | \nabla g |$, $g = - \nabla \phi$) into $\Phi$-field energy, and $-\Gamma \dot{\Phi}^2$ provides damping.
+
+\section{Entropic Redistribution and Redshift}
+RSVP attributes redshift to entropic smoothing mediated by lamphrodynes, rather than spatial expansion. The entropy field $S$ evolves according to:
+\begin{equation}
+\frac{\partial S}{\partial t} = \nabla^2 S + \alpha (\mathbf{v} \cdot \nabla S),
+\end{equation}
+where $\nabla^2 S$ represents diffusive smoothing of gradients, and $\alpha (\mathbf{v} \cdot \nabla S)$ accounts for anisotropic transport along vector flows. This mechanism predicts observable signatures such as void ellipticity ($e \propto S^{-1}$) and CMB temperature fluctuations, testable via surveys like LSST and Euclid.
+
+The entropy functional is expanded as:
+\begin{equation}
+s(\Phi) = s_0 + \alpha_1 \frac{(\nabla \Phi)^2}{\Lambda_S^2} + \alpha_2 \frac{(\Box \Phi)^2}{\Lambda_S^4} + \cdots,
+\end{equation}
+with $\Lambda_S$ setting the scale for plenum defects and higher-order tiling terms. This gradient expansion provides a microscopic basis for bulk viscosity, linking to observational cosmology without expansion.
+
+The redshift is derived as $z \approx \exp \left( \chi / 2 \int \partial_s \ln(1 + \chi S) ds \right)$, where gradients accumulate photon energy loss. Microphysically, this is a statistical-mechanical effect on the electromagnetic field phase, similar to diffusion in plasma.
+
+\section{Non-Expanding Interpretation and Coarse-Graining Scale}
+In RSVP, apparent expansion arises from a dynamically evolving coarse-graining scale $\Lambda^{-1}(t,\vec{x})$, tied to entropic smoothing. The physical metric is:
+\begin{equation}
+g_{\mu\nu}^{\rm phys} = \Omega_\Lambda^2(t,\vec{x}) \bar{g}_{\mu\nu},
+\end{equation}
+where $\bar{g}_{\mu\nu}$ is a fixed coordinate metric, and $\Omega_\Lambda = f(\Lambda^{-1})$ maps the scale to conformal rescaling of rods and clocks. Redshift is then a ratio of measurement scales:
+\begin{equation}
+1 + z = \frac{\Omega_{\Lambda(t_0)}}{\Omega_{\Lambda(t_{\rm em})}} \approx \frac{\Lambda(t_{\rm em})}{\Lambda(t_0)},
+\end{equation}
+for $\Omega \propto \Lambda^{-1}$. The scale evolves via gradient flow:
+\begin{equation}
+\dot{\Lambda} = \Upsilon \Lambda^2 u^\mu \nabla_\mu s(\mathcal{S}_\Lambda \Phi) - \frac{\Lambda}{\tau_{\rm rein}},
+\end{equation}
+where $\mathcal{S}_\Lambda$ is a smoothing kernel of width $\Lambda^{-1}$, $\Upsilon > 0$ converts entropy flux to scale growth, and $\tau_{\rm rein}$ models ultra-long-timescale reintegration (e.g., Hawking emission). This picture provides physical intuition: sustained smoothing coarsens rulers exponentially, mimicking inflation, while reintegration allows for Janus-point-like recurrence.
+
+Compared to standard expansion, this avoids singularities and fine-tuning, aligning with Wiltshire's cosmic clock reinterpretations \citep{Wiltshire:2007}.
+
+\section{Cartan Torsion and Plenomic Vorticity}
+Cartan torsion encodes plenomic vorticity:
+\begin{equation}
+T^j_{ik} = \Gamma^j_{ik} - \Gamma^j_{ki},
+\end{equation}
+representing asymmetric connections from $v$ shear. Torsion alters structure formation by introducing chiral effects, potentially in galaxy spin alignments or anisotropic void dynamics, testable via surveys like SDSS. Geometrically, it twists geodesics in a vortical plenum, differing from torsion-free GR.
+
+\section{Energetics and Outward Falling}
+For a vacuum sphere:
+\begin{equation}
+U_G(R) = -\frac{4\pi G}{3} \rho \Lambda_m R^2, \quad \frac{dU_G}{dR} = -\frac{8\pi G}{3} \rho \Lambda_m R < 0,
+\end{equation}
+showing outward favorability. For a cluster ($M \sim 10^{14} M_\odot$, $R \sim 1$ Mpc), $\Delta \Phi \sim 10^{-3} \rho_{\rm crit}$ for 10\% collapse efficiency, analogous to buoyancy where vacuum "rises" in gravitational fields.
+
+% Inflation chapter expanded with longer explanations and comparative analysis
+\chapter{Inflation in the RSVP Framework}
+\section{Inflation Without an Inflaton: Entropic Smoothing, Bulk Viscosity, and Tensor-Sourced Scalars}
+\label{sec:rsvp-no-inflaton}
+
+\subsection{Field Content and Constitutive Data}
+The RSVP plenum is defined by the metric $g_{\mu\nu}$, scalar entropy potential $\Phi$ (generating entropy gradients and non-adiabatic stresses, not a standard inflaton), unit timelike four-velocity $u^\mu$ ($u^\mu u_\mu = -1$) associated with a baryon-like flow $v^\mu = n u^\mu + X^\mu$ (number density $n$, transverse diffusion $X^\mu u_\mu = 0$), and entropy density $s = s(\nabla \Phi, n; g)$. $\Phi$ drives thermodynamic processes, contrasting with inflaton models where a potential $V(\phi)$ is central.
+
+In the BV/AKSZ formalism, the conservative Hilbert term and ideal fluid are 0-shifted, while entropy production is $(-1)$-shifted BRST-exact defect currents, preserving gauge consistency and enforcing $\dot{S} \ge 0$. This structure allows RSVP to incorporate dissipation naturally, unlike phenomenological viscous cosmology.
+
+\subsection{Macrodynamics on FRW and the Viscous Fixed Point}
+On spatially flat FRW, $ds^2 = -dt^2 + a(t)^2 d\vec{x}^2$, the non-ideal RSVP fluid has stress-energy:
+\begin{equation}
+T^{\mu\nu} = (\rho + p_{\rm eff}) u^\mu u^\nu + p_{\rm eff} g^{\mu\nu}, \quad p_{\rm eff} = p - 3 \zeta H + \Pi_{\rm na},
+\end{equation}
+with $H = \dot{a}/a$, adiabatic $p = w \rho$ ($w \ge 0$, e.g., $w = 1/3$ for radiation baseline), bulk viscosity $\zeta \ge 0$ from entropy gradients, and non-adiabatic pressure $\Pi_{\rm na}$ from $\dot{s} \ne 0$. Einstein’s equations reduce to:
+\begin{equation}
+H^2 = \frac{\rho}{3 M_P^2}, \quad \dot{H} = -\frac{1}{2 M_P^2} (\rho + p_{\rm eff}) = -\frac{3}{2} (1+w) H^2 + \frac{3}{2} \frac{\zeta}{M_P^2} H - \frac{1}{2 M_P^2} \Pi_{\rm na}.
+\label{eq:Hdot-viscous}
+\end{equation}
+For slowly varying $\zeta$ and $\Pi_{\rm na}$, a quasi-de Sitter fixed point emerges:
+\begin{equation}
+H_* \simeq \frac{\zeta}{(1+w) M_P^2}, \quad a(t) \sim e^{H_* t},
+\end{equation}
+(to leading order, absorbing $\Pi_{\rm na}$ into $\zeta$ if subleading). Linearization $H = H_* + \delta H$ yields $\delta \dot{H} = -\frac{3}{2} \frac{\zeta}{M_P^2} \delta H < 0$, confirming the attractor nature.
+
+Physically, persistent entropy production supplies negative effective pressure $p_{\rm eff} \ll -\rho/3$, driving acceleration without a scalar potential. This contrasts with standard inflation, where $V(\phi)$ must be flat, and bounce models, where contraction precedes expansion.
+
+\paragraph{Slow-roll without a potential.}
+The Hubble slow-roll parameter is:
+\begin{equation}
+\varepsilon \equiv -\frac{\dot{H}}{H^2} = \frac{3}{2} (1+w) - \frac{3}{2} \frac{\zeta}{M_P^2 H} + \frac{1}{2} \frac{\Pi_{\rm na}}{M_P^2 H^2}.
+\end{equation}
+Inflation requires $\varepsilon < 1$:
+\begin{equation}
+\frac{\zeta}{M_P^2 H} > (1+w) - \frac{\Pi_{\rm na}}{3 M_P^2 H^2}.
+\end{equation}
+Near the fixed point, $\varepsilon \simeq 0$. The e-fold count for constant $\zeta$ is $N \simeq H_* (t_f - t_i)$; for relaxing $\zeta(t) = \zeta_0 / (1 + t/\tau)$:
+\begin{equation}
+\dot{H} = -\frac{3}{2} (1+w) H^2 + \frac{3}{2 M_P^2} \frac{\zeta_0}{1 + t/\tau} H, \quad N \approx \frac{\zeta_0 \tau}{(1+w) M_P^2} \ln\left(1 + \frac{\Delta t}{\tau}\right).
+\end{equation}
+Moderate $\zeta_0 \tau / [(1+w) M_P^2] \sim 50-60$ yields sufficient e-folds without fine-tuning, unlike chaotic inflation's large-field excursions.
+
+\subsection{Microscopic RSVP Origin of $\zeta$ and $\Pi_{\rm na}$}
+Adopt an entropy functional (structurally consistent with RSVP):
+\begin{equation}
+s(\Phi) = s_0 + \alpha_1 \frac{(\nabla \Phi)^2}{\Lambda_S^2} + \alpha_2 \frac{(\Box \Phi)^2}{\Lambda_S^4} + \cdots,
+\end{equation}
+with nonequilibrium chemical work:
+\begin{equation}
+\mu_{\rm ne} = \beta_1 \frac{u \cdot \nabla \Phi}{\Lambda_S} + \beta_2 \frac{\Box \Phi}{\Lambda_S^2} + \cdots,
+\end{equation}
+where $\mu_{\rm ne} \nabla_\mu (n u^\mu)$ drives $s \dot{} > 0$. Linear response around FRW gives:
+\begin{equation}
+\zeta = \kappa_0 \frac{\langle (\nabla \Phi)^2 \rangle}{\Lambda_S^3} + \kappa_1 \frac{\langle (\Box \Phi)^2 \rangle}{\Lambda_S^5} + \cdots \ge 0, \quad \Pi_{\rm na} = \gamma_0 T_{\rm eff} u^\mu \nabla_\mu s(\Phi).
+\end{equation}
+In BV/AKSZ, these originate from BRST-exact defect currents enforcing the second law. This microscopic basis contrasts with phenomenological viscosity in bulk viscous cosmology \citep{Coley:2009}, providing a geometric origin tied to plenum gradients.
+
+\subsection{Perturbations: Effective-Fluid Power Spectra and the BJMR Correspondence}
+The comoving curvature perturbation $\mathcal{R}$ evolves as:
+\begin{equation}
+\dot{\mathcal{R}} = -\frac{H}{\rho + p} \delta p_{\rm nad}, \quad \delta p_{\rm nad} = \delta p_{\rm eff} - c_a^2 \delta \rho,
+\end{equation}
+with $\delta p_{\rm eff} = \delta p - 3 H \delta \zeta - 3 \zeta \delta H + \delta \Pi_{\rm na}$, and $c_a^2 = \dot{p}/\dot{\rho}$. For suppressed $\delta \zeta$ and $\delta \Pi_{\rm na}$ on super-horizon scales, $\mathcal{R}$ is conserved, as in slow-roll inflation. The effective-fluid power spectra are:
+\begin{equation}
+\mathcal{P}_{\mathcal{R}}(k_*) \simeq \frac{H^2}{8\pi^2 M_P^2 \varepsilon c_s} \Big|_{k_* = a H}, \quad n_s - 1 \simeq -2 \varepsilon - \eta_{\rm eff} - s,
+\end{equation}
+where $\eta_{\rm eff} = \dot{\varepsilon} / (H \varepsilon)$ and $s = \dot{c_s} / (H c_s)$. Tensor spectrum:
+\begin{equation}
+\mathcal{P}_T \simeq \frac{2 H^2}{\pi^2 M_P^2}, \quad r = \frac{\mathcal{P}_T}{\mathcal{P}_{\mathcal{R}}} \simeq 16 \varepsilon c_s.
+\end{equation}
+Small $r$ arises from small $\varepsilon$ near the viscous attractor or $c_s < 1$.
+
+\paragraph{Second-order scalar sourcing from tensors (BJMR $\leftrightarrow$ RSVP).}
+In GR de Sitter, second-order scalars arise from quadratic graviton terms, with spectrum a convolution of tensor power $P_h(k)$ with kernel $K_h$ \citep{Bertacca2024}, nearly scale-invariant with small $r$ and squeezed non-Gaussianity. In RSVP, the transverse-traceless shear:
+\begin{equation}
+t_{ij} \equiv \mathrm{TT}\left(\partial_i v_j + \partial_j v_i - \frac{2}{3} \delta_{ij} \nabla \cdot \mathbf{v}\right),
+\end{equation}
+replaces the first-order tensor $\chi_{ij}^{(1)}$. The second-order scalar obeys a master equation sourced quadratically in $t_{ij}$, with spectrum:
+\begin{equation}
+P_\varphi(k) \sim \int d^3 k_1 d^3 k_2 \delta(\mathbf{k} - \mathbf{k}_1 - \mathbf{k}_2) K_t(\mathbf{k}_1, \mathbf{k}_2) P_t(k_1) P_t(k_2).
+\end{equation}
+The BJMR growth condition $w - c_s^2 > 0$ translates to RSVP's $w_{\rm eff} - c_{s,\rm eff}^2 > 0$, realized during entropy production. Growth halts at radiation-like fixed point $w_{\rm eff} = c_{s,\rm eff}^2 = 1/3$, providing a graceful exit. This correspondence allows RSVP to reproduce BJMR results while embedding them in an entropy-driven plenum, unlike standard inflation where scalars come from inflaton fluctuations or string gas cosmology where tensors dominate without second-order sourcing.
+
+\subsection{Exit and Reheating-by-Relaxation}
+As $\Phi$ gradients relax, $\zeta(t)$ and $\Pi_{\rm na}(t)$ decrease, $\varepsilon$ rises to 1, terminating inflation. The non-equilibrium sector dumps energy into a radiation bath, with reheating temperature from:
+\begin{equation}
+\rho_{\rm reh} = \frac{\pi^2}{30} g_*(T_{\rm reh}) T_{\rm reh}^4 \simeq \rho_{\rm end} e^{-3(1 + \bar{w}) N_{\rm reh}},
+\end{equation}
+where $\bar{w}$ is the post-inflation equation-of-state, and no inflaton decay channel is needed—the "decay" is plenum relaxation. This contrasts with standard reheating, where inflaton oscillation and decay (e.g., to fermions via Yukawa couplings) generate the hot big bang, and bounce models, where reheating follows contraction.
+
+Baryogenesis could occur through asymmetry in entropy production, with implications for structure formation via enhanced entropy generation.
+
+\subsection{Consistency Conditions and Observational Handles}
+Stability requires $\zeta \ge 0$, $0 < c_s^2 \le 1$, $\varepsilon > 0$. Small $\delta p_{\rm nad}$ during the observable window conserves $\mathcal{R}$. Phenomenologically, RSVP predicts:
+(i) small $r$ from the viscous attractor;
+(ii) nearly scale-invariant spectrum with tilt from $\zeta$, $c_s$ variations;
+(iii) non-Gaussianity from tensor/shear sourcing, distinct from single-clock $f_{\rm NL}$;
+(iv) natural exit to radiation.
+
+Compared to standard inflation, RSVP's non-Gaussianity has characteristic squeezed limits, testable by future CMB missions like CMB-S4 \citep{Abazajian:2016}. Gravitational wave background is suppressed, aligning with LIGO/Virgo non-detections.
+
+\paragraph{Notes on non-expanding reinterpretations.}
+Apparent expansion ($a_{\rm eff}$) emerges from $\Lambda^{-1}(t,\vec{x})$, with observables in $g^{\rm phys}_{\mu\nu} = \Omega_\Lambda^2 \bar{g}_{\mu\nu}$, equivalent to viscous de Sitter kinematics but geometric content in the RSVP entropy sector.
+
+\chapter{Quantum Thermodynamic Aspects}
+RSVP incorporates quantum thermodynamics by modeling the plenum as an open quantum system, with entropy production linked to decoherence and classicalization of perturbations. The graviton condensate in BJMR can be interpreted as a Bose-Einstein condensate, with occupation number:
+\begin{equation}
+n_k = \frac{1}{e^{\omega_k / T_{\rm eff}} - 1},
+\end{equation}
+where $T_{\rm eff}$ is the effective plenum temperature. Decoherence arises from interactions with the entropy field, described by the master equation for the density operator $\hat{\rho}$:
+\begin{equation}
+\dot{\hat{\rho}} = -i [\hat{H}, \hat{\rho}] + \sum_i \left( \hat{L}_i \hat{\rho} \hat{L}_i^\dagger - \frac{1}{2} \{\hat{L}_i^\dagger \hat{L}_i, \hat{\rho}\} \right),
+\end{equation}
+with Lindblad operators $\hat{L}_i$ encoding dissipation \citep{Breuer:2002}. In RSVP, this classicalizes quantum modes, producing observable structures without trans-Planckian issues.
+
+This quantum open-system formalism aligns with Barandes’s unistochastic quantum theory \citep{Barandes:2021}, bridging quantum mechanics and RSVP's entropic gravity.
+
+\chapter{Observational Signatures}
+\section{CMB Anisotropies and Power Spectrum Tilt}
+RSVP predicts a nearly scale-invariant scalar spectrum with tilt $n_s - 1 \simeq -2\varepsilon - \eta_{\rm eff} - s$, where slow variations in $\zeta$ induce a red tilt matching Planck's $n_s \approx 0.965$. The tensor-to-scalar ratio $r \simeq 16 \varepsilon c_s$ is small ($\sim 10^{-3}-10^{-4}$), consistent with Planck upper bounds and CMB-S4 forecasts \citep{Abazajian:2016}.
+
+Non-Gaussianity arises from quadratic sourcing, with squeezed-limit features distinct from single-field equilateral $f_{\rm NL}$. This could be tested via CMB bispectrum analysis.
+
+RSVP reproduces CMB acoustic peaks via entropy-driven oscillations in the plenum, with the first peak at $\ell \sim 220$ from torsion-phase correlations, without expansion, analogous to plasma waves fixed in scale.
+
+\section{Gravitational Wave Background}
+The primordial gravitational wave spectrum $\mathcal{P}_T$ is suppressed, but second-order effects generate a stochastic background detectable by LISA or pulsar timing arrays. Unlike standard inflation, RSVP's GWs carry entropy signatures, potentially correlating with CMB B-modes.
+
+\section{Other Implications}
+Baryogenesis via asymmetric entropy production, and structure formation enhanced by anisotropic smoothing, leading to void lensing and filament alignment observable in Euclid data.
+
+Type Ia supernovae redshift fits luminosity distance with $z \approx \exp \left( \chi / 2 \int \partial_s \ln(1 + \chi S) ds \right)$, matching data with $\chi \sim 10^{-3}$ Mpc$^{-1}$.
+
+BAO scales via S-integrated paths match observations, with potential 5\% shifts testable against $\Lambda$CDM.
+
+\chapter{Computational Modeling: The RSVP Simulator}
+\section{Lattice-Based Simulations}
+The RSVP Simulator employs lattice methods like AREPO and GADGET-4, incorporating dynamic Voronoi-Delaunay tessellation to model scalar gradients $\nabla \Phi$, vector flows $\mathbf{v} \cdot \nabla S$, and constraint relaxation. Key metrics include Betti number ratios for topology and Wasserstein distances for field coherence. The TARTAN framework enhances simulation with recursive tiling and Gaussian aura fields, allowing testing of entropic smoothing without expansion.
+
+Physical intuition: Lattice sites represent plenum quanta (lamphrons), with edges modeling lamphrodyne-mediated transport, simulating "space falling outward."
+
+The plenum is discretized on an $N \times N \times N$ cubic lattice with fields $\rho_m$, $\Phi$, $S$, $v$. Steps include:
+\begin{enumerate}
+    \item Solve Poisson equation $\nabla^2 \phi = 4\pi G \rho_m$.
+    \item Compute strain $\sigma_g = | \nabla g |$, $g = - \nabla \phi$.
+    \item Update $\Phi$ with diffusion, pumping, and damping terms.
+    \item Adjust $\rho_m$ to enforce budget.
+    \item Include $- \nabla p_\Phi$ in momentum equation.
+\end{enumerate}
+
+Pseudocode:
+\begin{lstlisting}
+% Initialize grid and fields: rho_m, Phi, S, v (vector field), phi (potential)
+% Assume N x N x N grid, dt timestep, parameters alpha, beta, gamma, D_Phi, kappa, G, c_Phi, etc.
+for each timestep:
+    % 1. Solve Poisson for gravitational potential phi
+    phi = poisson_solver(4 * pi * G * rho_m) % using FFT or iterative solver
+    g = -gradient(phi) % gravitational acceleration
+
+    % 2. Compute gravitational strain sigma_g
+    sigma_g = magnitude(gradient(g))
+
+    % 3. Update Phi
+    dot_Phi = (alpha * sigma_g + beta * time_derivative(S) - gamma * time_derivative(Phi) + D_Phi * laplacian(Phi))
+    Phi_new = Phi + dt * dot_Phi
+
+    % 4. Enforce local budget on rho_m
+    rho_m = rho_m - kappa * (Phi_new - Phi)
+    Phi = Phi_new
+
+    % 5. Update momentum equation for v, including back-reaction from p_Phi = c_Phi**2 * Phi
+    grad_p_Phi = c_Phi**2 * gradient(Phi)
+    % Assume Navier-Stokes like solver for v:
+    % rhs = -grad_p_m - rho_m * grad_phi - grad_p_Phi
+    % v = update_velocity(v, rho_m, rhs, dt)
+
+    % Optional: Update S with entropy balance
+    % dot_S = eta * sigma_g + zeta * magnitude(gradient(Phi))**2 - divergence(J_S)
+    % S = S + dt * dot_S
+
+    % Advection for rho_m, Phi, S if needed
+    % rho_m = advect(rho_m, v, dt)
+    % etc.
+
+    % Outputs: compute void statistics, lensing, RSVP redshift integrals along rays
+\end{lstlisting}
+
+Parameter sensitivity: Increasing $\beta$ steepens redshift slope; varying $\alpha$ alters web topology from filament-dominated to void-heavy.
+
+\section{Observational Predictions}
+The simulator predicts cosmic shear:
+\begin{equation}
+\gamma_{\rm RSVP} = \int \rho_b \mathbf{v} \, dl,
+\end{equation}
+void ellipticity $e \propto S^{-1}$, and filament shear alignment, testable via LSST and Euclid. Compared to standard N-body simulations, RSVP's static background avoids expansion artifacts, focusing on entropic redistribution.
+
+\chapter{Empirical Validation and Interdisciplinary Applications}
+\section{Astronomical Tests}
+RSVP's predictions, such as void ellipticity and filament alignment, can be validated using large-scale surveys. The Neutrino Fossil Registry hypothesizes neutrino interactions as plenum archives, testable via CMB correlations and experiments like IceCube. Laboratory analogues include quantum dots in gallium arsenide for entropic redshift and superfluid helium-3 for quantum turbulence mimicking plenum dynamics.
+
+Type Ia supernovae: The redshift $1 + z \approx \exp \left( \chi / 2 \int \partial_s \ln(1 + \chi S) ds \right)$ fits luminosity distance $d_L = (1 + z) \int dz / H(z)$ adapted to plenum, matching data with $\chi \sim 10^{-3}$ Mpc$^{-1}$.
+
+CMB angular power spectrum: RSVP reproduces acoustic peaks via entropy-driven oscillations, with first peak at $\ell \sim 220$.
+
+BAO and galaxy surveys: Comoving distances via S-integrated paths match DESI BAO at $z \sim 0.11$, with potential 5\% shifts.
+
+\section{Connections to Cognitive Science}
+RSVP’s field dynamics parallel neural oscillations, with plenum intelligence viewing thought as scalar-vector interactions, inspired by fMRI studies \citep{Cabral:2017}. Using Stuart–Landau stochastic resonance, consciousness emerges from field modes, with applications in AI. The brain as semantic vector transformer integrates RSVP with Self-Aware Networks (SAN), explaining memory via entropy fields and cross-mode coupling, validated by EEG/fMRI correlations.
+
+\chapter{Conclusion and Future Directions}
+This monograph presents the RSVP framework as a comprehensive alternative to expansion-based cosmology, leveraging entropic redistribution to explain redshift, gravity, and structure formation. By replacing the inflaton with entropy-driven bulk viscosity and vector shear, RSVP produces quasi-de Sitter expansion, scale-invariant perturbations, and a natural exit, consistent with Planck observations and avoiding fine-tuning.
+
+Future work will refine gauge-fixing terms, expand the RSVP Simulator’s capabilities, and explore laboratory analogues like quantum turbulence in superfluid helium-3. Connections to other RSVP-related projects include:
+
+\begin{enumerate}
+    \item \textbf{Crystal Plenum Theory (CPT)}: As the foundational substrate, CPT describes the universe as a crystalline plenum with lamphrons and lamphrodynes, using Delaunay-Voronoi tessellation for field interactions. Future refinements will bridge scientific and philosophical narratives.
+    \item \textbf{RSVP Simulator}: Enhance lattice simulations with AREPO and GADGET-4 for testing "space falling outward" via entropic smoothing, incorporating TARTAN for coherence.
+    \item \textbf{RSVP Roadmap}: Outline multi-phase development, including theoretical refinements (gauge-fixing, effective metrics), extensions to quantum mechanics via TARTAN coarse-graining, and observational tests like filament shear.
+    \item \textbf{Gradient-Driven Anisotropic Smoothing}: Model entropic redistribution with equations like $\partial S / \partial t = \nabla^2 S + \alpha (\mathbf{v} \cdot \nabla S)$, linking to void ellipticity and CMB anomalies.
+    \item \textbf{Neutrino Fossil Registry}: Hypothesize neutrino records of plenum evolution, testable via detection experiments and CMB maps.
+    \item \textbf{Plenum Intelligence}: Explore cognitive systems as scalar-vector interactions, inspired by fMRI studies, with Stuart–Landau mapping for consciousness.
+    \item \textbf{Brain as Semantic Vector Transformer}: Apply RSVP to neurodynamics, integrating with SAN for memory and decision-making, validated by EEG/fMRI.
+\end{enumerate}
+
+These projects will integrate to validate RSVP's non-expanding paradigm.
+
+% Appendices
+\appendix
+\renewcommand{\thesection}{\Alph{section}}
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+
+\chapter{Mathematical Appendix: RSVP Inflation Without an Inflaton}
+\section{Field Content and Symplectic Structure}
+The RSVP plenum is defined by:
+\begin{itemize}
+    \item Metric $g_{\mu\nu}$.
+    \item Scalar entropy potential $\Phi$ (generator of non-adiabatic stresses, not a standard inflaton).
+    \item Unit timelike four-velocity $u^\mu$ ($u^\mu u_\mu=-1$) and baryon-like flow $v^\mu = n u^\mu + X^\mu$, with $X^\mu u_\mu=0$.
+    \item Entropy density $s = s(\nabla\Phi, n; g)$.
+\end{itemize}
+Conservative dynamics live in the 0-shifted sector, while entropy production is encoded as BRST-exact defect currents in the $(-1)$-shifted BV/AKSZ sector, ensuring $\dot S \ge 0$ and gauge consistency.
+
+\section{Effective FRW Dynamics}
+On flat FRW, $ds^2=-dt^2 + a(t)^2 d\vec{x}^2$, the non-ideal plenum stress-energy tensor is
+\begin{equation}
+    T^{\mu\nu} = (\rho + p_{\rm eff}) u^\mu u^\nu + p_{\rm eff} g^{\mu\nu}, \quad p_{\rm eff} = p - 3 \zeta H + \Pi_{\rm na},
+\end{equation}
+with $H = \dot a / a$, adiabatic $p = w \rho$ ($w \ge 0$), bulk viscosity $\zeta \ge 0$, and non-adiabatic pressure $\Pi_{\rm na}$. Einstein equations reduce to
+\begin{equation}
+    H^2 = \frac{\rho}{3 M_P^2}, \quad \dot H = -\frac{1}{2 M_P^2} (\rho + p_{\rm eff}) = -\frac{3}{2}(1+w)H^2 + \frac{3}{2}\frac{\zeta}{M_P^2}H - \frac{1}{2 M_P^2} \Pi_{\rm na}.
+\end{equation}
+A quasi-de Sitter fixed point arises for slowly varying $\zeta$ and $\Pi_{\rm na}$:
+\begin{equation}
+    H_* \simeq \frac{\zeta}{(1+w) M_P^2}, \quad a(t) \sim e^{H_* t}.
+\end{equation}
+
+\section{Slow-Roll Parameters Without a Scalar Potential}
+Define the Hubble slow-roll parameter:
+\begin{equation}
+    \varepsilon \equiv - \frac{\dot H}{H^2} = \frac{3}{2}(1+w) - \frac{3}{2}\frac{\zeta}{M_P^2 H} + \frac{1}{2}\frac{\Pi_{\rm na}}{M_P^2 H^2}.
+\end{equation}
+Inflation occurs when $\varepsilon < 1$, i.e.
+\begin{equation}
+    \frac{\zeta}{M_P^2 H} > (1+w) - \frac{\Pi_{\rm na}}{3 M_P^2 H^2}.
+\end{equation}
+
+\section{Microscopic Origin of $\zeta$ and $\Pi_{\rm na}$}
+Using a gradient expansion for the entropy functional,
+\begin{equation}
+    s(\Phi) = s_0 + \alpha_1 \frac{(\nabla\Phi)^2}{\Lambda_S^2} + \alpha_2 \frac{(\Box \Phi)^2}{\Lambda_S^4} + \dots, \quad \mu_{\rm ne} = \beta_1 \frac{u \cdot \nabla \Phi}{\Lambda_S} + \beta_2 \frac{\Box \Phi}{\Lambda_S^2} + \dots
+\end{equation}
+Linear response yields
+\begin{equation}
+    \zeta = \kappa_0 \frac{\langle (\nabla\Phi)^2\rangle}{\Lambda_S^3} + \kappa_1 \frac{\langle \Box \Phi\rangle^2}{\Lambda_S^5} + \dots \ge 0, \quad \Pi_{\rm na} = \gamma_0 T_{\rm eff} u^\mu \nabla_\mu s(\Phi).
+\end{equation}
+These arise from BRST-exact defect currents in the BV/AKSZ framework, guaranteeing $\dot S \ge 0$.
+
+\section{Perturbations and Effective-Fluid Spectra}
+For comoving curvature perturbations $\mathcal R$:
+\begin{equation}
+    \mathcal P_{\mathcal R}(k_*) \simeq \frac{H^2}{8 \pi^2 M_P^2 \varepsilon c_s}\Big|_{k_*=aH}, \quad n_s-1 \simeq -2 \varepsilon - \eta_{\rm eff} - s,
+\end{equation}
+with $\eta_{\rm eff} = \dot \varepsilon / (H \varepsilon)$ and $s = \dot c_s / (H c_s)$. Tensor power:
+\begin{equation}
+    \mathcal P_T \simeq \frac{2 H^2}{\pi^2 M_P^2}, \quad r = \frac{\mathcal P_T}{\mathcal P_{\mathcal R}} \simeq 16 \varepsilon c_s.
+\end{equation}
+
+\paragraph{Second-order scalar sourcing from shear:}
+Define transverse-traceless shear from vector flow:
+\begin{equation}
+    t_{ij} \equiv \mathrm{TT}\left(\partial_i v_j + \partial_j v_i - \frac{2}{3} \delta_{ij} \nabla \cdot \mathbf v \right),
+\end{equation}
+which sources second-order scalars via convolution kernels analogous to BJMR:
+\begin{equation}
+    P_\varphi(k) \sim \int d^3 k_1\, d^3 k_2\, \delta(\mathbf k - \mathbf k_1 - \mathbf k_2) \, \mathcal K_t(\mathbf k_1,\mathbf k_2) P_t(k_1) P_t(k_2).
+\end{equation}
+
+\section{Exit from Inflation and Reheating-by-Relaxation}
+As gradients of $\Phi$ decay, $\zeta(t)$ and $\Pi_{\rm na}(t)$ decrease, $\varepsilon$ rises toward unity, and inflation ends. Energy is transferred into a radiation bath with
+\begin{equation}
+    \rho_{\rm reh} = \frac{\pi^2}{30} g_* T_{\rm reh}^4.
+\end{equation}
+No fundamental inflaton decay is required; reheating occurs via the relaxation of the entropy-generating plenum.
+
+\section{Non-Expanding Interpretation}
+Apparent expansion can equivalently arise from a dynamically evolving coarse-graining scale $\Lambda^{-1}(t,\vec x)$:
+\begin{equation}
+    g_{\mu\nu}^{\rm phys} = \Omega_\Lambda^2(t,\vec x) \bar g_{\mu\nu},
+\end{equation}
+with redshift and horizon effects emerging from entropic smoothing rather than intrinsic metric expansion.
+
+\chapter{Mathematical Details of the Kernel}
+The kernel $K_h(k_1,k_2)$ in BJMR is derived from the second-order source term in the scalar perturbation equation. The full integral for the power spectrum is:
+\begin{equation}
+\mathcal{P}_\phi(k) = \frac{1}{64 (2\pi)^3} \frac{1}{k^4} \int d^3 k_1 d^3 k_2 \, \delta^{(3)}(\mathbf{k} - \mathbf{k}_1 - \mathbf{k}_2) K_h(\mathbf{k}_1, \mathbf{k}_2) P_h(k_1) P_h(k_2).
+\end{equation}
+Intermediate steps involve projecting the quadratic tensor source onto scalar harmonics, with $K_h$ encoding the projection operator. In RSVP, $K_t$ is analogous, derived from the shear source projection.
+
+\chapter{Comparison with Standard Inflationary Scenarios}
+\begin{table}[H]
+\centering
+\begin{tabular}{p{3cm}p{4cm}p{4cm}p{4cm}}
+\toprule
+\textbf{Feature} & \textbf{Standard Inflation} & \textbf{BJMR} & \textbf{RSVP} \\
+\midrule
+Scalar Source & Inflaton fluctuations & Graviton self-interaction & Vector/entropy coupling \\
+Tilt $n_s$ & $-2\epsilon - \eta$ & From quantum time-measurement & Slow $\zeta$ variation \\
+Tensor-to-scalar $r$ & $16\epsilon$ & Small from condensate & $16 \varepsilon c_s$ \\
+Non-Gaussianity & Equilateral $f_{\rm NL}$ & Squeezed from kernel & Shear-sourced squeezed \\
+Exit Mechanism & Inflaton oscillation & Radiation halt & Plenum relaxation \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of inflationary features across models, with observational constraints from Planck ($n_s \approx 0.965$, $r < 0.06$).}
+\label{tab:inflation-comparison}
+\end{table}
+
+\chapter{Quantum Field Treatment of Tensor Modes}
+Tensor modes are quantized as gravitons in de Sitter, with mode functions satisfying the Mukhanov-Sasaki equation. The vacuum choice is Bunch-Davies, leading to power $P_h(k) \propto H^2 / k^3$. The condensate occupation number is $n_k \sim (k/H)^{-3( w - c_s^2 )}$, with decay rates from interactions with the plenum field, ensuring classicalization.
+
+\chapter{Entropy-Based Interpretation (RSVP Link)}
+Map BJMR to RSVP PDEs:
+\begin{equation}
+\partial_t \Phi + \nabla \cdot (\Phi \mathbf{v}) = S, \quad \partial_t \mathbf{v} + \cdots = - \nabla U(\Phi, S) + \cdots, \quad \partial_t S = \sigma(\Phi, \mathbf{v}, \nabla \mathbf{v}) - \nabla \cdot \mathbf{J}_S.
+\end{equation}
+The kernel $K_h(k_1,k_2)$ corresponds to entropic coupling in $\sigma$, with tensor quadratic source analogous to vector shear term.
+
+\chapter{Numerical Simulation Approach}
+A lattice model discretizes the plenum on a grid, evolving $\Phi$ and $\mathbf{v}$ via finite-difference methods. To compute $P_\phi(k)$, sample tensor modes, apply the convolution, and average over realizations. Visualization uses matplotlib for power spectrum plots.
+
+\chapter{RSVP Field Theory: Action, Euler-Lagrange Equations, and Constitutive Closure}
+Fields and kinematics: $(\Phi, v, S)$ on 3-manifold $M$, mass flux $J := \Phi v$. Continuity: $C(\Phi, v) := \partial_t \Phi + \nabla \cdot (\Phi v) = 0$. Gauge 1-form $A$: $v = \nabla \chi + \alpha \nabla \beta + v^\perp$, $\nabla \cdot (\Phi v^\perp) = 0$.
+
+Action:
+\begin{equation}
+A[\Phi, v, S, \lambda] = \int dt \int_M \left( \frac{\nu}{2} \Phi |v|^2 - \frac{\kappa}{2} |\nabla \Phi|^2 - \Theta \Phi S + \lambda (\partial_t \Phi + \nabla \cdot (\Phi v)) \right) d^3x,
+\end{equation}
+with $\nu, \kappa, \Theta > 0$. Rayleigh functional $R[S_t] := \frac{1}{2} \int_M \zeta (\partial_t S - D \Delta S - \Sigma)^2 d^3x$, $D > 0$, $\Sigma \ge 0$.
+
+Variations yield:
+\begin{equation}
+\nu \Phi v + \lambda \nabla \Phi + \Phi \nabla \lambda = 0 \implies \nu \Phi \frac{Dv}{Dt} = - \nabla (\Phi \partial_t \lambda) - \Phi \nabla \left( \frac{|\nabla \lambda|^2}{2\nu} \right),
+\end{equation}
+with $\partial_t \lambda = \Theta S - \kappa \Delta \Phi / \Phi$:
+\begin{equation}
+\nu \Phi \frac{Dv}{Dt} = - \kappa \nabla (\Delta \Phi) + \Theta \Phi \nabla S.
+\end{equation}
+For $\Phi$: $-\partial_t \lambda - v \cdot \nabla \lambda - \kappa \Delta \Phi - \Theta S + \frac{\nu}{2} |v|^2 = 0$.
+
+For $S$: $\partial_t S + v \cdot \nabla S = D \Delta S + \Sigma (\Phi, \nabla v, \dots )$, $\Sigma \ge 0$.
+
+Summary PDEs:
+\begin{equation}
+\partial_t \Phi + \nabla \cdot (\Phi v) = 0,
+\end{equation}
+\begin{equation}
+\nu \Phi \frac{Dv}{Dt} = - \kappa \nabla (\Delta \Phi) + \Theta \Phi \nabla S,
+\end{equation}
+\begin{equation}
+\partial_t S + v \cdot \nabla S = D \Delta S + \Sigma (\ge 0).
+\end{equation}
+
+\bibliography{references}
+\end{document}

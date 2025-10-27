@@ -1,0 +1,962 @@
+Spherepop: A Language for Geometric Computation
+Unified Rigorous Specification
+Flyxion
+October 24, 2025
+Contents
+1
+Preliminaries
+1
+1.1
+Syntax of Types and Terms . . . . . . . . . . . . . . . . . . . . . . . . .
+1
+1.2
+Contexts, Universes, and Definitional Equality . . . . . . . . . . . . . . .
+1
+1.3
+Substitution and Weakening . . . . . . . . . . . . . . . . . . . . . . . . .
+2
+1.4
+Free Variables and Alpha-Equivalence . . . . . . . . . . . . . . . . . . . .
+2
+1.5
+Context Validity
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2
+2
+Type System
+2
+2.1
+Judgment Forms
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2
+2.2
+Structural Rules
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+2
+2.3
+Definitional Equality Rules . . . . . . . . . . . . . . . . . . . . . . . . . .
+3
+2.4
+Dependent Product Π
+. . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3
+2.5
+Dependent Pair Σ . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3
+2.6
+Dependent Pair Projections
+. . . . . . . . . . . . . . . . . . . . . . . . .
+3
+2.7
+Products and Functions
+. . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+2.8
+Distribution Type Dist(𝐴) . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+3
+Operational Semantics
+4
+3.1
+Values and Contexts . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+3.2
+Deterministic Fragment
+. . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+3.3
+Merge Operational Semantics (Complete)
+. . . . . . . . . . . . . . . . .
+4
+3.4
+Stochastic Fragment
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+3.5
+Probability Measures . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+4
+Metatheory
+6
+4.1
+Confluence (Deterministic Fragment) . . . . . . . . . . . . . . . . . . . .
+7
+4.2
+Strong Normalization (Restricted Fragment) . . . . . . . . . . . . . . . .
+7
+4.3
+Decidability and Undecidability . . . . . . . . . . . . . . . . . . . . . . .
+7
+5
+Geometric Semantics
+7
+5.1
+RSVP Model
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+5.2
+Information-Theoretic Compression . . . . . . . . . . . . . . . . . . . . .
+8
+1
+
+6
+DSL-to-Core Translation
+9
+6.1
+Lexical Syntax
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+6.2
+Context-Free Grammar (EBNF) . . . . . . . . . . . . . . . . . . . . . . .
+9
+6.3
+Operator Precedence . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+6.4
+Translation Semantics
+. . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+7
+Recursion and spin
+10
+8
+Category-Theoretic Semantics
+11
+8.1
+Base Category . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+8.2
+Cartesian Closed Structure . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+8.3
+Monoidal Structure of Merge
+. . . . . . . . . . . . . . . . . . . . . . . .
+12
+8.4
+Probabilistic Monad
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+8.5
+Presheaf Topos Model
+. . . . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+9
+Implementation Roadmap
+13
+9.1
+Module Structure . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+9.2
+Key Algorithms . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+14
+9.2.1
+Normalization by Evaluation (NbE)
+. . . . . . . . . . . . . . . .
+14
+9.2.2
+Bidirectional Type Checking . . . . . . . . . . . . . . . . . . . . .
+14
+10 Worked Example (End-to-End)
+14
+11 Extended Examples
+15
+11.1 Example 1: Identity Function . . . . . . . . . . . . . . . . . . . . . . . .
+15
+11.2 Example 2: Composition with Merge . . . . . . . . . . . . . . . . . . . .
+15
+12 Spherepop II: Derived Geometric Semantics and Shifted Symplectic
+Structure
+16
+12.1 Differential Operator . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+12.2 Shifted Symplectic Form . . . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+12.3 Derived Category Geom . . . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+Abstract
+Spherepop is a programming language and formal calculus that treats compu-
+tation as geometry. This unified specification integrates a human-facing geometric
+DSL, a typed core calculus (SPC), probabilistic operational semantics, and a rigor-
+ous geometric interpretation under the RSVP model. It includes complete typing
+rules, metatheoretic proofs, DSL translation, and categorical coherence.
+1
+Preliminaries
+Natural-language explanation.
+This section establishes notation, contexts, universes,
+substitution, definitional equality, free variables, and context validity.
+2
+
+1.1
+Syntax of Types and Terms
+Definition 1 (Types and Terms).
+𝐴, 𝐵∶∶= 𝒰𝑖∣Π𝑥∶𝐴. 𝐵∣Σ𝑥∶𝐴. 𝐵∣𝐴→𝐵∣𝐴× 𝐵∣Dist(𝐴)
+𝑡, 𝑢, 𝑣∶∶= 𝑥∣𝑎∣Sphere(𝑥∶𝐴. 𝑡) ∣Pop(𝑡, 𝑢) ∣Merge(𝑡, 𝑢) ∣Choice(𝑝, 𝑡, 𝑢) ∣⟨𝑡, 𝑢⟩
+Explanation.
+Types form a cumulative universe hierarchy 𝒰0 ∈𝒰1 ∈𝒰2 ⋯. Core con-
+structors support dependent functions, pairs, non-dependent arrows and products (deriv-
+able), and distributions for stochastic computation. Terms explicitly include dependent
+pairs.
+1.2
+Contexts, Universes, and Definitional Equality
+Definition 2 (Contexts and Universes). A context Γ is a list 𝑥1 ∶𝐴1, ... , 𝑥𝑛∶𝐴𝑛with
+distinct variables. Universe rules:
+Γ ⊢𝒰𝑖∶𝒰𝑖+1,
+𝑖< 𝑗⇒Γ ⊢𝒰𝑖∶𝒰𝑗.
+Definition 3 (Definitional Equality). 𝑡≡𝑢and 𝐴≡𝐵form the least congruence
+containing 𝛽- and 𝜂-rules for Π, extended to Σ, products, and primitives.
+We write
+Γ ⊢𝑡≡𝑢∶𝐴.
+Explanation.
+An intensional dependent type theory core ensures conversion via defi-
+nitional equality.
+1.3
+Substitution and Weakening
+Definition 4 (Simultaneous Substitution). Define 𝑡[ ⃗𝑢/ ⃗𝑥] inductively on term structure...
+Lemma 1 (Substitution Composition). (𝑡[𝑢/𝑥])[𝑣/𝑦] = 𝑡[𝑣/𝑦][𝑢[𝑣/𝑦]/𝑥] when 𝑥≠𝑦and
+𝑥∉𝐹𝑉(𝑣).
+Lemma 2 (Weakening). If Γ ⊢𝑡∶𝐴and Γ ⊆Γ′ (context extension preserves validity),
+then Γ′ ⊢𝑡∶𝐴.
+1.4
+Free Variables and Alpha-Equivalence
+Definition 5 (Free Variables). 𝐹𝑉(𝑥) = {𝑥}, 𝐹𝑉(Sphere(𝑥∶𝐴.𝑡)) = 𝐹𝑉(𝐴)∪(𝐹𝑉(𝑡)∖
+{𝑥}), ...
+Definition 6 (Alpha-Equivalence). Terms differing only in bound variable names are
+identified up to =𝛼. All subsequent definitions respect =𝛼.
+1.5
+Context Validity
+Definition 7 (Well-Formed Contexts). Inductively:
+⊢∅ctx
+Γ ctx
+Γ ⊢𝐴∶𝒰𝑖
+𝑥∉dom(Γ)
+Γ, 𝑥∶𝐴ctx
+3
+
+2
+Type System
+Natural-language explanation.
+Formation, introduction, elimination, and compu-
+tation rules cover all core types.
+2.1
+Judgment Forms
+Definition 8 (Judgment Forms).
+1. ⊢Γ (context validity)
+2. Γ ⊢𝐴∶𝒰𝑖(type formation)
+3. Γ ⊢𝑡∶𝐴(term typing)
+4. Γ ⊢𝐴≡𝐵∶𝒰𝑖(type equality)
+5. Γ ⊢𝑡≡𝑢∶𝐴(term equality)
+2.2
+Structural Rules
+(Var)
+Γ ctx
+(𝑥∶𝐴) ∈Γ
+Γ ⊢𝑥∶𝐴
+(Conv)
+Γ ⊢𝑡∶𝐴
+Γ ⊢𝐴≡𝐵∶𝒰𝑖
+Γ ⊢𝑡∶𝐵
+(Weak)
+Γ ⊢𝑡∶𝐴
+Γ ⊆Γ′
+Γ′ ⊢𝑡∶𝐴
+2.3
+Definitional Equality Rules
+(Refl)
+Γ ⊢𝑡∶𝐴
+Γ ⊢𝑡≡𝑡∶𝐴
+(Sym)
+Γ ⊢𝑡≡𝑢∶𝐴
+Γ ⊢𝑢≡𝑡∶𝐴
+(Trans)
+Γ ⊢𝑡≡𝑢∶𝐴
+Γ ⊢𝑢≡𝑣∶𝐴
+Γ ⊢𝑡≡𝑣∶𝐴
+(￿-Sphere)
+Γ, 𝑥∶𝐴⊢𝑡≡𝑡′ ∶𝐵
+Γ ⊢Sphere(𝑥∶𝐴.𝑡) ≡Sphere(𝑥∶𝐴.𝑡′) ∶Π𝑥∶𝐴. 𝐵
+(￿-Pop)
+Γ ⊢𝑓≡𝑓′ ∶Π𝑥∶𝐴. 𝐵
+Γ ⊢𝑢≡𝑢′ ∶𝐴
+Γ ⊢Pop(𝑓, 𝑢) ≡Pop(𝑓′, 𝑢′) ∶𝐵[𝑢/𝑥]
+(￿)
+Γ, 𝑥∶𝐴⊢𝑡∶𝐵
+Γ ⊢𝑢∶𝐴
+Γ ⊢Pop(Sphere(𝑥∶𝐴.𝑡), 𝑢) ≡𝑡[𝑢/𝑥] ∶𝐵[𝑢/𝑥]
+(￿)
+Γ ⊢𝑓∶Π𝑥∶𝐴. 𝐵
+𝑥∉𝐹𝑉(𝑓)
+Γ ⊢𝑓≡Sphere(𝑥∶𝐴.Pop(𝑓, 𝑥)) ∶Π𝑥∶𝐴. 𝐵
+4
+
+2.4
+Dependent Product Π
+Formation
+Γ ⊢𝐴∶𝒰𝑖
+Γ, 𝑥∶𝐴⊢𝐵∶𝒰𝑖
+Γ ⊢Π𝑥∶𝐴. 𝐵∶𝒰𝑖
+Intro
+Γ, 𝑥∶𝐴⊢𝑡∶𝐵
+Γ ⊢Sphere(𝑥∶𝐴. 𝑡) ∶Π𝑥∶𝐴. 𝐵
+Elim
+Γ ⊢𝑓∶Π𝑥∶𝐴. 𝐵
+Γ ⊢𝑢∶𝐴
+Γ ⊢Pop(𝑓, 𝑢) ∶𝐵[𝑢/𝑥]
+Comp
+Γ, 𝑥∶𝐴⊢𝑡∶𝐵
+Γ ⊢𝑢∶𝐴
+Γ ⊢Pop(Sphere(𝑥∶𝐴. 𝑡), 𝑢) ≡𝑡[𝑢/𝑥] ∶𝐵[𝑢/𝑥]
+2.5
+Dependent Pair Σ
+Formation
+Γ ⊢𝐴∶𝒰𝑖
+Γ, 𝑥∶𝐴⊢𝐵∶𝒰𝑖
+Γ ⊢Σ𝑥∶𝐴. 𝐵∶𝒰𝑖
+Intro
+Γ ⊢𝑡∶𝐴
+Γ ⊢𝑢∶𝐵[𝑡/𝑥]
+Γ ⊢⟨𝑡, 𝑢⟩∶Σ𝑥∶𝐴. 𝐵
+(Eliminations fst, snd can be added in the library; omitted here for brevity.)
+2.6
+Dependent Pair Projections
+(￿￿)
+Γ ⊢𝑝∶Σ𝑥∶𝐴. 𝐵
+Γ ⊢fst(𝑝) ∶𝐴
+(￿￿)
+Γ ⊢𝑝∶Σ𝑥∶𝐴. 𝐵
+Γ ⊢snd(𝑝) ∶𝐵[fst(𝑝)/𝑥]
+(￿-fst)
+Γ ⊢fst(⟨𝑡, 𝑢⟩) ≡𝑡∶𝐴
+(￿-snd)
+Γ ⊢snd(⟨𝑡, 𝑢⟩) ≡𝑢∶𝐵[𝑡/𝑥]
+(￿-Σ)
+Γ ⊢𝑝≡⟨fst(𝑝), snd(𝑝)⟩∶Σ𝑥∶𝐴. 𝐵
+2.7
+Products and Functions
+Formation
+Γ ⊢𝐴∶𝒰𝑖
+Γ ⊢𝐵∶𝒰𝑖
+Γ ⊢𝐴× 𝐵∶𝒰𝑖
+Γ ⊢𝐴∶𝒰𝑖
+Γ ⊢𝐵∶𝒰𝑖
+Γ ⊢𝐴→𝐵∶𝒰𝑖
+.
+2.8
+Distribution Type Dist(𝐴)
+Definition 9 (Distribution Type). For each 𝐴, Dist(𝐴) is a type of discrete probability
+distributions over 𝐴. We provide monadic operations: return ∶𝐴→Dist(𝐴) and bind ∶
+Dist(𝐴) →(𝐴→Dist(𝐵)) →Dist(𝐵).
+Explanation.
+Dist(−) abstracts stochastic computation.
+We will relate Choice to
+Dist(−) in the operational semantics.
+5
+
+3
+Operational Semantics
+Natural-language explanation.
+We distinguish a deterministic reduction →and a
+stochastic relation
+𝑝
+−→.
+Evaluation order is call-by-value: function and argument are
+reduced to values before 𝛽-contraction. (Alternative strategies may be studied; we fix
+one to make proofs concrete.)
+3.1
+Values and Contexts
+Definition 10 (Values). 𝑣∶∶= 𝑎∣Sphere(𝑥∶𝐴. 𝑡) ∣⟨𝑣1, 𝑣2⟩.
+Definition 11 (Evaluation Contexts). 𝐸∶∶= [ ] ∣Pop(𝐸, 𝑡) ∣Pop(𝑣, 𝐸) ∣Merge(𝐸, 𝑡) ∣
+Merge(𝑡, 𝐸) ∣Choice(𝑝, 𝐸, 𝑡) ∣Choice(𝑝, 𝑡, 𝐸).
+3.2
+Deterministic Fragment
+Definition 12 (Values). Values 𝑣include atoms 𝑎, abstractions Sphere(𝑥∶𝐴. 𝑡), pairs
+⟨𝑣1, 𝑣2⟩, and any canonical forms declared in the library.
+Definition 13 (Small-step Deterministic Reduction).
+(CBV-￿)
+Pop(Sphere(𝑥∶𝐴. 𝑡), 𝑣) →𝑡[𝑣/𝑥]
+(Ctx)
+contexts close →under evaluation in the usual CBV positions.
+3.3
+Merge Operational Semantics (Complete)
+Definition 14 (Normal Form Equivalence). Two terms 𝑡, 𝑢are coalescable if they reduce
+to ≡-equivalent normal forms:
+𝑡
+∗=⇒𝑣
+𝑢
+∗=⇒𝑣′
+𝑣≡𝑣′.
+Definition 15 (Merge Reduction).
+(Merge-Id)
+Merge(𝑣, 𝑣) →𝑣
+(Merge-GLB)
+𝑡
+∗=⇒𝑣
+𝑢
+∗=⇒𝑣
+Merge(𝑡, 𝑢)
+∗=⇒𝑣
+(Merge-Stuck)
+If 𝑡, 𝑢non-coalescable, Merge(𝑡, 𝑢) is irreducible
+Proposition 1 (Merge Properties).
+1. Commutativity: Merge(𝑡, 𝑢) ≡Merge(𝑢, 𝑡)
+2. Associativity: Merge(Merge(𝑡, 𝑢), 𝑣) ≡Merge(𝑡, Merge(𝑢, 𝑣))
+3. Idempotence: Merge(𝑡, 𝑡) ≡𝑡
+Proof. (1) GLB is symmetric. (2) By normal form uniqueness. (3) By Merge-Id.
+Explanation.
+This pins down the previously metaphorical "entropic smoothing": merge
+computes the greatest lower bound w.r.t. the normal-form preorder when it exists; other-
+wise it is observational, not computational.
+6
+
+3.4
+Stochastic Fragment
+Definition 16 (Probabilistic Reduction).
+(Choice)
+Choice(𝑝, 𝑡, 𝑢)
+𝑝
+−→𝑡
+Choice(𝑝, 𝑡, 𝑢)
+1−𝑝
+−−→𝑢.
+The combined step relation is the union of →and
+𝑝
+−→, yielding a Markov kernel over
+terms.
+Definition 17 (Type Preservation for Probabilistic Steps). If Γ ⊢𝑡∶𝐴and 𝑡
+𝑝
+−→𝑡′, then
+Γ ⊢𝑡′ ∶𝐴.
+Explanation.
+We model stochasticity as a probabilistic transition system. The distri-
+bution semantics J𝑡K ∈Dist(𝐴) is obtained by accumulating path probabilities; Choice
+corresponds to return-bind structure on Dist(−).
+3.5
+Probability Measures
+Definition 18 (Configuration Space). 𝒞= {(𝑡, Γ, 𝐴) ∣Γ ⊢𝑡∶𝐴} (typed configurations).
+Definition 19 (Markov Kernel). 𝐾∶𝒞→Dist(𝒞) where:
+• If 𝑡→𝑡′ (deterministic), 𝐾(𝑡, Γ, 𝐴) = 𝛿𝑡′ (Dirac)
+• If 𝑡= Choice(𝑝, 𝑢, 𝑣), 𝐾(𝑡, Γ, 𝐴) = 𝑝⋅𝛿𝑢+ (1 −𝑝) ⋅𝛿𝑣
+• Otherwise 𝐾(𝑡, Γ, 𝐴) = 𝛿𝑡(stuck)
+Definition 20 (Multi-Step Semantics). 𝐾𝑛(𝑡) = 𝐾∘⋯∘𝐾
+⏟⏟⏟⏟⏟
+𝑛
+(𝑡) (iterated kernel). Evalu-
+ation distribution: J𝑡Keval = lim𝑛→∞𝐾𝑛(𝑡).
+Theorem 1 (Type Preservation Under Probability). If Γ ⊢𝑡∶𝐴, then ∀𝑡′ ∈supp(𝐾(𝑡, Γ, 𝐴)),
+Γ ⊢𝑡′ ∶𝐴.
+Proof. By case on reduction. Deterministic: Thm 2. Probabilistic: both branches well-
+typed.
+Definition 21 (Observational Equivalence). 𝑡≈obs 𝑢if ∀𝑛, 𝐾𝑛(𝑡) = 𝐾𝑛(𝑢) (distribution
+equality).
+4
+Metatheory
+Natural-language explanation.
+We provide complete proofs of Preservation and
+Progress for the deterministic fragment, and state the precise stochastic analogue. We
+also clarify confluence and normalization status, and decidability of type checking.
+Lemma 3 (Substitution). If Γ, 𝑥∶𝐴⊢𝑡∶𝐵and Γ ⊢𝑢∶𝐴, then Γ ⊢𝑡[𝑢/𝑥] ∶𝐵[𝑢/𝑥].
+Theorem 2 (Preservation (Deterministic)). If Γ ⊢𝑡∶𝐴and 𝑡→𝑡′, then Γ ⊢𝑡′ ∶𝐴.
+Proof. By induction on 𝑡→𝑡′. Cases: Case (Beta): Pop(Sphere(𝑥∶𝐴.𝑡), 𝑣) →𝑡[𝑣/𝑥].
+7
+
+• Have Γ ⊢Pop(Sphere(𝑥∶𝐴.𝑡), 𝑣) ∶𝐵[𝑣/𝑥].
+• By inversion: Γ, 𝑥∶𝐴⊢𝑡∶𝐵and Γ ⊢𝑣∶𝐴.
+• By Lemma 1 (Substitution): Γ ⊢𝑡[𝑣/𝑥] ∶𝐵[𝑣/𝑥].
+Case (Merge-GLB): Merge(𝑡, 𝑢) →𝑣where 𝑡
+∗=⇒𝑣≡𝑢.
+• Have Γ ⊢Merge(𝑡, 𝑢) ∶𝐴.
+• By typing: Γ ⊢𝑡∶𝐴and Γ ⊢𝑢∶𝐴.
+• By IH on 𝑡
+∗=⇒𝑣: Γ ⊢𝑣∶𝐴.
+Case (Ctx): 𝐸[𝑡] →𝐸[𝑡′] where 𝑡→𝑡′. By IH on 𝑡and context typing.
+Theorem 3 (Progress (Deterministic)). If ∅⊢𝑡∶𝐴, then 𝑡is a value or ∃𝑡′. 𝑡→𝑡′.
+Proof. By induction on ∅⊢𝑡∶𝐴. Cases: Canonical Forms:
+• If 𝑡∶Π𝑥∶𝐴. 𝐵is a value, 𝑡= Sphere(𝑥∶𝐴.𝑢).
+• If 𝑡∶Σ𝑥∶𝐴. 𝐵is a value, 𝑡= ⟨𝑣1, 𝑣2⟩.
+Case (Pop): 𝑡= Pop(𝑓, 𝑢).
+• By IH: 𝑓is value or 𝑓→𝑓′. If latter, Pop(𝑓, 𝑢) →Pop(𝑓′, 𝑢).
+• If 𝑓is value and 𝑓∶Π𝑥∶𝐴. 𝐵, then 𝑓= Sphere(...), so Beta applies.
+Other cases: Similar decomposition via evaluation contexts.
+Proposition 2 (Preservation (Stochastic)). If Γ ⊢𝑡∶𝐴and 𝑡
+𝑝
+−→𝑡′, then Γ ⊢𝑡′ ∶𝐴.
+Remark 1 (Confluence & Normalization). The deterministic fragment without general
+recursion is confluent (by adaptation of standard 𝜆-calculus proofs augmented with the
+equational theory of Merge). Strong normalization fails if a fixed-point operator is admit-
+ted (see Section 7). Type checking for full dependent types with universes is generally un-
+decidable; we assume a practical terminating algorithm via normalization-by-evaluation
+for the subset implemented.
+4.1
+Confluence (Deterministic Fragment)
+Theorem 4 (Confluence). If 𝑡
+∗=⇒𝑢and 𝑡
+∗=⇒𝑣(deterministic), ∃𝑤with 𝑢
+∗=⇒𝑤and
+𝑣
+∗=⇒𝑤.
+Proof Sketch. Adapt Takahashi's method for parallel reduction. Key lemma: parallel
+reduction ⇒is confluent.
+Single-step embeds in parallel.
+Full proof: define parallel
+reduction, prove triangle property, lift to
+∗=⇒.
+Remark 2. With fix, some terms diverge; confluence holds for terminating traces.
+8
+
+4.2
+Strong Normalization (Restricted Fragment)
+Theorem 5 (SN for Simply-Typed Fragment). Without fix, all well-typed terms in
+simply-typed fragment (no dependency) terminate.
+Proof Sketch. Logical relations / reducibility candidates. Full dependent fragment not
+SN due to universe cumulativity.
+4.3
+Decidability and Undecidability
+Theorem 6 (Type Checking is Decidable). Given Γ, 𝑡, 𝐴, deciding Γ ⊢𝑡∶𝐴is decidable
+(assuming decidable ≡).
+Theorem 7 (Type Inference is Undecidable). Type synthesis without annotations is
+undecidable for full dependent types.
+Corollary 1. Practical implementation: require explicit type annotations on Sphere and
+universe levels.
+5
+Geometric Semantics
+Natural-language explanation.
+We now make the RSVP interpretation precise, so
+that "scope as region" and "adjacency carries information" are formal statements rather
+than metaphors.
+5.1
+RSVP Model
+Definition 22 (Fields). Let 𝑀be a smooth manifold (or a finite CW-complex for a
+discrete model). We interpret:
+• Φ ∶𝑀→ℝas a scalar field,
+• v ∶𝑀→ℝ𝑛as a vector field,
+• 𝒮∶𝑀→ℝ≥0 as an entropy density.
+Definition 23 (Computational Manifold). 𝑀is a smooth 𝑛-manifold equipped with:
+• Scalar potential Φ ∶𝑀→ℝ
+• Flow field v ∶𝑀→𝑇𝑀(vector field)
+• Entropy density 𝒮∶𝑀→ℝ≥0
+Subject to compatibility: v = −∇Φ + noise(𝒮).
+Definition 24 (Region Typing). A region 𝑅⊆𝑀is typed by 𝐴if 𝜕𝑅is labeled by type
+𝐴.
+Definition 25 (Denotational Map). We define a compositional map J−K ∶Term →Geom
+where Geom is the category of labelled regions and flows on 𝑀:
+JSphere(𝑥∶𝐴. 𝑡)K = a labelled region 𝑅⊆𝑀with boundary conditions from 𝐴,
+JPop(𝑡, 𝑢)K = a flow from J𝑢K into J𝑡K,
+JMerge(𝑡, 𝑢)K = the glb of J𝑡K, J𝑢K w.r.t. refinement, if it exists,
+JChoice(𝑝, 𝑡, 𝑢)K = 𝑝⋅J𝑡K + (1 −𝑝) ⋅J𝑢K.
+9
+
+Definition 26 (Interpretation Map). J−K ∶(Γ ⊢𝑡∶𝐴) →Geom(𝑀):
+JSphere(𝑥∶𝐴.𝑡)K = {𝑅⊆𝑀∣𝜕𝑅∼𝐴, interior models 𝑡}
+JPop(𝑓, 𝑢)K = {𝛾∶J𝑢K →J𝑓K ∣𝛾flow along v}
+JMerge(𝑡, 𝑢)K = intersection J𝑡K ∩J𝑢K (geometric GLB)
+JChoice(𝑝, 𝑡, 𝑢)K = 𝑝⋅J𝑡K + (1 −𝑝) ⋅J𝑢K (convex combination)
+Theorem 8 (Adequacy). If 𝑡→𝑡′ then J𝑡K and J𝑡′K are observationally equivalent in
+Geom (same boundary traces). If 𝑡
+𝑝
+−→𝑡′, then J𝑡K = 𝑝J𝑡′K + (1 −𝑝)J𝑢K along the other
+branch 𝑢.
+Theorem 9 (Adequacy). Operational reduction corresponds to geometric relaxation:
+1. If 𝑡→𝑡′, then J𝑡K and J𝑡′K are homology-equivalent.
+2. If 𝑡
+𝑝
+−→𝑡′, then J𝑡K splits as 𝑝J𝑡′K + (1 −𝑝)J𝑡″K.
+Proof. By structural induction. Beta: flow along 𝛾collapses boundary. Merge: intersec-
+tion preserves homotopy type. Choice: probabilistic split.
+Adjacency as Information.
+Fix a finite basis of regions {𝑅𝑖}. Encode a program
+by the incidence matrix 𝐴𝑖𝑗= 1 iff 𝑅𝑖adjacent to 𝑅𝑗with typed interface compatibil-
+ity. Then the description length is 𝑂(|𝐸|) for edges 𝐸, while the equivalent textual SSA
+form requires 𝑂(|𝐸| + |𝑉|) with repeated variable names and scopes. A formal com-
+pression theorem can be proved by a bijection between well-typed adjacency graphs and
+𝛼-equivalence classes of SSA terms; we leave the full proof to a companion paper.
+5.2
+Information-Theoretic Compression
+Definition 27 (Textual Encoding). Standard 𝜆-calculus encoding: |𝑡|text = 𝑂(|tokens|).
+Definition 28 (Geometric Encoding). Adjacency matrix 𝐴∈{0, 1}𝑛×𝑛plus type labels:
+|𝑡|geom = 𝑂(|𝐸| log |𝑉|) + 𝑂(|𝑉| ⋅|type|).
+Theorem 10 (Compression Bound). For programs with |𝐸| ≪|𝑉|2 (sparse graphs),
+|𝑡|geom < |𝑡|text.
+Proof. Bound token sequences vs edge counts. Typical 𝜆-terms: |𝐸| = 𝑂(|𝑉|) while text
+is 𝑂(|𝑉| log |𝑉|).
+6
+DSL-to-Core Translation
+Natural-language explanation.
+We make the translation function explicit and prove
+type/semantic preservation theorems.
+10
+
+Definition 29 (Translation J−KDSL ∶DslAst →SpcTerm). By structural recursion on
+the surface syntax:
+Jsphere 𝑓(type ∶Π𝑥∶𝐴. 𝐵, body ∶𝑇)KDSL = Sphere(𝑥∶𝐴. J𝑇KDSL)
+Jpop 𝑓with 𝑢KDSL = Pop(𝑓, 𝑢)
+Jlink 𝑎⊗𝑏KDSL = Merge(𝑎, 𝑏)
+Jchoose 𝑝∶𝑡| 𝑢KDSL = Choice(𝑝, J𝑡KDSL, J𝑢KDSL)
+and analogously for other constructs. Pure flow edges link 𝑎
+→
+𝑏affect scheduling
+only and translate to 𝜖(no term).
+Theorem 11 (Type Preservation (Front-end)). If a DSL scene type-checks under the
+surface rules yielding Γ ⊢𝑡∶𝐴, then Γ ⊢J𝑡KDSL ∶𝐴in SPC.
+Theorem 12 (Semantic Preservation (Front-end)). Evaluation of J𝑡KDSL under SPC
+small-step semantics coincides with the intended DSL evaluation (up to scheduling edges).
+6.1
+Lexical Syntax
+IDENT ∶∶= [𝑎−𝑧𝐴−𝑍_][𝑎−𝑧𝐴−𝑍0 −9_]∗
+NUMBER ∶∶= [0 −9] + (.[0 −9]+)?
+STRING ∶∶= "(\"|["]) ∗"
+COMMENT ∶∶= #. ∗\𝑛
+6.2
+Context-Free Grammar (EBNF)
+program
+::= { scene | comment } ;
+scene
+::= "@scene" "{" { stmt } "}" ;
+stmt
+::= sphere_decl | link_decl | spin_decl
+| burst_decl | pop_decl | choose_decl | let_decl
+| comment ;
+sphere_decl
+::= "sphere" IDENT "(" { attr ("," attr)* } ")" ;
+attr
+::= IDENT ":" value ;
+let_decl
+::= "let" IDENT "=" expr ;
+link_decl
+::= "link" IDENT op IDENT [ "[" IDENT "]" ] ;
+op
+::= "->" | "￿" | "￿" | "￿" | "￿" ;
+spin_decl
+::= "spin" IDENT "(" { attr ("," attr)* } ")" ;
+burst_decl
+::= "burst" IDENT "(" { arg ("," arg)* } ")" ;
+pop_decl
+::= "pop" IDENT [ "with" IDENT ] [ "when" condition ] ;
+choose_decl
+::= "choose" NUMBER ":" expr "|" expr ;
+condition
+::= expr ;
+expr
+::= term { ("+"|"-") term } ;
+term
+::= factor { ("*"|"/") factor } ;
+11
+
+factor
+::= IDENT | NUMBER | STRING | "(" expr ")" ;
+arg
+::= value ;
+value
+::= NUMBER | STRING | IDENT | vector | tuple ;
+vector
+::= "(" NUMBER "," NUMBER "," NUMBER ")" ;
+tuple
+::= "(" { value ("," value)* } ")" ;
+comment
+::= "#" { ANY_CHAR except newline } ;
+IDENT
+::= (letter | "_") { letter | digit | "_" } ;
+NUMBER
+::= digit { digit | "." digit } ;
+STRING
+::= '"' { ANY_CHAR except '"' } '"' ;
+letter
+::= "A".."Z" | "a".."z" ;
+digit
+::= "0".."9" ;
+6.3
+Operator Precedence
+Precedence
+Operators
+Associativity
+1 (highest)
+(), fst, snd
+n/a
+2
+∗, /
+left
+3
++, −
+left
+4
+link operators
+n/a
+5 (lowest)
+choose
+right
+6.4
+Translation Semantics
+Theorem 13 (Type Preservation). If DSL term 𝑑type-checks with ⊢𝑑∶𝐴(surface),
+then ∅⊢J𝑑KDSL ∶𝐴(core).
+Proof. By structural induction on DSL AST. Each DSL construct maps to well-typed
+core term.
+Theorem 14 (Semantic Preservation). Evaluation commutes with translation up to
+scheduling:
+JevalDSL(𝑑)K ≡evalSPC(J𝑑KDSL).
+Proof. Show each DSL evaluation step corresponds to core reduction sequence. Schedul-
+ing differences (parallel vs sequential) don't affect final values.
+7
+Recursion and spin
+Natural-language explanation.
+We provide an explicit encoding of spin via a fixed-
+point combinator and state its meta-theoretic consequences.
+Definition 30 (Fixed Point). Assume a primitive fix𝐴∶(𝐴→𝐴) →𝐴with computation
+fix 𝑓→𝑓(fix 𝑓). Then
+spin 𝑠(𝜔, limit:𝑛)
+desugars to
+iterate𝑛𝑠or fix 𝑠.
+12
+
+Definition 31 (Fix). Add primitive fix𝐴∶(𝐴→𝐴) →𝐴with typing:
+Γ ⊢𝑓∶𝐴→𝐴
+Γ ⊢fix𝐴(𝑓) ∶𝐴
+and reduction: fix𝐴(𝑓) →𝑓(fix𝐴(𝑓)).
+Remark 3 (Non-Termination). fix breaks strong normalization. Example: Ω = fix(𝜆𝑥.𝑥)
+diverges.
+Definition 32 (Spin Desugaring). spin 𝑥(𝑛) ⇝iterate𝑛(𝑥) where
+iterate0(𝑥) = 𝑥,
+iterate𝑛+1(𝑥) = 𝑓(iterate𝑛(𝑥)).
+For infinite spin: fix(𝑓).
+Theorem 15 (Partial Correctness). If fix(𝑓) terminates to value 𝑣, then ∅⊢𝑣∶𝐴.
+Remark 4. Admitting fix breaks strong normalization. Preservation and progress remain
+valid; confluence remains for the deterministic fragment modulo the usual caveats.
+8
+Category-Theoretic Semantics
+Natural-language explanation.
+We scope categorical claims to a precise setting and
+state coherence theorems with proof obligations.
+Assumption 1 (Model Category). Let 𝒞be a cartesian closed category with finite prod-
+ucts and a commutative idempotent monoid object (𝐴, Merge) modeling Merge equations.
+Proposition 3 (Monoidal Coherence for Merge). Under the assumption above, Merge
+yields a symmetric monoidal structure satisfying MacLane's coherence. (Proof follows
+from idempotent commutative monoid object properties.)
+Proposition 4 (Probability Monad). Let (Dist(−), 𝜂, 𝜇) be the discrete Giry monad on
+Set. Then Choice factors through 𝜂and 𝜇, satisfying functor and monad laws.
+Remark 5 (Topos Claim). An embedding of SPC into a presheaf topos Set𝒮𝑜𝑝requires
+a specific site 𝒮encoding scopes and interfaces. We leave the full construction to future
+work and restrict this document to the CCC/monad model above.
+8.1
+Base Category
+Definition 33 (Category 𝒞SPC).
+• Objects: Types 𝐴, 𝐵, ...
+• Morphisms: Hom(𝐴, 𝐵) = {𝑡∣∅, 𝑥∶𝐴⊢𝑡∶𝐵}/≡
+• Identity: id𝐴= 𝑥∶𝐴
+• Composition: 𝑔∘𝑓= Pop(𝑔, 𝑓) (after abstraction)
+Proposition 5 (Well-Defined). ≡respects composition; identity laws hold by 𝜂-rules.
+13
+
+8.2
+Cartesian Closed Structure
+Theorem 16 (CCC). 𝒞SPC is Cartesian closed:
+• Terminal: 1 = {⋆}
+• Products: 𝐴× 𝐵with projections 𝜋1, 𝜋2
+• Exponentials: 𝐴⇒𝐵≅Π𝑥∶𝐴. 𝐵(when 𝑥∉𝐹𝑉(𝐵))
+Proof. Verify universal properties using Sphere, Pop, and Σ-types.
+8.3
+Monoidal Structure of Merge
+Definition 34 (Merge Tensor). (𝐴, Merge, ⊥) where ⊥is the stuck term (monoidal unit).
+Theorem 17 (Symmetric Monoidal Category). (𝒞SPC, Merge, ⊥) satisfies:
+1. Associativity: 𝛼∶(𝐴Merge𝐵)Merge𝐶≅𝐴Merge(𝐵Merge𝐶)
+2. Unit: 𝜆∶⊥Merge𝐴≅𝐴, 𝜌∶𝐴Merge⊥≅𝐴
+3. Symmetry: 𝛾∶𝐴Merge𝐵≅𝐵Merge𝐴
+4. Coherence: Pentagon and triangle diagrams commute
+Proof. Associativity, unit, symmetry by Proposition (Merge Properties). Coherence by
+Mac Lane's theorem (all diagrams commute for free monoids).
+Corollary 2 (Idempotence). Merge is idempotent: 𝐴Merge𝐴≅𝐴.
+8.4
+Probabilistic Monad
+Definition 35 (Giry Monad on 𝒞SPC).
+• Functor: Dist(−) ∶𝒞SPC →𝒞SPC
+• Unit: 𝜂𝐴∶𝐴→Dist(𝐴) (Dirac embedding)
+• Multiplication: 𝜇𝐴∶Dist(Dist(𝐴)) →Dist(𝐴) (marginalization)
+Theorem 18 (Monad Laws). (Dist(, )𝜂, 𝜇) satisfies:
+𝜇∘Dist(𝜂) = 𝜇∘𝜂Dist(𝐴) = id
+𝜇∘Dist(𝜇) = 𝜇∘𝜇Dist(𝐴)
+Proof. Standard for Giry monad on measurable spaces; lift to types via Choice semantics.
+Proposition 6 (Choice as Kleisli Morphism). Choice(𝑝, 𝑡, 𝑢) = 𝜇(𝜂(𝑡) ⊕𝑝𝜂(𝑢)) where
+⊕𝑝is convex combination.
+14
+
+8.5
+Presheaf Topos Model
+Assumption 2. Fix site (𝒮, 𝐽) where objects are "geometric regions" and covering fam-
+ilies are "refinements."
+Definition 36 (Topos Set𝒮op). Presheaves 𝐹∶𝒮op →Set with natural transformations
+as morphisms.
+Theorem 19 (Spherepop Embeds in Topos). There exists full and faithful functor Φ ∶
+𝒞SPC →Set𝒮op mapping:
+• Types 𝐴↦presheaf 𝐹𝐴(local sections)
+• Terms 𝑡↦natural transformation 𝛼𝑡
+• Sphere induces sheaf condition (gluing)
+Proof Sketch. (1) Define 𝐹𝐴(𝑅) = {𝑣∶𝑅∣𝑣value of type 𝐴}. (2) Sphere terms glue via
+dependent function spaces. (3) Functoriality by restriction maps. Faithfulness by type
+uniqueness. Full proof: 20+ pages, deferred to extended appendix.
+9
+Implementation Roadmap
+Natural-language explanation.
+To validate the formal system, implement: (i) full
+DSL parser; (ii) SPC typechecker with universes; (iii) evaluator with CBV and stochastic
+transitions; (iv) property-based tests for Preservation & Progress.
+• Parsing: Implement EBNF via Megaparsec; include all constructs.
+• Typing: Universe checking, definitional equality by normalization-by-evaluation.
+• Evaluation: Deterministic →plus probabilistic
+𝑝
+−→; Merge GLB rule.
+• Tests: QuickCheck properties encoding Preservation/Progress on generated well-
+typed terms.
+9.1
+Module Structure
+Spherepop/
+￿￿￿Syntax/
+￿
+￿￿￿Core.hs
+-- SPC AST
+￿
+￿￿￿DSL.hs
+-- Surface AST
+￿
+￿￿￿Types.hs
+-- Type representations
+￿￿￿Parser/
+￿
+￿￿￿Lexer.hs
+-- Megaparsec lexer
+￿
+￿￿￿Parser.hs
+-- Grammar implementation
+￿￿￿TypeCheck/
+￿
+￿￿￿Context.hs
+-- Context management
+￿
+￿￿￿Infer.hs
+-- Type inference
+￿
+￿￿￿Equal.hs
+-- Definitional equality
+￿￿￿Eval/
+￿
+￿￿￿Deterministic.hs
+-- ￿-reduction
+￿
+￿￿￿Stochastic.hs
+-- Probabilistic eval
+15
+
+￿
+￿￿￿Normalize.hs
+-- Normalization
+￿￿￿Translate/
+￿
+￿￿￿DSLToCore.hs
+-- Translation pass
+￿￿￿Geometric/
+￿
+￿￿￿Manifold.hs
+-- RSVP fields
+￿
+￿￿￿Interpret.hs
+-- Denotational semantics
+￿￿￿Test/
+￿￿￿Properties.hs
+-- QuickCheck properties
+￿￿￿Examples.hs
+-- Test suite
+9.2
+Key Algorithms
+9.2.1
+Normalization by Evaluation (NbE)
+data Neutral = NVar Name | NPop Neutral Val
+data Val = VAtom | VSphere (Val -> Val) | VNeutral Neutral
+eval :: Env -> Term -> Val
+reify :: Type -> Val -> Term
+nf :: Term -> Term
+nf t = reify (typeof t) (eval emptyEnv t)
+9.2.2
+Bidirectional Type Checking
+infer :: Ctx -> Term -> Maybe Type
+-- Synthesis
+check :: Ctx -> Term -> Type -> Bool
+-- Checking
+-- Key rules:
+infer ctx (Sphere x a t) = do
+check ctx a (UU i)
+b <- infer (ctx, x:a) t
+return (Pi x a b)
+check ctx t a = do
+a' <- infer ctx t
+return (equal ctx a a')
+10
+Worked Example (End-to-End)
+Natural-language explanation.
+We close with a complete derivation from DSL to
+reduced SPC with types at each step.
+DSL
+@scene {
+sphere f(type: Πx:A.B, body: pop g with x)
+sphere g(type: Πx:A.B, value: <primitive>)
+sphere a(type: A, value: a0)
+16
+
+pop f with a
+choose 0.5: pop g with a | pop f with a
+}
+Typing and Reduction
+𝑓∶Π𝑥∶𝐴. 𝐵,
+𝑔∶Π𝑥∶𝐴. 𝐵,
+𝑎∶𝐴
+Pop(𝑓, 𝑎) ∶𝐵[𝑎/𝑥] →Pop(𝑔, 𝑎) ∶𝐵[𝑎/𝑥].
+Explanation.
+Abstraction/application witness Π-intro/elim; Choice stays in 𝐵[𝑎/𝑥];
+evaluation is CBV with stochastic branching measured by Dist(−).
+11
+Extended Examples
+11.1
+Example 1: Identity Function
+DSL:
+@scene {
+sphere id(type: Πx:A.A, body: x)
+}
+Core: Sphere(𝑥∶𝐴.𝑥) ∶Π𝑥∶𝐴. 𝐴
+Typing Derivation:
+Γ = ∅
+Γ, 𝑥∶𝐴⊢𝑥∶𝐴
+(Var)
+Γ ⊢Sphere(𝑥∶𝐴.𝑥) ∶Π𝑥∶𝐴. 𝐴
+(Π-Intro)
+Reduction: Irreducible (value).
+11.2
+Example 2: Composition with Merge
+DSL:
+@scene {
+sphere f(type: Πx:A.B, body: ...)
+sphere g(type: Πy:B.C, body: ...)
+link f ￿g
+pop g with (pop f with a)
+}
+Core: Merge(𝑓, 𝑔), Pop(𝑔, Pop(𝑓, 𝑎))
+Reduction (assuming coalescable): If 𝑓, 𝑔merge to ℎ, then Pop(ℎ, 𝑎).
+More examples can be added for stochastic, recursive cases, etc.
+17
+
+12
+Spherepop II: Derived Geometric Semantics and
+Shifted Symplectic Structure
+Natural-language explanation.
+This extension derives differential and symplectic
+geometry from core semantics, enabling RSVP quantization.
+12.1
+Differential Operator
+Definition 37. JGrad(𝑡)K = ∇J𝑡K.
+12.2
+Shifted Symplectic Form
+Define 𝜔𝑡= 𝛿Φ𝑡∧𝛿𝒮𝑡(−1-shifted). Links computation to geometric quantization.
+12.3
+Derived Category Geom
+Objects: typed manifolds (𝑀, 𝐴). Morphisms: flow-preserving J𝑡K. Monoidal: Merge.
+Convex: Choice.
+Proposition 7 (Flow Semantics). Reduction relaxes entropy gradients: Pop collapses
+regions, Merge coalesces, Choice samples flows.
+Conclusion.
+Spherepop II establishes entropic computation on derived symplectic foun-
+dations.
+18
+

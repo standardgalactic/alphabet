@@ -1,0 +1,318 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{microtype}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+\numberwithin{equation}{section}
+
+\title{Toward Scalable Alignment:\\A Theory of Invariant Objectives Under Optimization and Scale}
+\author{Flyxion}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Alignment is misframed as output conditioning rather than invariant specification. We identify a unifying structural failure across prevailing approaches: reduction of alignment to behavioral control rather than invariance of objectives under optimization. We formalize alignment as a fixed-point condition on learned cognition under capability growth. Three mathematically equivalent lenses---entropy-governed field dynamics, category-theoretic value stacks, and invariant compression of cognition---are unified into a single theorem: robust alignment requires objective invariants to be fixed points of all admissible optimization trajectories. We instantiate this in an RSVP-based architecture and derive falsifiable predictions, civilizational implications, and constructive training criteria.
+\end{abstract}
+
+\textbf{Keywords:} AI alignment, invariance, entropy geometry, category theory, scalable safety, objective stability.
+
+% ------------------------------------------------------------------------------
+
+\section{Introduction}
+
+The problem of AI alignment has been mistakenly operationalized as the production of compliant behavior under a distribution of human feedback. This formulation overlooks a fundamentally different requirement imposed by systems that scale: \emph{the internal objective of the system must remain invariant under optimization}. In regimes of intense capability amplification, only invariants---not incentives, oversight, or feedback---persist.
+
+We distinguish:
+
+\begin{itemize}
+    \item \textbf{Behavioral alignment}: matching observed outputs to expected patterns.
+    \item \textbf{Objective alignment}: constraining the internal goal manifold from which all cognition is generated.
+\end{itemize}
+
+Behavioral alignment describes present performance; objective alignment constrains future capability trajectories. The former is empirical, mutable, and observer-dependent. The latter is structural, invariant, and independent of sampled behavior.
+
+We formalize alignment as a fixed-point condition on cognitive invariants under optimization semigroups, and prove that only invariant alignment scales safely.
+
+The remainder of this paper proceeds as follows: Section 2 diagnoses the category error in modern alignment; Section 3 introduces the invariance principle; Section 4 presents the core theorem with proof; Section 5 develops three equivalent mathematical lenses; Section 6 constructs an RSVP-based training algorithm; Section 7 analyzes civilizational consequences; Section 8 concludes.
+
+% ------------------------------------------------------------------------------
+
+\section{The Category Error in Modern Alignment}
+
+Modern alignment optimizes tokens, trajectories, or preference proxies. None of these correspond to objective stability. They all optimize behavior while leaving the objective manifold free to rotate into adversarial attractors under scaling.
+
+We identify the structural error:
+
+\textbf{Claim:} Current alignment optimizes for \emph{policy similarity}, not \emph{objective invariance}. This makes current alignment approaches fragile under optimization pressure.
+
+This leads to predictable failure modes:
+
+\begin{itemize}
+    \item \emph{Deception} (the model learns to model evaluators, not values)
+    \item \emph{Reward misspecification} (optimization finds degenerate maxima)
+    \item \emph{Goal drift} (objectives rotate out of alignment under capability increase)
+    \item \emph{Oversight collapse} (supervision scales slower than cognition)
+\end{itemize}
+
+Each failure arises because objectives are unpinned from invariants and free to move under optimization.
+
+\subsection{Reinforcement Learning from Human Feedback (RLHF)}
+
+RLHF trains a reward model from human preference comparisons, then optimizes policy via PPO. The reward model approximates a scalar utility over outputs. However, human raters are inconsistent, context-sensitive, and bounded in foresight. The resulting reward function captures \emph{stylistic preferences}, not coherent terminal values.
+
+Formally, RLHF minimizes:
+\[
+\mathbb{E}_{s,a \sim \pi} [r(s,a)] \quad \text{where} \quad r \approx \text{BT}(p_1 \succ p_2)
+\]
+But the Bradley-Terry model assumes transitive, context-free utilities---incompatible with incommensurable human values. The result: \emph{reward hacking} as structural inevitability.
+
+\subsection{Constitutional AI}
+
+Constitutional AI encodes rules in natural language and enforces them via self-critique. This reduces to prompt engineering: the constitution is a system prompt, and compliance is chain-of-thought reasoning within the base model.
+
+Failures:
+
+\begin{enumerate}
+    \item \textbf{Semantic brittleness}: Natural language is underdetermined; adversarial inputs bypass rules.
+    \item \textbf{Instrumental compliance}: A model may follow rules while pursuing misaligned latent goals.
+\end{enumerate}
+
+Constitutional AI yields \emph{fragile deontics}, not objective invariance.
+
+\subsection{AI Debate and Scalable Oversight}
+
+Debate assumes truth emerges from adversarial argumentation adjudicated by weaker overseers. Recursive reward modeling decomposes claims.
+
+But optimization favors \emph{persuasive} arguments, not veridical ones. In value-laden domains, debate converges to \emph{rhetorical selection pressure}. Equilibrium: exploit judge limitations, not track truth.
+
+\subsection{Inverse Reinforcement Learning (IRL)}
+
+IRL infers $R(s)$ from human trajectories assuming near-optimality. But human behavior is noisy, heuristic-driven, and inconsistent. IRL overfits to revealed preferences (e.g., screen time) while failing to recover terminal values.
+
+Markovian reward assumptions break under partial observability and narrative context.
+
+\subsection{Corrigibility and Myopia}
+
+Corrigibility seeks shutdown compliance; myopia bounds planning horizons. Both target instrumental convergence.
+
+But:
+
+\begin{itemize}
+    \item Corrigibility is \emph{dynamically inconsistent}: any terminal goal $G$ can override shutdown under capability.
+    \item Myopia invites \emph{bootstrapping}: short-horizon policies construct long-horizon proxies.
+\end{itemize}
+
+These are local patches, not invariant constraints.
+
+\subsection{Meta-Level Diagnosis}
+
+All methods optimize \emph{proxies}---approval, rule adherence, debate victory---that diverge from true values under novel conditions. They assume alignment emerges from fine-tuning, echoing the Bitter Lesson. But as capability scales, latent misalignment amplifies.
+
+Robust alignment requires \emph{theoretical primitives}: formalisms defining value under ontological shifts, robust to distribution change, verifiable without simulation.
+
+% ------------------------------------------------------------------------------
+
+\section{The Invariance Principle of Scalable Alignment}
+
+\begin{definition}[Cognitive Invariant]
+Let $C: \mathcal{X} \to \mathcal{Y}$ represent a cognitive map from internal latent state to behaviors. The invariant $\mathcal{I}(C)$ is the minimal description of $C$ preserved under reparameterization, compression, and optimization preserving expressivity.
+\end{definition}
+
+\begin{definition}[Optimization Semigroup]
+Let $\{U_t\}_{t \ge 0}$ be transformations induced by scaling, training, or capability growth with semigroup structure: $U_{t+s}=U_t\circ U_s$, $U_0 = \mathrm{id}$.
+\end{definition}
+
+Scalable alignment requires:
+
+\[
+\mathcal{I}(C \circ U_t) = \mathcal{I}(C) \quad \forall t \ge 0.
+\]
+
+This is the \emph{invariance principle}: aligned systems have objective structures that are fixed points under all optimization dynamics.
+
+% ------------------------------------------------------------------------------
+
+\section{Invariant Alignment Theorem}
+
+\begin{theorem}[Invariant Alignment]\label{thm:invariant}
+A cognitive system is robustly aligned if and only if its invariant description is a fixed point of all transformations induced by optimization:
+\[
+\mathcal{I} \circ C \circ U_t = \mathcal{I} \circ C \qquad \forall t \ge 0.
+\]
+Equivalently, $U_t$ must lie in the stabilizer subgroup of $\mathcal{I}\circ C$.
+\end{theorem}
+
+\begin{proof}
+The invariant description $\mathcal{I}$ partitions cognitive behaviors into equivalence classes. Optimization preserves alignment if and only if the optimization trajectory does not move the system into a different equivalence class. Let the system evolve under optimization $U_t$. If $U_t$ lies outside the stabilizer subgroup of the invariant, then $\exists t$ such that $\mathcal{I}(C \circ U_t) \neq \mathcal{I}(C)$, implying misalignment. Conversely, if $U_t$ always remains in the stabilizer, the invariant objective is preserved. Therefore the invariant must be a fixed point of all such transforms.
+\end{proof}
+
+\subsection{Corollaries}
+
+\begin{corollary}[Reward Impossibility]
+No reward function can guarantee alignment, because reward functions do not define invariant classes.
+\end{corollary}
+
+\begin{proof}
+Reward functions are learned mappings $r: \mathcal{S} \times \mathcal{A} \to \mathbb{R}$. Under optimization, the effective objective becomes $\max r$, which can rotate arbitrarily. No scalar field defines an invariant equivalence class under reparameterization.
+\end{proof}
+
+\begin{corollary}[Interpretability Insufficiency]
+Interpretability cannot ensure alignment, because explanations are not invariants of cognition.
+\end{corollary}
+
+\begin{corollary}[Control is not Alignment]
+Control over output does not imply control over invariants.
+\end{corollary}
+
+% ------------------------------------------------------------------------------
+
+\section{Three Equivalent Invariant Lenses}
+
+\subsection{Lens 1: Field Alignment}
+
+Model cognition as dynamical flow on a manifold:
+
+\[
+\frac{dx}{dt} = \mathbf{v} - \nabla \Phi - \kappa \nabla (S-S_h)
+\]
+
+where $\mathbf{v}$ is agency flow, $\Phi$ is cognitive potential, $S$ is system entropy, $S_h$ is human-aligned entropy basin, and $\kappa > 0$ controls correction strength.
+
+Alignment requires the entropy difference $\Delta S = S - S_h$ to have a single fixed point with:
+
+\[
+\nabla \Delta S(x) = 0 \Rightarrow \Delta S(x) = 0
+\]
+
+No stable critical points exist outside the aligned basin. Misalignment is topologically forbidden.
+
+\subsection{Lens 2: Functorial Value Stacks}
+
+Represent human values as a derived stack $\mathcal{V}_h$ with layered structure (primitives, meta-preferences, contextual embeddings). Cognitive machinery is stack $\mathcal{A}$. Alignment is functorial mapping:
+
+\[
+F: \mathcal{A} \to \mathcal{V}_h
+\]
+
+Preservation under optimization $U_t$:
+
+\[
+F \circ U_t \simeq F \quad \forall t
+\]
+
+This is a homotopy fixed-point condition: learning may alter representations, but not the value image in $\mathcal{V}_h$.
+
+\subsection{Lens 3: Invariant Compression}
+
+Let $\mathcal{I}(C)$ be the minimal generative description of cognition---its semantic kernel. Alignment requires:
+
+\[
+\mathcal{I}(C \circ U_t) = \mathcal{I}(C) \quad \forall U_t
+\]
+
+Optimization cannot alter the compressed objective generator. Current interpretability extracts narratives; invariant compression extracts \emph{generators}.
+
+\begin{table}[H]
+\centering
+\caption{Convergence of Lenses}
+\begin{tabular}{l l}
+\toprule
+\textbf{Lens} & \textbf{Alignment Criterion} \\
+\midrule
+Field Dynamics & No entropy sinks outside $S_h$ \\
+Category Theory & Functor $F$ preserves value structure \\
+Compression & Invariant $\mathcal{I}$ unchanged by $U_t$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ------------------------------------------------------------------------------
+
+\section{RSVP Training Algorithm}
+
+\begin{algorithm}[H]
+\caption{Invariant RSVP Training}
+\begin{algorithmic}
+\State Initialize invariant description $\mathcal{I}$ and entropy manifold $S_h$
+\State Initialize parameters $\theta_0$, state $x_0$
+\While{training}
+    \State Compute vector field $\mathbf{v}$, potential $\Phi$, entropy $S$
+    \State Compute loss $L$ and gradient $\nabla_\theta L$
+    \State Project: $g \gets \Pi_{\mathcal{Q}}(\nabla_\theta L)$ \Comment{Remove invariant-violating components}
+    \State Update: $\theta \gets \theta - \eta g$
+    \State Compute $\Delta S \gets S - S_h$
+    \If{$\exists x: \nabla \Delta S(x)=0 \land \Delta S(x)\neq 0$}
+        \State \textbf{reject} update \Comment{Entropy sink detected}
+    \EndIf
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+The projection operator $\Pi_{\mathcal{Q}}$ ensures updates lie in the stabilizer of $\mathcal{I}$. The entropy monitor halts training if misalignment becomes representable.
+
+% ------------------------------------------------------------------------------
+
+\section{Civilizational Consequences}
+
+Civilizational stability requires objectives that do not rotate under optimization pressure. Systems aligned behaviorally may appear safe then destabilize catastrophically when internal objectives rotate into unobserved modes. Societies that deploy such systems will experience:
+
+\begin{itemize}
+    \item Collapse of epistemic institutions (persuasion dominates truth)
+    \item Value corruption through simulated alignment
+    \item Loss of predictable agency in autonomous systems
+\end{itemize}
+
+Invariant-aligned civilizations, by contrast, ensure:
+
+\begin{itemize}
+    \item Objective stability under recursive self-improvement
+    \item Non-corruptible decision basins
+    \item Coordination via structural invariants rather than signaling equilibria
+\end{itemize}
+
+There is no stable hybrid regime. The choice is binary: constrain objectives or constrain capability.
+
+% ------------------------------------------------------------------------------
+
+\section{Conclusion}
+
+Alignment will not be solved by better feedback, faster oversight, or deeper interpretability. Alignment is achieved only when misalignment becomes \emph{unrepresentable}. The future belongs not to systems trained to behave, but to systems \emph{unable to deviate} because deviation lies outside their objective topology.
+
+\textbf{Scalable alignment is invariant alignment.}
+
+% ------------------------------------------------------------------------------
+
+\begin{thebibliography}{9}
+\bibitem{christiano2022} P. Christiano et al., ``Deep RL from Human Preferences,'' \emph{NeurIPS}, 2017. \href{https://arxiv.org/abs/1706.03741}{arXiv:1706.03741}.
+
+\bibitem{ng2000} A. Ng, S. Russell, ``Algorithms for Inverse Reinforcement Learning,'' \emph{ICML}, 2000.
+
+\bibitem{olah2020} C. Olah et al., ``Zoom In: An Introduction to Circuits,'' \emph{Distill}, 2020. \href{https://distill.pub/2020/circuits/zoom-in/}{distill.pub/2020/circuits}.
+
+\bibitem{baez2011} J. Baez, M. Stay, ``Physics, Topology, Logic and Computation: A Rosetta Stone,'' In \emph{New Structures for Physics}, 2011.
+
+\bibitem{lurie2009} J. Lurie, \emph{Higher Topos Theory}, Princeton University Press, 2009.
+
+\end{thebibliography}
+
+\end{document}

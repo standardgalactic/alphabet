@@ -1,0 +1,3011 @@
+\documentclass[11pt]{article}
+
+% --------------------------------------------------
+% Packages
+% --------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{csquotes}
+\usepackage{hyperref}
+\usepackage[numbers,authoryear]{natbib}
+
+\geometry{margin=1in}
+\setstretch{1.15}
+
+% --------------------------------------------------
+% Theorem environments
+% --------------------------------------------------
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+% --------------------------------------------------
+% Macros
+% --------------------------------------------------
+\newcommand{\Lang}{\mathcal{L}}
+\newcommand{\Sym}{\mathcal{S}}
+\newcommand{\Act}{\mathcal{A}}
+\newcommand{\Hist}{\mathcal{H}}
+
+% --------------------------------------------------
+% Title
+% --------------------------------------------------
+\title{Constraint Before Reference:\\
+Operator Semantics, Reification, and Symbolic Conflict}
+\author{Flyxion}
+\date{\today}
+
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Persistent symbolic and ideological conflicts are often attributed to deep
+metaphysical or factual disagreement. This paper argues that many such conflicts
+are more accurately diagnosed as semantic failures arising from a misordering of
+priority between constraint and reference. In a wide class of linguistic,
+institutional, and computational systems, meaning functions primarily by
+constraining admissible futures rather than by denoting objects. When symbols
+that operate as constraints are reclassified as referential absolutes, negotiable
+procedural disagreements collapse into non-negotiable existential claims.
+
+The paper develops a constraint-first framework grounded in philosophy of
+language, operational semantics, and category theory. It formalizes linguistic
+operators as functions on event histories that irreversibly restrict future
+possibilities, provides a small-step operational semantics with soundness and
+completeness results, and lifts this account to a functorial semantics in which
+symbols correspond to endofunctors on spaces of admissible futures. Reification
+is shown to constitute a semantic type error with predictable structural
+consequences, including loss of negotiability and escalation of conflict.
+
+The framework explains the role of semantic compression and drift in long-lived
+symbolic systems, characterizes narrative as a constraint-preserving encoding,
+and offers precise diagnostics for distinguishing factual disagreement from
+operator misclassification. Applications are developed across legal systems,
+organizational governance, computational architectures, and multi-agent
+coordination, demonstrating how operator-level reframing can expand resolution
+space without requiring consensus on beliefs or interpretations.
+
+By restoring category discipline between constraint and reference, the paper
+provides a neutral, formally explicit account of meaning that clarifies why many
+disputes persist despite shared normative commitments and identifies structural
+conditions under which disagreement can remain negotiable rather than absolute.
+\end{abstract}
+
+
+% ==================================================
+\section{Introduction}
+% ==================================================
+
+Persistent conflicts across legal, political, organizational, and computational
+domains are frequently described as deep, principled, or metaphysical in nature.
+They are often attributed to incompatible worldviews, irreconcilable values, or
+fundamental disagreements about reality itself. Yet in many such cases, closer
+inspection reveals substantial agreement on practical norms governing action,
+responsibility, and coordination. What remains unresolved is not what should be
+done, but how certain symbols, terms, or roles are understood to function within
+the system that governs doing.
+
+This paper advances the thesis that a large class of persistent symbolic
+conflicts arise from a specific semantic failure: the inversion of priority
+between \emph{constraint} and \emph{reference}. Symbols that originally functioned
+to regulate admissible actions, identities, or future states are misclassified as
+denoting absolute objects or facts. Once this misclassification occurs,
+procedural disagreement is transformed into existential opposition, rendering
+negotiation structurally impossible.
+
+The central claim is not that reference is unimportant, but that it is secondary.
+Constraint is logically and operationally prior. Meaning stabilizes action before
+it stabilizes description.
+
+% --------------------------------------------------
+\subsection{A Motivating Case: Jurisdictional Conflict}
+% --------------------------------------------------
+
+Consider a recurring form of legal conflict involving jurisdiction. Two courts,
+agencies, or institutional bodies may dispute which of them has authority over a
+given case. Such disputes are often framed as disagreements about facts: where an
+event occurred, which law applies, or which entity possesses legitimate power.
+
+However, jurisdiction does not denote a physical object or discoverable property.
+It is an operator: a rule that constrains which actions are permitted by whom and
+under what conditions. When jurisdiction is treated as a referential fact rather
+than a procedural constraint, disputes escalate. Each party seeks to establish
+exclusive ownership of an alleged object (“true authority”), rather than to
+negotiate the boundaries of permissible action.
+
+In practice, many jurisdictional disputes are resolved not by discovering new
+facts, but by redefining procedural constraints: carving out exceptions,
+establishing precedence rules, or introducing shared oversight mechanisms. The
+conflict dissolves once the operator structure is restored.
+
+This pattern recurs across domains. The case is representative rather than
+exceptional.
+
+% --------------------------------------------------
+\subsection{Problem Statement}
+% --------------------------------------------------
+
+The prevailing semantic frameworks used to analyze disagreement emphasize
+truth-conditions, reference, and correspondence. While powerful, these frameworks
+are ill-suited to explaining why conflicts persist in contexts where truth-value
+disagreement is minimal or irrelevant.
+
+This paper proposes an alternative explanatory axis. It distinguishes symbols
+that function primarily as \emph{operators}—constraining admissible futures—from
+symbols that function primarily as \emph{referents}—denoting objects or states of
+affairs. Conflicts arise when operator symbols are reinterpreted as referential
+absolutes.
+
+This misclassification produces a characteristic set of effects. Procedural norms
+are naturalized and treated as features of the world rather than as revisable
+rules of coordination, the space of negotiation collapses as alternative
+interpretations are excluded, and disagreement is reframed as existential rather
+than practical, transforming what could be resolved through procedural revision
+into a perceived threat to identity or reality itself.
+
+Understanding this mechanism requires tools beyond standard truth-conditional
+semantics.
+
+% --------------------------------------------------
+\subsection{Relation to Existing Literature}
+% --------------------------------------------------
+
+The framework developed here draws on and synthesizes several distinct traditions.
+
+In philosophy of language, the distinction between sense and reference (Frege),
+between description and naming (Russell), and between rigid designation and use
+(Kripke) establishes that reference alone cannot account for meaning
+\cite{frege1892,russell1905,kripke1980}. Donnellan’s distinction between
+referential and attributive uses of descriptions further destabilizes a purely
+referential account \cite{donnellan1966}.
+
+Speech act theory and performativity shift attention from truth to action.
+Austin’s performatives and Searle’s institutional facts demonstrate that many
+utterances do not describe the world but change it \cite{austin1962,searle1969}.
+However, these accounts stop short of formalizing long-range constraint on future
+states.
+
+Inferentialist and pragmatist approaches, especially Brandom’s account of meaning
+as normative inferential role, come closer to the present view
+\cite{brandom1994}. Yet they lack a fully explicit temporal or event-based
+semantics.
+
+In legal and institutional theory, Hart’s distinction between primary and
+secondary rules reveals how authority emerges from constraint rather than fact
+\cite{hart1961}. More recent work in institutional design and governance confirms
+that symbolic stability depends on enforceable procedural limits, not metaphysical
+agreement.
+
+Finally, in computer science, operational semantics, game semantics, and
+event-sourced systems already treat meaning as execution and constraint rather
+than description. These traditions supply the formal backbone of the present
+approach.
+
+This paper unifies these strands into a single, explicit framework.
+
+% --------------------------------------------------
+\subsection{Methodology}
+% --------------------------------------------------
+
+The methodology of this paper is formal, analytic, and comparative.
+
+First, it introduces a precise semantic distinction between reference and
+constraint, expressed using operator semantics over event histories.
+
+Second, it develops an operational semantics in which meaning is evaluated by its
+effect on admissible futures rather than by truth conditions.
+
+Third, it lifts this operational account into a categorical framework, allowing
+structural comparison between symbolic systems via functors and natural
+transformations.
+
+Throughout, formal development is interleaved with concrete examples drawn from
+law, organizational systems, and computation. These examples are not illustrative
+ornaments; they function as empirical anchors for the formal claims.
+
+The approach is intentionally neutral with respect to metaphysical commitments.
+The framework does not deny reference, belief, or interpretation. It specifies
+their proper semantic location.
+
+% --------------------------------------------------
+\subsection{Contributions and Roadmap}
+% --------------------------------------------------
+
+This paper advances several interconnected contributions. It formally
+distinguishes between operator symbols and referential symbols, and shows how
+systematic misclassification between these semantic types gives rise to
+persistent and intractable conflict. It introduces an event-historical
+operational semantics in which symbolic meaning is constituted by irreversible
+constraints on admissible futures rather than by static denotation. It further
+develops a functorial semantics that enables structural comparison between
+symbolic systems at an abstract level, independent of their surface
+representations. In addition, the analysis identifies structural risks inherent
+in highly expressive operator systems, particularly with respect to domination,
+lock-in, and loss of negotiability. Finally, the framework is shown to apply
+across legal, organizational, and computational domains, demonstrating its
+generality and practical relevance.
+
+The paper proceeds as follows. Section~2 deepens the philosophical foundations of
+the reference/operator distinction. Section~3 develops a formal account of
+semantic compression and drift. Section~4 analyzes reification as a category
+error and proves its consequences. Section~5 develops narrative as a constraint-
+preserving encoding mechanism. Sections~6 and~7 present the operational and
+functorial semantics, respectively. Subsequent sections apply the framework,
+compare it with alternatives, and discuss methodological limits and future
+directions. The conclusion synthesizes the results and outlines practical and
+theoretical implications.
+
+% ==================================================
+\section{Names, Reference, and Operators}
+% ==================================================
+
+This section develops the conceptual foundation for the paper’s central
+distinction between \emph{referential} expressions and \emph{operator} expressions.
+The distinction is motivated philosophically, formalized semantically, and
+illustrated across legal, institutional, and computational domains. The aim is
+not to deny the existence or utility of reference, but to establish that many
+conflicts arise when expressions whose primary function is to constrain action
+are mistakenly treated as denoting objects.
+
+% --------------------------------------------------
+\subsection{Classical Accounts of Reference}
+% --------------------------------------------------
+
+Modern philosophy of language begins with the problem of reference. Frege’s
+distinction between sense (\emph{Sinn}) and reference (\emph{Bedeutung}) establishes
+that linguistic meaning cannot be reduced to denotation alone
+\cite{frege1892}. A name may refer to an object while differing in cognitive
+content, indicating that reference is only one dimension of meaning.
+
+Russell’s theory of descriptions further complicates the picture by showing that
+many apparently referential expressions function quantificationally rather than
+denotationally \cite{russell1905}. Kripke’s account of rigid designation restores
+a strong notion of reference for proper names, but explicitly limits its scope
+\cite{kripke1980}. Even on Kripke’s account, not all grammatically name-like
+expressions are rigid designators.
+
+Donnellan’s distinction between referential and attributive uses of descriptions
+demonstrates that reference is often a matter of use rather than form
+\cite{donnellan1966}. The same expression may function referentially in one
+context and non-referentially in another.
+
+These developments collectively undermine the assumption that naming implies
+objecthood.
+
+% --------------------------------------------------
+\subsection{From Reference to Operation}
+% --------------------------------------------------
+
+While the classical literature focuses on reference, a parallel tradition shifts
+attention to what expressions \emph{do}. Austin’s theory of speech acts
+demonstrates that many utterances perform actions rather than describe states of
+affairs \cite{austin1962}. Searle extends this insight to institutional facts,
+showing how rules create roles, permissions, and obligations
+\cite{searle1969}.
+
+However, speech act theory typically treats performative force as localized to
+utterance events. What remains underdeveloped is an account of how symbolic
+expressions impose long-range constraints on future action.
+
+To address this gap, we introduce the concept of a linguistic operator.
+
+\begin{definition}[Linguistic Operator]
+A linguistic operator is a symbolic expression whose primary semantic function is
+to constrain the space of admissible actions, interpretations, or identities
+across a structured practice, rather than to denote an object or state of affairs.
+\end{definition}
+
+Operators may be realized linguistically, procedurally, or formally. Their
+meaning lies in their effect on permissible continuation, not in correspondence
+to an external entity.
+
+% --------------------------------------------------
+\subsection{Examples Across Domains}
+% --------------------------------------------------
+
+The operator/reference distinction appears across many domains.
+
+\paragraph{Legal Domain.}
+Terms such as \emph{jurisdiction}, \emph{authority}, and \emph{standing} do not
+denote physical objects. They function as operators that delimit who may act, in
+what capacity, and under which conditions. Treating such terms as referential
+properties invites absolutist conflict; treating them as procedural constraints
+enables negotiation and reform \cite{hart1961}.
+
+\paragraph{Institutional Roles.}
+Expressions like \emph{citizenship} or \emph{membership} regulate access to rights
+and obligations. Their semantic force derives from rule systems, not from
+intrinsic properties of individuals. Reifying these roles as natural kinds
+produces exclusionary pathologies.
+
+\paragraph{Computational Systems.}
+In programming languages, constructs such as \texttt{lock}, \texttt{scope}, or
+\texttt{permission} are operators over execution paths. They constrain possible
+program states without denoting runtime objects. Misunderstanding these
+constructs as values rather than control structures leads to design errors.
+
+These examples illustrate that operator semantics is neither marginal nor exotic.
+It is pervasive.
+
+% --------------------------------------------------
+\subsection{A Taxonomy of Operator Types}
+% --------------------------------------------------
+
+Operators may be classified according to the type of constraint they impose on
+admissible continuation.
+
+\begin{definition}[Operator Taxonomy]
+Let $\Hist$ denote a space of admissible event histories. Operators may be
+distinguished by the manner in which they constrain this space. Some operators
+function by excluding subsets of $\Hist$, thereby prohibiting certain future
+trajectories. Others operate by authorizing actions that would otherwise be
+excluded under existing constraints. A further class imposes precedence
+relations, introducing ordering constraints among events without eliminating
+them outright. Identification operators act by equating or merging histories,
+roles, or trajectories that were previously distinct, while forgetting operators
+erase internal distinctions among histories while preserving admissibility at a
+coarser level of resolution.
+\end{definition}
+
+Each class of operator constrains continuation in a structurally distinct way.
+Crucially, none of these operators function by denoting objects; their semantic
+force lies entirely in how they reshape the space of admissible futures.
+
+
+% --------------------------------------------------
+\subsection{Criteria for Classification}
+% --------------------------------------------------
+
+To determine whether a symbol functions primarily as an operator or as a
+referential expression, the framework proposes a set of diagnostic criteria.
+A symbol exhibits operator-like behavior when modifications to its use alter
+what may occur next without changing the factual description of the present
+state, when its interpretation depends essentially on institutional or
+procedural context, and when disputes concerning its application can be resolved
+through rule revision rather than by appeal to empirical discovery. A further
+indicator is temporal reach: symbols that primarily constrain future states of
+affairs rather than describe present ones are characteristic of operator
+semantics.
+
+Symbols satisfying most of these criteria should therefore be analyzed as
+operators rather than as referents.
+
+% --------------------------------------------------
+\subsection{Borderline and Hybrid Cases}
+% --------------------------------------------------
+
+Some expressions exhibit mixed behavior. For example, \emph{property} may refer
+to an asset while simultaneously functioning as an operator regulating use and
+transfer. Hybrid cases require careful semantic typing to avoid category error.
+
+\begin{remark}
+Hybrid symbols are especially prone to reification errors because their
+referential aspect masks their operator function.
+\end{remark}
+
+% --------------------------------------------------
+\subsection{Historical Development of the Distinction}
+% --------------------------------------------------
+
+The gradual recognition of operator semantics parallels broader shifts in
+analytic philosophy away from static correspondence models toward use- and
+practice-based accounts of meaning. Wittgenstein’s later work emphasizes rule-
+following and language games \cite{wittgenstein1953}, while Brandom formalizes
+meaning in terms of normative inferential roles \cite{brandom1994}.
+
+The present framework extends these insights by introducing an explicit temporal
+and structural account of constraint, enabling precise analysis of persistence,
+drift, and conflict.
+
+% --------------------------------------------------
+\subsection{Section Summary}
+% --------------------------------------------------
+
+This section has argued that many grammatically name-like expressions function
+primarily as operators rather than referents. Misclassifying such expressions
+produces structural conflict by converting procedural constraints into alleged
+objects of dispute. Establishing the operator/reference distinction is therefore
+a prerequisite for the formal analysis that follows.
+
+% ==================================================
+\section{Semantic Compression and Drift}
+% ==================================================
+
+This section develops a rigorous account of semantic compression and drift. The
+central claim is that symbolic systems preserve coordination by compressing
+high-dimensional normative and procedural constraints into low-dimensional
+representations. While such compression is necessary for scalability and
+stability, it introduces predictable failure modes. Over time, compressed
+symbols drift away from their original operator structure, increasing the risk
+of reification and conflict.
+
+The analysis proceeds in four stages. First, semantic compression is formalized
+using information-theoretic tools. Second, historical case studies illustrate
+long-term drift in institutional symbols. Third, a typology of drift mechanisms
+is developed. Finally, semantic drift is modeled as a dynamical process over
+constraint spaces.
+
+% --------------------------------------------------
+\subsection{Compression as an Information-Theoretic Necessity}
+% --------------------------------------------------
+
+Let a symbolic system be understood as a mapping from complex constraint
+structures to manageable representations. Coordination across agents requires
+that these representations be communicable, memorable, and repeatable.
+
+Formally, let $X$ denote a space of high-dimensional constraint states, and let
+$Y$ denote a space of symbolic representations. A semantic compression is a
+mapping
+\[
+C : X \to Y
+\]
+that reduces descriptive complexity while preserving sufficient information for
+coordination.
+
+Using Shannon entropy, the compression ratio may be characterized as
+\[
+\kappa = \frac{H(Y)}{H(X)},
+\]
+where $H(\cdot)$ denotes entropy. For long-lived symbolic systems, $\kappa \ll 1$
+is not optional but necessary.
+
+However, compression is lossy. Information about the original constraint
+topology is discarded. The meaning of a symbol is therefore underdetermined by
+its form alone.
+
+\begin{definition}[Semantic Compression]
+Semantic compression is the lossy encoding of a high-dimensional constraint
+structure into a low-dimensional symbolic representation that preserves
+coordination-relevant information while discarding contextual detail.
+\end{definition}
+
+This definition applies equally to legal terms, organizational roles, technical
+abstractions, and computational interfaces.
+
+% --------------------------------------------------
+\subsection{Decompression and Interpretation}
+% --------------------------------------------------
+
+Symbols are not used directly. They are interpreted, or decompressed, back into
+constraints on action.
+
+Let
+\[
+D_t : Y \to X
+\]
+be a decompression function at time $t$. Crucially, $D_t$ is not fixed. It
+depends on background practices, incentives, and institutional context.
+
+Meaning at time $t$ is therefore given by the composite
+\[
+D_t \circ C.
+\]
+
+Semantic drift occurs when $D_t$ changes while $C$ remains fixed. Because the
+compressed symbol does not encode its original context, reinterpretation is
+unavoidable.
+
+% --------------------------------------------------
+\subsection{Historical Case Studies of Drift}
+% --------------------------------------------------
+
+\paragraph{Constitutional Terminology.}
+Terms such as \emph{due process} or \emph{equal protection} originated as
+procedural constraints on governance. Over centuries, they have accumulated
+layers of interpretation, judicial precedent, and political pressure. Disputes
+over their meaning are rarely resolved by discovering facts; they are resolved by
+reconfiguring operator structure through reinterpretation and amendment.
+
+\paragraph{Scientific Concepts.}
+Scientific terms such as \emph{gene}, \emph{information}, or \emph{fitness} have
+undergone substantial drift as empirical knowledge and theoretical frameworks
+evolved. Early compressed meanings proved insufficient, leading to contested
+reinterpretations. Treating these terms as fixed referents rather than evolving
+operators has repeatedly generated confusion.
+
+\paragraph{Organizational Roles.}
+Roles such as \emph{manager} or \emph{fiduciary} encode complex responsibility
+structures. As organizations scale and technologies change, these compressed
+symbols drift away from their original constraint sets, producing governance
+failures unless explicitly re-articulated.
+
+These cases demonstrate that drift is not accidental; it is structural.
+
+% --------------------------------------------------
+\subsection{Mechanisms of Semantic Drift}
+% --------------------------------------------------
+
+Semantic drift arises through multiple interacting mechanisms that alter how
+compressed symbolic structures are interpreted over time.
+
+\begin{definition}[Drift Mechanisms]
+Semantic drift refers to systematic changes in the interpretation of symbolic
+operators induced by shifts in the conditions of their use. Common mechanisms
+include the loss of background practices that originally anchored interpretation,
+reinterpretation driven by misaligned incentives or strategic advantage, the
+imposition of preferred decompressions by agents or institutions with asymmetric
+power, changes in feasible action brought about by new technological
+affordances, and the gradual accumulation of institutional modifications that
+layer partial adjustments rather than re-articulating underlying constraints.
+\end{definition}
+
+
+Each mechanism alters $D_t$ without modifying the symbol itself, increasing
+semantic divergence across agents.
+
+% --------------------------------------------------
+\subsection{Drift as a Dynamical System}
+% --------------------------------------------------
+
+Let $D_t$ evolve according to a dynamical process
+\[
+D_{t+1} = F(D_t, I_t, P_t),
+\]
+where $I_t$ represents incentive structures and $P_t$ represents power
+distributions.
+
+The resulting system may exhibit a range of dynamical behaviors over time,
+including convergence toward a stable interpretation, oscillation corresponding
+to persistently contested meaning, divergence in which interpretations fragment
+across subcommunities, and lock-in characterized by path-dependent rigidity. In
+this dynamical perspective, reification corresponds to a particular attractor in
+which an operator is treated as a fixed referent, thereby freezing the evolution
+of the admissible future space $D_t$ and eliminating the possibility of further
+negotiation.
+
+
+\begin{remark}
+Reification is not semantic stability but semantic arrest.
+\end{remark}
+
+% --------------------------------------------------
+\subsection{Compression--Drift Tradeoff}
+% --------------------------------------------------
+
+There exists a fundamental tradeoff between compression efficiency and drift
+risk. Highly compressed symbols scale well but drift rapidly; richly articulated
+symbols resist drift but scale poorly.
+
+This tradeoff can be expressed schematically as:
+\[
+\text{Scalability} \;\uparrow \quad \Longleftrightarrow \quad \text{Drift Risk}
+\;\uparrow
+\]
+
+Managing symbolic systems therefore requires periodic re-articulation of
+operator structure.
+
+% --------------------------------------------------
+\subsection{Section Summary}
+% --------------------------------------------------
+
+Semantic compression is necessary for coordination but introduces unavoidable
+drift. Drift becomes pathological when compressed operator symbols are treated
+as referential absolutes, producing reification and conflict. Understanding drift
+as a dynamical process prepares the ground for the formal analysis of category
+error in the next section.
+
+% ==================================================
+\section{Reification and Category Error}
+% ==================================================
+
+This section analyzes reification as a precise semantic failure: a category error
+in which linguistic operators are misclassified as referential expressions. The
+analysis proceeds by formal definition, proof of consequences, examination of
+boundary cases, and articulation of strategies for reversing reification once it
+has occurred.
+
+The central result is that reification transforms negotiable constraint systems
+into absolutist symbolic regimes by collapsing procedural disagreement into
+existential opposition.
+
+% --------------------------------------------------
+\subsection{Formal Definition of Reification}
+% --------------------------------------------------
+
+Let $\Lang$ be a language whose expressions are typed into distinct semantic
+categories. We distinguish in particular between two primary types. Expressions
+of type $\mathcal{R}$ are referential, and their semantic evaluation proceeds by
+correspondence to objects, properties, or states of affairs. Expressions of type
+$\mathcal{O}$ are operators, and their semantic contribution consists in
+constraining the space of admissible future continuations of an event history
+rather than in denoting entities.
+
+
+\begin{definition}[Semantic Typing]
+A semantic typing is a function
+\[
+\tau : \Lang \to \{\mathcal{R}, \mathcal{O}\}
+\]
+assigning each expression its dominant semantic role.
+\end{definition}
+
+\begin{definition}[Reification Error]
+A reification error occurs when an expression $\sigma$ such that
+$\tau(\sigma) = \mathcal{O}$ is treated, interpreted, or adjudicated as if
+$\tau(\sigma) = \mathcal{R}$.
+\end{definition}
+
+Reification is thus not a metaphysical mistake but a semantic one.
+
+% --------------------------------------------------
+\subsection{Formal Consequences of Reification}
+% --------------------------------------------------
+
+We now prove the central proposition introduced earlier.
+
+\begin{proposition}[Reification Produces Absolutism]
+If a symbolic system treats its highest-order operators as referential objects,
+then disagreement within that system tends toward absolutism rather than
+negotiation.
+\end{proposition}
+
+\begin{proof}
+Let $\sigma$ be an operator constraining admissible histories
+$\sigma : \Hist \to \mathcal{P}(\Hist)$. As an operator, disagreement over $\sigma$
+concerns which constraints to impose and is resolvable by modification,
+composition, or reinterpretation.
+
+If $\sigma$ is retyped as referential, disagreement over $\sigma$ becomes a
+dispute over the existence, identity, or nature of an object. Referential
+disagreement admits no procedural resolution; it can only be settled by denial
+or elimination of opposing claims.
+
+Thus, the space of negotiable futures collapses. Disagreement becomes existential
+rather than procedural. \qed
+\end{proof}
+
+% --------------------------------------------------
+\subsection{Corollaries}
+% --------------------------------------------------
+
+\begin{corollary}[Collapse of Negotiation Space]
+Reification strictly reduces the set of admissible resolutions available to a
+symbolic system.
+\end{corollary}
+
+\begin{corollary}[Path Dependence]
+Once reification occurs, subsequent reinterpretations accumulate asymmetrically,
+producing lock-in effects.
+\end{corollary}
+
+\begin{corollary}[Conflict Amplification]
+Reified operators amplify conflict by converting rule disagreement into identity
+threat.
+\end{corollary}
+
+Each corollary follows directly from the elimination of procedural degrees of
+freedom.
+
+% --------------------------------------------------
+\subsection{Boundary Conditions and Counterexamples}
+% --------------------------------------------------
+
+Not all symbols are susceptible to reification in the same way.
+
+\paragraph{Pure Referents.}
+Expressions denoting physical objects or well-defined quantities are correctly
+typed as referential. Treating them as operators produces confusion but not
+absolutism.
+
+\paragraph{Explicitly Typed Operators.}
+Systems that explicitly distinguish rules from facts—such as typed programming
+languages or well-designed legal codes—exhibit strong resistance to reification.
+
+\paragraph{Hybrid Symbols.}
+Symbols combining referential and operator aspects require careful handling.
+Failure to disambiguate their roles produces instability rather than immediate
+absolutism.
+
+These cases delimit the scope of the theory.
+
+% --------------------------------------------------
+\subsection{Cognitive and Social Mechanisms of Reification}
+% --------------------------------------------------
+
+Reification is reinforced by well-documented cognitive and social tendencies.
+
+\paragraph{Cognitive Load Reduction.}
+Treating operators as objects simplifies reasoning by reducing temporal and
+procedural complexity.
+
+\paragraph{Essentialist Bias.}
+Humans exhibit a bias toward treating abstract roles as natural kinds, even when
+they are rule-defined.
+
+\paragraph{Institutional Incentives.}
+Power asymmetries reward actors who present procedural constraints as immutable
+facts.
+
+These mechanisms explain why reification is common even when formally unjustified.
+
+% --------------------------------------------------
+\subsection{De-Reification: Recovering Operator Structure}
+% --------------------------------------------------
+
+Despite its stabilizing appearance, reification is reversible.
+
+\begin{definition}[De-Reification]
+De-reification is the semantic operation of restoring an expression’s operator
+typing by re-articulating the constraints it imposes on admissible futures.
+\end{definition}
+
+Effective strategies for de-reification involve making governing rules explicit,
+reframing disputes in procedural rather than referential terms, and decomposing
+constraints temporally so that their effects on admissible futures can be
+examined over time. In addition, reconstructing the original operator intent
+through narrative analysis can restore the regulative function of symbols that
+have become reified, thereby reopening interpretive and negotiable space.
+
+
+Crucially, de-reification does not require consensus on interpretation—only
+agreement that the symbol functions procedurally.
+
+% --------------------------------------------------
+\subsection{Formal Characterization of De-Reification}
+% --------------------------------------------------
+
+Let $\sigma$ be reified. De-reification corresponds to replacing a referential
+judgment
+\[
+\sigma = x
+\]
+with an operator judgment
+\[
+\sigma(h) = \{ h' \mid h' \text{ satisfies constraint } C \}.
+\]
+
+This restores negotiability by reopening the space of admissible histories.
+
+\begin{remark}
+De-reification reintroduces time into meaning. Absolutism is timeless; procedure
+is temporal.
+\end{remark}
+
+% --------------------------------------------------
+\subsection{Section Summary}
+% --------------------------------------------------
+
+Reification is a semantic category error with predictable structural
+consequences. By mistaking operators for referents, symbolic systems collapse
+negotiation into absolutism. Recognizing and reversing this error is a necessary
+precondition for durable coordination. The next section examines how narrative
+serves as a constraint-preserving alternative to reification.
+
+% ==================================================
+\section{Narrative as Constraint-Preserving Encoding}
+% ==================================================
+
+The preceding sections analyzed the failure modes that arise when symbolic
+operators are reified as referents. This section develops the complementary
+thesis: narrative functions as a robust mechanism for preserving operator
+structure without collapsing it into absolutist form. Narrative encodes
+constraints indirectly, distributing semantic force across time, agents, and
+consequence rather than locating it in isolated propositions.
+
+This section formalizes narrative as a constraint-preserving encoding over event
+histories, compares it to alternative preservation mechanisms, and explains its
+central role in maintaining negotiability in long-lived symbolic systems.
+
+% --------------------------------------------------
+\subsection{Narrative Versus Propositional Encoding}
+% --------------------------------------------------
+
+Propositional encoding represents meaning by asserting facts. Narrative encoding
+represents meaning by exhibiting sequences of events subject to constraints.
+
+Let $\Hist$ denote a space of event histories. A propositional statement
+partitions $\Hist$ into histories where the proposition holds and histories where
+it does not. By contrast, a narrative selects a structured subset of $\Hist$
+whose admissible continuations implicitly encode norms.
+
+\begin{definition}[Narrative Encoding]
+A narrative encoding of a constraint $C$ is a structured projection
+\[
+N \subseteq \Hist
+\]
+such that admissible interpretations of $N$ enforce $C$ without explicitly
+asserting it as a proposition.
+\end{definition}
+
+Narratives thus preserve constraint topology while avoiding explicit operator
+invocation.
+
+% --------------------------------------------------
+\subsection{Temporal Structure and Constraint Distribution}
+% --------------------------------------------------
+
+Narratives distribute meaning across temporal structure. No single event or
+utterance carries the full semantic load. Instead, constraints emerge from
+patterns of action and consequence.
+
+This distribution has two important effects. First, it resists reification by
+preventing meaning from being localized in any single symbol, assertion, or
+moment. Second, it permits multiple decompressions that remain consistent with
+the same underlying operator structure, allowing interpretive flexibility
+without sacrificing semantic coherence.
+
+Formally, let $N = \langle e_1, \dots, e_n \rangle$ be a narrative sequence. The
+constraint enforced by $N$ is not attributable to any $e_i$ alone but to the
+relations among them.
+
+\begin{remark}
+Narrative meaning is irreducibly temporal. Attempts to extract a timeless core
+invite reification.
+\end{remark}
+
+% --------------------------------------------------
+\subsection{Narrative and Temporal Logic}
+% --------------------------------------------------
+
+Narrative constraints can be formalized using temporal logic. Let $\Box$ denote
+necessity over futures and $\Diamond$ possibility.
+
+Rather than asserting $\Box P$ directly, a narrative may demonstrate that any
+history in which $P$ fails leads to undesirable or excluded continuations. The
+constraint is encoded by exhibited consequence rather than asserted necessity.
+
+This aligns narrative semantics with model-checking rather than truth
+evaluation.
+
+% --------------------------------------------------
+\subsection{Comparison with Other Preservation Mechanisms}
+% --------------------------------------------------
+
+Narrative is not the only method for preserving operator structure, but it has
+distinct advantages.
+
+\paragraph{Ritualized Procedure.}
+Procedures encode constraints through repetition but are brittle under context
+change.
+
+\paragraph{Case Law and Precedent.}
+Precedent preserves constraint through exemplars, closely approximating narrative
+structure. Its success depends on analogical reasoning.
+
+\paragraph{Formal Specification.}
+Formal systems preserve constraints precisely but scale poorly across human
+interpretive communities.
+
+Narrative occupies a unique position: high interpretive flexibility with
+constraint stability.
+
+% --------------------------------------------------
+\subsection{Examples Across Domains}
+% --------------------------------------------------
+
+\paragraph{Legal Reasoning.}
+Judicial opinions often rely on narrative reconstruction of facts to justify
+procedural outcomes. The binding force lies not in explicit rule citation but in
+the exhibited pattern of reasoning.
+
+\paragraph{Organizational Memory.}
+Organizations transmit norms through stories of success and failure. These
+stories encode constraints on acceptable behavior without issuing formal
+directives.
+
+\paragraph{Simulation and Training.}
+Simulations encode constraints by allowing agents to explore outcome spaces.
+Narrative scenarios function as executable operator semantics.
+
+% --------------------------------------------------
+\subsection{Narrative and Reinterpretation}
+% --------------------------------------------------
+
+Because narrative avoids explicit operator invocation, it supports reinterpretive
+plasticity. Different agents may extract different surface meanings while
+preserving deep constraint structure.
+
+Let $D_i$ and $D_j$ be two decompression functions applied to the same narrative
+$N$. If both yield constraint-equivalent interpretations, coordination remains
+possible despite disagreement.
+
+\begin{definition}[Constraint-Equivalent Interpretations]
+Two interpretations are constraint-equivalent if they induce the same admissible
+future space.
+\end{definition}
+
+This explains how narrative sustains coordination across heterogeneous agents.
+
+% --------------------------------------------------
+\subsection{Computational Perspectives}
+% --------------------------------------------------
+
+From a computational standpoint, narrative corresponds to execution traces in
+which constraints are inferred from the distinction between reachable and
+unreachable states rather than asserted propositionally. On this view, narrative
+semantics aligns naturally with formalisms such as process algebras, game
+semantics, reinforcement learning environments, and scenario-based planning,
+each of which characterizes meaning in terms of permitted trajectories through a
+state space. In all such cases, semantic content is not given by isolated
+assertions but emerges from the structure of possible and impossible paths.
+
+% --------------------------------------------------
+\subsection{Narrative as Anti-Reification Mechanism}
+% --------------------------------------------------
+
+Narrative resists reification by distributing meaning across temporal structure,
+by embedding constraints in patterns of consequence rather than in isolated
+assertions, and by preventing individual symbols from being detached from the
+contexts that give them regulative force. Attempts to extract a single
+authoritative proposition from a narrative typically destroy its semantic
+function, replacing constraint-guided interpretation with a brittle and
+misleading referential reading.
+
+\begin{remark}
+Narrative fails only when it is forced to answer referential questions it was not
+designed to answer.
+\end{remark}
+
+% --------------------------------------------------
+\subsection{Section Summary}
+% --------------------------------------------------
+
+Narrative functions as a constraint-preserving encoding that avoids the category
+errors associated with reification. By distributing semantic force across time
+and consequence, it stabilizes operator structure while maintaining
+negotiability. This makes narrative indispensable to long-lived symbolic systems.
+The next sections formalize these insights in operational and categorical terms.
+
+% ==================================================
+\section{Operational Semantics on Event Histories}
+% ==================================================
+
+This section provides a complete operational semantics for symbolic meaning
+understood as constraint on admissible futures. Rather than assigning truth
+conditions to expressions, the semantics specifies how symbolic operators act on
+event histories to restrict or transform the space of possible continuations.
+
+Operational semantics is chosen for two reasons. First, it makes temporal
+irreversibility explicit. Second, it aligns semantic evaluation with execution,
+rendering meaning directly actionable.
+
+% --------------------------------------------------
+\subsection{Event Histories}
+% --------------------------------------------------
+
+Let $\Hist$ be a set of finite, prefix-closed sequences of events. An event
+history $h \in \Hist$ is written as
+\[
+h = \langle e_1, e_2, \dots, e_n \rangle,
+\]
+where each $e_i$ represents an irreversible update.
+
+\begin{definition}[Prefix Order]
+For histories $h, h' \in \Hist$, we write $h \preceq h'$ if $h$ is a prefix of $h'$.
+\end{definition}
+
+The prefix order induces a partial order on $\Hist$ representing irreversible
+extension.
+
+\begin{definition}[Future Space]
+For a history $h$, the future space is
+\[
+\mathsf{Fut}(h) = \{ h' \in \Hist \mid h \preceq h' \}.
+\]
+\end{definition}
+
+Once an event occurs, histories incompatible with it are permanently excluded
+from $\mathsf{Fut}(h)$.
+
+% --------------------------------------------------
+\subsection{Operators as Transition Constraints}
+% --------------------------------------------------
+
+An operator acts by eliminating or restructuring futures rather than by adding
+content to history.
+
+\begin{definition}[Operator]
+An operator is a function
+\[
+\sigma : \Hist \to \mathcal{P}(\Hist)
+\]
+such that $\sigma(h) \subseteq \mathsf{Fut}(h)$ for all $h \in \Hist$.
+\end{definition}
+
+Operators are monotone: they cannot introduce futures incompatible with the
+current history.
+
+\begin{lemma}[Monotonicity]
+For any operator $\sigma$ and histories $h \preceq h'$,
+\[
+\sigma(h') \subseteq \sigma(h).
+\]
+\end{lemma}
+
+\begin{proof}
+Any future admissible after $h'$ must also be admissible after $h$, since
+$h'$ introduces additional constraints. \qed
+\end{proof}
+
+% --------------------------------------------------
+\subsection{Configurations and Rewrite Rules}
+% --------------------------------------------------
+
+Semantic evaluation proceeds by rewriting configurations.
+
+\begin{definition}[Configuration]
+A configuration is a pair $(h, \Sigma)$ where $h \in \Hist$ and $\Sigma$ is a
+multiset of active operators.
+\end{definition}
+
+A rewrite relation
+\[
+(h, \Sigma) \longrightarrow (h', \Sigma')
+\]
+specifies a single semantic step.
+
+% --------------------------------------------------
+\subsection{Core Rewrite Schemes}
+% --------------------------------------------------
+
+We define representative rewrite schemes corresponding to common operator types.
+
+\paragraph{POP (Exclusion).}
+\[
+\frac{h' \in \mathsf{Fut}(h) \quad h' \notin \sigma(h)}
+{(h, \{\sigma\}) \longrightarrow (h, \emptyset)}
+\]
+
+POP eliminates incompatible futures.
+
+\paragraph{BIND (Precedence).}
+\[
+(h, \{\textsc{Bind}(e_i \prec e_j)\}) \longrightarrow (h, \Sigma')
+\]
+where $\Sigma'$ enforces the ordering constraint on all extensions of $h$.
+
+\paragraph{MERGE (Identification).}
+\[
+(h_1, h_2, \{\textsc{Merge}\}) \longrightarrow (h, \Sigma)
+\]
+where $h$ is the least upper bound of $h_1$ and $h_2$ if one exists.
+
+\paragraph{COLLAPSE (Forgetting).}
+\[
+(h, \{\textsc{Collapse}\}) \longrightarrow (h', \Sigma)
+\]
+where $h'$ is a quotient of $h$ under an equivalence relation preserving
+admissibility.
+
+Each rule eliminates or restructures futures without adding new ones.
+
+% --------------------------------------------------
+\subsection{Soundness}
+% --------------------------------------------------
+
+\begin{theorem}[Soundness]
+If $(h, \Sigma) \longrightarrow (h', \Sigma')$, then
+\[
+\mathsf{Fut}(h') \subseteq \mathsf{Fut}(h).
+\]
+\end{theorem}
+
+\begin{proof}
+Each rewrite rule either preserves $h$ or replaces it with a quotient or merge
+consistent with $h$. No rule introduces histories incompatible with prior events.
+Therefore admissible futures are monotonically reduced. \qed
+\end{proof}
+
+Soundness ensures that semantic evaluation corresponds to constraint
+strengthening.
+
+% --------------------------------------------------
+\subsection{Completeness}
+% --------------------------------------------------
+
+Completeness ensures that all constraint reductions can be realized operationally.
+
+\begin{theorem}[Completeness]
+For any operator $\sigma$ and history $h$, if $h' \in \sigma(h)$, then there exists
+a finite rewrite sequence
+\[
+(h, \{\sigma\}) \longrightarrow^{*} (h', \Sigma')
+\]
+realizing the constraint imposed by $\sigma$.
+\end{theorem}
+
+\begin{proof}
+By construction, operators specify admissible futures. Each elimination or
+restructuring step corresponds to a rewrite rule. Finite composition suffices to
+exclude all incompatible histories. \qed
+\end{proof}
+
+Completeness guarantees that operator semantics is executable.
+
+% --------------------------------------------------
+\subsection{Worked Examples}
+% --------------------------------------------------
+
+Consider a history $h = \langle e_1 \rangle$ and an operator enforcing that event
+$e_2$ may occur only after $e_3$.
+
+Applying \textsc{Bind} yields:
+\[
+(h, \{\textsc{Bind}(e_3 \prec e_2)\}) \longrightarrow (h, \Sigma')
+\]
+where $\Sigma'$ excludes all futures in which $e_2$ precedes $e_3$.
+
+The resulting future space contains only histories consistent with the
+constraint. No propositional assertion is required.
+
+% --------------------------------------------------
+\subsection{Comparison with Other Semantic Frameworks}
+% --------------------------------------------------
+
+\paragraph{Denotational Semantics.}
+Denotational approaches assign mathematical objects to expressions. While
+powerful, they obscure temporal irreversibility and negotiation dynamics.
+
+\paragraph{Modal Semantics.}
+Modal logic captures necessity and possibility but treats modality statically.
+Operator semantics embeds modality in execution.
+
+\paragraph{Game Semantics.}
+Game semantics models interaction explicitly. Operator semantics may be viewed as
+a restriction of game semantics to admissible trajectories.
+
+Operational semantics uniquely combines temporal structure with constraint
+evaluation.
+
+
+
+% --------------------------------------------------
+\subsection{Algebraic Properties of Operators}
+% --------------------------------------------------
+
+Operators compose naturally.
+
+\begin{definition}[Operator Composition]
+Given operators $\sigma_1, \sigma_2$, define
+\[
+(\sigma_2 \circ \sigma_1)(h) = \sigma_2(\sigma_1(h)).
+\]
+\end{definition}
+
+Composition is associative but not necessarily commutative. Identity operators
+act as neutral elements.
+
+These properties prepare the ground for categorical abstraction.
+
+% --------------------------------------------------
+\subsection{Section Summary}
+% --------------------------------------------------
+
+This section established a complete operational semantics for meaning as
+constraint on event histories. Soundness and completeness ensure that semantic
+evaluation is both faithful and executable. The next section lifts this framework
+to a categorical level, enabling structural comparison between symbolic systems.
+
+% ==================================================
+\section{From Operator Semantics to Event--Historical Structure}
+% ==================================================
+
+This appendix provides a precise correspondence between the operator-based
+semantic framework developed above and an event-historical semantics in which
+meaning, identity, and obligation are constituted by irreversible transitions.
+
+% ==================================================
+\subsection{Event--Historical Substrate}
+% ==================================================
+
+Let $\Hist$ denote a partially ordered set of events equipped with a precedence
+relation $\prec$. An event history $h \in \Hist$ is a finite or countably infinite
+prefix-closed sequence of events.
+
+\begin{definition}[Event]
+An event is an irreversible update that reduces the space of admissible future
+histories.
+\end{definition}
+
+Irreversibility is essential: an event does not merely describe change but
+\emph{settles} what can no longer occur.
+
+% ==================================================
+\subsection{Operators as Constraints on Futures}
+% ==================================================
+
+Recall that an operator was defined as a function constraining admissible action.
+We now refine this definition in event-historical terms.
+
+\begin{definition}[Event-Historical Operator]
+An operator $\sigma$ is a function
+\[
+\sigma : \Hist \to \mathcal{P}(\Hist)
+\]
+such that for any history $h$, $\sigma(h)$ is the set of admissible future
+extensions of $h$ consistent with $\sigma$.
+\end{definition}
+
+Operators do not add content to history; they restrict continuation. Their
+semantic force is entirely future-directed.
+
+This formalizes the intuition that sacred or legal symbols regulate conduct rather
+than denote entities.
+
+% ==================================================
+\subsection{Spherepop Correspondence}
+% ==================================================
+
+In Spherepop-style calculi, existence and identity arise from explicit operations
+rather than axioms. We may map core Spherepop primitives to the present framework
+as follows.
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Spherepop Operation} & \textbf{Semantic Interpretation} \\
+\midrule
+POP & Irreversible elimination of future branches \\
+MERGE & Identification of histories under shared constraints \\
+BIND & Introduction of precedence constraints on events \\
+COLLAPSE & Erasure of historical differentiation \\
+\end{tabular}
+\end{center}
+
+Each operation corresponds to a transformation on $\Hist$ that alters the space
+of admissible continuations.
+
+\begin{proposition}
+Spherepop operations are higher-order operators acting on event histories rather
+than on values or propositions.
+\end{proposition}
+
+\begin{proof}
+Each operation modifies $\mathcal{P}(\Hist)$ by restricting, identifying, or
+releasing future extensions. No operation asserts a truth condition; all impose
+structural constraints.
+\end{proof}
+
+% ==================================================
+\subsection{Identity as Stabilized History}
+% ==================================================
+
+Under this mapping, identity is not primitive.
+
+\begin{definition}[Historical Identity]
+An identity is an equivalence class of event histories stabilized under a set of
+operators.
+\end{definition}
+
+Names, titles, and symbolic markers do not refer to entities but to stabilized
+regions of $\Hist$. Reification occurs when such equivalence classes are mistaken
+for timeless objects.
+
+This explains why identity-based conflicts intensify when symbolic operators are
+treated as ontological predicates.
+
+
+% ==================================================
+\section{A Functorial Semantics of Constrained Futures}
+% ==================================================
+
+The previous section defined meaning operationally as constraint on admissible
+event histories. This section abstracts that account categorically. The resulting
+functorial semantics makes explicit which structural features of symbolic systems
+are invariant under reinterpretation and which are not.
+
+Category theory is employed not as an added layer of abstraction, but as a means
+of isolating semantic structure from representational accident. Two symbolic
+systems are semantically equivalent, on this view, if their constraint structures
+are categorically isomorphic, regardless of surface vocabulary.
+
+% --------------------------------------------------
+\subsection{The Category of Event Histories}
+% --------------------------------------------------
+
+Define a category $\mathbf{Hist}$ whose objects are event histories
+$h \in \Hist$ and whose morphisms encode irreversible extension. For any two
+histories $h$ and $h'$, there exists a unique morphism $f : h \to h'$ if and only
+if $h \preceq h'$, that is, if $h$ is a prefix of $h'$.
+
+\begin{proposition}
+The category $\mathbf{Hist}$ is thin, and hence a preorder, encoding the
+irreversible extension of event histories.
+\end{proposition}
+
+
+\begin{proof}
+By definition, there is at most one morphism between any two objects. Reflexivity
+and transitivity follow from prefix inclusion. \qed
+\end{proof}
+
+The categorical structure directly mirrors temporal irreversibility.
+
+% --------------------------------------------------
+\subsection{The Category of Constraint Spaces}
+% --------------------------------------------------
+
+Let $\mathbf{Constr}$ be the category defined by:
+
+\begin{itemize}
+\item Objects are subsets $C \subseteq \Hist$ closed under extension
+(i.e.\ if $h \in C$ and $h \preceq h'$, then $h' \in C$).
+\item Morphisms are monotone functions preserving inclusion.
+\end{itemize}
+
+\begin{proposition}
+$\mathbf{Constr}$ is a complete lattice category.
+\end{proposition}
+
+\begin{proof}
+Arbitrary intersections and unions of extension-closed sets are extension-closed,
+yielding limits and colimits. \qed
+\end{proof}
+
+$\mathbf{Constr}$ captures admissibility structure independently of presentation.
+
+% --------------------------------------------------
+\subsection{The Meaning Functor}
+% --------------------------------------------------
+
+We now define the central semantic construction.
+
+\begin{definition}[Meaning Functor]
+Define a functor
+\[
+\mathcal{M} : \mathbf{Hist} \to \mathbf{Constr}
+\]
+by
+\[
+\mathcal{M}(h) = \mathsf{Fut}(h),
+\]
+and for $f : h \to h'$,
+\[
+\mathcal{M}(f)(C) = C \cap \mathsf{Fut}(h').
+\]
+\end{definition}
+
+\begin{theorem}[Functoriality]
+$\mathcal{M}$ is a well-defined functor.
+\end{theorem}
+
+\begin{proof}
+Identity morphisms map to identity inclusions. Composition of prefix morphisms
+corresponds to successive restriction of admissible futures. Associativity
+follows from set intersection. \qed
+\end{proof}
+
+The meaning functor assigns to each history its space of admissible continuations.
+
+% --------------------------------------------------
+\subsection{Operators as Endofunctors}
+% --------------------------------------------------
+
+Each operator induces an endofunctor on $\mathbf{Constr}$.
+
+\begin{definition}[Operator Endofunctor]
+Given an operator $\sigma$, define an endofunctor
+\[
+F_\sigma : \mathbf{Constr} \to \mathbf{Constr}
+\]
+by
+\[
+F_\sigma(C) = C \cap \sigma(h),
+\]
+for any history $h$ generating $C$.
+\end{definition}
+
+\begin{proposition}
+Operator composition corresponds to functor composition.
+\end{proposition}
+
+\begin{proof}
+Intersection of admissible futures is associative. Identity operators act as
+identity functors. \qed
+\end{proof}
+
+Thus, symbolic systems correspond to monoids of endofunctors.
+
+% --------------------------------------------------
+\subsection{Natural Transformations as Reinterpretation}
+% --------------------------------------------------
+
+Reinterpretation of symbols corresponds categorically to natural transformation.
+
+\begin{definition}[Semantic Reinterpretation]
+A reinterpretation of an operator $\sigma$ as $\sigma'$ is a natural
+transformation
+\[
+\eta : F_\sigma \Rightarrow F_{\sigma'}.
+\]
+\end{definition}
+
+Naturality ensures that reinterpretation commutes with history extension.
+
+\begin{remark}
+Semantic drift corresponds to loss of naturality: reinterpretation behaves
+differently across contexts.
+\end{remark}
+
+This formalizes the intuition that drift is not mere change, but structural
+misalignment.
+
+% --------------------------------------------------
+\subsection{Limits, Colimits, and Identity}
+% --------------------------------------------------
+
+MERGE operations correspond to colimits in $\mathbf{Constr}$, while COLLAPSE
+corresponds to coequalizers.
+
+\begin{proposition}
+Stable identities arise as fixed points of operator endofunctor composition.
+\end{proposition}
+
+\begin{proof}
+An identity persists exactly when repeated application of constraints leaves the
+admissible future space invariant. \qed
+\end{proof}
+
+Identity is thus an emergent categorical invariant, not a primitive referent.
+
+% --------------------------------------------------
+\subsection{Semantic Equivalence}
+% --------------------------------------------------
+
+Two symbolic systems are semantically equivalent if their meaning functors are
+naturally isomorphic.
+
+\begin{definition}[Semantic Equivalence]
+Two systems $S_1$ and $S_2$ are semantically equivalent if there exists a natural
+isomorphism
+\[
+\mathcal{M}_1 \cong \mathcal{M}_2.
+\]
+\end{definition}
+
+This criterion ignores vocabulary and focuses solely on constraint structure.
+
+\begin{remark}
+Many apparent metaphysical disagreements reduce to failures of recognizing
+semantic equivalence.
+\end{remark}
+
+% --------------------------------------------------
+\subsection{Adjunctions and Relaxation}
+% --------------------------------------------------
+
+Relaxation of constraints corresponds to left adjoints; enforcement corresponds
+to right adjoints.
+
+\begin{definition}[Constraint Adjunction]
+An adjunction $L \dashv R$ between endofunctors represents reversible negotiation
+between permissiveness and restriction.
+\end{definition}
+
+Adjunctions formalize the possibility of controlled loosening without collapse.
+
+% --------------------------------------------------
+\subsection{Section Summary}
+% --------------------------------------------------
+
+This section lifted operational semantics into a categorical framework. Meaning is
+a functor from histories to admissible futures; symbols are endofunctors; and
+reinterpretation is natural transformation. This abstraction isolates semantic
+invariants and clarifies when disagreement is substantive and when it is merely
+presentational.
+
+The next section applies the framework to concrete domains and extended case
+studies.
+
+% ==================================================
+\section{Applications and Case Studies}
+% ==================================================
+
+The preceding sections developed a formal theory in which meaning is understood as
+constraint on admissible futures rather than reference to objects. This section
+demonstrates the explanatory and diagnostic power of that framework across
+multiple domains. In each case, persistent conflict or instability is shown to
+arise from reification of operator symbols, and resolution is shown to depend on
+restoring operator-level interpretation.
+
+The aim is not to offer policy prescriptions, but to show how semantic structure
+conditions the space of possible resolutions.
+
+% --------------------------------------------------
+\subsection{Legal Systems}
+% --------------------------------------------------
+
+Legal systems provide a paradigmatic case of operator semantics at scale. Legal
+language is replete with expressions that regulate conduct without denoting
+objects.
+
+\paragraph{Constitutional Interpretation.}
+Constitutional terms such as \emph{authority}, \emph{due process}, or
+\emph{jurisdiction} function as operators that constrain permissible actions of
+institutions. Disputes framed as disagreements about the “true meaning” of such
+terms often persist because the terms are treated as referential absolutes rather
+than adjustable constraints.
+
+Under an operator semantics, constitutional interpretation becomes a problem of
+constraint preservation under changing conditions. Amendments, precedent, and
+doctrinal tests function as reinterpretations—natural transformations—rather than
+discoveries of fixed reference.
+
+\paragraph{Contract Law.}
+Contracts encode future constraints on action. Treating contractual language as
+descriptive rather than performative leads to brittle enforcement and adversarial
+interpretation. Operator semantics clarifies why doctrines such as good faith and
+reasonableness are indispensable: they reintroduce negotiability at the operator
+level.
+
+% --------------------------------------------------
+\subsection{Organizational Governance}
+% --------------------------------------------------
+
+Organizations coordinate action through role definitions, procedures, and
+protocols. These are operator-rich systems.
+
+\paragraph{Role Reification.}
+Roles such as \emph{manager}, \emph{executive}, or \emph{stakeholder} regulate
+decision authority. When these roles are reified as intrinsic personal properties
+rather than procedural positions, organizations experience rigidity, blame
+cycles, and power struggles.
+
+Operator semantics explains why effective organizations continuously revise role
+definitions: they are re-articulating constraints to maintain adaptability.
+
+\paragraph{Protocol Design.}
+Organizational protocols function as executable narratives. Case escalation
+procedures, incident response playbooks, and governance charters encode
+constraints via conditional sequences rather than propositions.
+
+Failures often arise when protocols are treated as literal instructions rather
+than as constraint-generating structures adaptable to context.
+
+% --------------------------------------------------
+\subsection{Computational Systems}
+% --------------------------------------------------
+
+Computational systems provide a domain where operator semantics is already
+implicitly accepted.
+
+\paragraph{Programming Language Semantics.}
+Control structures such as scopes, locks, and permissions constrain execution
+paths. Treating these constructs as values rather than operators leads to security
+and concurrency failures.
+
+Operational semantics makes explicit why static typing and access control are
+forms of semantic constraint enforcement.
+
+\paragraph{Distributed Systems.}
+Consensus protocols do not describe truth; they restrict admissible histories of
+system state. Operator semantics clarifies why such systems fail under network
+partition: admissible future spaces fragment.
+
+\paragraph{AI and Multi-Agent Systems.}
+Reward functions and policies are operators over agent trajectories. Reifying
+objectives as fixed goals rather than adjustable constraints produces brittle and
+misaligned systems. Operator semantics reframes alignment as constraint
+negotiation over futures rather than goal specification.
+
+% --------------------------------------------------
+\subsection{Conflict Resolution and Mediation}
+% --------------------------------------------------
+
+Many entrenched conflicts persist despite agreement on outcomes because parties
+disagree on symbolic framing.
+
+Operator semantics suggests a diagnostic procedure for addressing persistent
+symbolic conflict. The procedure begins by identifying symbols that are treated as
+referential absolutes rather than as regulative devices. It then proceeds by
+recovering the operator functions those symbols originally served, followed by
+the explicit re-articulation of the constraints they impose on admissible action.
+Finally, negotiability is restored through procedural revision, allowing
+coordination to occur without requiring agreement on underlying metaphysical or
+interpretive commitments.
+
+This procedure does not require consensus on narratives or identities. It requires
+only agreement that certain symbols regulate action rather than denote objects.
+
+% --------------------------------------------------
+\subsection{Formal Modeling of a Case Study}
+% --------------------------------------------------
+
+Let two agents share a history $h$ and disagree over a symbol $\sigma$. If
+$\sigma$ is treated referentially, admissible futures partition into disjoint
+sets with no overlap.
+
+Under operator interpretation, both agents agree on a constraint
+$\sigma : \Hist \to \mathcal{P}(\Hist)$, even if they differ on surface
+interpretation. The intersection
+\[
+\mathsf{Fut}_1(h) \cap \mathsf{Fut}_2(h)
+\]
+remains non-empty, preserving coordination.
+
+This formal distinction explains why reframing disputes procedurally often
+succeeds where factual argument fails.
+
+% --------------------------------------------------
+\subsection{Section Summary}
+% --------------------------------------------------
+
+Across legal, organizational, and computational systems, persistent conflict
+arises when operator symbols are reified. Resolution depends not on discovering
+correct reference, but on restoring constraint structure. The next section
+compares this framework with alternative semantic theories and addresses
+potential objections.
+
+% ==================================================
+\section{Comparison with Alternative Frameworks}
+% ==================================================
+
+This section situates the constraint-first framework relative to established
+approaches in philosophy of language, semantics, and coordination theory. The
+goal is not to dismiss alternative frameworks, but to clarify the specific
+phenomena each explains well, the failure modes they exhibit, and the sense in
+which operator semantics provides a complementary—and in some cases strictly
+stronger—explanatory account of persistent symbolic conflict.
+
+% --------------------------------------------------
+\subsection{Truth-Conditional Semantics}
+% --------------------------------------------------
+
+Truth-conditional semantics evaluates meaning by specifying the conditions under
+which an expression is true or false. This approach has been extraordinarily
+successful in modeling descriptive language and factual discourse.
+
+However, truth-conditional semantics encounters difficulty in domains where
+disagreement persists despite agreement on observable facts. In such cases,
+truth conditions are either trivially satisfied or irrelevant to the dispute.
+
+Operator semantics explains this failure mode: the disputed expressions do not
+primarily function to describe states of affairs. They regulate admissible
+actions and identities. Evaluating them by truth conditions misclassifies their
+semantic role.
+
+Truth-conditional semantics remains appropriate for referential expressions. The
+present framework argues only that it is incomplete as a general theory of
+meaning.
+
+% --------------------------------------------------
+\subsection{Pragmatist and Inferentialist Accounts}
+% --------------------------------------------------
+
+Pragmatist approaches emphasize use, practice, and consequences over reference.
+Inferentialist theories, particularly those developed by Brandom, understand
+meaning in terms of normative inferential roles.
+
+These accounts align closely with the present framework. Both reject the
+primacy of correspondence and emphasize rule-governed practice. However, they
+typically lack an explicit temporal or event-historical semantics.
+
+Constraint-first semantics extends inferentialist approaches by making the role of
+irreversibility explicit, by modeling how constraints operate over extended
+temporal horizons rather than only locally within inferential contexts, and by
+providing an executable semantics in which meaning can be realized through
+concrete transitions over event histories. The result is a more precise account
+of how meaning stabilizes over time and of why semantic misclassification, rather
+than substantive disagreement, so often gives rise to persistent conflict.
+
+% --------------------------------------------------
+\subsection{Speech Act Theory and Performativity}
+% --------------------------------------------------
+
+Speech act theory demonstrates that many utterances perform actions rather than
+describe facts. Performativity captures how language brings about institutional
+states.
+
+While foundational, speech act theory remains largely local: it focuses on the
+effect of utterances at the moment of performance. Operator semantics generalizes
+this insight to persistent, distributed constraint over histories.
+
+In effect, operator semantics treats institutions themselves as extended speech
+acts whose force unfolds temporally.
+
+% --------------------------------------------------
+\subsection{Game-Theoretic and Economic Models}
+% --------------------------------------------------
+
+Game-theoretic models analyze coordination in terms of incentives, equilibria,
+and strategies. These models excel at predicting behavior under fixed rules.
+
+However, they typically assume the rule structure as given. When disputes arise
+over the rules themselves, game-theoretic analysis must step outside its formal
+frame.
+
+Operator semantics addresses this meta-level by modeling how rules constrain
+admissible futures and how those constraints may be renegotiated. It complements
+game theory by explaining how the game itself is constituted and transformed.
+
+% --------------------------------------------------
+\subsection{Realist Objections}
+% --------------------------------------------------
+
+A common objection holds that some symbolic disputes concern real facts and
+cannot be resolved procedurally. The present framework does not deny this.
+Rather, it provides a criterion for distinguishing factual disagreement from
+semantic misclassification.
+
+Where disagreement turns on empirical claims, reference remains primary. Where
+disagreement persists despite empirical convergence, operator semantics offers a
+diagnostic alternative.
+
+Constraint-first semantics thus narrows the scope of realist claims without
+rejecting realism outright.
+
+% --------------------------------------------------
+\subsection{Summary of Comparative Advantages}
+% --------------------------------------------------
+
+The distinctive contributions of the present framework lie in its explicit
+semantic typing of operators as distinct from referential expressions, its
+event-historical treatment of meaning as constraint on admissible futures, and
+its formal modeling of reification and de-reification as structurally identifiable
+semantic transformations. In addition, it provides categorical criteria for
+semantic equivalence grounded in preserved constraint structure and offers
+practical diagnostic tools for analyzing and mitigating persistent symbolic
+conflict. No existing framework integrates all of these elements within a single,
+coherent formal account.
+
+% --------------------------------------------------
+\subsection{Section Summary}
+% --------------------------------------------------
+
+Constraint-first semantics does not replace truth-conditional, pragmatist, or
+game-theoretic approaches. It explains a class of failures they systematically
+leave unresolved. The next section addresses methodological considerations,
+scope, and limitations of the framework.
+
+% ==================================================
+\section{Methodological Considerations}
+% ==================================================
+
+This section addresses methodological questions raised by a constraint-first
+approach to meaning. It clarifies what neutrality entails in this context,
+identifies the limits of formal modeling, specifies the scope of applicability,
+and discusses how the framework can be empirically evaluated. These
+considerations are essential for situating the theory within broader research
+programs and for avoiding category errors in its application.
+
+% --------------------------------------------------
+\subsection{Neutrality and Non-Commitment}
+% --------------------------------------------------
+
+The framework developed in this paper is neutral with respect to metaphysical,
+ideological, and interpretive commitments. Neutrality here does not mean
+indifference to outcomes, nor does it imply value skepticism. It means that the
+theory does not presuppose any particular account of what exists, what is true,
+or what ultimately matters.
+
+Instead, the framework specifies how symbolic expressions function within
+rule-governed systems to constrain admissible futures. This functional focus
+allows the theory to diagnose semantic failures without adjudicating underlying
+beliefs.
+
+\begin{remark}
+Neutrality is achieved by semantic typing, not by suspension of judgment.
+\end{remark}
+
+By distinguishing operator semantics from referential semantics, the framework
+avoids implicit metaphysical commitments while preserving analytical precision.
+
+% --------------------------------------------------
+\subsection{Limits of Formal Modeling}
+% --------------------------------------------------
+
+Formal semantics necessarily abstracts away from aspects of lived practice.
+While the operational and functorial models capture structural features of
+constraint, they do not encode affect, persuasion, or power directly.
+
+This limitation is deliberate. The framework is designed to analyze the
+\emph{conditions of negotiability}, not to model every factor influencing
+decision-making. Psychological, sociological, and political variables enter the
+analysis indirectly, through their effect on interpretation functions and power
+asymmetries.
+
+Formal clarity requires selective abstraction.
+
+% --------------------------------------------------
+\subsection{Scope of Applicability}
+% --------------------------------------------------
+
+The constraint-first framework applies in contexts where symbols function
+primarily to regulate action rather than to describe objects, where coordination
+depends on shared procedural constraints rather than on shared representations,
+and where disagreement persists even after substantial convergence on empirical
+facts. In such settings, semantic failure is best diagnosed at the level of
+constraint interpretation rather than referential disagreement.
+
+
+These conditions obtain in legal systems, organizational governance,
+computational protocols, and multi-agent environments. The framework is less
+useful for domains dominated by empirical discovery or purely descriptive
+language.
+
+\begin{remark}
+Applying operator semantics to genuinely referential disputes constitutes a
+category error.
+\end{remark}
+
+The theory therefore includes its own criteria for appropriate use.
+
+% --------------------------------------------------
+\subsection{Generalizability and Transfer}
+% --------------------------------------------------
+
+Generalizability is achieved structurally rather than substantively. The same
+formal apparatus applies across domains because it abstracts from domain-specific
+content and models constraint topology instead.
+
+Transfer between domains requires careful retyping of symbols and explicit
+identification of admissible histories. Failure to perform this retyping risks
+importing inappropriate assumptions.
+
+% --------------------------------------------------
+\subsection{Empirical Testability}
+% --------------------------------------------------
+
+Although the framework is formal, it yields empirically testable predictions.
+
+First, it predicts that conflicts framed in referential terms will exhibit
+intractability even when procedural consensus exists. Second, it predicts that
+reframing disputes at the operator level will expand the space of negotiated
+outcomes.
+
+These predictions can be tested through a combination of experimental studies
+that manipulate negotiation framing, comparative analyses of institutional
+reforms across differing semantic regimes, and simulations of multi-agent systems
+operating under alternative constraint structures. Each of these approaches
+provides a means of assessing how semantic typing and operator reinterpretation
+affect the persistence or resolution of conflict.
+
+Empirical validation thus concerns patterns of resolution and persistence, not
+truth-apt judgments.
+
+% --------------------------------------------------
+\subsection{Falsifiability}
+% --------------------------------------------------
+
+The framework is falsifiable in several ways. If conflicts diagnosed as
+reification failures remain intractable after operator-level reframing, the
+theory is challenged. If referential reframing consistently outperforms
+procedural reframing in operator-dominated domains, the central claim is
+undermined.
+
+The theory therefore makes substantive, testable claims about the structure of
+disagreement.
+
+% --------------------------------------------------
+\subsection{Methodological Summary}
+% --------------------------------------------------
+
+Constraint-first semantics is a structural, neutral, and formally explicit
+approach to meaning. Its power lies in diagnosing semantic failure modes and
+clarifying the conditions under which negotiation is possible. Its limits are
+those of abstraction itself.
+
+The next section outlines future research directions opened by this framework.
+
+% ==================================================
+\section{Future Directions}
+% ==================================================
+
+The constraint-first framework developed in this paper opens multiple avenues for
+further research. Some involve deepening the formal apparatus, others involve
+empirical validation, and still others involve practical deployment in
+computational and institutional systems. This section outlines these directions
+and identifies open questions that remain unresolved.
+
+The aim is not to forecast outcomes, but to clarify where the theory’s internal
+logic points next.
+
+% --------------------------------------------------
+\subsection{Computational Implementations}
+% --------------------------------------------------
+
+One immediate direction is the construction of executable systems that embody
+operator semantics directly. Event-sourced architectures, rewrite systems, and
+policy engines already approximate this structure, but often without explicit
+semantic typing.
+
+Future work may include the development of programming languages that treat
+operators as first-class semantic entities, the design of runtime systems that
+explicitly track and manipulate spaces of admissible futures, and the creation
+of formal verification tools capable of reasoning about the preservation and
+compatibility of constraints over execution histories. In addition, interpreter
+designs that make processes of de-reification explicit as program
+transformations represent a promising direction for rendering semantic structure
+transparent within computational systems.
+
+Such systems would make semantic structure visible and manipulable, reducing the
+risk of unintentional reification in software design.
+
+% --------------------------------------------------
+\subsection{Multi-Agent Systems and Coordination}
+% --------------------------------------------------
+
+The framework naturally extends to multi-agent environments in which coordination
+depends on shared constraints rather than on shared beliefs or representations.
+Within such settings, several open questions arise concerning the dynamics of
+interaction and interpretation. These include how agents negotiate
+reinterpretations of governing operators, how spaces of admissible futures
+fragment or merge under conditions of partial agreement, how asymmetries of power
+shape the distribution and enforcement of constraints, and how stable patterns of
+coordination emerge through iterative processes of de-reification and
+reinterpretation.
+
+These questions can be explored through simulation, game-theoretic extension,
+and experimental economics.
+
+% --------------------------------------------------
+\subsection{Empirical Research Programs}
+% --------------------------------------------------
+
+Empirical validation of the framework necessarily requires interdisciplinary
+collaboration, drawing on methods from the social sciences, cognitive science,
+and computational analysis. Promising lines of inquiry include controlled
+experimental studies that manipulate negotiation framing, longitudinal analyses
+of institutional reform processes, corpus-based investigations of symbolic drift
+in legal or organizational texts, and behavioral studies examining susceptibility
+to reification bias in interpretive judgment.
+
+Across these approaches, the central empirical variable of interest is not
+convergence on truth-apt claims, but the expansion or contraction of the space of
+negotiable futures made available to participants under different semantic
+framings.
+
+% --------------------------------------------------
+\subsection{Formal Extensions}
+% --------------------------------------------------
+
+Several formal questions remain open.
+
+\paragraph{Complexity.}
+What is the computational complexity of determining non-empty intersection of
+admissible future spaces under multiple operators?
+
+\paragraph{Decidability.}
+Under what conditions is constraint compatibility decidable?
+
+\paragraph{Higher-Order Operators.}
+What are the properties of systems in which operators act on other operators?
+
+\paragraph{Topological Structure.}
+Can constraint spaces be given a meaningful topology or metric capturing degrees
+of negotiability?
+
+Addressing these questions would strengthen the mathematical foundations of the
+theory.
+
+% --------------------------------------------------
+\subsection{Institutional Design}
+% --------------------------------------------------
+
+The framework suggests a set of design principles for institutions and protocols
+concerned with durable coordination. In particular, institutions are more likely
+to remain adaptable and less prone to absolutist conflict when they explicitly
+distinguish symbols that function as operators from those that function as
+referential terms, when they incorporate mechanisms for the periodic
+de-reification and reinterpretation of their governing symbols, and when they
+maintain a non-empty space of admissible future actions under revision and
+change.
+
+The formal articulation and evaluation of these principles constitutes an
+important direction for future applied research.
+
+% --------------------------------------------------
+\subsection{Integration with Other Theories}
+% --------------------------------------------------
+
+Constraint-first semantics is compatible with, but distinct from, a range of
+existing theoretical frameworks. Future work may explore deeper integration with
+inferentialist approaches to meaning, with models from institutional economics
+and governance theory that emphasize rule-structured coordination, and with
+formal epistemology concerned with belief revision and informational dynamics.
+In addition, the framework invites further engagement with research on AI
+alignment, where the management of admissible futures and the avoidance of
+semantic reification are increasingly recognized as central design challenges.
+
+
+Such integration should proceed cautiously, preserving semantic typing
+discipline.
+
+% --------------------------------------------------
+\subsection{Section Summary}
+% --------------------------------------------------
+
+The theory developed here is not complete. It is deliberately foundational. Its
+value lies in identifying a semantic failure mode and providing tools to analyze
+and correct it. The directions outlined above represent natural extensions rather
+than speculative leaps.
+
+The concluding section synthesizes the results and articulates their broader
+significance.
+
+% ==================================================
+\section{Conclusion}
+% ==================================================
+
+This paper has advanced a simple but far-reaching thesis: in a wide class of
+symbolic systems, constraint is logically and operationally prior to reference.
+Many persistent conflicts arise not from deep disagreement about facts, values,
+or reality, but from a semantic misclassification in which operator symbols are
+treated as referential absolutes. Once this inversion occurs, negotiable
+procedural disagreement collapses into existential opposition.
+
+The framework developed here restores category discipline by distinguishing
+symbols that denote objects from symbols that constrain admissible futures. It
+does not deny reference, belief, or interpretation. It specifies their proper
+place.
+
+% --------------------------------------------------
+\subsection{Summary of Results}
+% --------------------------------------------------
+
+The paper has established the following results:
+
+First, it developed a principled distinction between referential expressions and
+operator expressions, grounded in the philosophy of language and extended through
+formal semantics. This distinction explains why many grammatically name-like
+symbols resist truth-conditional analysis.
+
+Second, it showed that long-lived symbolic systems rely on semantic compression,
+which is necessary for coordination but introduces predictable drift. Drift
+becomes pathological when compressed operators are reified as fixed referents.
+
+Third, it provided a formal account of reification as a semantic category error
+and proved that reification collapses negotiation space by converting procedural
+constraints into alleged objects of dispute.
+
+Fourth, it demonstrated that narrative functions as a constraint-preserving
+encoding that resists reification by distributing semantic force across time and
+consequence.
+
+Fifth, it introduced an operational semantics on event histories in which meaning
+is executable constraint, and proved soundness and completeness of the resulting
+rewrite system.
+
+Sixth, it lifted this operational account into a functorial semantics, showing
+that symbols correspond to endofunctors, reinterpretation to natural
+transformations, and identity to fixed points of constraint composition.
+
+Seventh, it applied the framework across legal, organizational, computational,
+and multi-agent domains, demonstrating its diagnostic and explanatory power.
+
+Eighth, it situated the framework relative to existing semantic, pragmatic, and
+coordination theories, clarifying both its compatibility and its distinct
+contributions.
+
+% --------------------------------------------------
+\subsection{Theoretical Contributions}
+% --------------------------------------------------
+
+The principal theoretical contributions of this work can be summarized as
+follows. The paper introduces a constraint-first ordering of semantic priority
+that applies across institutional, computational, and interpretive domains. It
+develops a formal account of reification and de-reification as semantic type
+errors and corrective reinterpretations, respectively. It advances an
+event-historical semantics in which meaning is constituted by irreversible
+constraints on admissible futures rather than by static reference. It provides a
+categorical criterion for semantic equivalence grounded in preserved constraint
+structure, and it offers a structural explanation of why certain symbolic
+conflicts persist despite apparent normative convergence.
+
+
+Together, these contributions provide a unified account of meaning, stability,
+and disagreement that neither reduces symbols to reference nor dissolves them
+into indeterminacy.
+
+% --------------------------------------------------
+\subsection{Practical Implications}
+% --------------------------------------------------
+
+The practical implications of a constraint-first semantics are substantial.
+
+For legal and institutional systems, the framework clarifies why procedural
+re-articulation often succeeds where factual argument fails. For organizations,
+it explains the necessity of revisiting role definitions and protocols. For
+computational and AI systems, it reframes alignment as the management of
+admissible futures rather than the specification of fixed objectives.
+
+In each case, stability depends on preserving negotiability at the operator
+level.
+
+% --------------------------------------------------
+\subsection{Ethical Considerations and Misuse}
+% --------------------------------------------------
+
+The expressive power of operator semantics entails ethical risk. Systems capable
+of constraining futures at scale can be used to stabilize cooperation or to
+eliminate it. The difference lies not in the formalism but in how operator
+composition is governed.
+
+This paper has therefore emphasized transparency, explicit typing, and
+preservation of non-empty admissible future space as minimal structural
+safeguards. These are not moral add-ons; they are conditions for avoiding semantic
+capture.
+
+% --------------------------------------------------
+\subsection{Philosophical Significance}
+% --------------------------------------------------
+
+At a broader level, the framework challenges a deeply ingrained assumption in the
+theory of meaning: that reference is primary and constraint derivative. The
+analysis here suggests the opposite ordering in many of the domains where meaning
+matters most for coordination.
+
+Meaning stabilizes action before it stabilizes description. Symbols bind futures
+before they describe worlds.
+
+Recognizing this priority does not resolve all disagreement. It does something
+more fundamental: it restores the possibility of resolution by returning
+conflict to the domain of procedure rather than absolutes.
+
+% --------------------------------------------------
+\subsection{Closing Remark}
+% --------------------------------------------------
+
+Constraint before reference is not a slogan but a discipline. It is a demand for
+semantic precision in the places where imprecision carries the highest cost. By
+recovering the operator structure of symbolic systems, we recover the conditions
+under which disagreement can remain productive rather than destructive.
+
+That recovery is not optional. It is a precondition for durable coordination in
+any system complex enough to endure.
+
+\newpage
+% ==================================================
+\appendix
+\section{Formal System Specification}
+% ==================================================
+
+This appendix presents the core formal system underlying the constraint-first
+semantics developed in the main body. The purpose of this appendix is threefold:
+(1) to make all semantic assumptions explicit, (2) to provide a typed foundation
+that prevents category errors, and (3) to prepare the ground for operational and
+categorical proofs in subsequent appendices.
+
+% ==================================================
+\subsection{Semantic Typing Discipline}
+% ==================================================
+
+We begin by fixing the semantic universe and its typing discipline.
+
+\subsubsection{Semantic Types}
+
+\begin{definition}[Semantic Universe]
+The semantic universe consists of three disjoint domains:
+\[
+\mathcal{R} \quad \text{(referential terms)}, \qquad
+\mathcal{O} \quad \text{(operators)}, \qquad
+\mathcal{H} \quad \text{(event histories)}.
+\]
+These domains are semantically disjoint. In particular, operators are not
+objects, and histories are not propositions.
+\end{definition}
+
+\begin{remark}
+Semantic typing is independent of grammatical form. A syntactic noun phrase may
+denote an element of $\mathcal{O}$ rather than $\mathcal{R}$.
+\end{remark}
+
+This separation is the formal mechanism by which reification errors are detected.
+
+% ==================================================
+\subsection{Event Histories}
+% ==================================================
+
+Event histories encode irreversible structure.
+
+\begin{definition}[Event]
+An event $e$ is an atomic, irreversible update that eliminates at least one
+possible future continuation.
+\end{definition}
+
+\begin{definition}[Event History]
+An event history $h$ is a finite or countably infinite sequence
+\[
+h = \langle e_1, e_2, \dots \rangle
+\]
+equipped with a precedence relation that is transitive and antisymmetric, and
+that satisfies prefix closure. These conditions ensure that the ordering of
+events is well-defined, irreversible, and compatible with the interpretation of
+histories as settled pasts extended by admissible futures.
+\end{definition}
+
+
+\begin{definition}[Prefix Order]
+For histories $h, h' \in \mathcal{H}$, define
+\[
+h \preceq h' \iff h \text{ is a prefix of } h'.
+\]
+\end{definition}
+
+Prefix order encodes irreversibility: once an event occurs, all incompatible
+histories are excluded.
+
+% ==================================================
+\subsection{Admissible Futures}
+% ==================================================
+
+\begin{definition}[Future Space]
+For a history $h$, define its future space as
+\[
+\mathsf{Fut}(h) = \{ h' \in \mathcal{H} \mid h \preceq h' \}.
+\]
+\end{definition}
+
+\begin{lemma}[Monotonicity of Futures]
+If $h \preceq h'$, then
+\[
+\mathsf{Fut}(h') \subseteq \mathsf{Fut}(h).
+\]
+\end{lemma}
+
+\begin{proof}
+Any continuation of $h'$ is necessarily a continuation of $h$, since $h$ is a
+prefix of $h'$. No new futures are introduced by extension.
+\end{proof}
+
+This lemma formalizes temporal asymmetry.
+
+% ==================================================
+\subsection{Operators as Future Constraints}
+% ==================================================
+
+\begin{definition}[Operator]
+An operator is a function
+\[
+\sigma : \mathcal{H} \to \mathcal{P}(\mathcal{H})
+\]
+such that
+\[
+\sigma(h) \subseteq \mathsf{Fut}(h) \quad \text{for all } h \in \mathcal{H}.
+\]
+Operators do not generate events. They constrain which future histories remain
+admissible.
+\end{definition}
+
+\begin{lemma}[Operator Monotonicity]
+If $h \preceq h'$, then
+\[
+\sigma(h') \subseteq \sigma(h).
+\]
+\end{lemma}
+
+\begin{proof}
+Since $\mathsf{Fut}(h') \subseteq \mathsf{Fut}(h)$ and
+$\sigma(h') \subseteq \mathsf{Fut}(h')$, it follows that
+$\sigma(h') \subseteq \mathsf{Fut}(h)$. Operators cannot re-admit excluded
+futures.
+\end{proof}
+
+% ==================================================
+\subsection{Operator Composition}
+% ==================================================
+
+\begin{definition}[Operator Composition]
+Given operators $\sigma_1, \sigma_2 \in \mathcal{O}$, define their composition by
+\[
+(\sigma_2 \circ \sigma_1)(h) = \sigma_2(h) \cap \sigma_1(h).
+\]
+\end{definition}
+
+\begin{proposition}[Closure]
+The set $\mathcal{O}$ is closed under composition.
+\end{proposition}
+
+\begin{proof}
+Intersection preserves admissibility: both $\sigma_1(h)$ and $\sigma_2(h)$ are
+subsets of $\mathsf{Fut}(h)$, hence so is their intersection.
+\end{proof}
+
+Composition is commutative but not necessarily idempotent.
+
+% ==================================================
+\subsection{Reification as a Type Error}
+% ==================================================
+
+\begin{definition}[Reification Error]
+A reification error occurs when an expression of semantic type $\mathcal{O}$ is
+treated as if it were of type $\mathcal{R}$.
+\end{definition}
+
+\begin{lemma}[Semantic Collapse Under Reification]
+If an operator $\sigma$ is reified, then its interpretation no longer constrains
+$\mathsf{Fut}(h)$ but instead introduces truth-conditional evaluation.
+\end{lemma}
+
+\begin{proof}
+Truth-conditional evaluation presupposes denotation. Operators lack denotation and
+only define admissibility. Reification therefore discards constraint semantics and
+replaces it with an inapplicable evaluation regime.
+\end{proof}
+
+This formalizes why reification collapses negotiation space: admissibility is
+replaced by alleged facticity.
+
+% ==================================================
+\subsection{Minimal Consistency Conditions}
+% ==================================================
+
+\begin{definition}[Semantic Consistency]
+A symbolic system is semantically consistent if and only if for all histories
+$h$,
+\[
+\bigcap_{\sigma \in \Sigma} \sigma(h) \neq \varnothing.
+\]
+\end{definition}
+
+\begin{remark}
+Consistency here is structural, not logical. It concerns future availability,
+not contradiction.
+\end{remark}
+
+% ==================================================
+\subsection{Appendix Summary}
+% ==================================================
+
+This appendix has established a typed semantic universe in which referential
+expressions, operators, and event histories are formally distinguished. Within
+this universe, event histories were characterized as irreversible structures,
+and operators were defined as constraints on admissible future continuations
+rather than as denotational entities. Reification was identified as a formal type
+error arising from the misclassification of operators as referential terms, and
+semantic consistency was defined in structural terms as the preservation of a
+non-empty future space.
+
+These definitions provide a sufficient foundation for the operational semantics
+and accompanying proofs developed in subsequent sections, ensuring that later
+results rest on a precise and internally coherent formal basis.
+
+\newpage
+% ==================================================
+\section{Operational Semantics and Expanded Proofs}
+% ==================================================
+
+This appendix develops the operational semantics implicit in the main text and
+provides detailed proofs of soundness, completeness, and related properties.
+Where the main body emphasized conceptual structure, this appendix makes the
+execution model explicit.
+
+% ==================================================
+\subsection{Configurations and Execution State}
+% ==================================================
+
+\subsubsection{Configurations}
+
+\begin{definition}[Configuration]
+A configuration is an ordered pair $(h, \Sigma)$, where $h \in \mathcal{H}$
+denotes the current event history and $\Sigma \subseteq \mathcal{O}$ is a finite
+multiset of operators active at that history. The configuration represents a
+semantic state consisting of a settled past together with the constraints that
+currently govern the space of admissible future continuations.
+\end{definition}
+
+
+\begin{remark}
+Configurations do not contain values, propositions, or truth assignments. They
+encode only history and constraint.
+\end{remark}
+
+% ==================================================
+\subsection{Small-Step Transition Relation}
+% ==================================================
+
+We define a small-step transition relation
+\[
+(h, \Sigma) \;\longrightarrow\; (h', \Sigma').
+\]
+
+Each transition rule satisfies two invariants:
+\begin{enumerate}
+\item \emph{Prefix preservation}: $h \preceq h'$,
+\item \emph{Constraint monotonicity}: admissible futures do not expand.
+\end{enumerate}
+
+The transition relation formalizes execution as progressive restriction of
+future possibility.
+
+% ==================================================
+\subsection{Primitive Rewrite Rules}
+% ==================================================
+
+We define the following canonical rule schemas.
+
+% --------------------------------------------------
+\subsubsection{POP (Elimination)}
+% --------------------------------------------------
+
+The POP rule removes futures violating a constraint.
+
+\[
+\frac{
+h' \in \mathsf{Fut}(h)
+\quad
+h' \notin \sigma(h)
+}{
+(h, \{\sigma\} \cup \Sigma)
+\;\longrightarrow\;
+(h, \Sigma)
+}
+\]
+
+This rule enforces the constraint without altering history. It eliminates
+incompatible continuations but introduces no new structure.
+
+% --------------------------------------------------
+\subsubsection{BIND (Precedence Constraint)}
+% --------------------------------------------------
+
+The BIND rule introduces ordering constraints on future events.
+
+\[
+(h, \{\textsc{BIND}(e_i \prec e_j)\} \cup \Sigma)
+\;\longrightarrow\;
+(h, \Sigma')
+\]
+
+where $\Sigma'$ contains an operator enforcing the precedence relation
+$e_i \prec e_j$ on all future extensions.
+
+BIND does not settle events; it constrains their admissible orderings.
+
+% --------------------------------------------------
+\subsubsection{MERGE (Identification)}
+% --------------------------------------------------
+
+The MERGE rule identifies compatible histories.
+
+\[
+(h_1, h_2, \textsc{MERGE})
+\;\longrightarrow\;
+(h, \Sigma)
+\]
+
+where $h$ is the least upper bound of $h_1$ and $h_2$ under prefix order, if such a
+history exists.
+
+MERGE fails when no consistent joint history exists, producing deadlock.
+
+% --------------------------------------------------
+\subsubsection{COLLAPSE (Forgetting)}
+% --------------------------------------------------
+
+The COLLAPSE rule erases internal distinctions while preserving admissibility.
+
+\[
+(h, \textsc{COLLAPSE})
+\;\longrightarrow\;
+(h', \Sigma)
+\]
+
+where $h'$ is a quotient of $h$ under an equivalence relation that preserves
+future availability.
+
+COLLAPSE reduces historical resolution without increasing possibility.
+
+% ==================================================
+\subsection{Invariant Preservation}
+% ==================================================
+
+\begin{lemma}[Prefix Preservation]
+For any transition $(h, \Sigma) \rightarrow (h', \Sigma')$, we have
+\[
+h \preceq h'.
+\]
+\end{lemma}
+
+\begin{proof}
+POP, BIND, and COLLAPSE do not extend history. MERGE produces a history that
+contains both input histories as prefixes. No rule removes past events.
+\end{proof}
+
+% ==================================================
+\subsection{Soundness Theorem}
+% ==================================================
+
+\begin{theorem}[Soundness]
+If
+\[
+(h, \Sigma) \longrightarrow (h', \Sigma'),
+\]
+then
+\[
+\mathsf{Fut}(h') \subseteq \mathsf{Fut}(h).
+\]
+\end{theorem}
+
+\begin{proof}
+The claim follows by inspection of the rewrite rules. In the case of
+\textsc{POP}, admissible futures are restricted by intersection with the
+constraint set $\sigma(h)$. The \textsc{BIND} rule excludes precisely those
+future histories that violate the imposed precedence relations. The
+\textsc{MERGE} rule retains only those histories that are jointly consistent
+with the merged inputs, while the \textsc{COLLAPSE} rule preserves admissible
+futures up to an explicitly defined equivalence relation. In all cases, the
+effect of rewriting is either to preserve or to eliminate elements of
+$\mathsf{Fut}(h)$; no rule introduces histories that were not already admissible.
+It follows that admissible futures are preserved or strictly reduced under every
+transition.
+\end{proof}
+
+Soundness therefore guarantees that semantic execution respects the
+irreversibility of event histories.
+
+
+% ==================================================
+\subsection{Completeness Theorem}
+% ==================================================
+
+\begin{theorem}[Completeness]
+Let $C \subseteq \mathsf{Fut}(h)$ be any constraint expressible as a finite
+intersection of operator images. Then there exists a finite sequence of rewrite
+steps yielding a configuration whose admissible futures are exactly $C$.
+\end{theorem}
+
+\begin{proof}
+By assumption,
+\[
+C = \bigcap_{i=1}^n \sigma_i(h).
+\]
+Applying the corresponding operators via POP in any order yields the desired
+restriction. Order is irrelevant due to commutativity and associativity of
+intersection.
+\end{proof}
+
+Completeness ensures that the operational semantics can realize all expressible
+constraints.
+
+% ==================================================
+\subsection{Deadlock and Collapse}
+% ==================================================
+
+\begin{definition}[Semantic Deadlock]
+A configuration $(h, \Sigma)$ is in deadlock if
+\[
+\bigcap_{\sigma \in \Sigma} \sigma(h) = \varnothing.
+\]
+\end{definition}
+
+\begin{lemma}[Deadlock Persistence]
+Once deadlock is reached, no further transitions are possible.
+\end{lemma}
+
+\begin{proof}
+All rewrite rules presuppose non-empty admissible futures. When none exist, no
+rule applies.
+\end{proof}
+
+Deadlock corresponds to semantic absolutism: no continuation is permitted.
+
+% ==================================================
+\subsection{Determinacy and Confluence}
+% ==================================================
+
+\begin{proposition}[Confluence]
+Operator application is confluent: the order of operator enforcement does not
+affect the resulting admissible future space.
+\end{proposition}
+
+\begin{proof}
+Operator composition is set intersection, which is associative and commutative.
+All reduction paths therefore converge to the same admissible future space.
+\end{proof}
+
+Confluence guarantees determinacy of semantic outcome.
+
+% ==================================================
+\subsection{Appendix Summary}
+% ==================================================
+
+This appendix has developed a small-step operational semantics for the
+constraint-first framework and demonstrated that semantic execution preserves
+the irreversibility invariants imposed by event histories. It has established
+soundness and completeness results for the execution model, showing that all and
+only admissible future restrictions can be realized through finite sequences of
+rewrite steps. In addition, the appendix has provided a formal characterization
+of semantic deadlock in terms of empty future spaces and shown that operator
+application is confluent, ensuring that the order of constraint enforcement does
+not affect the resulting admissible futures.
+
+These results justify treating meaning as executable constraint rather than
+denotation and provide the technical backbone for the categorical semantics
+developed elsewhere.
+
+\newpage
+% ==================================================
+\section{Functorial Semantics: Expanded Constructions and Proofs}
+% ==================================================
+
+This appendix lifts the operational semantics developed in Appendix~B to a
+categorical level. The aim is to demonstrate that constraint-first meaning is not
+merely an execution model but a structural semantics with well-defined invariants,
+equivalences, and transformation laws. The categorical perspective clarifies which
+aspects of meaning are preserved under reinterpretation and why certain semantic
+failures correspond to formal type errors.
+
+% ==================================================
+\subsection{The Category of Histories}
+% ==================================================
+
+\begin{definition}[Category $\mathbf{Hist}$]
+Define $\mathbf{Hist}$ as the category whose objects are event histories
+$h \in \mathcal{H}$ and whose morphisms are given by prefix inclusion: there
+exists a unique morphism $h \to h'$ if and only if $h \preceq h'$.
+\end{definition}
+
+\begin{lemma}[Thinness]
+The category $\mathbf{Hist}$ is thin: between any two objects there exists at most
+one morphism.
+\end{lemma}
+
+\begin{proof}
+Prefix order is antisymmetric and transitive. Thus for any $h,h' \in \mathcal{H}$,
+the relation $h \preceq h'$ uniquely determines the existence of a morphism, and
+no parallel morphisms are possible.
+\end{proof}
+
+Thinness reflects the irreversibility of time: histories extend but do not branch
+backward.
+
+% ==================================================
+\subsection{The Category of Constraint Spaces}
+% ==================================================
+
+\begin{definition}[Constraint Space]
+A constraint space is a subset $C \subseteq \mathcal{H}$ such that whenever
+$h \in C$ and $h \preceq h'$, then $h' \in C$.
+\end{definition}
+
+Constraint spaces are upward closed under prefix order and represent sets of
+admissible futures.
+
+\begin{definition}[Category $\mathbf{Constr}$]
+Define $\mathbf{Constr}$ as the category whose objects are constraint spaces and
+whose morphisms are monotone functions preserving inclusion.
+\end{definition}
+
+\begin{lemma}
+The category $\mathbf{Constr}$ forms a complete lattice under intersection and
+union.
+\end{lemma}
+
+\begin{proof}
+Upward closure is preserved under arbitrary intersections and unions. Hence the
+set of constraint spaces is closed under these operations, yielding a complete
+lattice structure.
+\end{proof}
+
+This lattice structure reflects the combinatorial nature of constraint
+composition.
+
+% ==================================================
+\subsection{The Meaning Functor}
+% ==================================================
+
+\begin{definition}[Meaning Functor]
+Define a functor
+\[
+\mathcal{M} : \mathbf{Hist} \to \mathbf{Constr}
+\]
+by
+\[
+\mathcal{M}(h) = \mathsf{Fut}(h),
+\]
+and for a morphism $h \to h'$,
+\[
+\mathcal{M}(h \to h')(C) = C \cap \mathsf{Fut}(h').
+\]
+\end{definition}
+
+\begin{theorem}[Functoriality]
+The mapping $\mathcal{M}$ is a well-defined functor.
+\end{theorem}
+
+\begin{proof}
+Identity: for any history $h$,
+\[
+\mathcal{M}(\mathrm{id}_h)(C) = C \cap \mathsf{Fut}(h) = C,
+\]
+since $C \subseteq \mathsf{Fut}(h)$ by definition.
+
+Composition: if $h \preceq h' \preceq h''$, then
+\[
+\mathcal{M}(h \to h'') = \mathcal{M}(h' \to h'') \circ \mathcal{M}(h \to h'),
+\]
+because intersection with $\mathsf{Fut}(h'')$ factors through intersection with
+$\mathsf{Fut}(h')$.
+\end{proof}
+
+The meaning functor assigns to each history its space of admissible continuations.
+
+% ==================================================
+\subsection{Operators as Endofunctors}
+% ==================================================
+
+\begin{definition}[Operator Endofunctor]
+Each operator $\sigma$ induces an endofunctor
+\[
+F_\sigma : \mathbf{Constr} \to \mathbf{Constr}
+\]
+defined by
+\[
+F_\sigma(C) = C \cap \sigma(h),
+\]
+where $h$ is any history generating the constraint space $C$.
+\end{definition}
+
+\begin{lemma}[Well-Definedness]
+The definition of $F_\sigma$ does not depend on the choice of representative
+history $h$.
+\end{lemma}
+
+\begin{proof}
+If $\mathsf{Fut}(h) = \mathsf{Fut}(h')$, then $h$ and $h'$ are equivalent under
+prefix closure. By operator monotonicity, $\sigma(h) = \sigma(h')$, so the
+intersection defining $F_\sigma(C)$ is invariant.
+\end{proof}
+
+Thus operators act uniformly on constraint spaces.
+
+% ==================================================
+\subsection{Composition and Identity}
+% ==================================================
+
+\begin{proposition}
+Operator composition corresponds to functor composition:
+\[
+F_{\sigma_1 \circ \sigma_2} = F_{\sigma_1} \circ F_{\sigma_2}.
+\]
+\end{proposition}
+
+\begin{proof}
+Both sides evaluate to intersection with
+$\sigma_1(h) \cap \sigma_2(h)$ for any representative history $h$.
+\end{proof}
+
+The identity operator induces the identity endofunctor on $\mathbf{Constr}$.
+
+% ==================================================
+\subsection{Reinterpretation as Natural Transformation}
+% ==================================================
+
+\begin{definition}[Reinterpretation]
+A reinterpretation of a symbol is a natural transformation
+\[
+\eta : F_\sigma \Rightarrow F_{\sigma'}.
+\]
+\end{definition}
+
+\begin{lemma}[Naturality Condition]
+For all morphisms $f : C \to C'$ in $\mathbf{Constr}$,
+\[
+\eta_{C'} \circ F_\sigma(f) = F_{\sigma'}(f) \circ \eta_C.
+\]
+\end{lemma}
+
+Failure of this condition corresponds to semantic drift: reinterpretation that
+depends on context rather than preserving structural meaning.
+
+% ==================================================
+\subsection{Identity and Fixed Points}
+% ==================================================
+
+\begin{definition}[Stable Identity]
+A constraint space $C$ is a stable identity if and only if
+\[
+F_\sigma(C) = C.
+\]
+\end{definition}
+
+\begin{proposition}
+Stable identities are precisely the fixed points of the operator endofunctor
+system.
+\end{proposition}
+
+\begin{proof}
+This follows immediately from the definition of fixed points in
+$\mathbf{Constr}$.
+\end{proof}
+
+Identities are thus not primitive objects but stabilized regions of constraint
+space.
+
+% ==================================================
+\subsection{Reification as a Categorical Error}
+% ==================================================
+
+\begin{definition}
+Reification is the attempt to treat an endofunctor or a natural transformation as
+an object of $\mathbf{Hist}$.
+\end{definition}
+
+\begin{lemma}
+Such an attempt destroys functorial structure.
+\end{lemma}
+
+\begin{proof}
+Objects of $\mathbf{Hist}$ are histories, not transformations. Treating
+endofunctors or natural transformations as objects eliminates the distinction
+between objects and morphisms, collapsing composition and violating naturality.
+\end{proof}
+
+This formalizes reification as a categorical type error.
+
+% ==================================================
+\subsection{Appendix Summary}
+% ==================================================
+
+This appendix has established the categorical structure underlying the framework,
+including the categories of event histories and constraint spaces and the functor
+that maps histories to their admissible futures. Within this setting, symbolic
+operators were shown to correspond to endofunctors on constraint spaces, while
+reinterpretation was formalized as natural transformation. Identity was
+characterized as a fixed point of constraint composition, and reification was
+identified as a categorical type error arising from the misclassification of
+morphism-level structure as object-level content.
+
+Taken together with the operational results developed earlier, these constructions
+demonstrate that constraint-first meaning admits both an executable semantics and
+an abstract categorical characterization. Crucially, the same structural
+invariants are preserved across these levels of description, ensuring that the
+formalism remains coherent under both execution and abstraction.
+
+\newpage
+% ==================================================
+\section{Notation Glossary and Meta-Theoretic Remarks}
+% ==================================================
+
+This appendix consolidates the notation used throughout the paper and records
+meta-theoretic properties of the formal system. Its purpose is expository and
+clarificatory rather than developmental. No new formal machinery is introduced;
+instead, this appendix makes explicit the commitments, limits, and interpretive
+status of the framework as a whole.
+
+% ==================================================
+\subsection{Notation Glossary}
+% ==================================================
+
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$\mathcal{H}$ & Set of event histories \\
+$h, h'$ & Individual event histories \\
+$e$ & An atomic irreversible event \\
+$\prec$ & Precedence relation on events \\
+$\preceq$ & Prefix order on histories \\
+$\mathsf{Fut}(h)$ & Admissible futures of history $h$ \\
+$\mathcal{O}$ & Semantic type of operators \\
+$\mathcal{R}$ & Semantic type of referential terms \\
+$\sigma, \tau$ & Operators (future-constraint functions) \\
+$\Sigma$ & Finite multiset of active operators \\
+$(h,\Sigma)$ & Operational configuration \\
+$\mathbf{Hist}$ & Category of event histories \\
+$\mathbf{Constr}$ & Category of constraint spaces \\
+$\mathcal{M}$ & Meaning functor $\mathbf{Hist} \to \mathbf{Constr}$ \\
+$F_\sigma$ & Endofunctor induced by operator $\sigma$ \\
+$\eta$ & Natural transformation (reinterpretation) \\
+$\circ$ & Operator or functor composition \\
+$\varnothing$ & Empty future space (semantic deadlock)
+\end{tabular}
+\end{center}
+
+\begin{remark}
+All symbols are typed implicitly by context. Ambiguity of semantic type is treated
+as a formal error rather than an interpretive ambiguity.
+\end{remark}
+
+% ==================================================
+\subsection{Meta-Theoretic Status of the System}
+% ==================================================
+
+This subsection records what has been established formally and what remains
+outside the scope of proof.
+
+\paragraph{Consistency.}
+The system is consistent relative to standard set theory. No rule introduces
+contradiction because no rule asserts propositions. All semantics is structural,
+monotone, and eliminative rather than generative.
+
+\paragraph{Soundness and Completeness.}
+Soundness and completeness were proven with respect to the operational semantics
+in Appendix~B. These results are internal: they concern faithful execution of
+constraint restriction rather than correspondence to an external model of truth.
+
+\paragraph{Decidability.}
+Decidability of non-empty future space depends on the class of operators admitted.
+For finite operator sets with computable constraint predicates, deadlock detection
+is decidable. In the general case, undecidability is expected.
+
+\paragraph{Expressive Power.}
+The system is strictly more expressive than propositional semantics, but strictly
+less expressive than unrestricted higher-order logic. Its expressive strength
+derives from irreversibility and constraint composition rather than from
+quantification over truth values.
+
+% ==================================================
+\subsection{Negative Results and Non-Claims}
+% ==================================================
+
+For the avoidance of misunderstanding, it is important to state explicitly what
+the framework does not claim. It does not assert that all disagreement is semantic
+in origin, nor does it suggest that referential semantics can be eliminated or
+replaced wholesale. It does not maintain that operator-level interpretation is
+sufficient to resolve every form of conflict, and it does not propose that formal
+models of constraint provide an exhaustive account of lived experience, social
+dynamics, or psychological motivation.
+
+These negative claims are not incidental qualifications. They are structural
+boundaries that prevent theoretical overreach and clarify the specific explanatory
+target of the framework. By delineating what lies outside its scope, the analysis
+preserves both its neutrality and its analytical force.
+
+\begin{remark}
+The framework diagnoses a specific semantic failure mode. It is not a universal
+solvent.
+\end{remark}
+
+% ==================================================
+\subsection{Formalism and Interpretation}
+% ==================================================
+
+The formal system constrains admissible interpretations but does not determine
+them uniquely. Multiple narratives, institutions, or practices may instantiate
+the same constraint topology.
+
+This explains how semantic equivalence can coexist with surface disagreement.
+
+\begin{proposition}
+If two symbolic systems induce naturally isomorphic meaning functors, then they
+are semantically equivalent with respect to admissible futures.
+\end{proposition}
+
+\begin{proof}
+Natural isomorphism preserves all structural relations in $\mathbf{Constr}$,
+including inclusion, intersection, and fixed points. Hence the induced spaces of
+admissible futures coincide.
+\end{proof}
+
+% ==================================================
+\subsection{Reification at the Meta-Level}
+% ==================================================
+
+Reification can itself be understood meta-theoretically as a collapse of typing
+discipline.
+
+\begin{definition}[Meta-Reification]
+Meta-reification occurs when the semantic framework itself is treated as a
+descriptive ontology rather than as a constraint model.
+\end{definition}
+
+This appendix explicitly avoids that error. The formalism does not describe what
+exists; it specifies how meaning constrains continuation.
+
+% ==================================================
+\subsection{Appendix Summary}
+% ==================================================
+
+This appendix has served to consolidate the formal presentation of the framework
+by fixing notation unambiguously and recording the meta-theoretic status of the
+system. It has clarified which structural guarantees are established by the
+formalism and which questions are intentionally left open, thereby preventing
+overextension or misinterpretation of the results. In doing so, it has made
+explicit the scope conditions under which the framework is intended to apply and
+the limits beyond which its claims do not extend.
+
+In addition, the appendix has articulated criteria for semantic equivalence in
+terms of preserved constraint structure, rather than surface representation or
+interpretive narrative. Finally, it has introduced a principled safeguard against
+reification at the level of the theory itself, ensuring that the formal apparatus
+is understood as a model of constraint and coordination rather than as a
+descriptive ontology.
+
+Taken together, these clarifications complete the formal specification of the
+constraint-first semantic framework and establish the conditions under which its
+results should be interpreted.
+
+\newpage
+\bibliographystyle{plainnat}
+\bibliography{constraint-before-reference}
+
+
+
+\end{document}

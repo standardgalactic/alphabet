@@ -1,0 +1,358 @@
+\documentclass[11pt]{article}
+
+% --------------------------------------------------
+% LuaLaTeX-specific font handling
+% --------------------------------------------------
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{Latin Modern Roman}
+\setmathfont{Latin Modern Math}
+
+% --------------------------------------------------
+% Geometry and Layout
+% --------------------------------------------------
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\setstretch{1.15}
+
+% --------------------------------------------------
+% Mathematics and Symbols
+% --------------------------------------------------
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+
+% --------------------------------------------------
+% Microtype for superior typography
+% --------------------------------------------------
+\usepackage{microtype}
+
+% --------------------------------------------------
+% References and Links
+% --------------------------------------------------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+% --------------------------------------------------
+% Minimal theorem environments (used inline)
+% --------------------------------------------------
+\newtheorem{claim}{Claim}
+\newtheorem{proposition}{Proposition}
+
+% --------------------------------------------------
+% Custom commands
+% --------------------------------------------------
+\newcommand{\histories}{\mathcal{H}}
+\newcommand{\valuation}{V}
+\newcommand{\errhistory}{h_{\text{err}}}
+\newcommand{\prob}{\mathbb{P}}
+
+\title{Admissible Histories:\\
+The Incongruent Neuron and the Ontological Structure of Error}
+\author{Flyxion}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We present a formal ontology of neural error based on recent empirical findings of incongruent neurons—units whose early activity reliably predicts incorrect behavioral outcomes more than one second before expression. Traditional theories treat error as computational failure, noise, or late-stage deviation from target representations. The incongruent neuron contradicts this picture: it exhibits stable, early, causally efficacious activity that unfolds coherently toward a disfavored outcome. We argue that such neurons authorize admissible histories—complete dynamical trajectories that are internally coherent but externally unrewarded. Error is thus reframed as the execution of legitimate alternative futures, not as malfunction. We develop a formal framework in which neural dynamics generate a space of admissible histories, learning assigns valuations to these histories, and behavioral accuracy emerges from pruning rather than correction. Intervention experiments provide direct causal evidence: real-time detection and suppression of incongruent activity increases accuracy by excluding futures, not by repairing computation. The framework resolves longstanding puzzles about the timing of commitment, the relationship between deliberation and decision, and the structural inevitability of error in competitive architectures. We conclude that rationality is an algebraic property of successful history pruning, not an axiom of neural computation.
+\end{abstract}
+
+\section{Introduction: The Epistemic Shock of the Incongruent Neuron}
+
+Recent experimental work on biomimetic corticostriatal models has revealed a class of neural signals that challenges foundational assumptions about the nature of error in cognitive systems. These signals, termed incongruent neurons, exhibit stable activity within the first two hundred milliseconds of stimulus presentation that reliably predicts an incorrect behavioral response occurring more than one second later. The temporal gap between neural commitment and behavioral expression is not a minor quantitative detail but a qualitative disruption of standard theoretical frameworks. In conventional accounts, error arises late: as noise accumulation in drift-diffusion processes, as insufficient evidence integration, as premature threshold crossing, or as failure to converge on the correct attractor. Under such views, error marks the point where computation breaks down, where the system deviates from an ideal trajectory it was attempting to follow.
+
+The incongruent neuron inverts this picture. It does not signal the absence of computation but the presence of a fully specified, internally coherent process that unfolds deterministically toward an outcome that happens to be externally judged as incorrect. The neural activity is not noisy, not ambiguous, not unstable. It is as robust and well-defined as the activity associated with correct responses. The only difference is evaluative: the trajectory it encodes is disfavored by task contingencies. This finding forces a conceptual revision. If error is not failure, then what is it? The central claim of this paper is ontological: error is the execution of an admissible history. What appears as a mistake at the level of behavior is, at the level of neural dynamics, the successful realization of a complete trajectory that the system is structurally capable of producing but which external reward signals mark as suboptimal.
+
+This reformulation has immediate consequences for how we understand agency, deliberation, and rationality. If the brain does not make mistakes in the sense of computational failure but rather executes alternative histories, then the proper unit of analysis is not the state at a time but the trajectory over time. The question becomes: which histories are admissible, how are they weighted, and by what mechanism are some futures excluded before they reach behavioral expression? These questions cannot be answered within a framework that treats error as deviation from a single correct path. They require a formal structure in which multiple futures coexist as legitimate possibilities, and selection among them is an operation on the space of histories rather than a correction of faulty states.
+
+To develop this structure, we begin by modeling each trial as a finite sequence of neural states. Let us denote such a sequence by $h = (x_0, x_1, \ldots, x_T)$, where $x_0$ corresponds to the moment of stimulus onset, $x_T$ corresponds to the moment of behavioral response, and the intermediate states $x_1, \ldots, x_{T-1}$ represent the unfolding neural dynamics between these endpoints. The index $t$ ranges over discrete time steps, which for concreteness we may take to correspond to tens of milliseconds, though the formalism is agnostic to the precise temporal resolution. Each state $x_t$ is a vector summarizing the relevant neural activity at that moment—for instance, the firing rates of a population of neurons, or a lower-dimensional embedding of such activity obtained through dimensionality reduction techniques.
+
+The empirical finding regarding incongruent neurons can now be stated with precision. Let $\pi : h \mapsto a$ denote the mapping from neural histories to behavioral actions, where $a \in \mathcal{A}$ is an element of the discrete action space. For example, in a two-alternative forced choice task, $\mathcal{A}$ might consist of two elements corresponding to leftward and rightward responses. The incongruent neuron finding asserts that for a subset of trials resulting in incorrect actions, there exists a time index $t$ that is substantially earlier than $T$—typically satisfying $t < T/5$—such that the conditional probability of the eventual action given the neural state up to time $t$ is close to unity:
+\[
+\prob(\pi(h) = a_{\text{err}} \mid x_0, x_1, \ldots, x_t) \approx 1.
+\]
+Here $a_{\text{err}}$ denotes the action that is judged incorrect according to task contingencies. This equation encodes a remarkable fact: the eventual behavioral outcome is not determined at the moment of response, nor even at the midpoint of the trial, but rather within the first fifth of the trial duration. The subsequent interval of more than one second is not a period of deliberation in the sense of weighing alternatives; it is the deterministic unfolding of a commitment already made.
+
+This temporal structure is difficult to reconcile with models in which decision formation is identified with the moment at which an evidence variable crosses a threshold. In such models, early activity should be ambiguous, reflecting the gradual accumulation of information, and commitment should occur only near the time of response. The incongruent neuron shows that this picture is incomplete. The system enters a committed state far earlier than response latencies would suggest, and this commitment is encoded in the activity of specific neural populations rather than in a scalar decision variable that is neutral with respect to outcome.
+
+The phenomenon is also difficult to reconcile with phenomenology. Subjectively, deliberation feels extended in time. We experience ourselves as weighing options, as considering alternatives, as revising our judgments in light of new evidence. Yet if the outcome is already fixed within two hundred milliseconds, what is the status of this phenomenological experience? One possibility is that what we experience as deliberation is not the formation of a decision but the conscious registration of a decision that has already been made at a subpersonal level. Another possibility is that phenomenology tracks not the commitment itself but the suppression of alternative commitments—the active inhibition of competing histories that would, if left unchecked, lead to different behavioral outcomes. These interpretations are speculative, but they illustrate the broader point: once we take seriously the idea that the outcome is determined early, the relationship between neural dynamics and subjective experience must be reconsidered.
+
+The historical antecedents of this problem are worth noting. The readiness potential experiments of Libet and colleagues in the nineteen-eighties showed that neural activity associated with voluntary movement begins hundreds of milliseconds before subjects report conscious awareness of the intention to move. That finding generated substantial controversy regarding the causal role of conscious intention. The incongruent neuron finding is related but distinct. It concerns not the timing of intention but the timing of commitment to a specific outcome. Moreover, it provides a direct predictive signature: the presence of incongruent activity allows an external observer to infer the eventual behavioral outcome with high confidence, whereas readiness potentials are less specific with respect to the particular action that will be executed.
+
+Drift-diffusion models, which have been highly successful in accounting for reaction time distributions and accuracy-speed tradeoffs, assume that evidence accumulates gradually until a threshold is crossed. Early in a trial, the accumulated evidence is near zero, and the eventual outcome is highly uncertain. The incongruent neuron finding suggests that this picture is incomplete. While it is possible that some form of evidence accumulation is occurring, the existence of early deterministic predictors implies that the system has already entered a regime in which one outcome is strongly favored. This could be accommodated within a drift-diffusion framework by allowing for strong initial biases or for fast attractor dynamics that collapse uncertainty more rapidly than evidence accumulation. However, such modifications would require substantial revision of the standard model, and it is unclear whether they would preserve the quantitative fits to reaction time data that have motivated the framework.
+
+Bayesian theories of perception and decision-making treat error as arising from insufficient evidence, incorrect priors, or suboptimal inference algorithms. The incongruent neuron finding does not directly contradict Bayesian principles, but it does complicate the interpretation of what is being computed. If the system settles into an error state within two hundred milliseconds, then either the prior was extremely strong, or the likelihood function was extremely peaked, or the inference was performed on a compressed representation that discarded task-relevant information. Each of these possibilities is in principle compatible with Bayesian optimality, but each also raises questions about why the system would adopt such a strategy. If the prior is strong enough to determine the outcome within two hundred milliseconds, why does the trial continue for another second? If the likelihood is peaked, why is there no subsequent revision when additional sensory evidence becomes available? These questions do not refute Bayesian approaches, but they highlight the need for a more explicit account of the temporal dynamics of inference.
+
+The framework we develop in this paper is intended to complement rather than replace these existing models. We do not claim that drift-diffusion, attractor dynamics, or Bayesian inference are wrong. Rather, we claim that they are incomplete insofar as they lack a formal account of the space of possible trajectories and the mechanisms by which some trajectories are excluded. The notion of an admissible history provides such an account. It shifts the explanatory target from the question "how does the system compute the correct answer?" to the question "which futures are structurally possible, and how are they selected among?" This shift has the advantage of making error a first-class citizen in the ontology rather than a residual category defined by negation.
+
+The structure of the paper is as follows. In the next section, we develop the notion of prefix-closure and argue that the incongruent neuron identifies prefixes that uniquely determine futures. In the third section, we distinguish between coherence and valuation, showing that admissibility is independent of reward. In the fourth section, we demonstrate that incongruent neurons are structural inevitabilities rather than anomalies, arising necessarily from the combination of sparse connectivity, competitive dynamics, and learning. In the fifth section, we analyze intervention experiments and argue that they provide causal evidence that error histories are complete trajectories rather than incomplete computations. The sixth section concludes with implications for agency, rationality, and the design of artificial cognitive systems. Throughout, we embed formal derivations within prose rather than isolating them in theorem boxes, aiming for a presentation that is both rigorous and readable.
+
+\section{The Temporal Collapse: Prefix-Closure and the Structure of Commitment}
+
+The most striking temporal feature of the incongruent neuron is the collapse of decision time. Within approximately two hundred milliseconds of stimulus onset, the system enters a dynamical regime from which the eventual behavioral outcome can be inferred with high confidence by an external observer who has access to the neural activity. The subsequent period, which may extend beyond one second, is not a period of outcome formation but rather a period of outcome expression. Behavioral response latency therefore ceases to be a direct indicator of when the decision was made and becomes instead a lagging indicator of a commitment that has already occurred.
+
+This phenomenon is naturally described by the notion of prefix-closure, a concept borrowed from formal language theory and the theory of computation. A set of sequences is prefix-closed if, whenever a sequence belongs to the set, every initial segment of that sequence also belongs to the set. In our context, the sequences are neural histories, and the set is the collection of all histories that are dynamically admissible given the architecture and parameters of the system. Prefix-closure captures the intuition that if a complete trajectory is possible, then every stage along that trajectory must also be possible. One cannot reach a final state without passing through the intermediate states that lead to it.
+
+To make this precise, consider a collection $\histories$ of finite histories, where each history is a sequence of neural states as defined earlier. We say that $\histories$ exhibits prefix-closure if the following condition holds: for any history $h = (x_0, x_1, \ldots, x_T)$ that belongs to $\histories$, and for any time index $t$ satisfying $0 \le t < T$, the truncated sequence $h_{\le t} = (x_0, x_1, \ldots, x_t)$ is also an element of $\histories$. Equivalently, we may say that $\histories$ is closed under taking initial segments. This property is not merely a formal convenience; it reflects a fundamental constraint on physical realizability. If a system cannot reach a state without passing through prior states, then the space of possible trajectories must respect the temporal ordering of causation.
+
+The incongruent neuron identifies precisely those prefixes that not only belong to $\histories$ but also determine a unique continuation within $\histories$. That is, once the system has reached a state $x_t$ at which incongruent neurons are active above threshold, there is effectively only one future trajectory that the system will follow, and that trajectory terminates in an incorrect behavioral response. The multiplicity of possible futures, which in principle exists at $t=0$, has collapsed by time $t$ onto a single branch.
+
+This collapse is formalized by the following observation. Suppose that a history $h$ is uniquely determined by its prefix $h_{\le t}$. Then any extension $h'$ of this prefix that differs from $h$ at later times cannot belong to $\histories$. The argument is straightforward. Uniqueness entails that the system dynamics, including synaptic connectivity, membrane properties, external inputs, and stochastic fluctuations, permit no alternative continuations from the prefix $h_{\le t}$. Therefore, if $h'$ differs from $h$ in the interval $[t+1, T]$, then $h'$ corresponds to a distinct dynamical trajectory that is inconsistent with the governing equations of the system. Since $\histories$ is defined as the set of histories consistent with these equations, $h'$ cannot be an element of $\histories$.
+
+To illustrate, consider a simple model in which neural dynamics are governed by a discrete-time update rule of the form $x_{t+1} = f(x_t)$, where $f$ is a deterministic function. In this case, any history is completely determined by its initial condition $x_0$, and the entire space $\histories$ is a collection of trajectories emanating from different initial conditions. Prefix-closure is automatically satisfied: if $(x_0, \ldots, x_T) \in \histories$, then $(x_0, \ldots, x_t) \in \histories$ for any $t < T$ because the latter is simply the first $t+1$ steps of iterating $f$ starting from $x_0$. Moreover, each prefix determines a unique continuation: given $(x_0, \ldots, x_t)$, the state at time $t+1$ is $x_{t+1} = f(x_t)$, and so forth. The incongruent neuron finding suggests that biological neural networks, while stochastic and high-dimensional, exhibit a similar collapse of possibilities at early times for a subset of trials.
+
+In a stochastic setting, the situation is slightly more subtle. If the update rule is $x_{t+1} = f(x_t) + \xi_t$, where $\xi_t$ represents noise, then a prefix does not determine a unique continuation but rather a probability distribution over continuations. However, if the noise is small relative to the deterministic drift, or if the system has entered an attractor basin from which escape is exponentially unlikely, then the distribution over continuations may be so sharply peaked that, for practical purposes, the continuation is unique. The incongruent neuron finding suggests that this is indeed the case: the conditional distribution $\prob(\pi(h) = a_{\text{err}} \mid x_0, \ldots, x_t)$ is close to one, indicating that the distribution over eventual actions given the early state is nearly a delta function.
+
+The collapse of uncertainty at early times is reminiscent of attractor dynamics, a widely studied phenomenon in neural network theory. In attractor networks, the state space is partitioned into basins of attraction, each associated with a stable fixed point or limit cycle. Once the system enters a basin, it is drawn inexorably toward the associated attractor, and small perturbations are insufficient to move it into a different basin. The incongruent neuron may be viewed as a marker of basin entry: its activity signals that the system has crossed a boundary in state space beyond which the eventual outcome is effectively determined.
+
+However, attractor dynamics alone do not fully explain the incongruent neuron phenomenon. In typical attractor models, the identity of the basin is revealed only when the system reaches the attractor itself, at which point the dynamics slow down and the state becomes stable. The incongruent neuron, by contrast, provides an early signal, active transiently during the initial phase of the trajectory rather than at the final fixed point. This suggests that the basin structure is encoded not only in the location of attractors but also in the geometry of the flow field far from the attractors. Certain directions in state space, traversed early in the trial, may be diagnostic of which attractor the system will eventually reach, even though the system is still far from that attractor at the time the diagnostic activity occurs.
+
+This geometric perspective suggests a reinterpretation of the phenomenology of deliberation. When we deliberate, we feel as though we are weighing alternatives, reconsidering evidence, and arriving at a conclusion through a process of reasoning. Yet if the outcome is determined within two hundred milliseconds, what is the subjective experience of deliberation tracking? One possibility is that it tracks the suppression of competing basins. Even after the system has entered one basin, the activity associated with other basins may persist for some time before being fully inhibited. The phenomenological experience of deliberation may correspond to this period of residual competition, during which multiple action plans are partially active but one is dominant. From this perspective, deliberation is not the process of forming a decision but the process of consolidating a decision that has already been made at a subpersonal level.
+
+Another possibility is that phenomenology is simply slow. Neural processes occur on a timescale of tens to hundreds of milliseconds, whereas conscious access may lag by an additional few hundred milliseconds. If so, then by the time we become consciously aware that we are deliberating, the neural dynamics have already committed to an outcome. Consciousness would then be a lagging indicator, a retrospective narrative constructed to make sense of neural events that have already occurred. This interpretation is consistent with a large body of evidence from psychophysics, neuroimaging, and electrophysiology showing that conscious perception lags behind neural processing by several hundred milliseconds.
+
+A third possibility, more radical, is that deliberation is an active process but one that operates on the space of admissible histories rather than on the space of instantaneous states. That is, what we experience as deliberation is not the evaluation of current evidence but the pruning of future trajectories. The system entertains multiple possible futures, computes expected valuations for each, and suppresses those that are disfavored. The incongruent neuron would then correspond to a future that has not yet been suppressed—a trajectory that remains dynamically admissible and internally coherent but which, if allowed to complete, will result in a disfavored outcome. Intervention experiments, discussed in a later section, provide some support for this interpretation by showing that external suppression of incongruent activity improves accuracy, suggesting that such suppression is a functional operation the system could in principle perform internally.
+
+These interpretations are not mutually exclusive, and the truth may involve elements of all three. What they share is the recognition that the relationship between neural dynamics and subjective experience is more complex than a simple correspondence between neural states and conscious contents. Once we accept that the outcome is determined early, we are forced to reconsider what deliberation is, what rationality consists in, and what it means to say that an agent has chosen an action.
+
+We now turn to the question of how prefix-closure interacts with learning and valuation. If the space of admissible histories is prefix-closed, and if learning assigns valuations to complete histories but not to prefixes, then how does the system learn to suppress disfavored prefixes before they complete? This question motivates the next section, in which we develop a formal distinction between coherence, which is an intrinsic property of a history's consistency with dynamics, and valuation, which is an extrinsic property reflecting alignment with task goals.
+
+\section{From Prefix to Fate: Admissibility and the Logic of Trajectories}
+
+The temporal collapse described in the previous section motivates a deeper reconsideration of what neural systems are selecting when they act. If the outcome of a trial is functionally fixed within the first two hundred milliseconds, then the object of selection cannot be a static state evaluated at the moment of response. Rather, what is selected is a trajectory—a temporally extended sequence of states whose future evolution is already constrained once a sufficiently informative prefix has been realized. The incongruent neuron is not a marker of failure or indecision, but a marker of trajectory commitment.
+
+This observation forces a shift from an entity-based ontology to a trajectory-based ontology. Traditional neuroscientific explanations tend to privilege entities: neurons encode stimuli, populations represent decisions, firing rates correspond to beliefs or values. In such frameworks, error is naturally interpreted as misrepresentation—an entity encodes the wrong thing, or a value signal deviates from its optimal target. The incongruent neuron resists this interpretation. It does not encode an incorrect stimulus, nor does it misfire relative to some ideal template. Instead, it participates coherently in a dynamical process that unfolds toward a specific behavioral outcome. The outcome is judged incorrect only after the fact, by reference to external task contingencies.
+
+To formalize this distinction, we introduce the notion of admissibility as a property of histories rather than states. Let $\histories$ denote the set of all neural histories that are dynamically permitted by the architecture of the system. This set is determined entirely by intrinsic factors: synaptic connectivity, membrane dynamics, neuromodulatory state, and the structure of external inputs. A history $h = (x_0, x_1, \ldots, x_T)$ belongs to $\histories$ if and only if each successive state $x_{t+1}$ arises from $x_t$ according to the governing neural dynamics. Importantly, no reference to reward, correctness, or task success is required to define $\histories$. Admissibility is a purely structural notion.
+
+Separately, we define a valuation function $\valuation : \histories \to \mathbb{R}$ that assigns to each history a scalar value reflecting its alignment with external goals. In the simplest case, $\valuation(h)$ may take positive values for rewarded histories and negative values for unrewarded ones, but the formalism allows for graded valuations as well. The crucial point is that $\valuation$ is imposed on $\histories$ from the outside, typically via reinforcement signals that arrive after the history has unfolded or at least after its decisive prefix has been realized.
+
+The logical independence of admissibility and valuation can now be made explicit. Whether a history belongs to $\histories$ depends solely on whether it satisfies the system’s dynamical constraints. Whether it is rewarded depends on how its terminal action is evaluated by the environment. A history with negative valuation is not dynamically pathological; it is simply disfavored. It follows that error, understood as negative valuation, does not imply non-admissibility. Incorrect histories are not outside the space of possibilities; they are legitimate members of it.
+
+This distinction resolves a long-standing tension in theories of error. Many models implicitly assume that incorrect responses reflect a failure to follow the correct internal dynamics, whether due to noise, insufficient evidence, or limited computational resources. Under that assumption, the space of admissible histories is implicitly identified with the space of correct histories, and errors are treated as deviations from admissibility. The incongruent neuron contradicts this identification. It demonstrates that histories leading to incorrect outcomes are dynamically stable, repeatable, and predictable. They are not deviations from the system’s dynamics; they are expressions of it.
+
+The formal consequence of this distinction can be stated as follows. Membership in $\histories$ is invariant under changes in valuation. That is, if a history $h$ is dynamically permitted, then it remains dynamically permitted regardless of whether $\valuation(h)$ is positive or negative. This invariance follows directly from the definitions. The dynamics that generate $h$ do not depend on the sign of $\valuation(h)$, because valuation is computed after or alongside the dynamics, not before them. A history does not become inadmissible by virtue of being unrewarded.
+
+To see this more concretely, consider a reinforcement learning system in which synaptic weights are updated according to reward-modulated plasticity, but neural activity during a given trial evolves according to fixed differential equations. During the trial, the system traverses a trajectory determined by its current weights and inputs. The reward signal arrives only after the trajectory has reached its terminal state. At no point during the trial does the reward signal alter the admissibility of the trajectory being executed. It may alter future trajectories by changing the weights, but it does not retroactively invalidate the history that has just occurred. Thus, admissibility is temporally prior to valuation.
+
+The incongruent neuron embodies this priority. Its activity signals that the system has entered a trajectory that is admissible under current dynamics. The fact that this trajectory will later be evaluated as incorrect does not diminish its internal coherence. On the contrary, the reliability with which incongruent activity predicts future error indicates that these trajectories are among the most stable and reproducible patterns the system can generate. They are not marginal cases; they are robust alternatives.
+
+This perspective also clarifies why incongruent neurons can be identified consistently across late trials. If error trajectories were merely noise-induced deviations, one would expect them to vary idiosyncratically from trial to trial, with little consistency in which neurons are involved. Instead, the empirical finding is that a stable subset of neurons reliably participates in error trajectories. This stability is precisely what one would expect if these neurons are components of admissible histories that have been shaped by learning but not eliminated by it.
+
+The distinction between coherence and value also sheds light on the representational status of incongruent neurons. It is tempting to say that they represent errors, but this language is misleading. They do not represent error as such; they represent actions. More precisely, they participate in the neural representation of an action plan that is coherent given the system’s internal state. The label “error” is applied only when this action plan is evaluated against an external criterion. From the system’s internal perspective, there is no such thing as an error trajectory—only trajectories with different valuations.
+
+This observation aligns with a more general principle in the theory of complex systems: internal dynamics are indifferent to external notions of success or failure. Evolutionary processes generate organisms that are locally stable given their developmental and ecological constraints, even if those organisms are poorly adapted to some future environment. Similarly, neural systems generate trajectories that are locally stable given their current architecture and learning history, even if those trajectories are poorly adapted to the current task. Stability and optimality are distinct properties, and conflating them leads to conceptual confusion.
+
+The notion of admissible histories provides a language for disentangling these properties. By focusing on the structure of $\histories$, we can ask which trajectories the system is capable of generating at all. By introducing $\valuation$, we can then ask which of these trajectories are favored or disfavored by external criteria. Error arises when a trajectory that belongs to $\histories$ has negative valuation. There is no contradiction in this; it is the expected outcome of a system that must operate under constraints and learn from sparse feedback.
+
+At this point, a natural question arises. If incorrect histories are admissible and stable, why does the system not execute them more often? Why does learning not simply converge to a state in which only correct trajectories remain admissible? The answer lies in the structure of learning itself. Learning adjusts the relative weights of trajectories, but it does not eliminate them entirely. Synaptic plasticity amplifies some pathways and attenuates others, but unless weights are driven to exact zero—a rare event in biological systems—attenuated pathways remain available. They are suppressed, not deleted.
+
+This observation leads directly to the claim that incongruent neurons are not anomalies but structural inevitabilities. Given sparse connectivity, competitive dynamics, and reinforcement learning, any sufficiently complex neural system will retain latent trajectories that are disfavored but not extinguished. These trajectories will occasionally be executed, either because suppression is incomplete or because transient fluctuations push the system into their basin of attraction. When this happens, the resulting behavior will be evaluated as erroneous, but from the system’s internal perspective, nothing has gone wrong. A legitimate history has simply been realized.
+
+The next section develops this inevitability in detail. We show that, under minimal assumptions about cortical architecture and learning rules, the existence of incongruent neurons follows as a mathematical consequence. Error is not an accident of implementation; it is a necessary byproduct of operating in a high-dimensional, competitive, and irreversible dynamical regime.
+
+\section{Structural Inevitability: Why Incongruent Neurons Must Exist}
+
+The empirical discovery of incongruent neurons initially appears surprising because it conflicts with an intuitive expectation: that learning should progressively eliminate error-supporting pathways. Under this expectation, neurons that consistently contribute to incorrect outcomes ought to be weakened to the point of functional irrelevance. The persistence of such neurons, and their robust predictive power, therefore seems paradoxical. This paradox dissolves once we examine the structural constraints under which learning operates.
+
+Cortical and corticostriatal architectures are characterized by sparse connectivity. Each neuron connects to only a small fraction of the neurons in the network, and these connections are shaped by anatomical constraints that precede learning. Receptive fields are biased by spatial location, developmental gradients, and prior experience. As a result, the initial conditions of learning are heterogeneous: some neurons are predisposed to respond more strongly to certain stimuli or actions than others. These predispositions are not errors; they are the raw material on which learning operates.
+
+Competitive dynamics further amplify this heterogeneity. Mechanisms such as local feedback lateral inhibition enforce competition among neural populations, ensuring that activity patterns become discrete rather than diffuse. Small initial differences are magnified, leading the system to settle into distinct patterns of activation. Once a pattern begins to dominate, inhibitory feedback suppresses competing patterns, making the outcome increasingly irreversible. This process is essential for reliable decision-making, but it also ensures that early biases have lasting consequences.
+
+Learning acts on top of this competitive substrate by adjusting synaptic weights in response to reward signals. A generic form of the learning rule can be written as
+\[
+w_{ij}(t+1) = w_{ij}(t) + \eta \, r(t) \, \Delta_{ij}(t),
+\]
+where $w_{ij}(t)$ denotes the synaptic weight from neuron $i$ to neuron $j$ at time $t$, $\eta$ is a learning rate, $r(t)$ is a reward signal, and $\Delta_{ij}(t)$ captures the correlation between pre- and post-synaptic activity during the trial. This rule increases weights that contribute to rewarded outcomes and decreases weights that contribute to unrewarded ones.
+
+Crucially, however, this update rule does not set weights to zero. Unless $\Delta_{ij}(t)$ is identically zero or the learning rate is infinite, weights associated with unrewarded trajectories are merely reduced, not eliminated. Over repeated trials, the ratio between weights supporting correct trajectories and those supporting incorrect ones may grow large, but the latter remain finite. As a result, the network retains the capacity to execute incorrect trajectories, even if that capacity is suppressed under typical conditions.
+
+This persistence is not a flaw; it is a consequence of stability. If learning were to eliminate all but one trajectory, the system would become brittle, unable to adapt to changes in task structure or environmental contingencies. Retaining a repertoire of alternative trajectories, even disfavored ones, confers flexibility. The cost of this flexibility is the occasional execution of an unrewarded trajectory. Error is the price of adaptability.
+
+From this perspective, incongruent neurons are the neural carriers of these retained alternatives. They are neurons whose connectivity and learned weights position them to support trajectories that are admissible but typically suppressed. Their existence is mandated by the combination of sparse connectivity, competitive dynamics, and incremental learning. Any system with these properties will exhibit analogous units, regardless of the specific task or species.
+
+The inevitability of incongruent neurons can be formalized by considering the geometry of weight space. Learning drives the system toward regions of weight space in which correct trajectories have high probability. However, unless the learning dynamics include explicit mechanisms for pruning dimensions of weight space—a form of structural plasticity that removes synapses entirely—the system will not collapse onto a single point. Instead, it will occupy a region in which multiple trajectories remain locally stable. In such a region, noise or transient perturbations can push the system from one trajectory to another. The incongruent neuron marks the entry into one such alternative region.
+
+This analysis also explains why incongruent neurons are most easily identified in late learning trials. Early in learning, the weight landscape is shallow, and many trajectories are roughly equally probable. As learning progresses, the landscape becomes steeper, and correct trajectories become dominant. It is only against this backdrop of dominance that the residual structure of incorrect trajectories becomes apparent. Incongruent neurons stand out precisely because they are the remnants of a once broader repertoire.
+
+The recognition of this inevitability reframes the empirical finding. Rather than asking why the system failed to eliminate error-supporting neurons, we should ask how it manages to suppress them most of the time. Accuracy, in this view, is not the default state but an achievement—a consequence of effective suppression of disfavored histories. This insight sets the stage for the final empirical argument of the paper: intervention.
+
+In the next section, we examine experiments in which incongruent activity is detected in real time and trials are halted before erroneous behavior is expressed. These experiments provide a direct test of the ontological claim developed here. If error trajectories are complete and admissible histories, then suppressing them should improve accuracy not by correcting computation but by excluding futures. The results bear this out, offering the strongest evidence yet that error is a legitimate history rather than a computational mishap.
+
+\section{The Intervention Proof: Pruning the Space of Futures}
+
+The most compelling empirical support for a trajectory-based ontology of error comes not from passive observation, but from active intervention. In the biomimetic corticostriatal model, trials were halted in real time when incongruent neuron activity exceeded a predefined threshold during the early phase of the trial. The result was a statistically significant increase in behavioral accuracy. This finding is often described as an instance of error prevention, but such language obscures the deeper implication. The intervention does not repair an unfolding computation. It does not redirect an incorrect trajectory toward a correct one. Instead, it removes an entire future from realization. What is being acted upon is not a state but a history.
+
+To appreciate the force of this result, it is helpful to contrast it with standard notions of control in neural systems. In classical feedback control, errors are corrected by comparing the current state to a desired reference and applying corrective forces that reduce the deviation. The intervention described here does nothing of the sort. At the moment the trial is halted, there is no behavioral deviation to correct. The system has not yet produced an incorrect response; indeed, from the perspective of observable behavior, nothing has gone wrong. The intervention operates solely on the basis of early neural activity that predicts a future outcome. Its effect is therefore prospective rather than reactive.
+
+This prospective character is precisely what one would expect if incongruent neurons mark the authorization of an admissible history. Once such a history has been authorized—once its defining prefix has been realized—the future evolution of the system is constrained to lie within that history’s continuation class. Halting the trial at this point does not alter the internal coherence of the history; it simply prevents the history from reaching its terminal behavioral state. The intervention acts as an exclusion operator on the space of admissible histories, removing those histories whose valuation is negative before they can be expressed.
+
+Formally, let $\histories$ denote the set of all admissible histories under the system’s dynamics, as before. Define a detection functional $D(h_{\le t})$ that maps a history prefix to a binary decision indicating whether incongruent activity exceeds threshold within that prefix. The intervention defines a pruned set of histories
+\[
+\histories' = \{ h \in \histories \mid D(h_{\le t}) = 0 \}.
+\]
+That is, $\histories'$ consists of those histories whose prefixes do not trigger the incongruent neuron detection criterion. Importantly, this pruning operation is applied uniformly to all histories, without regard to their eventual valuation. In practice, however, because incongruent activity is strongly predictive of negative valuation, the pruning disproportionately removes unrewarded histories.
+
+The effect of this pruning on behavioral accuracy can be analyzed directly. Let accuracy be defined as the proportion of executed histories that have positive valuation:
+\[
+\mathrm{Acc}(\mathcal{S}) = \frac{|\{ h \in \mathcal{S} \mid \valuation(h) > 0 \}|}{|\mathcal{S}|},
+\]
+where $\mathcal{S}$ is the set of histories that are allowed to reach behavioral expression. In the absence of intervention, $\mathcal{S} = \histories$. Under intervention, $\mathcal{S} = \histories'$. If the detection functional $D$ preferentially identifies histories with $\valuation(h) < 0$, then passing from $\histories$ to $\histories'$ reduces the denominator of this fraction more than it reduces the numerator. As a result, accuracy increases. This increase is not contingent on any change in the internal dynamics of the remaining histories. It follows directly from the exclusion of disfavored trajectories.
+
+This analysis reveals the intervention as a form of causal surgery on the space of possible futures. Rather than modifying the rules by which trajectories unfold, the intervention modifies which trajectories are allowed to unfold at all. This distinction is subtle but crucial. In causal inference, an intervention is typically understood as setting a variable to a particular value and observing the downstream effects. Here, the intervention does not set a neural variable to a new value; it truncates the temporal evolution of the system. The causal target is the continuation of a history, not the state of the system at a given time.
+
+The success of this intervention provides strong evidence that the error was already fully specified at the time of detection. If the future outcome were still undecided—if the system were genuinely deliberating among alternatives—then halting the trial would not selectively improve accuracy. It would simply remove trials at random, reducing sample size without changing the proportion of correct outcomes. The fact that accuracy increases indicates that the halted trials were systematically those that would have resulted in incorrect behavior. In other words, the error was already “in the world,” encoded in the neural dynamics, even though it had not yet been expressed behaviorally.
+
+This point bears emphasis, because it distinguishes the present interpretation from accounts that treat early error-predictive signals as mere correlates. Correlation alone does not license intervention-based conclusions. A variable may correlate with an outcome without being causally implicated in its production. The intervention experiment breaks this symmetry. By acting on the detection of incongruent activity and observing a change in behavioral accuracy, the experiment establishes that the detected activity is causally upstream of the error. More precisely, it establishes that the detected activity is part of the causal history that leads to the error.
+
+The intervention also clarifies the relationship between agency and control. In many discussions, agency is identified with the ability to select correct actions or to correct mistakes. The present framework suggests a different conception. Agency consists in the capacity to shape the space of admissible histories, either by altering the dynamics that generate them or by pruning those that are disfavored. Control is exercised not by steering a trajectory once it has begun, but by preventing certain trajectories from unfolding in the first place.
+
+This conception aligns naturally with the temporal structure revealed by incongruent neurons. If commitments are made early, then late-stage corrections are limited in their effectiveness. The most effective form of control is early exclusion. The intervention experiment demonstrates this principle explicitly. By acting within the first two hundred milliseconds—before the history has progressed beyond its decisive prefix—the intervention achieves maximal leverage. Once the system has traversed further along the trajectory, the cost of exclusion would increase, and the opportunity for correction would diminish.
+
+The irreversibility of this process is central. Neural dynamics, once committed to a trajectory, are not easily reversed. Synaptic and membrane processes unfold according to their own timescales, and inhibitory competition suppresses alternatives. The intervention does not reverse these processes; it bypasses them by stopping the trial altogether. This is an extreme form of control, one that biological systems cannot typically implement internally. Nevertheless, it reveals the structure of the problem. If biological agents had the capacity to perform similar pruning operations internally—by detecting and suppressing incongruent activity early—they would achieve higher accuracy without altering the underlying dynamics that generate trajectories.
+
+This observation invites a reinterpretation of learning and self-control. Learning does not aim to eliminate error trajectories; it aims to reduce their weight relative to correct ones. Self-control, in turn, may be understood as the ability to detect and suppress disfavored trajectories before they are expressed. Failures of self-control, on this view, are not failures of computation but failures of pruning. The incongruent neuron provides a neural signature of such failures before they occur.
+
+The intervention proof thus serves as a linchpin for the overall argument. It connects the abstract notion of admissible histories to concrete experimental manipulation. It shows that error trajectories are not hypothetical constructs inferred after the fact, but real causal entities that can be acted upon. By excluding them, one changes behavior. This is precisely what one would expect if histories, rather than states, are the primary units of neural computation.
+
+In the final section, we draw together the threads developed thus far and consider the broader implications of a history-based ontology for neuroscience, cognitive science, and the study of agency. We argue that many longstanding debates—about free will, rationality, and the nature of error—can be reframed productively once we abandon failure-centric models and take admissible histories as our starting point.
+
+\section{Conclusion: Error as a Legitimate History}
+
+The discovery of incongruent neurons compels a revision of how error is understood in neural systems. Rather than treating error as a breakdown of computation, a lapse in attention, or an intrusion of noise, we have argued that error is best understood as the execution of a legitimate, internally coherent history that happens to be disfavored by external criteria. This reinterpretation is not a matter of philosophical preference; it is dictated by the empirical facts. Incongruent neurons fire early, reliably, and causally. They do not signal confusion or instability. They signal commitment.
+
+Once this commitment-based view is adopted, a number of puzzles dissolve. The early timing of decision fixation is no longer paradoxical, because what is fixed early is not a state but a trajectory. The persistence of error-supporting neurons is no longer surprising, because learning suppresses but does not eliminate admissible histories. The effectiveness of early intervention is no longer mysterious, because excluding a history before it unfolds is more effective than attempting to correct it after the fact.
+
+This framework also clarifies the relationship between coherence and value. Neural systems generate trajectories that are coherent given their architecture and learning history. External feedback assigns value to these trajectories, but it does not retroactively alter their admissibility. Rational behavior emerges not from the elimination of irrational trajectories, but from the successful pruning of disfavored ones. Correctness is thus an emergent algebraic property of the interaction between dynamics and valuation, not an axiom of neural computation.
+
+The implications of this view extend beyond the specific case of incongruent neurons. Any system that operates under constraints, learns incrementally, and must commit to actions in finite time will generate a space of admissible histories. Errors will correspond to those histories that are internally coherent but externally disfavored. Understanding behavior, in such systems, requires understanding how histories are generated, weighted, and excluded.
+
+From this perspective, the study of error becomes the study of alternative futures. Rather than asking why a system failed to compute the correct answer, we ask which futures were available and why a particular one was realized. This shift opens new avenues for research. Experimentally, it suggests focusing on early neural markers of trajectory commitment and on interventions that act at the level of histories rather than states. Theoretically, it suggests developing formalisms that treat trajectories as first-class objects, with operations defined on sets of histories rather than on instantaneous configurations.
+
+Finally, this framework invites a rethinking of agency. Agency is often associated with the capacity to choose correctly or to correct mistakes. In a history-based ontology, agency is the capacity to shape the space of admissible futures. It is exercised through constraint, suppression, and exclusion as much as through selection. Failures of agency are failures to prune, not failures to compute.
+
+Incongruent neurons provide a rare empirical window into this deeper structure. They reveal that the brain does not stumble into error. It commits to it. Understanding that commitment, and the conditions under which it can be prevented or reversed, may prove more fruitful than continuing to search for the elusive moment at which computation goes wrong.
+
+\section{Discussion: Implications for Agency, Rationality, and Control}
+
+The reinterpretation of error as the execution of an admissible but disfavored history carries consequences that extend well beyond the specific experimental context in which incongruent neurons were identified. At stake is not merely a refinement of error theory, but a reorganization of how agency, rationality, and control are conceptualized in neural systems. By shifting the explanatory focus from state-based correctness to trajectory-based admissibility, we gain a framework that accommodates empirical findings that have long strained existing models.
+
+A first implication concerns agency. In many neuroscientific and philosophical accounts, agency is identified with the capacity to select actions based on reasons, values, or goals. Errors are then interpreted as failures of this capacity, either because the relevant information was unavailable, the computation was noisy, or the control mechanisms were insufficiently precise. The admissible-history framework suggests a different picture. Agency does not consist in selecting the correct outcome from a menu of options at the moment of action. It consists in shaping the space of possible futures before they are realized. Selection, in this sense, is temporally distributed and structurally constrained. By the time behavior is expressed, the decisive selection has already occurred.
+
+This perspective resonates with, but also sharpens, earlier debates about the timing of conscious intention. Findings such as readiness potentials suggested that neural activity precedes conscious awareness of intention, leading some to conclude that conscious will is epiphenomenal. The present framework reframes the issue. The relevant question is not whether neural activity precedes conscious intention, but which neural activity does so. If early activity authorizes entire histories, then conscious experience may track not the moment of authorization but the subsequent monitoring and potential suppression of alternative histories. Conscious agency, on this view, is not the originator of action but a regulator of futures, exerting influence primarily by pruning disfavored trajectories.
+
+Rationality, too, appears in a new light. Traditional theories often treat rationality as a property of individual decisions, evaluated by comparing chosen actions to optimal actions under some normative model. Errors are then deviations from rationality. In the admissible-history framework, rationality is not an intrinsic property of a trajectory but an emergent property of a selection process over trajectories. A system is rational to the extent that it reliably suppresses histories with low valuation before they are expressed. Irrational behavior arises not because the system lacks access to rational trajectories, but because suppression fails. This reframing suggests that rationality is fundamentally negative: it is defined by what does not happen as much as by what does.
+
+This negative conception of rationality has methodological consequences. Much of cognitive neuroscience focuses on identifying neural correlates of correct performance, optimal integration, or value maximization. The present analysis suggests that equal attention should be paid to the neural correlates of suppressed alternatives. Incongruent neurons provide a concrete example of such correlates. They reveal the presence of alternative futures that are actively competing with, but usually losing to, rewarded trajectories. Studying how these alternatives are suppressed, and under what conditions suppression fails, may yield deeper insight into cognitive control than studying correct performance alone.
+
+The intervention experiments discussed earlier point toward a new class of experimental paradigms. By detecting early markers of disfavored trajectories and intervening before behavioral expression, one can directly test hypotheses about the structure of admissible histories. Such closed-loop paradigms move beyond correlational analysis and allow for causal manipulation of the space of futures. Importantly, the effectiveness of these interventions depends on acting early, before trajectories have progressed beyond their decisive prefixes. This temporal sensitivity underscores the importance of understanding the geometry of trajectory space and the timing of commitment.
+
+The framework also has implications for theoretical biology and the study of adaptive systems more broadly. Any system that must act in the world under constraints, learn from sparse feedback, and operate irreversibly in time will generate a space of admissible histories. Selection among these histories, whether by natural selection, learning, or control mechanisms, will determine the system’s behavior. Errors, maladaptations, and failures are then not anomalies but necessary consequences of operating in such a space. They represent histories that were admissible given the system’s structure but disfavored given the environment. From this perspective, the problem of error is not how to eliminate it, but how to manage it.
+
+This management perspective aligns with observations from evolutionary biology. Evolution does not produce perfect organisms; it produces organisms that are locally adapted to particular niches, retaining traits that may be suboptimal or even maladaptive in other contexts. These traits persist because they are part of the organism’s admissible history space, shaped by past selection pressures. Similarly, neural systems retain trajectories that are disfavored in the current task because they were admissible and perhaps even advantageous in past contexts. Learning reshapes the valuation landscape but does not erase the historical structure.
+
+The admissible-history framework thus provides a unifying lens through which to view phenomena as diverse as neural error, self-control, habit formation, and adaptation. It emphasizes continuity rather than dichotomy: between correct and incorrect behavior, between rational and irrational action, between agency and automatism. All of these are understood as properties of trajectory spaces and the operations that shape them.
+
+\section*{Appendices}
+
+\section{Appendix A: Formal Considerations on Prefix-Free Histories}
+
+The analysis presented in the main text relies implicitly on a property that merits explicit discussion: the self-delimiting nature of histories that can be decoded in a single forward pass. In formal language theory, a code is said to be prefix-free if no codeword is a prefix of another. This property ensures that decoding can proceed sequentially without ambiguity, as the end of a codeword is uniquely determined by the sequence itself.
+
+An analogous constraint appears in neural systems that must commit to actions in real time. Once a decisive prefix has been realized, the system must be able to continue decoding the history without revisiting earlier alternatives. If prefixes were not effectively self-delimiting, then early commitment would be impossible, as the system would need to maintain multiple incompatible continuations indefinitely. The empirical finding that commitment occurs within a narrow temporal window suggests that neural trajectories are structured in a way that approximates prefix-free coding at the level of behaviorally relevant distinctions.
+
+Formally, consider a mapping from histories to actions $\pi : \histories \to \mathcal{A}$. A prefix $h_{\le t}$ can be said to be behaviorally self-delimiting if, for all $h, h' \in \histories$ such that $h_{\le t} = h'_{\le t}$, we have $\pi(h) = \pi(h')$. That is, once the prefix is fixed, the eventual action is fixed as well. This condition is weaker than full prefix-freeness, as it allows multiple histories to share a prefix so long as they terminate in the same action, but it captures the relevant constraint for action selection.
+
+The incongruent neuron identifies precisely such self-delimiting prefixes for error trajectories. Once these prefixes occur, the descriptive cost of switching to an alternative action becomes prohibitive, not because it is logically impossible, but because it would require traversing a region of state space that is dynamically inaccessible under the current constraints. In this sense, the system behaves as a hardware-constrained decoder of finite histories, operating under real-time limitations that favor early commitment.
+
+\section{Appendix B: Notational Summary}
+
+For clarity, we summarize the principal symbols used throughout the paper. A neural history is denoted by $h = (x_0, x_1, \ldots, x_T)$, where $x_t$ represents the neural state at time $t$. The set of all dynamically admissible histories is denoted by $\histories$. The mapping from histories to actions is denoted by $\pi$, and the valuation function assigning external value to histories is denoted by $\valuation$. The pruned set of histories resulting from intervention is denoted by $\histories'$. Probabilities are denoted by $\prob(\cdot)$.
+
+These symbols are intended to support, rather than replace, the narrative argument. The central claim of the paper does not depend on any particular formalism. It depends on the empirical observation that neural systems commit early to trajectories and on the logical consequences of that observation.
+
+\section*{Closing Remarks}
+
+The incongruent neuron is not merely a curiosity of a particular model or task. It is a window into the ontological structure of neural computation. By revealing that error trajectories are authorized early, executed coherently, and suppressible only through exclusion, it forces a reconsideration of what neural systems are doing when they act. The language of admissible histories provides a way to articulate this structure without reducing it to noise or failure. Future work, both experimental and theoretical, will determine how far this perspective can be generalized. What is already clear is that any adequate theory of cognition must take histories, not states, as its primary units.
+
+\begin{thebibliography}{99}
+
+\bibitem{Pathak2025}
+A.~Pathak, J.~Imafuku, M.~G. Burke, S.~R. McDougle, and J.~D. Cohen.
+\newblock Biomimetic model of corticostriatal micro-assemblies discovers a neural code.
+\newblock \emph{Nature Communications}, 16:7076, 2025.
+\newblock doi:10.1038/s41467-025-67076-x.
+
+\bibitem{Imafuku2025}
+K.~Imafuku.
+\newblock Syntactic structure, quantum weights.
+\newblock \emph{arXiv preprint arXiv:2512.08507}, 2025.
+
+\bibitem{Libet1983}
+B.~Libet, C.~A. Gleason, E.~W. Wright, and D.~K. Pearl.
+\newblock Time of conscious intention to act in relation to onset of cerebral activity.
+\newblock \emph{Brain}, 106(3):623--642, 1983.
+
+\bibitem{Ratcliff1978}
+R.~Ratcliff.
+\newblock A theory of memory retrieval.
+\newblock \emph{Psychological Review}, 85(2):59--108, 1978.
+
+\bibitem{RatcliffMcKoon2008}
+R.~Ratcliff and G.~McKoon.
+\newblock The diffusion decision model: theory and data for two-choice decision tasks.
+\newblock \emph{Neural Computation}, 20(4):873--922, 2008.
+
+\bibitem{Bogacz2006}
+R.~Bogacz, E.~Brown, J.~Moehlis, P.~Holmes, and J.~D. Cohen.
+\newblock The physics of optimal decision making: A formal analysis of models of performance in two-alternative forced-choice tasks.
+\newblock \emph{Psychological Review}, 113(4):700--765, 2006.
+
+\bibitem{DayanAbbott2001}
+P.~Dayan and L.~F. Abbott.
+\newblock \emph{Theoretical Neuroscience: Computational and Mathematical Modeling of Neural Systems}.
+\newblock MIT Press, Cambridge, MA, 2001.
+
+\bibitem{Friston2010}
+K.~Friston.
+\newblock The free-energy principle: a unified brain theory?
+\newblock \emph{Nature Reviews Neuroscience}, 11(2):127--138, 2010.
+
+\bibitem{BartoSutton1998}
+A.~G. Barto and R.~S. Sutton.
+\newblock Reinforcement learning: An introduction.
+\newblock \emph{MIT Press}, Cambridge, MA, 1998.
+
+\bibitem{Hopfield1982}
+J.~J. Hopfield.
+\newblock Neural networks and physical systems with emergent collective computational abilities.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 79(8):2554--2558, 1982.
+
+\bibitem{DecoRolls2005}
+G.~Deco and E.~T. Rolls.
+\newblock Neurodynamics of biased competition and cooperation for attention: A model with spiking neurons.
+\newblock \emph{Journal of Neurophysiology}, 94(1):295--313, 2005.
+
+\bibitem{MillerCohen2001}
+E.~K. Miller and J.~D. Cohen.
+\newblock An integrative theory of prefrontal cortex function.
+\newblock \emph{Annual Review of Neuroscience}, 24:167--202, 2001.
+
+\bibitem{Dennett1984}
+D.~C. Dennett.
+\newblock \emph{Elbow Room: The Varieties of Free Will Worth Wanting}.
+\newblock MIT Press, Cambridge, MA, 1984.
+
+\bibitem{Pearl2009}
+J.~Pearl.
+\newblock \emph{Causality: Models, Reasoning, and Inference}.
+\newblock Cambridge University Press, Cambridge, UK, 2009.
+
+\end{thebibliography}
+
+\end{document}

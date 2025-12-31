@@ -1,0 +1,376 @@
+\documentclass[11pt]{article}
+
+% --------------------------------------------------
+% LuaLaTeX setup
+% --------------------------------------------------
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\setstretch{1.2}
+
+\usepackage{microtype}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue
+}
+
+% --------------------------------------------------
+% Commands
+% --------------------------------------------------
+\newcommand{\histories}{\mathcal{H}}
+\newcommand{\valuation}{V}
+\newcommand{\prob}{\mathbb{P}}
+
+\title{Admissible Histories as a Unifying Principle of Neural Decision-Making}
+\author{Flyxion}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Decision-making in neuroscience is dominated by state-based models in which choices emerge from the gradual accumulation of evidence toward a threshold. Errors, within this framework, arise from noise, insufficient evidence, or premature commitment. Recent empirical findings fundamentally challenge this ontology. A biomimetic corticostriatal model, validated against macaque data, reveals a class of neurons—termed incongruent neurons—whose activity within the first 200 ms of a trial reliably predicts erroneous outcomes more than one second before behavioral expression (Pathak et al., 2025). These signals are stable, selective, and causally efficacious. We argue that such findings cannot be accommodated within drift–diffusion or related state-first models without ad hoc modification. Instead, they motivate a trajectory-first framework in which neural computation operates over admissible histories: temporally extended, dynamically permitted sequences of states. Errors are not failures of computation but the execution of admissible, internally coherent histories that are externally disfavored. We develop this framework, show how it subsumes attractor dynamics and reinforcement learning, and demonstrate that real-time intervention experiments constitute causal evidence for history-based selection. We conclude that admissible histories provide a unifying ontology for neural decision-making across biological scales.
+\end{abstract}
+
+\section{Introduction: The Limits of State-First Decision Models}
+
+The dominant theoretical frameworks for decision-making in neuroscience are state-first. Whether instantiated as drift–diffusion processes, race models, or Bayesian evidence accumulation, these frameworks share a common ontology: at each moment in time, the system occupies a state that summarizes accumulated information, and a decision is made when this state crosses a criterion (Ratcliff, 1978; Bogacz et al., 2006; Ratcliff and McKoon, 2008). Within this ontology, time is a parameter indexing progress toward a decision, not a constitutive element of the decision itself.
+
+Errors, in such models, are necessarily pathological. They arise because noise perturbs the accumulation process, because evidence is weak or misleading, or because thresholds are set inappropriately. Correct decisions reflect successful computation; incorrect decisions reflect its failure. This explanatory schema has been extraordinarily productive, accounting for reaction time distributions, speed–accuracy tradeoffs, and psychometric curves across a wide range of tasks.
+
+However, recent empirical findings expose a structural limitation of this approach. Pathak et al. (2025) report the discovery of incongruent neurons—neurons whose activity during the first 200 ms of a trial reliably predicts an incorrect behavioral outcome occurring more than 1,000 ms later. These neurons are not weakly correlated with error. They are strongly selective for specific stimulus–response contingencies, stable across trials, and causally implicated in driving the incorrect action. Most importantly, their predictive activity precedes the putative decision point by nearly an order of magnitude in time.
+
+This temporal structure cannot be reconciled with drift–diffusion models without abandoning their core assumptions. If the decision variable has not yet approached threshold, then early activity should be ambiguous with respect to outcome. If, conversely, the decision variable has already crossed threshold within 200 ms, then the remaining second of processing is epiphenomenal. In either case, the standard interpretation of deliberation as gradual evidence accumulation collapses.
+
+We argue that this collapse is not an empirical anomaly but a signal that the underlying ontology is wrong. Neural decision-making is not best understood as state evolution toward a threshold. It is better understood as the selection, weighting, and suppression of temporally extended histories.
+
+\section{From States to Histories}
+
+To formalize this shift, we model behavior not as the outcome of a single state transition, but as the realization of a neural history
+\[
+h = (x_0, x_1, \ldots, x_T),
+\]
+where $x_0$ denotes stimulus onset, $x_T$ denotes behavioral expression, and intermediate states encode the unfolding neural dynamics. Let $\pi(h)$ map histories to actions.
+
+The empirical signature of incongruent neurons can then be stated precisely. For a subset of trials resulting in incorrect actions, there exists a time index $t \ll T$ such that
+\[
+\prob(\pi(h) = a_{\text{err}} \mid x_0, \ldots, x_t) \approx 1.
+\]
+This equation expresses an early collapse of uncertainty over futures. Once the system has traversed a particular prefix of its history, the eventual outcome is fixed with high probability.
+
+This observation motivates the introduction of the set of admissible histories, $\histories$, defined as the set of all neural histories consistent with the system’s intrinsic dynamics. A history belongs to $\histories$ if it respects the architectural constraints imposed by connectivity, inhibition, synaptic plasticity, and neuromodulation. Crucially, admissibility is defined independently of reward or correctness.
+
+Within this framework, learning assigns a valuation function $\valuation : \histories \to \mathbb{R}$ that reflects task contingencies. Correctness is not a property of admissibility but of valuation. A history with negative valuation is incorrect, but it is not dynamically aberrant. It is fully coherent given the system’s internal constraints.
+
+This distinction is obscured in state-first models, where correctness is implicitly built into the dynamics. By contrast, the history-first framework cleanly separates what the system can do from what it is rewarded for doing.
+
+\section{Why Drift–Diffusion Fails as a Unifying Model}
+
+Drift–diffusion models assume that decision-relevant information is compressed into a low-dimensional state variable whose evolution determines choice (Ratcliff and McKoon, 2008). This assumption is incompatible with the existence of early, high-fidelity predictors of error that are not reducible to noise fluctuations.
+
+To accommodate incongruent neurons, a drift–diffusion model would need to posit either extreme initial biases or hidden thresholds crossed almost immediately. Both moves undermine the explanatory purpose of the model. Extreme biases trivialize evidence accumulation, while hidden thresholds reintroduce trajectory commitment without acknowledging it.
+
+More fundamentally, drift–diffusion models lack a representational vocabulary for incomplete futures. They describe how states evolve, not how futures are authorized or excluded. As a result, they cannot naturally express the idea that an error is already present in the system before any observable deviation occurs.
+
+In contrast, the admissible-history framework treats futures as first-class objects. Commitment is not the crossing of a threshold but the entry into a region of history space from which only one continuation is possible. Incongruent neurons mark such entry points for disfavored trajectories.
+
+\section{Structural Inevitability of Error Histories}
+
+A common intuition is that learning should eliminate error. The persistence of incongruent neurons appears, from a state-first perspective, as a failure of optimization. From a history-first perspective, it is inevitable.
+
+Biological neural networks are sparse, competitive, and incremental learners (Miller and Cohen, 2001; Sutton and Barto, 1998). Synaptic updates amplify rewarded pathways but rarely delete unrewarded ones. As long as synaptic weights remain finite, alternative trajectories remain admissible.
+
+This retention is not a flaw. It confers adaptability. A system that collapses onto a single trajectory would be incapable of responding to environmental change. The cost of adaptability is the continued existence of disfavored histories and, consequently, occasional error.
+
+Incongruent neurons are therefore not pathological. They are the neural realization of alternative futures that remain structurally possible.
+
+\section{Intervention as Causal Evidence}
+
+The decisive evidence for a history-based ontology comes from intervention. Pathak et al. (2025) demonstrate that halting trials in real time upon detection of incongruent activity significantly increases accuracy. This intervention occurs before any incorrect behavior is expressed.
+
+Within a state-first framework, this result is puzzling. There is no erroneous state to correct. Within a history-first framework, it is expected. The intervention excludes entire histories from realization.
+
+Formally, the intervention defines a pruned set of histories
+\[
+\histories' = \{ h \in \histories \mid h \text{ does not contain early incongruent activity} \}.
+\]
+Accuracy increases because negatively valued histories are selectively removed. The internal dynamics of the remaining histories are unchanged. What changes is which futures are allowed to occur.
+
+This result establishes that error trajectories are causally real before behavior. They are not retrospective labels applied after failure; they are present as structured futures within the neural system.
+
+\section{Unification and Implications}
+
+The admissible-history framework subsumes several existing approaches. Attractor dynamics describe the geometry of history space. Reinforcement learning shapes the valuation function over histories. Control corresponds to pruning or suppressing disfavored trajectories. What drift–diffusion models describe as noise-induced error appears here as the occasional execution of a suppressed but admissible history.
+
+This unification has implications beyond neuroscience. Any system that operates irreversibly under constraints—biological, computational, or physical—must select among possible futures. Errors, in such systems, are not failures but realizations of alternatives that remain structurally available.
+
+Incongruent neurons provide rare empirical access to this deeper structure. They show that the brain does not compute until it fails. It commits early, and sometimes commits to futures that the environment penalizes. Understanding cognition, therefore, requires understanding the structure of admissible histories and the mechanisms by which they are pruned.
+
+\section{A Bridge to Free Energy and Active Inference}
+
+Any attempt to replace or generalize drift–diffusion models must contend with a second dominant framework in contemporary theoretical neuroscience: the Free Energy Principle and its operationalization in active inference (Friston, 2010; Friston et al., 2017). At first glance, this framework appears more compatible with a trajectory-based interpretation of neural computation. Active inference explicitly emphasizes dynamics, prediction over time, and the minimization of long-term quantities such as expected free energy. Moreover, it frames behavior as inference over policies rather than as momentary choice, seemingly aligning with the idea that cognition unfolds over extended temporal structures.
+
+Despite these affinities, we argue that active inference remains fundamentally state-first in its ontology. The admissible-history framework developed here does not compete with active inference at the level of empirical adequacy, but it clarifies and extends its conceptual foundations by making explicit a commitment that active inference leaves implicit.
+
+In active inference, the primary objects of inference are hidden states of the world and policies, typically represented as sequences of actions. These policies are evaluated in terms of their expected free energy, a quantity that aggregates prediction error and uncertainty over future states. While policies are temporally extended, their evaluation is performed from the perspective of the current state, and their status is ultimately reduced to a scalar value that guides action selection. The future, in this framework, is simulated but not ontologically realized. Policies are hypothetical constructs whose role is to guide present action selection by minimizing a functional.
+
+By contrast, the admissible-history framework treats temporally extended trajectories as ontologically primary. A history is not a plan or a simulation; it is a dynamically realizable sequence of states that the system can, in principle, execute. The distinction is subtle but consequential. In active inference, the future exists as a distribution over predicted states conditioned on the current state. In the admissible-history framework, the future exists as a set of executable continuations constrained by architecture and learning.
+
+This distinction becomes critical when considering error. Within active inference, errors arise when prediction errors are not successfully minimized or when priors misalign with environmental contingencies. The framework excels at explaining why an agent might persist in apparently maladaptive behavior due to overly strong priors or incorrect generative models. However, it lacks a clear representational locus for an error that is both fully specified and causally efficacious long before behavioral expression.
+
+Incongruent neurons occupy precisely this locus. They do not encode prediction error in the standard sense, nor do they reflect uncertainty over hidden states. Instead, they encode commitment to a specific future trajectory that is internally coherent but externally disfavored. From the perspective of active inference, such activity would have to be interpreted as an unusually early collapse of posterior probability mass onto a suboptimal policy. Yet this interpretation strains the framework, as it implies that policy selection is effectively complete before most sensory evidence has been integrated.
+
+The admissible-history framework resolves this tension by reframing policy selection itself. Policies are not evaluated abstractions but realized histories whose admissibility is determined by neural dynamics. Valuation—whether framed as expected free energy, reward, or cost—is applied to these histories but does not determine their existence. In this sense, admissible histories form the substrate upon which active inference operates. Active inference specifies how histories are weighted and pruned; admissible-history theory specifies which histories exist to be weighted in the first place.
+
+This relationship can be made explicit. Let $\histories$ denote the set of all dynamically admissible neural histories. Active inference can then be understood as imposing a functional $G(h)$—expected free energy—over $\histories$, inducing a probability distribution
+\[
+\prob(h) \propto \exp(-G(h)).
+\]
+From this perspective, active inference is not a competing ontology but a particular valuation scheme defined over an already-existing space of histories. What it does not explain, and what incongruent neurons reveal, is why certain histories are executable at all, or why commitment to a specific history can occur so early and so irreversibly.
+
+The intervention results of Pathak et al. (2025) further underscore this point. Halting a trial based on early incongruent activity does not alter beliefs, update priors, or reduce prediction error. It removes a future from realization. Such an operation is difficult to express within a framework that treats the future as hypothetical. It is natural, however, within a framework in which futures are concrete objects subject to exclusion.
+
+Thus, the admissible-history framework should be seen as a unifying generalization rather than a rejection of active inference. It preserves the insight that behavior is guided by the evaluation of future consequences, while grounding this evaluation in a concrete space of executable trajectories. Drift–diffusion models operate on states; active inference operates on predicted states and policies; admissible-history theory operates on realizable histories.
+
+In this hierarchy, incongruent neurons mark the boundary where prediction becomes commitment. They reveal that the brain does not merely infer futures—it enters them. Once entered, a future possesses causal momentum that can only be interrupted by exclusion, not by further inference. Recognizing this distinction clarifies the limits of state-first frameworks and situates active inference within a broader, trajectory-first ontology appropriate for irreversible biological systems.
+
+\section{Conclusion}
+
+We have argued that recent findings on incongruent neurons necessitate a shift from state-first to history-first models of decision-making. Drift–diffusion models, while successful within a narrow domain, cannot accommodate early, stable, causally efficacious predictors of error without abandoning their core assumptions.
+
+By contrast, a framework based on admissible histories naturally explains early commitment, persistent error signals, and the success of early intervention. Errors are not failures of computation but executions of admissible, internally coherent trajectories that are externally disfavored.
+
+This perspective unifies disparate findings across neuroscience and computational biology and points toward a future in which the primary objects of cognitive theory are not states or decisions, but histories and the constraints that shape them.
+
+
+\section*{Appendix} 
+
+\appendix
+\section{States, Policies, and Admissible Histories}
+
+\subsection{Basic objects}
+
+Let $(\Omega,\mathcal{F},\mathbb{P})$ be a probability space. Let $\mathcal{X}$ denote the neural state space and $\mathcal{O}$ the observation space. Let $\mathcal{A}$ denote the action space. A trial is indexed by discrete time $t\in\{0,1,\dots,T\}$.
+
+A neural history is a finite sequence
+\[
+h \equiv x_{0:T} = (x_0,x_1,\dots,x_T)\in \mathcal{X}^{T+1}.
+\]
+An action history is
+\[
+a_{0:T-1}=(a_0,\dots,a_{T-1})\in\mathcal{A}^{T}.
+\]
+An observation history is
+\[
+o_{0:T}=(o_0,\dots,o_T)\in\mathcal{O}^{T+1}.
+\]
+
+\subsection{Dynamics and admissibility}
+
+Assume controlled Markovian neural dynamics with (possibly stochastic) kernel
+\[
+K_\theta(x_{t+1}\mid x_t,a_t,o_t), \qquad t=0,\dots,T-1,
+\]
+parameterized by $\theta$ (weights, gains, inhibition profiles, neuromodulatory parameters, etc.). A complete joint trajectory $(x_{0:T},a_{0:T-1},o_{0:T})$ has density
+\[
+p_\theta(x_{0:T},a_{0:T-1},o_{0:T})
+=
+p(x_0)\prod_{t=0}^{T-1} p(o_t\mid x_t)\, \pi(a_t\mid x_t,o_{0:t})\, K_\theta(x_{t+1}\mid x_t,a_t,o_t)\, p(o_{t+1}\mid x_{t+1}),
+\]
+where $\pi$ is the agent's action selection rule (possibly history-dependent).
+
+Define the set of \emph{admissible neural histories} as the support projection of the induced measure on $\mathcal{X}^{T+1}$:
+\[
+\histories_\theta
+\;\equiv\;
+\left\{
+x_{0:T}\in \mathcal{X}^{T+1}
+:
+\exists\, a_{0:T-1},o_{0:T}\;\;\text{s.t.}\;\; p_\theta(x_{0:T},a_{0:T-1},o_{0:T})>0
+\right\}.
+\]
+Equivalently, writing $\mathrm{supp}(p_\theta)$ for support,
+\[
+\histories_\theta = \mathrm{proj}_{\mathcal{X}^{T+1}}\bigl(\mathrm{supp}(p_\theta)\bigr).
+\]
+
+\subsection{Prefix operator and prefix-closure}
+
+Let the prefix operator $\mathrm{pref}_t$ map a history to its length-$(t+1)$ prefix:
+\[
+\mathrm{pref}_t(x_{0:T}) = x_{0:t}\in\mathcal{X}^{t+1}.
+\]
+Define the induced prefix set
+\[
+\histories_{\theta}^{(\le t)} \equiv \mathrm{pref}_t(\histories_\theta)\subseteq \mathcal{X}^{t+1}.
+\]
+Then $\histories_\theta$ is prefix-closed in the sense
+\[
+x_{0:T}\in\histories_\theta \implies x_{0:t}\in \histories_{\theta}^{(\le t)}\quad\forall t<T,
+\]
+and $\{\histories_{\theta}^{(\le t)}\}_{t=0}^{T}$ is a projective family.
+
+\subsection{Outcome map and early determinacy}
+
+Let $\Pi:\mathcal{X}^{T+1}\to \mathcal{A}_\mathrm{out}$ be the behavioral outcome map. For instance, $\Pi(x_{0:T})=\pi_\mathrm{readout}(x_T)$ for a terminal readout rule $\pi_\mathrm{readout}$. Let $A=\Pi(X_{0:T})$ be the random variable of the realized outcome.
+
+For a prefix $x_{0:t}$ define the conditional outcome distribution
+\[
+q_\theta(a\mid x_{0:t}) \equiv \mathbb{P}_\theta\!\left(A=a \mid X_{0:t}=x_{0:t}\right).
+\]
+Define the \emph{determinacy set} at time $t$ for level $\varepsilon\in(0,1)$:
+\[
+\mathcal{D}_{t,\varepsilon}
+\equiv
+\left\{x_{0:t}\in \histories_{\theta}^{(\le t)}:\; \exists a\in\mathcal{A}_\mathrm{out}\;\;\text{s.t.}\;\; q_\theta(a\mid x_{0:t})\ge 1-\varepsilon\right\}.
+\]
+The incongruent-neuron signature corresponds to existence of $t\ll T$ and small $\varepsilon$ such that a large-measure subset of error-trial prefixes lies in $\mathcal{D}_{t,\varepsilon}$.
+
+\subsection{Valuation over histories and separation from admissibility}
+
+Define an external valuation functional
+\[
+\valuation:\histories_\theta\to\mathbb{R}.
+\]
+A canonical instantiation is terminal reward:
+\[
+\valuation(x_{0:T})=R(\Pi(x_{0:T}),s),
+\]
+for task condition $s$ and reward map $R$. Admissibility is independent of valuation by construction:
+\[
+x_{0:T}\in\histories_\theta \;\;\text{is determined by}\;\; \mathrm{supp}(p_\theta)\;\;\text{and does not depend on}\;\; \valuation.
+\]
+Define correct/incorrect sets:
+\[
+\histories_\theta^{+}=\{h\in\histories_\theta:\valuation(h)>0\},\qquad
+\histories_\theta^{-}=\{h\in\histories_\theta:\valuation(h)<0\}.
+\]
+Both subsets can be nonempty even under converged learning:
+\[
+\histories_\theta^{-}\neq\varnothing\quad\text{is compatible with}\quad \arg\max \mathbb{E}_\theta[\valuation(H)].
+\]
+
+\subsection{Active inference as a valuation scheme on history space}
+
+Let $s_t$ denote hidden (world) states in a generative model with joint
+\[
+p(o_{0:T},s_{0:T},a_{0:T-1}) = p(s_0)\prod_{t=0}^{T-1} p(o_t\mid s_t)\, p(s_{t+1}\mid s_t,a_t)\, p(a_t\mid \pi),
+\]
+where $\pi$ is a policy (sequence of actions). Expected free energy $G(\pi)$ is defined (one common form) by
+\[
+G(\pi)=\sum_{t=0}^{T-1}\mathbb{E}_{q(o_{t+1},s_{t+1}\mid \pi)}\!\left[
+\ln q(s_{t+1}\mid \pi) - \ln p(s_{t+1}) - \ln p(o_{t+1}\mid s_{t+1})
+\right],
+\]
+or equivalent decompositions into risk and ambiguity (Friston, 2010; Friston et al., 2017).
+
+Embed this into the admissible-history framework by defining a policy-induced distribution over neural histories via the dynamics:
+\[
+\mathbb{P}_\theta(h\mid \pi)=\int p_\theta(x_{0:T},a_{0:T-1},o_{0:T})\;\delta(x_{0:T}-h)\; \mathrm{d}a_{0:T-1}\,\mathrm{d}o_{0:T},
+\]
+with $\pi$ governing $a_t$. Define a history-level functional by pullback:
+\[
+G_\theta(h) \equiv G(\pi(h)),
+\]
+where $\pi(h)$ extracts the effective policy from the realized history (or a latent policy variable is included explicitly). Then active inference induces a Gibbs form over admissible histories:
+\[
+\mathbb{P}_\theta(h) \propto \exp\!\left(-G_\theta(h)\right)\,\mathbf{1}_{\{h\in\histories_\theta\}},
+\]
+up to normalization.
+
+Thus, active inference specifies a weighting on $\histories_\theta$ but does not define $\histories_\theta$; admissibility is determined by $\mathrm{supp}(p_\theta)$.
+
+\subsection{Drift--diffusion as a state-first projection of history space}
+
+Let $z_t=\phi(x_t)\in\mathbb{R}$ be a low-dimensional decision coordinate (projection). Drift--diffusion assumes
+\[
+z_{t+1}=z_t+\mu\,\Delta t+\sigma\sqrt{\Delta t}\,\xi_t,\qquad \xi_t\sim\mathcal{N}(0,1),
+\]
+with decision time $\tau=\inf\{t: z_t\notin(-b,b)\}$ and choice $\mathrm{sign}(z_\tau)$ (Ratcliff and McKoon, 2008). This corresponds to replacing the full history $x_{0:T}$ with the projected path $z_{0:\tau}$ and defining the outcome map
+\[
+\Pi_{\mathrm{DDM}}(x_{0:T}) \equiv \mathrm{sign}\!\left(z_\tau\right),\qquad z_t=\phi(x_t).
+\]
+Incongruent-neuron early determinacy corresponds to existence of $t\ll T$ such that
+\[
+\mathbb{P}_\theta(\Pi(H)=a_{\mathrm{err}}\mid X_{0:t})\approx 1.
+\]
+In a drift--diffusion representation, this implies either (i) $\tau\le t$ with high probability, or (ii) the conditional distribution of $\tau$ given $z_{0:t}$ is such that the sign at threshold is already fixed by $t$. Both conditions entail an effectively early-absorbing regime, which collapses the interpretation of late-time accumulation.
+
+\subsection{History pruning as intervention}
+
+Let $I_t$ be an early detector functional on prefixes, $I_t:\mathcal{X}^{t+1}\to\{0,1\}$, with $I_t(x_{0:t})=1$ indicating “halt.” Define the pruned admissible set
+\[
+\histories_\theta^{(I)} \equiv \{h\in\histories_\theta:\; I_t(\mathrm{pref}_t(h))=0\}.
+\]
+Define accuracy on a set $\mathcal{S}\subseteq\histories_\theta$ by
+\[
+\mathrm{Acc}(\mathcal{S})\equiv \frac{|\mathcal{S}\cap \histories_\theta^{+}|}{|\mathcal{S}|}
+\]
+(for finite samples; replace by probabilities under $\mathbb{P}_\theta$ for measure-theoretic form). Under a detector with higher true-positive rate on $\histories_\theta^{-}$ than on $\histories_\theta^{+}$, pruning increases accuracy:
+\[
+\mathrm{Acc}(\histories_\theta^{(I)}) > \mathrm{Acc}(\histories_\theta),
+\]
+with strict inequality whenever $\mathbb{P}_\theta(I_t=1\mid H\in\histories_\theta^{-})>\mathbb{P}_\theta(I_t=1\mid H\in\histories_\theta^{+})$ and both classes have nonzero mass.
+
+\subsection{ICN as an early suffix classifier on history space}
+
+Let $g:\mathcal{X}^{t+1}\to\mathbb{R}$ be a readout of early cortical activity (e.g., projection onto the ICN subspace). Define the detector
+\[
+I_t(x_{0:t}) = \mathbf{1}\{g(x_{0:t})\ge \lambda\}.
+\]
+Define the induced ROC quantities
+\[
+\mathrm{TPR}(\lambda)=\mathbb{P}_\theta(g(X_{0:t})\ge\lambda\mid H\in\histories_\theta^{-}),\qquad
+\mathrm{FPR}(\lambda)=\mathbb{P}_\theta(g(X_{0:t})\ge\lambda\mid H\in\histories_\theta^{+}).
+\]
+The intervention effect is equivalently expressed as
+\[
+\mathrm{Acc}(\histories_\theta^{(I)}) = \frac{(1-\mathrm{FPR}(\lambda))\,\mathbb{P}_\theta(H\in\histories_\theta^{+})}{(1-\mathrm{FPR}(\lambda))\,\mathbb{P}_\theta(H\in\histories_\theta^{+}) + (1-\mathrm{TPR}(\lambda))\,\mathbb{P}_\theta(H\in\histories_\theta^{-})}.
+\]
+For $\mathrm{TPR}(\lambda)>\mathrm{FPR}(\lambda)$ and $\mathbb{P}_\theta(H\in\histories_\theta^{-})>0$, this is strictly greater than baseline accuracy
+\[
+\mathrm{Acc}(\histories_\theta)=\mathbb{P}_\theta(H\in\histories_\theta^{+}).
+\]
+
+
+\begin{thebibliography}{99}
+
+\bibitem{Pathak2025}
+Pathak, A., Imafuku, J., Burke, M. G., McDougle, S. R., \& Cohen, J. D. (2025).
+Biomimetic model of corticostriatal micro-assemblies discovers a neural code.
+\emph{Nature Communications}, 16, 7076.
+
+\bibitem{Ratcliff1978}
+Ratcliff, R. (1978).
+A theory of memory retrieval.
+\emph{Psychological Review}, 85(2), 59--108.
+
+\bibitem{RatcliffMcKoon2008}
+Ratcliff, R., \& McKoon, G. (2008).
+The diffusion decision model.
+\emph{Neural Computation}, 20(4), 873--922.
+
+\bibitem{Bogacz2006}
+Bogacz, R., Brown, E., Moehlis, J., Holmes, P., \& Cohen, J. D. (2006).
+The physics of optimal decision making.
+\emph{Psychological Review}, 113(4), 700--765.
+
+\bibitem{MillerCohen2001}
+Miller, E. K., \& Cohen, J. D. (2001).
+An integrative theory of prefrontal cortex function.
+\emph{Annual Review of Neuroscience}, 24, 167--202.
+
+\bibitem{SuttonBarto1998}
+Sutton, R. S., \& Barto, A. G. (1998).
+\emph{Reinforcement Learning: An Introduction}.
+MIT Press.
+
+\end{thebibliography}
+
+\end{document}

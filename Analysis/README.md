@@ -13,11 +13,12 @@ A structural argument that abstraction redistributes rather than eliminates burd
 **The Broken Internet**
 An analysis of gradient extraction and platform decay. The essay interprets digital systems as optimization engines whose unconstrained descent produces institutional and epistemic erosion.
 
-[Audio Overviews](https://standardgalactic.github.io/alphabet/analysis/)
+[Audio Overviews](https://standardgalactic.github.io/alphabet/Analysis/)
 
 # Related Essays
 
 [Embodied Constraint and Minimal Assembly](https://standardgalactic.github.io/alphabet/Embodied%20Constraint.pdf)
+
 [Order and Obfuscation](https://standardgalactic.github.io/research-projects/Order%20and%20Obfuscation.pdf)
 
 [Optimization without Restraint](https://standardgalactic.github.io/antivenom/Optimization%20without%20Restraint.pdf)

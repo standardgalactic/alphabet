@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Constraint and Displacement</title>
+
+  <style>
+    :root {
+      --vh: 1vh;
+    }
+
+    body {
+      margin: 0;
+      min-height: calc(var(--vh) * 100);
+      background: #0a0a0a;
+      color: #e6e6e6;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-y: auto;
+      text-align: center;
+      padding: 20px;
+    }
+
+    canvas {
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #111 0%, #000 100%);
+      box-shadow: 0 0 25px #fff1;
+      transition: transform 0.05s;
+      flex-shrink: 0;
+    }
+
+    canvas:active { transform: scale(0.98); }
+
+    h2 { margin-bottom: 6px; }
+
+    .subtitle {
+      opacity: 0.7;
+      font-size: 0.9em;
+      margin-bottom: 12px;
+      max-width: 720px;
+      line-height: 1.4;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      background: #111;
+      border: 1px solid #333;
+      color: #eee;
+      font-weight: bold;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 0.8em;
+    }
+
+    button:hover { background: #181818; }
+
+    .timer {
+      font-size: 1.1em;
+      letter-spacing: 1px;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .tracklist {
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .tracklist button {
+      width: 100%;
+      text-align: left;
+    }
+
+    .tracklist button.active {
+      background: #222;
+      border-color: #666;
+    }
+
+    .glitch-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.05) 0 2px,
+        transparent 2px 4px
+      );
+      opacity: 0;
+      mix-blend-mode: screen;
+    }
+
+    /* Short-screen protection */
+    @media (max-height: 700px) {
+      canvas {
+        width: 260px;
+        height: 260px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Constraint and Displacement</h2>
+
+<div class="subtitle">
+   A collection of three audio overviews exploring constraint, computation, language, and institutional decay. 
+  “Articulatory Ease in the Arabic Script” examines motor continuity and perceptual discriminability 
+  in writing systems. “Computing Does Not Destroy Difficulty” analyzes how abstraction redistributes 
+  rather than eliminates structural burden. “The Broken Internet” investigates gradient extraction, 
+  platform decay, and the thermodynamics of digital systems. Each piece approaches complexity not as 
+  something to be erased, but as something displaced, reorganized, and often concealed.
+</div>
+
+  <canvas id="turntable"></canvas>
+
+  <div class="controls">
+    <button id="play">Play</button>
+    <button id="pause">Pause</button>
+    <div class="timer" id="timer">00:00</div>
+    <button id="loop">Loop: Off</button>
+  </div>
+
+  <div class="tracklist">
+  <button data-track="Articulatory_Ease_in_the_Arabic_Script.mp3">
+    Articulatory Ease in the Arabic Script
+  </button>
+  <button data-track="Computing_Does_Not_Destroy_Difficulty.mp3">
+    Computing Does Not Destroy Difficulty
+  </button>
+  <button data-track="The_Broken_Internet.mp3">
+    The Broken Internet
+  </button>
+</div>
+
+  <div class="glitch-overlay" id="glitch"></div>
+
+  <audio id="audio" crossorigin="anonymous"></audio>
+
+  <script>
+    /* Fix mobile viewport height lying */
+    function setVH() {
+      document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    }
+    window.addEventListener('resize', setVH);
+    setVH();
+
+    const audio = document.getElementById('audio');
+    const playBtn = document.getElementById('play');
+    const pauseBtn = document.getElementById('pause');
+    const loopBtn = document.getElementById('loop');
+    const timer = document.getElementById('timer');
+    const canvas = document.getElementById('turntable');
+    const ctx = canvas.getContext('2d');
+    const glitch = document.getElementById('glitch');
+    const trackButtons = document.querySelectorAll('.tracklist button');
+
+    let rotation = 0;
+    let pulse = 120;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = 340 * dpr;
+    canvas.height = 340 * dpr;
+    ctx.scale(dpr, dpr);
+
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const ctxAudio = new AudioContext();
+    const analyser = ctxAudio.createAnalyser();
+    analyser.fftSize = 256;
+
+    const src = ctxAudio.createMediaElementSource(audio);
+    src.connect(analyser);
+    analyser.connect(ctxAudio.destination);
+
+    const freqData = new Uint8Array(analyser.frequencyBinCount);
+
+    function glitchEffect() {
+      analyser.getByteFrequencyData(freqData);
+      let bass = 0;
+      for (let i = 0; i < 32; i++) bass += freqData[i];
+      bass /= 32;
+
+      const brightness = Math.min(1, bass / 180);
+      pulse = 120 + brightness * 40;
+      glitch.style.opacity = brightness > 0.2 ? brightness : 0;
+
+      requestAnimationFrame(glitchEffect);
+    }
+
+    function drawTurntable() {
+      ctx.clearRect(0, 0, 340, 340);
+      ctx.save();
+      ctx.translate(170, 170);
+      ctx.rotate(rotation);
+
+      ctx.beginPath();
+      ctx.arc(0, 0, pulse, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 20, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff';
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function animate() {
+      rotation += audio.paused ? 0.002 : 0.02;
+      drawTurntable();
+      requestAnimationFrame(animate);
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
+
+    function updateTimer() {
+      if (audio.duration) {
+        const remaining = Math.max(0, audio.duration - audio.currentTime);
+        timer.textContent = formatTime(remaining);
+      }
+      requestAnimationFrame(updateTimer);
+    }
+
+    trackButtons.forEach(btn => {
+      btn.onclick = () => {
+        trackButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        audio.pause();
+        audio.src = btn.dataset.track;
+        audio.currentTime = 0;
+        ctxAudio.resume();
+        audio.play();
+        glitchEffect();
+      };
+    });
+
+    playBtn.onclick = () => {
+      ctxAudio.resume();
+      audio.play();
+      glitchEffect();
+    };
+
+    pauseBtn.onclick = () => audio.pause();
+
+    loopBtn.onclick = () => {
+      audio.loop = !audio.loop;
+      loopBtn.textContent = `Loop: ${audio.loop ? 'On' : 'Off'}`;
+    };
+
+    animate();
+    updateTimer();
+  </script>
+
+</body>
+</html>

@@ -23,6 +23,8 @@
 
 ## Arabic Phonetic English
 
+![](arabic-isolated-inverted.png)
+
 ![](arabic-phonetic-english-dark-mode.png)
 
 ## A New Arabic Keyboard
@@ -87,7 +89,7 @@ Unicode
 ## Logico Philosophicus
 
 [Cryptographic Puzzle](https://standardgalactic.github.io/alphabet/cipher.html)
-
+<!--
 ## Aurebesh
 
 ![](aurebesh-chart-dark.png)
@@ -95,7 +97,7 @@ Unicode
 ## Klingon
 
 ![](klingon-chart-dark.png)
-
+-->
 
 # How to Use
 

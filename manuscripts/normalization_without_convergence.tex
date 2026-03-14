@@ -1,0 +1,2592 @@
+\documentclass[12pt,a4paper]{article}
+
+% --------------------------------------------------
+% Encoding and Fonts
+% --------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+%\usepackage{lmodern}
+
+% --------------------------------------------------
+% Page Layout
+% --------------------------------------------------
+\usepackage{geometry}
+\geometry{margin=1.2in}
+
+% --------------------------------------------------
+% Microtypography
+% --------------------------------------------------
+%\usepackage{microtype}
+
+% --------------------------------------------------
+% Mathematics
+% --------------------------------------------------
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+
+% --------------------------------------------------
+% Figures and Tables
+% --------------------------------------------------
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, decorations.pathmorphing}
+
+% --------------------------------------------------
+% Citations
+% --------------------------------------------------
+\usepackage{natbib}
+
+% --------------------------------------------------
+% Hyperlinks
+% --------------------------------------------------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue
+}
+
+% --------------------------------------------------
+% Spacing and Layout Utilities
+% --------------------------------------------------
+\usepackage{setspace}
+\setstretch{1.15}
+\usepackage{enumitem}
+\emergencystretch=2em
+
+% --------------------------------------------------
+% Theorem Environments
+% --------------------------------------------------
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+
+\theoremstyle{plain}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{corollary}[definition]{Corollary}
+
+\theoremstyle{remark}
+\newtheorem{remark}[definition]{Remark}
+\newtheorem{example}[definition]{Example}
+
+% --------------------------------------------------
+% Custom Macros
+% --------------------------------------------------
+\newcommand{\HX}{H(X)}
+\newcommand{\HY}{H(Y)}
+\newcommand{\HE}{H_{E}}
+\newcommand{\calL}{\mathcal{L}}
+\newcommand{\calS}{\mathcal{S}}
+\newcommand{\calC}{\mathcal{C}}
+\newcommand{\calG}{\mathcal{G}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\calY}{\mathcal{Y}}
+\newcommand{\calT}{\mathcal{T}}
+\newcommand{\Prob}{\mathbb{P}}
+
+% --------------------------------------------------
+% Title Information
+% --------------------------------------------------
+\title{Normalization Without Convergence:\\[6pt]
+Large Language Models, Linguistic Entropy,\\
+and the Myth of Cognitive Homogenization}
+
+\author{Flyxion}
+
+\date{}
+
+% --------------------------------------------------
+% Document
+% --------------------------------------------------
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Recent commentary in cognitive science and computational linguistics has proposed that large
+language models (LLMs) are driving a broad homogenization of human language, perspective, and
+reasoning. According to this view, the widespread use of generative systems encourages
+convergence toward a statistical ``median'' embedded in the models' training distributions,
+potentially narrowing the diversity of linguistic expression and epistemic viewpoints across
+communicating populations. While this hypothesis raises important questions about the
+long-run cultural consequences of AI-mediated communication, many existing formulations rest
+on an implicit and underexamined assumption: that linguistic output provides a transparent
+window into the underlying generative structure of human cognition.
+
+This paper argues that such claims systematically conflate two distinct phenomena:
+\emph{surface-level normalization in the communication channel} and \emph{deep convergence in
+the generative processes of human cognition}. Drawing on an information-theoretic framework,
+we demonstrate that a system capable of mapping many idiosyncratic inputs to a standardized
+representation necessarily reduces the entropy of observable outputs while leaving the entropy
+of the underlying source distribution unchanged or unaffected. Formally, this follows from
+the data-processing inequality: post-processing cannot increase mutual information. In other
+words, uniformity at the level of representational output does not entail---and cannot
+establish---homogenization at the level of thought.
+
+From this perspective, large language models function less as normative enforcement mechanisms
+than as \emph{translation layers} between heterogeneous private linguistic systems and shared
+public registers. By reducing the communicative cost of nonstandard spelling, dialect, or
+multilingual composition, such systems may in fact expand the effective expressive space
+available to individual authors. We formalize this argument through a source--channel model,
+develop the notion of \emph{linguistic attractor basins} in a probabilistic landscape, and
+introduce a distinction between the entropy of generative sources and the entropy of
+exploratory discovery processes.
+
+We further argue that the more significant ecological risk of LLM-mediated communication lies
+not in stylistic convergence but in the potential contraction of \emph{exploratory variance}
+in knowledge discovery: the diversity of trajectories through which individuals encounter
+novel ideas, conflicting interpretations, and unexpected conceptual recombinations. If
+model-mediated search increasingly directs users toward the same conceptual summaries and
+canonical explanations, the space of intellectual trajectories may contract even while
+expressive diversity at the surface level remains intact. Understanding the cultural
+consequences of generative AI therefore requires attention not only to the entropy of
+linguistic form but also to the information ecology of exploration, discovery, and conceptual
+variation.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ==================================================
+\section{Introduction}
+\label{sec:introduction}
+% ==================================================
+
+Technologies that mediate human communication have repeatedly and profoundly reshaped the
+structure of linguistic expression and intellectual exchange. Writing systems, printing
+presses, editorial institutions, telegraph networks, search engines, and digital archives have
+each altered the mechanisms through which language is produced, transmitted, and interpreted.
+These transformations have recurrently generated concerns about the potential homogenization
+of thought: that the machinery of communication will ultimately flatten the diversity of the
+minds it connects. Yet the historical record consistently resists this conclusion. The
+diffusion of moveable type standardized orthographic conventions across European languages
+without destroying the intellectual heterogeneity of the Reformation. Editorial institutions
+imposed consistent rhetorical styles on scientific writing without constraining the diversity
+of scientific ideas. The internet concentrated written discourse around a small number of
+dominant platforms without eliminating the extraordinary proliferation of viewpoints that
+those platforms carry. In each case, normalization in the communication channel coexisted with
+the persistence or even expansion of cognitive diversity at the level of the source.
+
+The emergence of large language models (LLMs) represents the latest development in this long
+sequence of communicative technologies. Generative AI systems are now widely used to assist
+with writing, translation, summarization, coding, and information retrieval. Because these
+systems produce text by sampling from probability distributions learned from large corpora,
+their outputs often reflect statistically common linguistic forms: frequently recurring
+syntactic constructions, standard rhetorical organization, and stylistically moderate
+registers. This characteristic has prompted a growing body of scholarly commentary suggesting
+that the widespread adoption of LLMs may gradually homogenize human language, perspective,
+and reasoning---that individual discourse will be pulled, through repeated interaction with
+shared systems, toward a common statistical center.
+
+The homogenization hypothesis raises important questions regarding the long-term cultural
+consequences of AI-mediated communication. If a large and growing proportion of human
+discourse becomes filtered through a small set of generative systems, the observable
+distribution of linguistic expression may indeed shift toward a common mode. Such a shift
+could plausibly influence not only the stylistic surface of language but the structure of
+argumentation and the framing of ideas. These are legitimate concerns that deserve serious
+analytical treatment.
+
+However, evaluating the homogenization hypothesis requires careful attention to a distinction
+that much of the existing literature has failed to draw clearly: the distinction between
+\emph{observable representations} and the \emph{generative processes} that produce them.
+Communication systems routinely include intermediate transformation layers that reshape
+linguistic signals during transmission without altering the cognitive diversity of the
+communicating agents. Spelling conventions normalize orthographic variation. Editorial
+practices standardize rhetorical structure. Translation systems project expressions across
+language boundaries. Each of these mechanisms compresses surface-level variation without
+penetrating the generative layer of cognition.
+
+Large language models can be interpreted as a technologically novel form of such
+normalization. When used as editing or translation tools, they map diverse linguistic inputs
+into standardized outputs. The resulting reduction in observable variability may therefore
+reflect the operation of the communication channel rather than any transformation of the
+generative source. If this interpretation is correct, the inference from observed output
+uniformity to cognitive convergence is formally invalid.
+
+This paper develops a theoretical framework for analyzing this distinction with precision,
+drawing on concepts from information theory, probabilistic modeling, and the ecology of
+knowledge systems. The central claim is that the homogenization thesis systematically conflates
+two distinct kinds of entropy reduction: compression within the communication channel, which
+is a property of the transformation, and convergence within the generative processes of human
+cognition, which is a claim about the source distribution.
+
+The analysis is organized as follows. Section~\ref{sec:homogenization} introduces the
+homogenization hypothesis in its principal variants and identifies the shared inferential
+assumptions that underlie them. Section~\ref{sec:sourceentropy} develops an
+information-theoretic framework distinguishing source entropy from channel entropy and
+establishes the central formal results. Section~\ref{sec:private} elaborates the distinction
+between private generative systems and public communicative registers, drawing on historical
+precedent. Section~\ref{sec:instrumental} analyzes the difference between instrumental and
+epistemic uses of generative models and their differential implications for cognitive
+influence. Sections~\ref{sec:attractor}--\ref{sec:landscape} develop the geometric notion
+of linguistic attractor basins and the conceptual landscape in which they reside.
+Sections~\ref{sec:trajectories}--\ref{sec:transverse} extend this geometric framework
+to analyze conceptual trajectories, topic monotonicity, multimodal signatures, dialect
+liberation, constraint geometry, expressive degeneracy, combinatorial expansion, and
+transverse innovation across conceptual strata.
+Section~\ref{sec:exploratory} introduces the concept of exploratory entropy and analyzes
+how algorithmic mediation reshapes discovery distributions. Sections~\ref{sec:sourati}
+and~\ref{sec:agenda} engage with the specific claims of recent empirical literature and
+propose a more precise research program. Sections~\ref{sec:prostheses}--\ref{sec:multilayer}
+situate LLMs within a broader history of cognitive prosthetics, analyze the externalization
+of linguistic labor, examine temporal signatures in intellectual production, and synthesize
+the analysis into a unified five-layer model of expressive diversity. Section~\ref{sec:conclusion} draws
+the threads together and states the paper's principal conclusions. Appendices provide more
+detailed derivations of the central entropy results and a formal treatment of rank-mediated
+discovery distributions.
+
+% ==================================================
+\section{The Homogenization Thesis}
+\label{sec:homogenization}
+% ==================================================
+
+Recent discussions in cognitive science and computational linguistics have articulated a
+growing concern that large language models may induce a progressive homogenization of human
+language, reasoning, and perspective. The core intuition motivating this family of claims is
+straightforward. Because LLMs are trained on large corpora that aggregate statistical
+regularities across vast quantities of human communication, their outputs tend to reflect the
+most probable linguistic forms and conceptual framings present in those datasets. When such
+systems are widely adopted as writing assistants, editors, and conversational partners, it is
+argued that human discourse may gradually converge toward the same statistical center that
+those systems implicitly represent \citep{sourati2026}.
+
+In this view, the widespread use of generative language models acts as a powerful attractor
+within the space of linguistic and epistemic practices. Individual expressions that initially
+vary across dialects, registers, educational backgrounds, and cultural contexts are
+progressively ``pulled'' toward a shared normative distribution. Over time, this process is
+thought to reduce variance across several dimensions of human communication simultaneously:
+lexical choice, rhetorical structure, argumentative form, and epistemic framing.
+
+The homogenization thesis appears in three structurally distinct but related variants that
+are worth distinguishing precisely.
+
+\subsection{Linguistic Convergence}
+
+The \emph{linguistic convergence} hypothesis proposes that texts produced with the assistance
+of LLMs increasingly resemble one another in vocabulary, syntax, and discourse structure.
+Because the models generate outputs according to learned probability distributions over
+sequences of tokens, repeated use of the same systems may produce recognizable stylistic
+regularities across otherwise independent authors. The distributional signature of the model
+bleeds into the distributional signature of the assisted writer.
+
+This form of the hypothesis is the most empirically tractable, since it concerns surface
+properties of text that can in principle be measured directly. Its weakness, as argued below,
+is that surface similarity among assisted texts is entirely compatible with high diversity in
+the underlying cognitive processes that generated the pre-normalized inputs.
+
+\subsection{Perspectival Convergence}
+
+The \emph{perspectival convergence} hypothesis suggests that LLMs encode the dominant
+assumptions and interpretive frameworks of their training data and transmit those frameworks
+to users through the authority that attaches to model-generated outputs. Since large portions
+of the digital corpus from which these models are trained originate in Western academic,
+journalistic, and institutional contexts, critics argue that the models may implicitly
+reinforce the epistemic norms, evaluative standards, and categorical schemes associated with
+those contexts \citep{bender2021}. Users who repeatedly encounter these norms may
+internalize them as default frameworks for understanding the world.
+
+This variant is more difficult to operationalize empirically, since it requires measuring
+shifts in epistemic orientation rather than surface linguistic properties. It also makes
+stronger assumptions about the mechanism of influence, implying that repeated exposure to
+model outputs reshapes the prior beliefs and conceptual categories of users in measurable
+ways.
+
+\subsection{Reasoning Convergence}
+
+The \emph{reasoning convergence} hypothesis proposes that repeated interaction with
+model-generated explanations may influence the inferential strategies humans employ when
+solving problems. Step-by-step reasoning formats produced by language models might serve
+as templates for human inference, gradually reshaping problem-solving architecture toward
+the heuristics those models are tuned to produce.
+
+This is the strongest form of the hypothesis and also the least supported by available
+evidence. Demonstrating reasoning convergence would require longitudinal evidence of durable
+transfer from model-mediated reasoning contexts to independent problem-solving behavior---a
+much higher empirical bar than demonstrating stylistic similarity in assisted texts.
+
+\subsection{The Shared Inferential Structure}
+
+Despite their differences, all three variants of the homogenization thesis share a common
+inferential structure. Each proceeds from an observation about the properties of LLM outputs
+or LLM-assisted human outputs to a claim about the underlying generative processes of human
+cognition. They assume, explicitly or implicitly, that observable linguistic behavior provides
+a reliable proxy for the internal structure of human thought.
+
+This assumption is the central target of the present analysis. The argument that follows does
+not deny that generative AI systems influence human behavior---they surely do, as do all
+tools that mediate communication and cognition. The argument is rather that the specific
+inference from output uniformity to generative convergence is formally invalid, because a
+normalization layer in the communication channel can produce the former without the latter.
+
+% ==================================================
+\section{Source Entropy and Channel Normalization}
+\label{sec:sourceentropy}
+% ==================================================
+
+A rigorous analysis of the homogenization hypothesis requires placing the communication
+process within an information-theoretic framework. In classical information theory, a
+communication system involves at minimum three components: a source that generates signals,
+a channel through which those signals are transmitted, and a receiver that interprets the
+resulting representation \citep{shannon1948}. The statistical properties of what the receiver
+observes depend on the joint operation of the source and the channel. Crucially, these two
+contributions need not mirror one another.
+
+\subsection{The Communication Model}
+
+In the context of LLM-mediated communication, the components of the standard model admit
+natural interpretations. The \emph{generative source} corresponds to the cognitive and
+linguistic processes through which a human author formulates and expresses ideas. The
+\emph{normalization layer} corresponds to the large language model when it is used to edit,
+rewrite, translate, or otherwise transform the human-generated text. The
+\emph{communication channel} corresponds to the medium through which the normalized
+representation is transmitted. The \emph{receiver} corresponds to the audience that
+interprets the resulting output.
+
+Let $X$ denote a random variable representing expressions drawn from the generative source
+distribution $p(x)$. Let $T$ denote the deterministic transformation applied by the
+normalization layer, so that the observable output is $Y = T(X)$. The distribution of $Y$ is
+given by
+\[
+p(y) = \sum_{\{x : T(x) = y\}} p(x).
+\]
+This is the pushforward of the source distribution under the map $T$.
+
+\subsection{Entropy of the Generative Source}
+
+The entropy of the generative source distribution quantifies the diversity of linguistic
+expressions produced by the human author:
+\[
+H(X) = -\sum_x p(x)\log p(x).
+\]
+High values of $H(X)$ indicate that the author draws from a wide and roughly uniform
+distribution over possible expressions; low values indicate that the author's choices are
+heavily concentrated around a small set of forms.
+
+\subsection{Entropy of the Normalized Representation}
+
+The entropy of the observable representation is
+\[
+H(Y) = -\sum_y p(y)\log p(y).
+\]
+When the transformation $T$ is many-to-one---that is, when multiple distinct inputs $x_1, x_2,
+\ldots$ all map to the same output $y$---the output distribution $p(y)$ is strictly more
+concentrated than the source distribution $p(x)$. In this case $H(Y) < H(X)$.
+
+\begin{definition}[Compression Ratio]
+The \emph{compression ratio} of a normalization transformation $T$ at a point $y$ in the
+output space is
+\[
+\kappa(y) = |\{x : T(x) = y\}|.
+\]
+If $\kappa(y) > 1$ for any $y$, the transformation is non-injective and compresses the
+source distribution.
+\end{definition}
+
+\begin{proposition}[Entropy Inequality]
+\label{prop:entropy}
+For any deterministic mapping $T : \mathcal{X} \to \mathcal{Y}$,
+\[
+H(Y) \leq H(X),
+\]
+with equality if and only if $T$ is injective on the support of $p(x)$.
+\end{proposition}
+
+\begin{proof}
+Because $Y = T(X)$ is a deterministic function of $X$, knowledge of $X$ uniquely determines
+$Y$. Therefore the conditional entropy satisfies
+\[
+H(Y \mid X) = 0.
+\]
+By the chain rule of entropy,
+\[
+H(X, Y) = H(X) + H(Y \mid X) = H(X).
+\]
+But the chain rule also gives
+\[
+H(X, Y) = H(Y) + H(X \mid Y).
+\]
+Combining these two expressions,
+\[
+H(X) = H(Y) + H(X \mid Y).
+\]
+Since conditional entropy is always nonnegative, $H(X \mid Y) \geq 0$, it follows that
+\[
+H(Y) \leq H(X),
+\]
+with equality if and only if $H(X \mid Y) = 0$, which holds if and only if $X$ is determined
+by $Y$---that is, if $T$ is injective on the support of $p(x)$.
+\end{proof}
+
+\begin{remark}
+The quantity $H(X \mid Y) = H(X) - H(Y)$ measures the information about the source that is
+lost in the normalization process. It represents, in bits, the diversity of generative inputs
+that cannot be recovered from the normalized output. When this quantity is large, the
+normalization layer has compressed substantial generative diversity into a uniform
+representation---but the source diversity nonetheless exists and is not destroyed by the
+transformation.
+\end{remark}
+
+\subsection{The Data Processing Inequality}
+
+The proposition above is a special case of the more general data processing inequality, which
+states that no processing of a signal can increase the information it carries about its
+source \citep{shannon1948}. If $X \to Y \to Z$ is a Markov chain, then
+\[
+I(X; Z) \leq I(X; Y),
+\]
+where $I(\cdot ; \cdot)$ denotes mutual information. Applied to our setting, this means that
+any further transformation of the normalized output $Y$---including reception and
+interpretation by a human reader---can only further reduce the information available about
+the generative source $X$.
+
+The data processing inequality formalizes a core asymmetry in the communication system:
+information flows from source to receiver but cannot be increased along the way. Uniformity
+in $Y$ is therefore not merely compatible with diversity in $X$; it is what one should
+\emph{expect} from a many-to-one normalization layer applied to a diverse source. Observing
+that $H(Y)$ is small provides no evidence about the magnitude of $H(X)$.
+
+\subsection{Formal Implications for the Homogenization Thesis}
+
+The implications for the homogenization thesis are direct. If LLMs operate primarily as
+normalization transformations applied to human-generated inputs, then the observation that
+LLM-assisted texts exhibit reduced stylistic variability is precisely what the channel model
+predicts---regardless of whether the generative source has changed at all. The reduced entropy
+of $Y$ is a property of the transformation $T$, not of the source distribution $p(x)$.
+
+Demonstrating cognitive homogenization requires evidence that $H(X)$ has declined, not merely
+that $H(Y)$ is low. These are logically independent claims. Any study that measures only
+properties of the outputs $Y$ is measuring the wrong quantity.
+
+% ==================================================
+\section{Private Generative Systems and Public Registers}
+\label{sec:private}
+% ==================================================
+
+The formal argument of the preceding section acquires additional force when situated within
+the broader history of normalization in human communication systems. The coexistence of
+private generative diversity and public representational uniformity is not a novel feature
+introduced by AI systems. It is a structural characteristic of literate societies that has
+been reproduced across multiple historical periods and communicative technologies.
+
+\subsection{Historical Normalization Mechanisms}
+
+Spelling standardization in the early modern period dramatically reduced the orthographic
+diversity observable in texts without homogenizing the ideas those texts expressed. Before
+the consolidation of standard orthographies in the seventeenth and eighteenth centuries,
+written texts exhibited extraordinary variation in spelling, punctuation, and typographic
+practice---variation that reflected genuine diversity in regional pronunciation, scribal
+convention, and individual preference. The introduction of standardized dictionaries and
+printing practices collapsed this variation into a small set of conventional forms. Yet no
+historian of ideas has argued that orthographic standardization produced intellectual
+homogenization.
+
+Editorial institutions in scientific publishing impose strong and consistent expectations on
+rhetorical structure, citation practice, and argumentative organization. A paper submitted to
+a journal in any major scientific discipline will pass through a normalization process that
+aligns its surface form with disciplinary conventions. The diversity of ideas published
+across such journals vastly exceeds the diversity of their rhetorical presentation. The
+normalization of form has not constrained the diversity of content.
+
+Translation systems present a particularly instructive analogy. When a text is translated
+from one language to another, the translation necessarily loses certain features of the
+original---phonological texture, idiomatic resonance, lexical ambiguity---while preserving,
+imperfectly but substantially, the conceptual content. The translated text is a compressed
+projection of the original. Multiple distinct originals might produce highly similar
+translations. This compression does not imply that the original texts were cognitively
+equivalent.
+
+\subsection{LLMs as Automated Normalization Layers}
+
+Large language models can be understood as extending this historical lineage of normalization
+mechanisms into a new technological register. When used as editing or rewriting tools, they
+perform a function structurally similar to that of a human editor, style guide, or translator:
+they map the author's idiosyncratic expression into a form that conforms more closely to
+widely shared conventions and can therefore be more easily interpreted by a broader audience.
+
+The novelty of LLMs relative to prior normalization mechanisms lies principally in three
+dimensions: their computational scale, their adaptability across domains and registers, and
+their accessibility to users who previously lacked access to professional editorial services.
+None of these dimensions alters the basic logical structure of the normalization relationship
+between source and channel.
+
+\subsection{The Expansion of Expressive Space}
+
+A counterintuitive possibility emerges from this analysis. If large language models
+effectively function as translation layers between private generative systems and shared
+public registers, their availability may reduce the pressure that communicating agents
+experience to conform to normative conventions during the act of composition itself.
+
+Prior to the availability of automated normalization, a writer who preferred an unconventional
+spelling system, a non-prestige dialect, or a multilingual mixing of registers faced a direct
+trade-off: communicate idiosyncratically and sacrifice audience, or conform to conventions
+and sacrifice expressive authenticity. Automated normalization dissolves this trade-off. The
+writer can compose in whatever register is most generatively natural and allow the normalization
+layer to perform the translation when communication is required.
+
+Under these conditions, the availability of automated normalization may expand rather than
+contract the diversity of private linguistic practice. The apparent uniformity of the final
+output would reflect the existence of a translation interface, not the impoverishment of the
+generative source.
+
+This possibility is not merely speculative. There is historical precedent in the introduction
+of word processing software, which reduced the mechanical cost of revision and thereby enabled
+a more exploratory approach to composition. Whether LLMs produce analogous effects on
+expressive diversity is an empirical question, but the theoretical possibility is well-grounded.
+
+% ==================================================
+\section{Instrumental and Epistemic Interaction}
+\label{sec:instrumental}
+% ==================================================
+
+The preceding analysis focused on cases where LLMs are used instrumentally as editing or
+translation tools. In such cases, the human author retains primary control over the conceptual
+content of the communication and uses the model merely to normalize its surface form. However,
+LLMs are also used in modes that involve a more substantive epistemic relationship between
+the user and the model's outputs. Distinguishing these modes of interaction is essential for
+a precise assessment of the homogenization thesis.
+
+\subsection{Instrumental Use}
+
+In instrumental use, the model functions as a tool for drafting, translation, summarization,
+or formatting. The user specifies the conceptual content---the ideas to be expressed, the
+arguments to be made, the information to be conveyed---and recruits the model to assist with
+the linguistic form of the expression. The model's contribution is primarily syntactic and
+stylistic rather than conceptual.
+
+Under instrumental use, the source-channel model developed above applies with maximal force.
+The human author's generative processes operate largely independently of the model's
+distribution, and the model's outputs carry minimal information about those processes
+beyond what the author's inputs already contain. Any convergence in the final texts reflects
+the normalization performed by the channel, not the convergence of the underlying sources.
+
+\subsection{Epistemic Use}
+
+In epistemic use, the user approaches the model as a source of factual information, analysis,
+or interpretive guidance. The user's initial conceptual framework is incomplete or uncertain,
+and model-generated outputs contribute to its formation. In this mode, the model functions
+as a cognitive authority rather than merely a linguistic tool.
+
+Epistemic use raises more substantive concerns about perspectival convergence. If large
+numbers of users consult the same systems for information and analysis, and if those systems
+produce consistent outputs that reflect the distributional biases of their training data,
+then users' epistemic frameworks may be systematically influenced in converging directions.
+
+However, several qualifications limit the force of this concern. First, even in epistemic
+use, model outputs are typically not passively accepted but are evaluated against prior
+beliefs, independent evidence, and alternative sources. The degree of epistemic influence
+depends critically on the user's prior state of knowledge and critical orientation.
+Second, demonstrating lasting epistemic influence requires longitudinal evidence distinguishing
+temporary exposure effects from durable changes in belief or reasoning strategy---evidence
+that existing studies have not yet provided.
+
+\subsection{The Importance of the Distinction}
+
+The distinction between instrumental and epistemic use matters because the homogenization
+thesis tends to elide it. Studies that observe stylistic convergence in model-assisted texts
+are studying a phenomenon that occurs even in purely instrumental use, and therefore carry no
+implications for epistemic homogenization. Studies that observe temporary opinion alignment
+following exposure to opinionated model outputs are studying a phenomenon that occurs even in
+cases where the influence does not persist---and that therefore carry no implications for
+durable cognitive convergence.
+
+A rigorous assessment of the homogenization hypothesis requires empirical designs that are
+sensitive to the distinction between these modes and that measure the appropriate dependent
+variables for each.
+
+% ==================================================
+\section{Linguistic Attractor Basins}
+\label{sec:attractor}
+% ==================================================
+
+The homogenization thesis implicitly assumes that large language models impose a single
+dominant attractor within the space of possible linguistic expressions: a single peak or mode
+in the output distribution toward which all model-assisted texts converge. This assumption is
+empirically false in a straightforward sense---large language models produce diverse outputs
+across a wide range of registers, styles, and subject matters---but the underlying structural
+concern deserves more precise analysis.
+
+\begin{definition}[Linguistic Space]
+Let $\calL$ denote the space of possible linguistic expressions in a given language or family
+of languages. Points in $\calL$ represent individual utterances, texts, or discourse units,
+endowed with whatever geometric or topological structure is appropriate to the analysis.
+\end{definition}
+
+\begin{definition}[Model Distribution]
+Let $P_\theta : \calL \to [0,1]$ denote the probability distribution over expressions induced
+by a language model with parameters $\theta$. The model assigns higher probability to
+expressions that appear more frequently in configurations similar to those seen during
+training.
+\end{definition}
+
+\begin{definition}[Linguistic Attractor Basin]
+A \emph{linguistic attractor basin} of a language model with distribution $P_\theta$ is a
+region $A \subset \calL$ such that expressions within $A$ have relatively high probability
+under $P_\theta$ and perturbations of those expressions remain within $A$ after transformation
+by the normalization layer.
+\end{definition}
+
+Several features of this definition deserve elaboration. First, attractor basins need not be
+unique. A language model trained on diverse stylistic corpora will develop multiple attractor
+regions corresponding to different registers, genres, rhetorical forms, and subject domains.
+The output distribution is multimodal, not concentrated at a single point.
+
+Second, the existence of attractor basins in the model's distribution does not imply that
+human generative processes collapse into those basins. When humans use language models
+instrumentally, their generative processes may explore large and diverse regions of $\calL$
+before the normalization layer projects the resulting expressions into nearby high-probability
+regions. The projection reduces entropy at the output without constraining the range of
+inputs.
+
+Third, the attractor basins of a model evolve over time as the model's parameters and
+fine-tuning objectives change. There is no fixed homogenizing target; the normalization
+surface itself is dynamic.
+
+\begin{proposition}[Non-Injectivity and Basin Structure]
+Suppose $A \subset \calL$ is an attractor basin of $P_\theta$ and let $U \supset A$ be a
+neighborhood of $A$ in $\calL$. If the normalization transformation $T$ maps all points in
+$U$ to points in $A$, then $T$ restricted to $U$ is non-injective for any $|U| > |A|$, and
+consequently
+\[
+H(T(X)) < H(X)
+\]
+for any source distribution $p(x)$ supported on $U$.
+\end{proposition}
+
+\begin{proof}
+If $|U| > |A|$ and $T$ maps $U$ into $A$, then by the pigeonhole principle, at least two
+distinct points in $U$ share the same image in $A$ under $T$. The transformation is therefore
+non-injective, and the entropy inequality $H(T(X)) < H(X)$ follows from
+Proposition~\ref{prop:entropy}.
+\end{proof}
+
+% ==================================================
+\section{The Conceptual Landscape}
+\label{sec:landscape}
+% ==================================================
+
+The attractor structure of a language model can be visualized geometrically by interpreting
+the logarithm of the model probability as a potential landscape. Define the potential function
+$V : \calL \to \mathbb{R}$ by
+\[
+V(x) = -\log P_\theta(x).
+\]
+Regions of high probability correspond to valleys (local minima of $V$), while low-probability
+regions correspond to elevated terrain. The attractor basins identified in the previous
+section correspond geometrically to the valleys of this potential landscape.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=1.1]
+
+\draw[->] (-4.5,0) -- (4.5,0) node[right] {$\calL$ (Expression Space)};
+\draw[->] (0,-0.5) -- (0,3.5) node[above] {$V(x) = -\log P_\theta(x)$};
+
+% Potential landscape
+\draw[thick, domain=-4.2:4.2, smooth, samples=300]
+  plot (\x, {
+    2.2
+    - 1.1*exp(-0.8*(\x+2.5)^2)
+    - 0.9*exp(-0.6*(\x-0.3)^2)
+    - 1.0*exp(-0.7*(\x-2.8)^2)
+    + 0.25*sin(5*\x r)
+  });
+
+% Label basins
+\node[below] at (-2.5, 0.9) {\small Basin $A$};
+\node[below] at (0.3, 1.1) {\small Basin $B$};
+\node[below] at (2.8, 1.0) {\small Basin $C$};
+
+% Dotted horizontal barrier between basins
+\draw[dashed, gray] (-4.2,1.8) -- (4.2,1.8) node[right, gray] {\small barrier};
+
+% Arrows showing human exploration vs. model output
+\draw[->, blue, thick, dashed] (-1.2,2.5) .. controls (-1.8,1.5) and (-2.2,1.3) .. (-2.5,1.1)
+  node[midway, left, blue] {\small normalization};
+\draw[->, red, thick, dotted] (-2.5,1.1) .. controls (-0.5,0.7) and (1.2,2.2) .. (2.8,1.1)
+  node[midway, above, red] {\small exploration};
+
+\end{tikzpicture}
+\caption{Potential landscape $V(x) = -\log P_\theta(x)$ showing three attractor basins $A$,
+$B$, $C$. Normalization (blue dashed) projects expressions from surrounding terrain into
+nearby basins. Human exploratory generation (red dotted) may traverse the landscape widely
+before normalization applies.}
+\label{fig:landscape}
+\end{figure}
+
+Several features of this landscape are significant for the present argument. First, models
+trained on diverse corpora develop landscapes with multiple valleys rather than a single global
+minimum. The normalized output may cluster within any of several basins rather than
+collapsing to a single point.
+
+Second, human linguistic creativity characteristically involves the exploration of varied
+terrain: combining structures from different valleys, ascending from familiar basins to
+discover neighboring regions, or venturing into rarely visited high-probability subspaces that
+prior work has not mapped. The normalization layer applies after this exploration, projecting
+the resulting expression into the nearest basin without erasing the exploratory process that
+generated it.
+
+Third, the landscape itself is a function of the model parameters $\theta$, which evolve
+across model versions and fine-tuning objectives. The targets of normalization shift over
+time; there is no fixed ``average'' toward which all expression is inexorably drawn.
+
+\subsection{Attractor Dynamics Under Repeated Interaction}
+
+A more nuanced concern arises when users interact repeatedly with language models in a mode
+that is neither purely instrumental nor purely epistemic but somewhere in between. In such
+interactions, the model's outputs may gradually influence the forms of expression that feel
+natural to the user---not by constraining the content of thought, but by providing a familiar
+stylistic template that the user unconsciously reproduces.
+
+This effect is real and has plausible historical analogues. Writers who read extensively in a
+particular genre often find that its stylistic conventions infiltrate their own prose.
+Researchers trained in a specific disciplinary tradition tend to adopt its characteristic
+rhetorical forms. Whether repeated interaction with model-generated text produces comparable
+effects is an empirical question, but the mechanism is not implausible.
+
+The important point, however, is that such stylistic influence does not constitute cognitive
+homogenization in the sense relevant to the thesis. The homogenization thesis is concerned
+with diversity in ideas, perspectives, and reasoning strategies---the diversity of the
+generative source in the conceptual sense. Stylistic normalization, even if it reaches into
+the composition process rather than applying only as a post-hoc transformation, is compatible
+with the full persistence of conceptual diversity.
+
+% ==================================================
+\section{Conceptual Trajectories and Intellectual Identity}
+\label{sec:trajectories}
+% ==================================================
+
+The homogenization thesis implicitly treats authorship as a property of surface linguistic
+style: vocabulary distributions, syntactic patterns, or rhetorical structures. Yet
+intellectual identity often manifests more forcefully at a deeper level---in the recurring
+conceptual pathways through which an author explores ideas, the persistent combinations of
+analytical tools they bring to bear across different problems, and the characteristic
+questions that organize their intellectual attention. To formalize this observation, it is
+useful to introduce a geometric representation of discourse in terms of trajectories through
+conceptual space.
+
+\subsection{Conceptual Space and the Topic Simplex}
+
+Let $\calT = \{t_1, t_2, \ldots, t_m\}$ denote the set of conceptual topics, analytical
+tools, and methodological frameworks available within a discourse community. Each document
+can be represented as a point in the probability simplex
+\[
+\Delta^{m-1} = \left\{ (p_1, \ldots, p_m) \;\middle|\; p_i \ge 0, \quad
+\sum_{i=1}^m p_i = 1 \right\},
+\]
+where $p_i$ represents the relative emphasis placed on topic $t_i$ within the document. This
+representation maps each text to a vector describing its conceptual composition. A document
+that combines information theory, cultural evolution, and communication systems, for example,
+would be located in the region of $\Delta^{m-1}$ where the corresponding coordinates are
+jointly elevated. A document focused exclusively on a single technical apparatus would be
+located near a vertex.
+
+The simplex representation abstracts away from the specific linguistic forms in which ideas
+are expressed. Two documents that discuss entropy and knowledge ecosystems in very different
+prose styles will occupy similar positions in $\Delta^{m-1}$. This is precisely the
+separation that the present analysis seeks to formalize: surface linguistic form and
+conceptual content can vary independently.
+
+\subsection{Conceptual Trajectories}
+
+\begin{definition}[Conceptual Trajectory]
+Let $\{x_1, x_2, \ldots, x_n\}$ denote the sequence of texts produced by an author over
+time, and let $v_k \in \Delta^{m-1}$ be the topic vector corresponding to document $x_k$.
+The sequence
+\[
+\gamma = (v_1, v_2, \ldots, v_n)
+\]
+defines the author's \emph{conceptual trajectory} through the topic space.
+\end{definition}
+
+Conceptual trajectories capture how an author's intellectual attention moves across and
+between topics over time. Two authors may produce stylistically similar texts---texts that
+occupy nearby positions in the linguistic space $\calL$---while exhibiting entirely different
+trajectories in $\Delta^{m-1}$. Conversely, two authors with very different stylistic
+signatures may trace similar paths through conceptual space.
+
+This independence of trajectory from style is fundamental. The normalization layer applied by
+a language model operates on positions in $\calL$; it does not directly alter the sequence
+$(v_1, v_2, \ldots, v_n)$ of conceptual positions. An author's trajectory through topic space
+is determined by the problems they choose to engage, the analogies they develop, and the
+fields they draw upon---none of which are directly constrained by a linguistic rewriting
+transformation.
+
+\subsection{Trajectory Distance and Author Divergence}
+
+The divergence between two authors' intellectual practices can be quantified by a distance
+measure on their trajectories. One natural measure uses the average Jensen--Shannon divergence
+between their topic distributions over a shared window of documents:
+\[
+D(i, j) = \frac{1}{n} \sum_{k=1}^{n}
+\mathrm{JSD}(v_k^{(i)} \,\|\, v_k^{(j)}),
+\]
+where the Jensen--Shannon divergence is defined as
+\[
+\mathrm{JSD}(p \,\|\, q) = \tfrac{1}{2} D_{\mathrm{KL}}(p \,\|\, m) +
+\tfrac{1}{2} D_{\mathrm{KL}}(q \,\|\, m), \qquad m = \tfrac{1}{2}(p+q).
+\]
+Unlike the Kullback--Leibler divergence, the Jensen--Shannon divergence is symmetric and
+bounded, making it better suited for comparing distributions that may have non-overlapping
+supports.
+
+If $D(i,j)$ remains large across documents, the two authors maintain distinct conceptual
+identities even if stylistic features converge under normalization. The linguistic channel
+compresses toward a shared register while the conceptual trajectories diverge.
+
+\subsection{Topic Constellations}
+
+Beyond individual positions in the trajectory, authors typically exhibit persistent clusters
+of topics that co-occur with high frequency across their bodies of work. These clusters form
+what may be called \emph{topic constellations}.
+
+\begin{definition}[Topic Constellation]
+A topic constellation is a subset $C \subset \calT$ such that topics in $C$ co-occur with
+unusually high probability across the documents of a given author, relative to their marginal
+frequencies in the wider corpus.
+\end{definition}
+
+Topic constellations capture stable intellectual toolkits. An author working at the
+intersection of information theory and cultural evolution may repeatedly combine entropy,
+communication channels, and knowledge ecosystems across many different texts. Another author
+may combine legal theory, economics, and institutional analysis. These recurring combinations
+are not stylistic features; they are structural features of the intellectual domain the
+author has carved out for themselves.
+
+Constellations remain stable even when the surface expression of the associated texts is
+normalized, because the selection of conceptual topics is controlled by the author rather
+than the editing system.
+
+\subsection{Scaling of Conceptual Signatures}
+
+The identifiability of conceptual trajectories increases with the number of observed
+documents. Let $\hat{P}_i^{(n)}(t)$ denote the empirical topic distribution estimated from
+$n$ documents by author $i$. Under standard assumptions of independent topic sampling, the
+law of large numbers gives
+\[
+\hat{P}_i^{(n)}(t) \xrightarrow{\quad n \to \infty \quad} P_i(t) \quad \text{almost surely,}
+\]
+and the variance of the empirical estimate satisfies
+\[
+\mathrm{Var}\!\left[\hat{P}_i^{(n)}(t)\right] = \frac{P_i(t)(1 - P_i(t))}{n} \propto
+\frac{1}{n}.
+\]
+
+Consequently, larger bodies of work allow increasingly precise estimation of an author's
+conceptual signature. This implies a counterintuitive consequence: large volumes of normalized
+text may strengthen, rather than weaken, the identifiability of intellectual identity. Even if
+stylistic features converge under model-assisted editing, the trajectory of conceptual
+attention becomes more precisely estimable as the number of documents increases.
+
+\begin{proposition}[Convergence of Empirical Topic Distributions]
+\label{prop:topicconv}
+Let $\hat{P}_i^{(n)}$ and $\hat{P}_j^{(n)}$ be the empirical topic distributions of authors
+$i$ and $j$ estimated from $n$ documents each. If the true distributions $P_i$ and $P_j$
+are distinct, then for any $\epsilon > 0$ there exists $N$ such that for all $n > N$,
+\[
+\Prob\!\left( \mathrm{JSD}(\hat{P}_i^{(n)} \,\|\, \hat{P}_j^{(n)}) > 0 \right) > 1 - \epsilon.
+\]
+\end{proposition}
+
+This proposition formalizes the claim that distinct conceptual identities remain
+distinguishable in the limit of large text corpora, regardless of surface stylistic
+normalization.
+
+% ==================================================
+\section{Topic Monotonicity and Conceptual Toolchains}
+\label{sec:monotonicity}
+% ==================================================
+
+The trajectory framework of the previous section captures how authors move through conceptual
+space over time. However, intellectual practice exhibits a further structural regularity:
+authors not only visit characteristic conceptual regions; they recurrently deploy
+the same sequences of analytical operations across different problems.
+This recurring structure can be described as \emph{topic monotonicity}.
+
+\subsection{Conceptual Toolchains}
+
+\begin{definition}[Conceptual Toolchain]
+A \emph{conceptual toolchain} is an ordered sequence
+\[
+\tau = (t_{i_1}, t_{i_2}, \ldots, t_{i_k})
+\]
+of conceptual tools drawn from $\calT$ that are applied in a recognizable logical order
+during an argument or analysis.
+\end{definition}
+
+Conceptual toolchains represent stable intellectual procedures. In information-theoretic
+analyses of social phenomena, a characteristic sequence might proceed: probability
+distribution $\to$ entropy measure $\to$ channel model $\to$ inequality derivation $\to$
+cultural interpretation. In economic analysis of institutions, a recurring chain might move:
+incentive structure $\to$ equilibrium concept $\to$ comparative statics $\to$ welfare
+evaluation. In historical linguistics, a standard sequence might combine phonological
+reconstruction $\to$ morphological analysis $\to$ contact hypothesis $\to$ grammatical
+typology.
+
+These toolchains are not merely stylistic habits. They represent structured analytical
+methods that authors have developed, refined, and repeatedly applied. Their persistence
+across texts is evidence of genuine intellectual commitment to a set of procedures---a
+deeper form of identity than any stylistic signature.
+
+\subsection{Topic Monotonicity}
+
+\begin{definition}[Topic Monotonicity]
+An author's work exhibits \emph{topic monotonicity with respect to toolchain $\tau$} if
+\[
+\Prob(\tau \mid i) \gg \Prob(\tau),
+\]
+where $\Prob(\tau \mid i)$ is the probability that author $i$ employs toolchain $\tau$ in a
+given document and $\Prob(\tau)$ is the background frequency of $\tau$ across the wider
+corpus.
+\end{definition}
+
+When an author exhibits strong topic monotonicity, their characteristic toolchains
+function as intellectual fingerprints---analogous to recurring motifs in musical composition
+or consistent compositional choices in visual art: elements that reveal the systematic
+structure of a creative practice without exhausting its content.
+
+The detectability of topic monotonicity is a direct consequence of the convergence
+result in Proposition~\ref{prop:topicconv}. As the number of documents increases, the
+empirical frequency of each toolchain stabilizes, and differences between authors become
+increasingly apparent.
+
+\subsection{Normalization and Toolchain Preservation}
+
+Normalization transformations applied by language models operate primarily on surface
+linguistic structure. They affect lexical selection, sentence structure, and rhetorical
+organization, but they typically leave intact the underlying logical and methodological
+sequence of an argument. The transformation $T : X \to Y$ introduced in
+Section~\ref{sec:sourceentropy} can therefore be understood as a projection that preserves
+the sequence of conceptual operations embedded in the input even as it rewrites the linguistic
+form of their expression.
+
+This claim rests on the observation that conceptual toolchains are encoded at a level of
+abstraction above the lexical and syntactic features that normalization modifies. The step
+from ``probability distribution'' to ``entropy measure'' is a logical relationship between
+conceptual objects. Whether the associated sentence reads ``the entropy of the source
+distribution'' or ``the information content of the generative process'' does not alter the
+conceptual operation being performed. Both phrasings can arise from the same underlying
+analytical step; the normalization layer may choose between them without changing the
+structure of the argument.
+
+This asymmetry implies that stylistic similarity among normalized texts is a weak signal
+about the conceptual procedures that generated them. Two texts that employ the same
+conceptual toolchain may indeed converge stylistically after normalization. But the converse
+does not hold: stylistically similar outputs may arise from entirely different analytical
+sequences. The homogenization of form does not imply the homogenization of procedure.
+
+\subsection{Intellectual Identity as a Structured Conceptual Toolkit}
+
+The combined structure of conceptual trajectories, topic constellations, and topic
+monotonicity suggests a more comprehensive account of intellectual identity than models based
+solely on stylistic analysis. Within this framework, authorship is not defined primarily by
+the surface characteristics of linguistic expression but by the recurrent configuration of
+conceptual tools through which an individual engages with problems.
+
+An author's intellectual identity can be understood as a structured conceptual toolkit that
+evolves through repeated engagement across many texts. This toolkit includes the particular
+analytical tools the author tends to employ, the characteristic combinations through which
+those tools are brought into relation, and the recurring sequences of conceptual operations
+that structure argument development. Over time, these patterns generate stable intellectual
+signatures that persist across bodies of work even when the linguistic surface of individual
+documents is partially standardized.
+
+Within this perspective, stylistic normalization affects the representational surface of
+discourse without erasing the deeper organizational patterns that characterize intellectual
+practice. The persistence of these patterns indicates that intellectual identity is encoded
+primarily in the structure of conceptual activity rather than in the specific linguistic
+forms through which that activity is expressed.
+
+% ==================================================
+\section{Multimodal Signatures and Input-Layer Diversity}
+\label{sec:multimodal}
+% ==================================================
+
+The homogenization thesis typically treats the textual output of a communication system as
+the primary observable signal of authorship. Yet communication is produced through embodied
+processes---speech, handwriting, typing, gesture, and interaction timing---each of which
+leaves distinctive behavioral traces that are logically independent of the linguistic
+representation ultimately transmitted. These input modalities introduce an additional
+dimension of diversity that remains largely unaffected by the normalization layers applied
+to textual output.
+
+\subsection{Behavioral Signals in Communication}
+
+Let $B$ denote the set of behavioral signals associated with the production of a
+communicative act. These signals arise from the motor and perceptual processes through which
+linguistic and conceptual content is generated and transmitted. They include the acoustic
+characteristics of speech production, the geometric and kinematic trajectories of
+handwriting, the temporal structure of keystroke dynamics during typing, patterns of gestural
+emphasis accompanying explanation, and the rhythmic interaction traces that accumulate during
+composition and revision.
+
+Each class of behavioral signal captures a distinct aspect of the underlying generative
+process. Speech production contains stable acoustic features associated with the anatomical
+configuration of the vocal tract and with habitual patterns of articulation learned over a
+lifetime. These features are sufficiently distinctive that speaker identification from short
+voice samples achieves high accuracy even under varied recording conditions. Handwriting
+trajectories encode both the geometric shape of letterforms and the dynamic movement
+properties---velocity, pressure, angle---that reflect learned motor patterns. Typing behavior
+exhibits consistent temporal structures in interkeystroke intervals and pause distributions
+that remain stable for a given typist across different texts and sessions. Gestural
+interaction traces encode timing and spatial patterns of attention that correlate with
+cognitive processing styles.
+
+The statistical distinctiveness of these signals has been extensively documented in the
+biometric identification literature. The relevant finding for the present argument is that
+behavioral signals originate in processes that are substantially more resistant to
+normalization than the linguistic representations they help to produce.
+
+\subsection{Generative Model of Expression}
+
+The production of a textual expression can be represented as a joint generative process
+\[
+X = G(C, B),
+\]
+where $C \in \calC$ denotes the conceptual content generated by the author's cognitive
+processes and $B$ denotes the behavioral signals associated with the physical production of
+the expression. The function $G$ maps the joint state $(C, B)$ to a linguistic expression
+$X$.
+
+Large language models interact exclusively with the textual representation $X$. When used as
+normalization layers, they apply a transformation $Y = T(X)$ that modifies the linguistic
+surface while leaving the upstream variables $C$ and $B$ unchanged. The behavioral signals
+$B$ are invisible to the model; the conceptual content $C$ passes through the model's
+rewriting without being directly reconstructed or constrained.
+
+The entropy of the full generative system is therefore
+\[
+H(C, B) = H(C) + H(B \mid C) \geq H(C),
+\]
+and the normalization layer reduces only the entropy of the observable representation:
+\[
+H(Y) = H(T(X)) \leq H(X) \leq H(C, B).
+\]
+The gap between $H(C,B)$ and $H(Y)$ measures the diversity that is compressed by the
+normalization process but that remains present in the upstream generative system.
+
+\subsection{Multimodal Authorship Signatures}
+
+Communication environments increasingly support the simultaneous use of multiple input
+modalities. A written document may appear alongside a spoken explanation, handwritten
+annotations produced during drafting, and interaction traces recording the temporal structure
+of the composition process. Together, these heterogeneous signals form a high-dimensional
+representation of authorship. Each modality captures a distinct aspect of the expressive
+process; when considered jointly, they provide a far richer description of communicative
+activity than any single channel alone.
+
+The combination of modalities produces what may be described as a high-dimensional authorship
+signature. Even if individual modalities undergo partial normalization, the joint distribution
+of signals across textual, acoustic, motor, and temporal channels retains substantial entropy.
+The probability that two individuals would independently produce identical patterns across all
+of these channels simultaneously is negligibly small.
+
+Consequently, multimodal communication systems may enable new forms of authorship attribution
+that extend beyond traditional stylometric analysis. Rather than relying solely on surface
+linguistic features, such systems incorporate behavioral and temporal signals that originate
+in the embodied processes of communication. These signals provide additional structure through
+which individual patterns persist even in environments where linguistic surfaces become
+increasingly standardized.
+
+\subsection{Scaling Diversity Through Input Channels}
+
+The presence of multiple input modalities implies that the effective dimensionality of the
+expressive space grows with the number of channels available to a communicator. Each
+additional modality introduces new behavioral degrees of freedom into the generative process.
+The entropy of the full multimodal system is bounded below by the entropy of any single
+channel and above by the sum of marginal entropies:
+\[
+\max_b H(b) \leq H(B) \leq \sum_b H(b_k).
+\]
+
+Large language models compress only one projection of this high-dimensional system: the
+textual representation transmitted through the written channel. The broader generative
+system---comprising conceptual trajectories, multimodal behavioral signals, and temporal
+production patterns---remains high-dimensional and richly varied.
+
+% ==================================================
+\section{Dialect Liberation Under Automated Normalization}
+\label{sec:dialect}
+% ==================================================
+
+A central assumption of the homogenization thesis is that the widespread use of large
+language models will encourage individuals to converge toward a single dominant linguistic
+register. This assumption rests on an implicit model of communication in which speakers
+must adopt shared conventions to achieve intelligibility across heterogeneous audiences. It
+overlooks a structural change introduced by automated normalization: when translation and
+rewriting layers are available, the communicative cost of producing nonstandard language
+decreases substantially, and this reduction may expand rather than contract the diversity
+of upstream linguistic expression.
+
+\subsection{Communication Friction and Standardization Pressure}
+
+Linguistic standardization has historically been driven by communication friction: the
+interpretive cost borne by listeners when they encounter unfamiliar forms. If the listener
+cannot decode an unconventional spelling, dialectal construction, or mixed-register
+expression, communication fails. Under such conditions, speakers face a practical incentive
+to adopt conventions that minimize this friction, even at the cost of suppressing their
+own more natural or efficient linguistic habits.
+
+Formally, let $C(x, y)$ denote the cost of interpreting expression $x$ for listener $y$.
+The expected communication cost over a population of listeners is
+\[
+E[C] = \sum_{x, y} P(x, y) \, C(x, y).
+\]
+Standardization reduces this expected cost by restricting the distribution over expressions
+$x$ to forms that listeners can reliably decode. The resulting reduction in expected cost is
+a genuine benefit, but it is purchased at the price of compressing the distribution of
+upstream expression toward a smaller set of conventional forms.
+
+\subsection{Automated Normalization as a Cost-Reducing Layer}
+
+Automated normalization alters this cost structure. When a generative model can reliably
+rewrite an idiosyncratic expression into a widely interpretable standard form, the listener
+no longer bears the full burden of decoding nonstandard input. The effective interpretation
+cost of the original expression $X$ is reduced to the interpretation cost of the normalized
+output $Y = T(X)$:
+\[
+C'(X, y) = C(T(X), y).
+\]
+If $T$ reliably maps diverse inputs to forms that audiences can understand, the expected
+communication cost $E[C']$ decreases even when the original expressions remain highly
+variable.
+
+This means that the practical incentive for speakers to conform to standardized conventions
+during composition weakens when normalization layers are available. The friction that
+historically drove standardization is decoupled from the composition stage and relocated to
+the output stage, where it is absorbed by the automated system.
+
+\subsection{Expansion of Private Linguistic Systems}
+
+When the communicative cost of nonstandard expression decreases, speakers acquire greater
+freedom to produce language in forms that reflect their own linguistic habits, local
+environments, or idiosyncratic cognitive preferences. Such private linguistic systems can
+take many forms: regional dialects reflecting local speech communities, hybrid multilingual
+constructions blending two or more languages within a single drafting environment,
+unconventional spelling conventions adopted for efficiency or habit, personal shorthand
+developed through repeated writing practice, or partially formed provisional expressions
+that function as cognitive scaffolding during early drafting stages.
+
+The introduction of word processing software offers a useful historical parallel. By reducing
+the mechanical cost of revision, word processors encouraged more exploratory drafting
+behaviors: writers could generate provisional expressions rapidly and refine them iteratively,
+rather than composing polished sentences at the outset. Automated linguistic normalization
+extends this pattern further, allowing authors to experiment with unconventional linguistic
+structures during composition while relying on the normalization layer to convert the result
+into a standard communicative register when needed.
+
+\subsection{Decoupling of Generative and Communicative Registers}
+
+The communication structure that emerges under automated normalization introduces a
+separation between two layers of linguistic activity that were historically more tightly
+coupled. The \emph{private generative register} corresponds to the linguistic system employed
+by the author during composition: provisional, locally adapted, potentially idiosyncratic,
+and not directly constrained by audience legibility requirements. The \emph{public
+communicative register} corresponds to the representation ultimately transmitted to readers,
+which is required to satisfy broadly shared intelligibility standards.
+
+Historically, the need to produce intelligible documents required authors to convert their
+private register into standardized forms before publication. This conversion imposed costs
+that encouraged writers to adopt conventional forms earlier in the composition process,
+effectively compressing the generative stage toward the communicative standard.
+
+Large language models dissolve this compression by performing the conversion automatically.
+The public representation may appear stylistically standardized while the generative register
+remains heterogeneous and locally adapted. The apparent convergence of linguistic outputs
+within model-mediated systems may therefore conceal rather than reflect the structure of the
+generative processes that produced them.
+
+\begin{proposition}[Decoupling of Registers Under Normalization]
+\label{prop:decouple}
+Let $X$ be a random variable representing expressions drawn from a private generative
+register with entropy $H(X)$, and let $Y = T(X)$ be the normalized public representation.
+The correlation between $H(X)$ and $H(Y)$ over a population of authors is not constrained
+to be positive. In particular, there exist systems in which $H(Y)$ decreases while $H(X)$
+remains constant or increases.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:entropy}, $H(Y) \leq H(X)$ for any individual author. If a
+normalization technology reduces the communicative cost of private diversity, it may encourage
+authors to increase the entropy of $X$ while the entropy reduction imposed by $T$ ensures
+that $H(Y)$ remains low. These two effects operate on different variables and can vary
+independently.
+\end{proof}
+
+\subsection{Implications for Linguistic Diversity}
+
+If automated normalization continues to improve, the incentive for authors to conform to
+prestige dialects during composition may decline further. Individuals may increasingly
+compose in the registers most cognitively natural or locally appropriate for them, relying on
+normalization systems to translate those registers into shared communicative forms when
+necessary.
+
+The systems that appear to standardize linguistic output may therefore simultaneously
+contribute to the diversification of upstream generative practice. The observable uniformity
+of published texts would in this scenario reflect the increasing sophistication of the
+translation layer, not the impoverishment of the generative diversity that feeds it.
+
+% ==================================================
+\section{Constraint Geometry of Conceptual Spaces}
+\label{sec:constraints}
+% ==================================================
+
+The preceding sections have analyzed linguistic and conceptual diversity primarily through
+the lens of probability distributions and entropy. A complementary perspective emerges from
+interpreting the space of possible expressions as a geometric structure shaped by constraints.
+This geometric viewpoint illuminates a further reason why surface normalization cannot be
+taken as evidence of deep conceptual convergence.
+
+Let $\calL$ denote the space of linguistic expressions and $\calC$ the space of conceptual
+configurations available within a discourse community. Rather than treating these spaces as
+unstructured sets, we may view them as manifolds whose geometry is shaped by constraints
+arising from grammatical well-formedness, shared background knowledge, disciplinary
+conventions, and cognitive limitations on complexity.
+
+Under this interpretation, generative processes do not explore the ambient spaces uniformly.
+Instead, they trace paths along structured submanifolds corresponding to coherent conceptual
+frameworks or intellectual traditions. Each tradition defines a locally valid coordinate
+system within a region of the conceptual manifold; related ideas cluster along shared
+geometric directions, while ideas from distinct traditions inhabit different regions of the
+manifold.
+
+\subsection{Normalization as Projection onto the Linguistic Manifold}
+
+Normalization processes performed by language models can be understood as projections onto
+high-probability regions of the linguistic manifold $\calL$. Such projections alter the
+position of an expression within $\calL$ without necessarily altering its conceptual
+location in $\calC$.
+
+\begin{definition}[Normalization Projection]
+Let $\pi : \calL \to \calL_{\mathrm{norm}}$ denote the projection of a linguistic expression
+onto the high-probability submanifold $\calL_{\mathrm{norm}} \subset \calL$ defined by the
+language model's output distribution. A normalization transformation is a map of the form
+$T = \pi \circ \phi$ where $\phi : \calC \to \calL$ encodes the conceptual content in
+linguistic form.
+\end{definition}
+
+The key geometric observation is that the projection $\pi$ can reduce the variance of
+observed expressions within $\calL$ while leaving the distribution over $\calC$ unchanged.
+Multiple conceptual inputs, mapped to different points in $\calL$ by $\phi$, may be
+projected by $\pi$ to nearby points in $\calL_{\mathrm{norm}}$.
+
+\subsection{Strata and Cross-Stratum Transition}
+
+The conceptual manifold $\calC$ exhibits a stratified structure in which different
+intellectual traditions occupy partially overlapping submanifolds, called strata. Within
+any given stratum, conceptual trajectories tend to follow directions that are locally
+consistent with existing frameworks: refining definitions, extending models, applying
+established theories to new domains.
+
+Innovation frequently arises when a trajectory departs from these locally dominant directions
+and moves transversely between strata. Such transverse movements correspond to conceptual
+recombination across previously separated frameworks. The introduction of information-theoretic
+tools into biology, the application of evolutionary reasoning to cultural phenomena, or the
+incorporation of category-theoretic structures into programming language semantics all
+represent such transverse transitions.
+
+Stylistic convergence within $\calL$ is compatible with the full preservation of cross-stratum
+movement in $\calC$. The projection $\pi$ may map diverse conceptual inputs to similar
+linguistic forms without collapsing the stratified structure of the conceptual manifold.
+Intellectual innovation---which depends on transverse movement between strata---is not
+constrained by the uniformity of the linguistic representation that describes it.
+
+% ==================================================
+\section{Expressive Degeneracy in Linguistic Systems}
+\label{sec:degeneracy}
+% ==================================================
+
+The sections above have emphasized the logical independence of generative diversity from
+representational uniformity. A structural explanation for this independence can be given in
+terms of \emph{expressive degeneracy}: the phenomenon whereby many distinct conceptual
+configurations produce the same or similar observable linguistic representations. Degeneracy
+is widespread in biological, physical, and computational systems; in the context of language,
+it explains why stylistic convergence at the surface level cannot be taken as evidence of
+convergence in the underlying generative processes.
+
+\subsection{Many-to-One Structure of Expressive Mapping}
+
+Let $\calC$ denote the space of conceptual configurations and $\calL$ the space of linguistic
+expressions. The act of writing can be formalized as a mapping
+\[
+F : \calC \to \calL
+\]
+that translates conceptual structures into linguistic form. This mapping is neither injective
+nor uniquely determined by $C$: multiple distinct conceptual configurations can give rise to
+the same linguistic expression (many-to-one), and a single conceptual configuration can
+typically be expressed through multiple linguistic forms (one-to-many). The mapping $F$ is
+therefore highly non-injective in both directions.
+
+When a normalization layer $T$ is applied to produce the observable representation
+$Y = T(F(C))$, the degree of non-injectivity compounds further. Distinct conceptual inputs
+$C_1, C_2, \ldots$ may produce distinct expressions $F(C_1), F(C_2), \ldots$
+subsequently projected by $T$ onto the same normalized output $Y$. The equivalence
+class of conceptual configurations producing a given normalized output is
+\[
+[Y] = \bigl\{ C \in \calC : T(F(C)) = Y \bigr\},
+\]
+and this class may be large.
+
+\begin{proposition}[Degeneracy Under Composed Normalization]
+\label{prop:degeneracy}
+If $F$ is many-to-one and $T$ is many-to-one, then the composed map $T \circ F$ is
+many-to-one and $|[Y]| \geq \max\!\left( |F^{-1}(T^{-1}(Y))| \right)$. The degeneracy of
+the full system is at least as large as the degeneracy of either component alone.
+\end{proposition}
+
+The proof follows immediately from the definition of composition: distinct inputs that map
+to the same intermediate expression will certainly map to the same output, and distinct
+inputs that map to different intermediate expressions may still map to the same output if $T$
+collapses those expressions.
+
+\subsection{Implications for Interpretability of Output Similarity}
+
+From the perspective of an observer who sees only the normalized output $Y$, the equivalence
+class $[Y]$ is entirely opaque. Observing two texts with the same normalized representation
+provides no information about whether they belong to the same equivalence class for conceptual
+reasons (similar ideas expressed similarly) or as a consequence of degeneracy (diverse ideas
+that happen to produce the same normalized form).
+
+A useful analogy is the compilation of software source code into machine instructions. Distinct
+implementations of the same algorithm---or of entirely different algorithms that happen to
+produce the same output on a given input---may compile to nearly identical sequences of
+machine instructions once comments, variable names, and higher-level structural differences
+are eliminated. The similarity of the compiled form reveals little about the diversity of the
+original programs. Linguistic normalization operates analogously: it compresses diverse
+generative structures into common representational forms without eliminating the diversity of
+the structures themselves.
+
+\subsection{Degeneracy Grows with Dimensionality}
+
+In high-dimensional conceptual spaces, degeneracy increases rapidly with dimension. As the
+number of independent conceptual dimensions $m$ increases, the number of distinct
+configurations that project to any given low-dimensional representation grows. The
+compression introduced by normalization therefore conceals an expanding rather than
+contracting diversity of generative possibilities.
+
+This observation is relevant to the specific context of contemporary LLMs. These systems
+produce text from a high-dimensional internal state space but output a relatively low-entropy
+sequence of tokens. The resulting compression from internal state space to textual output
+introduces substantial degeneracy even before the human author's conceptual diversity is
+considered. The addition of the human generative layer further amplifies the size of the
+equivalence classes associated with any given normalized output.
+
+Recognizing the role of expressive degeneracy clarifies the structure of the homogenization
+debate. The question is not whether linguistic representations can become standardized---they
+evidently can---but whether the generative diversity of the conceptual space is itself
+contracting. The presence of large degeneracy classes in the mapping from conceptual to
+linguistic space shows that these two phenomena can vary entirely independently.
+
+% ==================================================
+\section{Combinatorial Expansion in Conceptual Space}
+\label{sec:combinatorial}
+% ==================================================
+
+Expressive degeneracy explains why a compressed linguistic representation is compatible with
+diverse underlying conceptual configurations. A related but distinct argument concerns the
+sheer combinatorial scale of the conceptual space itself: even if normalization systems were
+perfectly transparent---if every distinct conceptual configuration produced a distinct
+observable output---the space of available configurations would remain astronomically large
+and would not be meaningfully constrained by the existence of the normalization layer.
+
+\subsection{Combinatorial Structure of Topic Combinations}
+
+Let $\calT = \{t_1, t_2, \ldots, t_m\}$ denote the set of conceptual topics available within
+an intellectual community. Conceptual configurations can be represented as subsets or
+structured combinations of elements from $\calT$. Even restricting attention to unordered
+subsets, the number of possible configurations is
+\[
+|\mathcal{P}(\calT)| = 2^m.
+\]
+For ordered sequences of length $k$, the number of possible conceptual toolchains is $m^k$.
+In practice, $m$ is large---the relevant conceptual space of a modern intellectual community
+encompasses thousands of distinct topics, methods, and frameworks---so the combinatorial
+scale of the configuration space is effectively unlimited.
+
+The key point is that the normalization layer does not reduce the size of this conceptual
+space. It acts on the linguistic representations of configurations, not on the configurations
+themselves. The $2^m$ possible conceptual subsets remain available to any author; the
+normalization layer merely reshapes how the resulting expressions are rendered in standard
+form.
+
+\subsection{Coordination of Representation and Expansion of Content}
+
+The parallel with mathematical notation is instructive. Standard mathematical notation imposes
+strict conventions on symbolic expression: specific symbols for common operations,
+conventional reading order, required typographic formats. These conventions dramatically
+reduce the stylistic variation observable in mathematical texts. Yet the conceptual content
+expressible within this standardized notation is not similarly constrained. New theorems,
+novel proof strategies, and unexpected mathematical structures are discovered continuously
+within the same representational system that was in use when those structures were unknown.
+
+The standardization of notation coordinates expression without constraining content. This is
+possible precisely because the space of conceptual configurations is vastly larger than the
+space of representational forms. Linguistic normalization by LLMs plays an analogous role:
+it standardizes the representational layer while leaving the conceptual layer free to expand.
+
+\subsection{Innovation from Rare Combinations}
+
+Intellectual innovation characteristically arises from combinations of ideas that were
+previously rare or unexplored. New research programs, theoretical frameworks, and
+interdisciplinary syntheses emerge when conceptual tools from different regions of $\calT$
+are combined in configurations that have not previously been attempted.
+
+\begin{proposition}[Expansion of Innovative Configurations]
+\label{prop:expansion}
+Let $\calT$ be a set of $m$ conceptual topics. Define an \emph{innovative configuration} as
+any subset of $\calT$ that has not previously been observed in the corpus. The number of
+innovative configurations grows at least as fast as $2^m - |\calC_{\mathrm{obs}}|$, where
+$|\calC_{\mathrm{obs}}|$ is the number of previously observed configurations. For fixed
+$|\calC_{\mathrm{obs}}|$, this quantity grows exponentially in $m$.
+\end{proposition}
+
+The proposition implies that as the conceptual vocabulary available to a community grows,
+the number of unexplored combinations grows even faster. Intellectual diversity in this sense
+is structurally self-amplifying, not self-limiting. The introduction of linguistic
+normalization does not constrain this combinatorial expansion because the normalization
+operates on the representational surface rather than on the conceptual vocabulary.
+
+% ==================================================
+\section{Transverse Innovation in Conceptual Manifolds}
+\label{sec:transverse}
+% ==================================================
+
+The combinatorial argument of the previous section establishes that the potential space of
+conceptual configurations is effectively unbounded. The present section complements this with
+a dynamical argument: within actual intellectual practice, innovation arises through specific
+kinds of movement across the conceptual landscape that are not constrained by linguistic
+normalization.
+
+\subsection{Longitudinal versus Transverse Intellectual Movement}
+
+Within any given conceptual stratum---any established tradition, disciplinary framework, or
+theoretical program---intellectual work proceeds primarily in \emph{longitudinal directions}:
+extending existing models, clarifying their implications, testing them against new evidence,
+and resolving internal inconsistencies. This kind of work refines and develops an
+intellectual tradition from within.
+
+Innovation of a different character arises through \emph{transverse movement}: the departure
+from one established region of the conceptual manifold and the entry into a neighboring
+region, establishing connections between previously separated frameworks. Such transverse
+transitions are the mechanism by which new intellectual traditions come into existence.
+
+Historical examples are abundant. The mathematical formalization of probability in the
+seventeenth century required transverse movement between geometry, combinatorics, and
+practical reasoning about chance. The development of evolutionary epistemology required
+transverse movement between biology and philosophy of science. The emergence of cognitive
+neuroscience required transverse movement between experimental psychology, computational
+modeling, and neuroanatomy. In each case, the originality consisted not in moving further
+along an established path but in crossing from one region of the conceptual landscape into
+a neighboring one.
+
+\subsection{Independence of Transverse Movement from Stylistic Form}
+
+Transverse innovation operates in the conceptual space $\calC$ and is defined by the
+structure of the transition between strata. The linguistic representation of such a transition
+may be expressed through highly standardized prose without losing its novelty. The
+originality of an interdisciplinary synthesis lies in the conceptual linkage it establishes,
+not in the rhetorical form of its expression.
+
+This observation further weakens the inference from stylistic convergence to cognitive
+homogenization. Even if normalization processes encourage similar rhetorical structures across
+documents, the topology of intellectual exploration---including the occurrence of transverse
+movements between strata---may remain highly diverse. Two documents may appear stylistically
+similar after normalization while one represents a transverse conceptual move of significant
+originality and the other represents a routine longitudinal extension.
+
+\subsection{Preservation of Transverse Directions}
+
+The availability of automated normalization does not reduce the number of transverse
+directions available in the conceptual manifold. The manifold's structure is determined by
+the intellectual traditions and frameworks present in the discourse community, not by the
+linguistic register through which those traditions are expressed. As new disciplines form,
+new conceptual strata emerge, and new transverse directions between strata become available
+for exploration.
+
+Moreover, the reduction of linguistic friction may facilitate transverse movements by making
+it easier for scholars from different traditions to communicate across disciplinary
+boundaries. When an information theorist and a cultural anthropologist can express their
+respective frameworks in mutually legible registers with lower translation costs, the
+conditions for productive cross-stratum recombination improve.
+
+% ==================================================
+\section{Exploratory Entropy and the Ecology of Knowledge}
+\label{sec:exploratory}
+% ==================================================
+
+The preceding analysis has argued that generative diversity at the level of the cognitive
+source is unlikely to be substantially reduced by channel normalization. This does not,
+however, exhaust the culturally relevant consequences of LLM-mediated communication. A
+distinct and more subtle form of homogenization may operate not at the level of expression
+but at the level of \emph{discovery}: the pathways through which individuals encounter ideas,
+encounter conflicting interpretations, and develop the conditions for genuine conceptual
+innovation.
+
+\subsection{Exploratory Entropy Defined}
+
+\begin{definition}[Knowledge Environment]
+Let $\calS = \{s_1, s_2, \ldots, s_n\}$ denote the set of informational sources available
+within a knowledge environment. These include books, articles, archival materials, personal
+correspondence, course lectures, and any other medium through which ideas are encountered.
+Let $P(s_i)$ denote the probability that a learner encounters source $s_i$ during an episode
+of intellectual exploration.
+\end{definition}
+
+\begin{definition}[Exploratory Entropy]
+The \emph{exploratory entropy} of a knowledge environment is
+\[
+\HE = -\sum_{s \in \calS} P(s)\log P(s).
+\]
+High exploratory entropy corresponds to a discovery process in which exposure is distributed
+broadly across the available sources; low exploratory entropy corresponds to a process in
+which a small subset of sources dominates exposure, regardless of the size of $\calS$.
+\end{definition}
+
+\begin{remark}
+Exploratory entropy is distinct from both source entropy $H(X)$ and channel entropy $H(Y)$.
+It concerns the diversity of informational trajectories through which ideas are encountered,
+rather than the diversity of expressions produced or received. A system can maintain high
+$H(X)$ and high $H(Y)$ while exhibiting low $\HE$---that is, individuals may continue to
+produce and receive diverse expressions while all encountering the same small set of ideas
+along the same conceptual pathways.
+\end{remark}
+
+\subsection{Traditional Knowledge Environments}
+
+Traditional knowledge environments---physical libraries, disciplinary reading lists, archival
+research, informal scholarly correspondence---characteristically maintained relatively high
+exploratory entropy. The distribution $P(s)$ was shaped by the intersection of multiple
+independent factors: geographic proximity to particular collections, disciplinary training,
+personal recommendations, and the productive chance of finding unexpected materials in the
+course of searching for something else. These factors created overlapping but partially
+independent pathways through the available corpus, exposing different individuals to different
+subsets of available ideas and thereby generating the conditions for diverse intellectual
+trajectories.
+
+High exploratory entropy also enables what might be called \emph{cross-basin discovery}: the
+encounter with ideas that inhabit a different region of the conceptual landscape from the
+region one's prior work occupies. Such encounters are a significant source of intellectual
+innovation, since they introduce unexpected analogies, challenge presupposed frameworks, and
+open new angles of approach to persistent problems.
+
+\subsection{Algorithmic Mediation and the Concentration of Discovery}
+
+Generative AI systems, by contrast, typically synthesize information from many sources into
+a single summarized representation. The user who queries a language model for an explanation
+of a complex topic receives a single canonicalized output that collapses the diversity of
+sources and interpretations into one streamlined narrative.
+
+Formally, let $\calC$ be a corpus of documents. A generative summary $\calG(\calC)$ is a
+compression operator
+\[
+\calC \to \calG(\calC)
+\]
+that maps the full corpus onto a single synthesized representation. Users who rely on
+$\calG(\calC)$ rather than directly consulting the corpus encounter a highly concentrated
+distribution over ideas: the ideas that the synthesis surface prominently, weighted by their
+frequency and the model's training distribution.
+
+If a large proportion of users rely on the same generative systems to navigate the same
+knowledge domains, the distribution $P(s)$ over sources becomes increasingly concentrated
+around the canonical outputs of those systems. Exploratory entropy declines---not because
+the corpus has shrunk or because individuals have become less capable of diversity in their
+own expression, but because the pathways through which they encounter the corpus have
+contracted.
+
+\begin{proposition}[Entropy Concentration Under Summarization]
+\label{prop:concentration}
+Let $\calC = \{c_1, \ldots, c_m\}$ be a corpus with uniform discovery distribution
+$P_0(c_i) = 1/m$. Suppose a generative summary assigns saliency weights $w_i \geq 0$
+with $\sum_i w_i = 1$, defining the mediated distribution $P_G(c_i) = w_i$.
+If the weights are nonuniform, i.e.\ $\max_i w_i > 1/m$, then
+\[
+\HE(P_G) < \HE(P_0) = \log m.
+\]
+\end{proposition}
+
+\begin{proof}
+Since entropy is uniquely maximized by the uniform distribution over a finite set, any
+nonuniform distribution $P_G$ over $\{c_1, \ldots, c_m\}$ satisfies
+$\HE(P_G) < \log m = \HE(P_0)$.
+\end{proof}
+
+\subsection{The Significance of Exploratory Variance}
+
+The cultural significance of exploratory entropy lies in its relationship to intellectual
+innovation and adaptive resilience. From the perspective of cultural evolution, the resilience
+of a knowledge ecosystem depends not only on the diversity of ideas it currently contains but
+on the probability that novel combinations and reframings will be generated in the future. This
+probability is higher when exploratory pathways are diverse, because diversity in discovery
+creates the conditions for unexpected cross-fertilization.
+
+If the mechanisms of discovery increasingly converge toward centralized systems that surface
+the same canonical framings to large populations of users, the expected rate of conceptual
+recombination may decline. Many users may encounter similar interpretive schemas even if their
+individual expressive styles remain entirely distinct. The cultural consequence would not be a
+reduction in stylistic variation but a narrowing of the conceptual routes through which ideas
+are encountered---a form of homogenization that operates at the level of the epistemic
+infrastructure rather than at the level of individual expression.
+
+% ==================================================
+\section{Rank-Mediated Discovery and Its Entropy}
+\label{sec:rank}
+% ==================================================
+
+Modern information environments rarely expose users directly to the full set of available
+sources. Instead, search engines, recommender systems, and generative models mediate access
+through ranking, filtering, and summarization mechanisms. Each of these mechanisms
+systematically transforms the discovery distribution in ways that reduce exploratory entropy.
+
+\subsection{Ranking Functions and Exposure Distributions}
+
+Let $\calS = \{s_1, \ldots, s_n\}$ be a set of available sources. A ranking function $R$
+assigns to each source an ordinal rank $R(s_i) \in \{1, 2, \ldots, n\}$. A monotonically
+decreasing exposure function $f : \{1,\ldots,n\} \to (0,1]$ translates ranks into exposure
+probabilities. The rank-mediated discovery distribution is
+\[
+P'(s_i) = \frac{f(R(s_i))}{\sum_{j=1}^n f(R(s_j))}.
+\]
+
+In practice, $f$ decays sharply with rank position. Studies of user behavior on search
+engines consistently find that the probability of clicking on a result falls off rapidly
+beyond the first few ranked items \citep{lazer2009,raghavan2023}. A first-ranked source may
+receive orders of magnitude more exposure than a tenth-ranked source.
+
+\begin{proposition}[Ranking Reduces Exploratory Entropy]
+\label{prop:ranking}
+Let $P_0$ be the uniform distribution over $\calS$. For any monotonically decreasing exposure
+function $f$ that is non-constant,
+\[
+\HE(P') < \HE(P_0) = \log n.
+\]
+\end{proposition}
+
+\begin{proof}
+The rank-mediated distribution $P'$ is nonuniform whenever $f$ is non-constant, since
+sources at different rank positions receive different exposure probabilities. Entropy is uniquely maximized by the uniform distribution, so
+$\HE(P') < \log n = \HE(P_0)$.
+\end{proof}
+
+\subsection{Compounding Effects of Ranking and Summarization}
+
+Generative AI systems introduce an additional layer of compression beyond ranking. Rather
+than merely ordering sources, they synthesize multiple ranked sources into a single
+output. If the user receives only the synthesized output rather than the ranked list, the
+effective discovery distribution collapses from $P'$ to a point mass on the synthesized
+summary---an entropy of zero.
+
+In practice, users retain some residual exposure to original sources through citations and
+links, and some proportion of users actively pursue original materials. The effective
+discovery distribution is a mixture between the point-mass on the summary and the original
+distribution $P'$ over cited sources. But even in the most optimistic case, the entropy of
+this mixture is bounded above by the entropy of $P'$, which is itself bounded by $\log n$.
+Summarization introduces a floor on entropy reduction that stacks multiplicatively with the
+reduction introduced by ranking.
+
+\subsection{Design as a Variable}
+
+It is important to note that the entropy of the rank-mediated discovery distribution depends
+on the specific design of the information interface, not merely on the existence of
+algorithmic mediation. Interfaces that surface multiple alternative summaries, provide
+explicit citation links to diverse original sources, incorporate stochastic exploration
+mechanisms, or present conflicting interpretations alongside consensus views will maintain
+higher exploratory entropy than interfaces that present a single canonical response.
+
+The policy implications are therefore not that generative AI systems necessarily reduce
+exploratory entropy, but that their design choices determine by how much they reduce it.
+This is a tractable engineering and institutional problem, not a structural inevitability.
+
+% ==================================================
+\section{Normalization Layers in Historical Communication Systems}
+\label{sec:historical}
+% ==================================================
+
+The analysis developed in this paper situates large language models within a long historical
+tradition of normalization mechanisms in communication systems. This situating serves a dual
+function: it both demystifies the LLM case by showing that its structural logic is not
+novel, and it furnishes historical evidence relevant to the empirical question of whether
+normalization mechanisms have historically produced cognitive convergence.
+
+\subsection{Case Studies in Communicative Standardization}
+
+Three historical cases merit detailed consideration.
+
+\paragraph{Standardized orthography.} The emergence of standardized spelling in European
+languages between the sixteenth and eighteenth centuries compressed an extraordinary range of
+orthographic variation into a small set of conventional forms. The linguistic diversity of
+the pre-standardization period---in which educated writers might spell the same word
+differently on the same page---is well documented by historians of language. Its compression
+did not visibly impoverish the diversity of ideas expressed in the resulting standardized
+texts. The century following orthographic standardization in England was the century of the
+Scientific Revolution. If anything, standardization facilitated the cross-regional
+communication of diverse ideas by reducing the cognitive cost of decoding nonstandard
+orthographic forms.
+
+\paragraph{Scientific editorial conventions.} The development of standardized scientific
+prose in the late seventeenth and eighteenth centuries---associated with institutions such as
+the Royal Society and the Acad\'emie des sciences---imposed strong rhetorical norms on
+scientific writing. The passive voice, the impersonal register, the systematic use of
+tables and mathematical notation, and the conventional structure of hypothesis, method,
+result, and discussion are all artifacts of this normalization process. None of these
+conventions has been shown to have constrained the diversity of scientific ideas expressed
+within them; on the contrary, they facilitated the communication of diverse findings across
+linguistic and disciplinary barriers.
+
+\paragraph{Translation.} The practice of translation has always involved the compression of
+generative diversity. A translation system---whether human or automated---maps the rich
+generative space of one language onto the different generative space of another, inevitably
+losing features of the original in the process. Yet translation has historically expanded the
+effective audience of ideas rather than homogenizing them, by making diverse ideas accessible
+across language barriers that would otherwise prevent their communication.
+
+\subsection{The Structural Pattern}
+
+These historical cases share a common pattern. In each, a normalization mechanism applied to
+the communication channel reduced the surface diversity of the observable output without
+reducing the diversity of the ideas that output expressed. In some cases, normalization
+actively facilitated the dissemination of diverse ideas by reducing the cognitive barriers
+to comprehension across heterogeneous audiences.
+
+The same structural pattern applies to LLM-mediated normalization. The novel features of
+LLMs---their computational power, their breadth across domains, their accessibility---may
+amplify both the normalization effects and the facilitating effects. Which of these
+amplifications dominates is a contingent empirical question, not one that can be settled by
+theoretical analysis alone.
+
+% ==================================================
+\section{Reexamining Recent Empirical Claims}
+\label{sec:sourati}
+% ==================================================
+
+Recent discussions of linguistic and cognitive homogenization have been articulated most
+explicitly in the work of \citet{sourati2026}, who argue that large language models may
+gradually standardize human expression, perspective, and reasoning. Their analysis raises
+important concerns regarding the cultural consequences of generative AI systems and has
+stimulated a broader scholarly conversation about the dynamics of human--machine
+communication.
+
+The information-theoretic and ecological framework developed in the preceding sections
+provides several grounds for reconsidering specific assumptions that underlie their claims.
+
+\subsection{Representation Versus Generation}
+
+A central premise of the homogenization argument is that similarities in linguistic output
+reflect convergence in the underlying cognitive processes that produced those outputs. As the
+formal analysis of Section~\ref{sec:sourceentropy} demonstrates, this premise is false as a
+general logical claim. A normalization layer can produce output similarity from diverse
+inputs; observing output similarity is therefore not evidence of input similarity.
+
+For the premise to hold, it would need to be established that the normalization layer in
+question is approximately injective---that different cognitive processes tend to produce
+distinctly different model-assisted outputs. This claim requires positive evidence, not
+merely the assumption that output tracks input.
+
+\subsection{Instrumental Versus Epistemic Interaction}
+
+The homogenization argument often treats model outputs as epistemic influences that
+substantively reshape users' conceptual frameworks. The distinction developed in
+Section~\ref{sec:instrumental} shows that this characterization applies only to epistemic
+modes of interaction. In instrumental modes, the model functions as a communication interface,
+and its influence on underlying reasoning is limited.
+
+Existing empirical studies of homogenization have not, in general, adequately controlled for
+the difference between these modes. Studies that expose participants to opinionated
+model-generated content are studying the epistemic interaction mode, and their results cannot
+be generalized to instrumental use cases.
+
+\subsection{Short-Term Effects and Long-Term Dynamics}
+
+The empirical studies cited in support of homogenization typically employ short-term
+experimental designs: participants interact with model outputs during a single session, and
+subsequent shifts in expressed opinion or linguistic style are measured. Such designs are
+capable of detecting immediate alignment effects but provide no evidence about whether those
+effects persist once the interaction ends.
+
+The relevant claim in the homogenization thesis is about long-term cultural dynamics: a
+gradual and durable shift in the generative processes of a population. Demonstrating such a
+shift requires longitudinal designs with appropriate washout periods and measures that can
+distinguish persistent changes in generative behavior from temporary surface alignment. The
+existing literature provides no such evidence.
+
+\subsection{Stylistic Similarity and Conceptual Diversity}
+
+Many studies supporting the homogenization thesis focus on stylistic or lexical features of
+text: the distribution of word frequencies, syntactic constructions, or rhetorical
+organizational patterns. These are precisely the features that normalization layers are
+designed to standardize. As noted above, observing stylistic convergence in model-assisted
+texts is consistent with---and indeed predicted by---a channel normalization account.
+
+The relevant measure for the homogenization thesis is not stylistic similarity but
+\emph{conceptual diversity}: the diversity of ideas, arguments, and interpretive frameworks
+expressed in the texts. Measuring conceptual diversity is substantially more difficult than
+measuring stylistic similarity, but it is the measure that the thesis actually requires.
+
+% ==================================================
+\section{Toward a Precise Research Agenda}
+\label{sec:agenda}
+% ==================================================
+
+The preceding critiques identify specific methodological gaps in the existing empirical
+literature. Filling these gaps requires a research agenda organized around a clearer
+conceptual framework. We propose three priority directions.
+
+\subsection{Longitudinal Studies of Generative Behavior}
+
+The central empirical question is whether sustained use of LLMs produces durable changes in
+the generative processes of human authors---changes that persist in the absence of model
+assistance. Addressing this question requires longitudinal study designs that track the
+same individuals over extended periods, with periodic measurement of unassisted writing
+under controlled conditions.
+
+Such studies should measure not only surface stylistic features but also conceptual
+properties: the range of arguments made, the diversity of sources cited, the variety of
+framing strategies employed. If generative diversity contracts over time in unassisted writing,
+and if this contraction correlates with the intensity of model use, the homogenization thesis
+would receive genuine empirical support.
+
+\subsection{Transfer Studies in Reasoning}
+
+The reasoning convergence hypothesis requires evidence of durable transfer from
+model-mediated reasoning contexts to independent problem-solving behavior. Experimental
+designs could expose participants to extended interaction with model-generated reasoning traces
+for specific problem types and then measure problem-solving strategies on novel instances of
+the same types in the absence of model assistance. If transfer occurs and if the transferred
+strategies resemble model-generated strategies more than alternative human strategies for the
+same problems, this would constitute evidence for reasoning convergence.
+
+\subsection{Measurement of Exploratory Entropy}
+
+The concept of exploratory entropy introduced in Section~\ref{sec:exploratory} suggests a
+third research direction: direct measurement of how algorithmic mediation reshapes the
+distribution of sources that individuals encounter. Digital trace data from browsing behavior,
+citation networks, and search interaction logs could in principle be used to estimate $P(s)$
+before and after the introduction of model-mediated search into a given domain.
+
+Comparing the entropy of discovery distributions across populations with varying degrees of
+model-mediated versus direct-search engagement would provide direct evidence about the
+ecological effects of generative AI on knowledge exploration.
+
+% ==================================================
+\section{Cognitive Prostheses and Human Agency}
+\label{sec:prostheses}
+% ==================================================
+
+Generative AI systems are most productively understood within the broader theoretical
+tradition of cognitive prostheses: technologies that externalize aspects of cognitive
+processing and thereby reconfigure the functional boundaries of the human cognitive system.
+
+\subsection{The Prosthetic Tradition}
+
+Writing itself is the paradigm case of a cognitive prosthesis. By externalizing memory into
+inscribed symbols, writing extended the temporal and spatial reach of human cognition in ways
+that fundamentally altered the structure of intellectual culture. Yet no one concludes from
+the universality of written language that human cognition has homogenized; rather, writing
+created new conditions for the proliferation of diverse ideas by enabling their stable
+transmission across time and space.
+
+Printing extended this effect by distributing written content to larger audiences at lower
+cost. Calculators externalized arithmetic processing, freeing cognitive resources for
+higher-order mathematical reasoning. Search engines externalized the process of bibliographic
+exploration, enabling access to larger corpora than any individual could maintain in memory.
+
+Each of these prosthetic technologies reshaped the landscape of cognitive activity without
+eliminating human agency in directing that activity. They introduced new affordances and
+new constraints, shifted the allocation of cognitive effort, and created new dependencies.
+But the direction of inquiry, the selection of questions, and the evaluation of conclusions
+remained irreducibly human.
+
+\subsection{LLMs as Prosthetic Systems}
+
+Large language models extend this lineage into new domains. They externalize substantial
+portions of the linguistic production process: drafting, editing, reformulation,
+summarization. They also externalize portions of the information retrieval and synthesis
+process: answering questions, explaining concepts, generating literature reviews.
+
+The empirically relevant question is not whether this externalization influences human
+cognitive behavior---it surely does, as do all prosthetic technologies---but how it reshapes
+the space of available cognitive strategies. The history of prior prostheses suggests that
+the answer to this question is rarely simple and often counterintuitive. Calculators did
+not reduce mathematical thinking; they shifted it from arithmetic to conceptual domains.
+Search engines did not reduce reading; they changed the patterns of reading. The effects
+of LLMs on human cognition are likely to exhibit comparable complexity.
+
+\subsection{Human Agency in the Prosthetic System}
+
+A central feature of prosthetic technologies is that they do not merely constrain the
+human who uses them but create new possibilities for action. The writer using a word
+processor has access to revision strategies that would be prohibitively costly with pen and
+paper. The researcher using a search engine can explore connections across bodies of
+literature that would be inaccessible within a physical library's limits.
+
+LLMs similarly create new possibilities: the ability to quickly prototype arguments, to
+translate idiomatic expression into standard forms, to generate alternative framings of a
+familiar problem. Whether individuals exploit these possibilities in ways that expand or
+contract the diversity of their intellectual output is a function of how they choose to use
+the technology---a function, in other words, of human agency operating within the new
+landscape the technology creates.
+
+This observation has normative implications for the homogenization debate. If the cultural
+consequences of LLMs depend substantially on how they are used, the appropriate response to
+concerns about homogenization is not merely to analyze the statistical properties of model
+outputs but to design usage contexts, interface features, and pedagogical practices that
+encourage expansive rather than contractive modes of engagement.
+
+% ==================================================
+\section{Implications for Linguistic Diversity}
+\label{sec:implications}
+% ==================================================
+
+The theoretical framework developed throughout this paper permits a more nuanced and precise
+account of LLMs' effects on linguistic diversity than the homogenization thesis provides.
+Several implications warrant explicit statement.
+
+\subsection{Normalization and Diversity Are Compatible}
+
+The central formal result is that normalization in the communication channel is compatible
+with the full preservation of generative diversity at the source. Proposition~\ref{prop:entropy}
+establishes this compatibility in the general case, and the historical cases of
+Section~\ref{sec:historical} provide empirical corroboration. There is no logical pathway
+from the observation of normalized outputs to the conclusion of cognitive homogenization.
+
+\subsection{Normalization May Expand Effective Expressive Space}
+
+The argument of Section~\ref{sec:private} suggests that automated normalization may expand
+rather than contract the effective expressive space of individual authors by removing the
+communicative penalty that previously attached to non-standard expression. This possibility
+is underexplored in existing literature and merits empirical investigation.
+
+\subsection{The Ecological Risk Is Real but Differently Located}
+
+The framework identifies a genuine cultural risk associated with LLM-mediated communication,
+but locates it differently from the homogenization thesis. The risk lies not in the
+normalization of expressive form but in the potential contraction of exploratory entropy:
+the diversity of pathways through which individuals encounter ideas. Propositions
+\ref{prop:concentration} and \ref{prop:ranking} formalize the conditions under which this
+contraction occurs and demonstrate that it is a structural feature of summarization and
+ranking systems rather than a contingent effect.
+
+\subsection{Design Choices Determine Cultural Consequences}
+
+The magnitude of the exploratory entropy reduction introduced by AI systems depends
+substantially on their design: the specificity of their summaries, the diversity of sources
+they surface, the degree to which they support rather than replace direct engagement with
+original materials, and the stochasticity of their discovery mechanisms. These are tractable
+design choices, not structural inevitabilities.
+
+% ==================================================
+\section{Externalization of Linguistic Effort and the Redistribution of Cognitive Load}
+\label{sec:externalization}
+% ==================================================
+
+Throughout the history of intellectual practice, technological systems have repeatedly
+altered the distribution of cognitive effort required to produce and transmit ideas. Writing
+externalized memory, allowing information to persist outside the human mind and enabling the
+systematic accumulation of knowledge across generations. Printing externalized the
+reproduction of texts, enabling ideas to circulate across large populations at low
+marginal cost. Calculators externalized arithmetic operations, releasing attentional
+resources for higher-level reasoning about structure and relationship. Search engines
+externalized bibliographic exploration, enabling rapid navigation across bodies of literature
+that would otherwise require years to traverse.
+
+Large language models extend this lineage into new domains. They externalize substantial
+portions of the linguistic production process that previously required significant cognitive
+effort from human authors: drafting, grammatical correction, stylistic reformatting,
+translation between registers, and summarization. When such tasks are externalized, the
+total cognitive resources available to an author do not necessarily decline; they are
+redistributed across different stages and kinds of intellectual work.
+
+\subsection{Reallocation of Compositional Resources}
+
+When linguistic optimization becomes inexpensive, the marginal cost of expressing complex or
+speculative ideas decreases. Authors may become more willing to pursue unconventional
+arguments, extended analogies, and interdisciplinary syntheses when the linguistic burden of
+expressing those ideas is substantially reduced. Ideas that would previously have been
+abandoned partway through composition---because the effort required to formulate them
+clearly exceeded the available cognitive budget---may now reach expression more frequently.
+
+The redistribution also alters the temporal structure of composition. Exploratory drafting
+practices become less costly when the mechanical work of rendering provisional expressions
+into polished form is partly automated. Authors can generate approximate articulations of ideas rapidly,
+relying on the normalization system to refine the result and encouraging iteration
+across a wider range of conceptual possibilities rather than deeper development of a
+narrower set.
+
+This effect is an extension of the well-documented impact of word processing on writing
+practice. Studies of the transition from typewriters and handwritten manuscripts to word
+processors found that the reduction in revision costs encouraged longer, more complex, and
+more iteratively developed documents. The cognitive resources freed from mechanical drafting
+were partially redirected toward substantive revision of content. Automated normalization
+may produce a comparable effect at the level of stylistic and grammatical refinement.
+
+\subsection{The Separation of Generation and Representation}
+
+Externalization of linguistic effort introduces a more explicit structural separation between
+the generation of conceptual content and the production of its public representation. The
+generative stage of writing can proceed with greater tolerance for incomplete, irregular, or
+idiosyncratic expression when the representational stage is handled by an automated system.
+This division resembles the separation between drafting and editing that exists in
+collaborative writing environments---the difference being that the editor is now automated
+and available at negligible cost.
+
+From the perspective of the homogenization debate, the externalization of linguistic effort
+introduces an important asymmetry. The processes most directly affected by language models
+are those associated with representation and formatting rather than those associated with the
+generation of ideas. The reduction of stylistic variation in final outputs reflects a shift
+in how linguistic labor is distributed, not a contraction of conceptual possibility. The
+resources previously devoted to achieving linguistic conformity are released for other
+purposes; the question is where they are redirected, and the evidence from analogous
+historical transitions suggests the answer is: toward substantive intellectual work.
+
+\subsection{Historical Precedents}
+
+The pattern of cognitive resource reallocation through technological externalization is
+well-established in the history of intellectual tools. The introduction of algebraic notation
+in mathematics freed mathematicians from tracking the referents of verbal descriptions and
+enabled the development of abstract structural reasoning that was previously too cognitively
+costly to sustain. The introduction of statistical software freed researchers from manual
+calculation and enabled the widespread adoption of more complex models. In each case, the
+externalization of a cognitive operation did not reduce the quality or diversity of the
+intellectual work it supported; it changed the level at which that work was conducted.
+
+The externalization of linguistic production through LLMs is likely to produce comparable
+effects: a shift in the level at which human intellectual effort is concentrated, from the
+surface properties of expression toward the structural and conceptual properties of argument.
+Whether this shift will on balance increase or decrease intellectual diversity is an
+empirical question. But the theoretical analysis suggests there is no strong reason to
+expect it to decrease diversity, and several reasons to expect the opposite.
+
+% ==================================================
+\section{Temporal Signatures in Intellectual Production}
+\label{sec:temporal}
+% ==================================================
+
+Intellectual identity is not defined solely by the spatial distribution of topics within
+conceptual space. It also emerges through temporal patterns in the production and development
+of ideas. Over extended periods, authors exhibit characteristic rhythms in the way they
+explore, refine, and recombine conceptual materials. These rhythms form temporal signatures
+that remain visible across bodies of work even when the linguistic surface of individual
+texts becomes standardized.
+
+\subsection{Temporal Structure of Conceptual Trajectories}
+
+Let $\{x_1, x_2, \ldots, x_n\}$ denote the sequence of texts produced by an author over
+time, ordered by date of composition. The corresponding topic vectors $(v_1, v_2, \ldots,
+v_n)$ in $\Delta^{m-1}$ represent a time-stamped trajectory through conceptual space. The
+structure of this trajectory is not fully captured by the set of visited positions; the
+ordering and timing of those positions carry additional information about the dynamics of
+the author's intellectual process.
+
+The first-order difference sequence $\Delta v_k = v_{k+1} - v_k$ describes the local
+direction of movement through conceptual space at each step. Sequences of such directional
+changes encode the characteristic rhythms of intellectual exploration: the pace at which new
+topics are introduced, the tendency to consolidate or diverge after a period of synthesis,
+the characteristic duration of engagement with a particular framework before moving on.
+
+These temporal structures have been observed in many historical cases. Scientific research
+programs often progress through recognizable phases: a period of exploratory experimentation
+during which the problem space is mapped, a consolidation phase during which theoretical
+frameworks are developed, and an extension phase during which the framework is applied to
+new domains. Philosophical traditions exhibit comparable cycles of critique, reformulation,
+and synthesis. Literary and artistic careers show characteristic developmental arcs that
+manifest in the temporal structure of thematic evolution.
+
+\subsection{Temporal Signatures as Author Fingerprints}
+
+Temporal patterns in conceptual trajectories constitute a form of intellectual fingerprint
+that is orthogonal to both stylistic and purely distributional characterizations of
+authorship. Two authors may have similar time-averaged topic distributions while exhibiting
+very different temporal dynamics: one moving rapidly between conceptual domains, the other
+developing a single framework in depth over an extended period.
+
+These temporal structures are largely independent of the stylistic features of linguistic
+representation. A conceptual transition from one region of the intellectual landscape to
+another may be expressed through standardized prose without obscuring the underlying
+movement in conceptual space. The normalization of linguistic form leaves the temporal
+dynamics of intellectual development intact.
+
+\subsection{Temporal Records Under Reduced Friction}
+
+The availability of automated linguistic assistance may make temporal signatures more visible
+rather than less. When the mechanical effort of editing and formatting text decreases, the
+cost of producing intermediate drafts and exploratory notes also decreases. Authors may
+record more stages of their conceptual development, producing richer temporal records of
+their intellectual activity. The temporal trajectory---which was previously partially obscured
+by the selection pressure that determined which drafts were worth the effort of production---
+may become more fully observable as that pressure decreases.
+
+This suggests a counterintuitive consequence: automated normalization may increase the
+temporal resolution at which intellectual trajectories can be studied, by reducing the costs
+that previously determined how much of the trajectory was recorded. The cultural consequence
+would be an expansion of the observable record of intellectual diversity in time, not a
+contraction.
+
+% ==================================================
+\section{A Multilayer Model of Expressive Diversity}
+\label{sec:multilayer}
+% ==================================================
+
+The preceding sections have introduced several distinct dimensions of diversity within
+AI-mediated communication systems. Each corresponds to a different layer in the generative
+and communicative process through which ideas are produced and transmitted. This section
+synthesizes these layers into a unified model and draws out the implications for evaluating
+the homogenization thesis.
+
+\subsection{The Five Layers}
+
+At the deepest level lies the diversity of generative conceptual processes, reflected in the
+source entropy $H(X)$. This layer corresponds to the variety of conceptual configurations
+that individuals are capable of producing---the combinatorial expansion described in
+Section~\ref{sec:combinatorial} ensures that this space remains effectively unbounded.
+
+Above this lies the diversity of conceptual trajectories and toolchains. Authors move through
+the conceptual manifold in distinctive patterns, forming recognizable constellations of topics
+and recurring sequences of analytical procedures. The topology of these trajectories---
+including the occurrence of transverse movements between conceptual strata---encodes stable
+intellectual signatures that persist across bodies of work (Sections~\ref{sec:trajectories}
+and~\ref{sec:monotonicity}).
+
+A third layer consists of behavioral signals associated with the embodied production of
+communication. Voice patterns, handwriting trajectories, typing dynamics, and other input
+modalities introduce additional degrees of behavioral variation that originate in processes
+that are invisible to and unaffected by linguistic normalization systems
+(Section~\ref{sec:multimodal}).
+
+A fourth layer corresponds to temporal signatures: the characteristic rhythms at which
+conceptual positions evolve over time, the dynamics of exploration and consolidation, and
+the developmental arcs through which intellectual practices mature
+(Section~\ref{sec:temporal}).
+
+The fifth and outermost layer consists of the observable linguistic representation transmitted
+through the communication channel. The entropy $H(Y)$ of this representation may be reduced
+by normalization processes, and the exploratory entropy $\HE$ of the discovery pathways
+through which ideas are encountered may be reduced by algorithmic mediation
+(Sections~\ref{sec:exploratory} and~\ref{sec:rank}).
+
+\subsection{Layer Independence and the Invalidity of Homogenization Inferences}
+
+These layers are only weakly coupled. Compression at the level of linguistic representation
+does not propagate automatically to the deeper layers of conceptual generation, behavioral
+expression, or temporal dynamics. A communication system may exhibit substantial uniformity
+at its surface output while maintaining considerable diversity in the processes that generate
+those outputs.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  block/.style={rectangle, draw, rounded corners=3pt, minimum width=8.5cm,
+    minimum height=0.85cm, font=\small, align=center},
+  arrow/.style={->, thick, gray},
+  node distance=0.55cm
+]
+\node[block, fill=gray!10] (gen)   {Layer 1: Generative Conceptual Processes \quad $H(X)$};
+\node[block, fill=gray!12, below=of gen] (traj) {Layer 2: Conceptual Trajectories \& Toolchains};
+\node[block, fill=gray!14, below=of traj] (beh)  {Layer 3: Behavioral Input Signals \quad $H(B)$};
+\node[block, fill=gray!16, below=of beh]  (temp) {Layer 4: Temporal Signatures};
+\node[block, fill=gray!22, below=of temp] (rep)  {Layer 5: Observable Linguistic Representation \quad $H(Y)$};
+
+\draw[arrow] (gen)  -- (traj);
+\draw[arrow] (traj) -- (beh);
+\draw[arrow] (beh)  -- (temp);
+\draw[arrow] (temp) -- (rep);
+\end{tikzpicture}
+\caption{\small Five-layer model of expressive diversity in AI-mediated communication.
+LLMs as normalization systems act primarily at Layer~5; the deeper layers are governed by
+independent mechanisms and are not directly constrained by surface representation.}
+\label{fig:multilayer}
+\end{figure}
+
+The homogenization thesis implicitly assumes that reductions in observable linguistic entropy
+$H(Y)$ correspond to reductions in the generative entropy $H(X)$ of the underlying cognitive
+system. The multilayer model demonstrates that this inference is unwarranted. Each layer
+possesses its own dynamics, and changes at one layer need not imply corresponding changes at
+another.
+
+Large language models primarily affect the outermost representational layer. They rewrite and
+normalize textual expressions without directly constraining the conceptual configurations that
+generate those expressions, the behavioral patterns through which they are produced, the
+temporal dynamics through which they evolve, or---as argued separately---the exploratory
+pathways through which source material is encountered. At the same time, their influence on
+discovery pathways may reshape the distribution of intellectual inputs that authors encounter,
+introducing a distinct and more tractable form of cultural concern.
+
+\subsection{Implications for Research and Policy}
+
+The multilayer model reshapes the research agenda for evaluating the cultural consequences of
+generative AI. Studies that measure only the properties of the observable output layer---
+stylometric analyses of LLM-assisted texts, experiments on short-term opinion alignment,
+distributional comparisons of model-generated prose---are measuring at the wrong level. They
+capture the behavior of the normalization transformation, not the behavior of the generative
+cognitive system.
+
+Research designs sensitive to the deeper layers would require longitudinal tracking of
+conceptual trajectories, comparison of toolchain distributions across corpora with varying
+levels of AI assistance, measurement of exploratory entropy in digital knowledge environments,
+and experimental investigation of how externalized linguistic labor reshapes the allocation
+of cognitive effort.
+
+Policy interventions aimed at preserving intellectual diversity should similarly target the
+layers where the genuine risks are concentrated: the exploratory infrastructure through which
+ideas are discovered, the diversity of conceptual frameworks surfaced by summarization
+systems, and the design of interfaces that determine whether AI tools expand or constrain the
+range of intellectual possibilities available to users.
+
+% ==================================================
+\section{Conclusion: Diversity, Compression, and Cultural Dynamics}
+\label{sec:conclusion}
+% ==================================================
+
+The homogenization thesis rests on the assumption that uniformity in linguistic outputs
+implies convergence in human cognition. This assumption is formally invalid: a normalization
+layer in the communication channel can produce the former without the latter. The data
+processing inequality---that post-processing cannot increase mutual information---establishes
+this result as a general theoretical claim, not merely a possibility in specific cases.
+
+Large language models, when used instrumentally as editing, translation, or drafting tools,
+operate as normalization layers. They map diverse generative inputs onto a more standardized
+output distribution. The entropy of that output is necessarily lower than the entropy of the
+source distribution; but this reduction is a property of the transformation, not evidence
+that the source distribution has changed. Observing stylistic convergence in LLM-assisted
+texts no more establishes cognitive convergence than observing orthographic uniformity in
+printed texts establishes uniformity in the ideas those texts express.
+
+The deeper analysis developed in this paper identifies several additional dimensions along
+which expressive and intellectual diversity persists beneath surface linguistic uniformity.
+Conceptual trajectories through the topic simplex $\Delta^{m-1}$ remain distinctive across
+authors even when their linguistic surfaces converge; topic constellations and conceptual
+toolchains form stable intellectual signatures that grow more precisely identifiable with
+larger bodies of work; behavioral input signals from embodied production processes introduce
+high-dimensional variation that is invisible to textual normalization; temporal dynamics in
+intellectual production encode characteristic rhythms of exploration and consolidation; and
+the combinatorial expansion of conceptual space ensures that the number of intellectually
+novel configurations remains effectively unbounded.
+
+The genuine cultural risk identified by this analysis lies elsewhere: in the potential
+contraction of exploratory entropy as knowledge discovery becomes increasingly centralized
+and algorithmically mediated. The diversity of conceptual pathways through which individuals
+encounter ideas---a significant source of intellectual innovation and cultural
+resilience---may contract as a consequence of the summarization and ranking dynamics that
+characterize current AI systems. This is a distinct phenomenon from linguistic normalization,
+governed by distinct mechanisms, and requiring distinct empirical and normative responses.
+
+This is a tractable policy and design problem. Interfaces that preserve exploratory diversity,
+that surface conflicting interpretations alongside canonical ones, that encourage direct
+engagement with original sources, and that expose users to unexpected conceptual neighborhoods
+can maintain higher exploratory entropy than those that optimize exclusively for efficiency
+and convenience. The cultural consequences of generative AI depend on these choices in ways
+that are amenable to deliberate intervention.
+
+The multilayer model synthesized in Section~\ref{sec:multilayer} provides the appropriate
+framework for this intervention. Intellectual diversity is distributed across five layers of
+the communication system---generative processes, conceptual trajectories, behavioral signals,
+temporal dynamics, and linguistic representation---and the appropriate measures of its
+preservation differ at each level. Understanding the long-term implications of generative
+language technologies requires sustained attention to all five layers: the diversity of
+generative sources, the structure of conceptual exploration, the behavioral richness of
+embodied expression, the temporal shape of intellectual development, and the ecology of
+knowledge discovery through which ideas circulate. Conflating these dimensions---as the
+homogenization thesis characteristically does---produces misdirected concern and obscures the
+places where cultural vigilance is most needed.
+
+\newpage
+\section*{Appendices}
+\appendix
+
+% ==================================================
+\section{Formal Derivation of Entropy Inequalities Under Deterministic Normalization}
+\label{app:entropy}
+% ==================================================
+
+This appendix collects and extends the entropy-theoretic results discussed in the main text.
+
+\subsection{Setup}
+
+Let $(\calX, p)$ be a discrete probability space representing the generative source, where
+$\calX$ is the set of possible linguistic expressions and $p(x) = \Prob(X = x)$ is the
+source distribution. Let $\calY$ be the output space and $T : \calX \to \calY$ a deterministic
+function representing the normalization transformation. The observable output is the random
+variable $Y = T(X)$, with distribution
+\[
+p(y) = \Prob(Y = y) = \Prob(T(X) = y) = \sum_{\{x : T(x) = y\}} p(x).
+\]
+
+\subsection{Entropy of the Source}
+
+\[
+H(X) = -\sum_{x \in \calX} p(x) \log p(x).
+\]
+
+\subsection{Entropy of the Normalized Output}
+
+\[
+H(Y) = -\sum_{y \in \calY} p(y) \log p(y) = -\sum_{y \in \calY}
+\left(\sum_{\{x : T(x) = y\}} p(x)\right) \log \left(\sum_{\{x : T(x) = y\}} p(x)\right).
+\]
+
+\subsection{The Core Inequality}
+
+\begin{theorem}[Entropy Reduction Under Deterministic Normalization]
+Let $X$ be a discrete random variable and $Y = T(X)$ a deterministic function of $X$. Then
+\[
+H(Y) \leq H(X),
+\]
+with equality if and only if $T$ is injective on the support of $p(x)$.
+\end{theorem}
+
+\begin{proof}
+Since $Y$ is a deterministic function of $X$, the conditional entropy satisfies
+$H(Y \mid X) = 0$. By the chain rule:
+\[
+H(X, Y) = H(X) + H(Y \mid X) = H(X).
+\]
+Also by the chain rule:
+\[
+H(X, Y) = H(Y) + H(X \mid Y).
+\]
+Therefore $H(X) = H(Y) + H(X \mid Y)$, so $H(Y) = H(X) - H(X \mid Y) \leq H(X)$ since
+$H(X \mid Y) \geq 0$.
+
+For equality: $H(X \mid Y) = 0$ if and only if $X$ is a function of $Y$, which holds if and
+only if $T$ is injective on the support of $p(x)$.
+\end{proof}
+
+\subsection{Quantifying Information Loss}
+
+The information lost in normalization is measured by the equivocation $H(X \mid Y)$:
+\[
+H(X \mid Y) = H(X) - H(Y) = \sum_{y \in \calY} p(y) H(X \mid Y = y),
+\]
+where
+\[
+H(X \mid Y = y) = -\sum_{\{x : T(x) = y\}} \frac{p(x)}{p(y)} \log \frac{p(x)}{p(y)}.
+\]
+This conditional entropy measures the residual diversity within each equivalence class
+$T^{-1}(y)$. When normalization collapses many diverse expressions into a single output,
+$H(X \mid Y = y)$ is large for that $y$, reflecting the substantial generative diversity
+that is invisible in the normalized representation.
+
+\subsection{The Data Processing Inequality}
+
+The main theorem is a consequence of the more general data processing inequality. If $Z$ is
+any random variable such that $X \to Y \to Z$ is a Markov chain (i.e., $Z$ depends on $X$
+only through $Y$), then
+\[
+I(X; Z) \leq I(X; Y),
+\]
+where $I(X; Y) = H(X) - H(X \mid Y)$ denotes mutual information. For deterministic $Y = T(X)$,
+$I(X; Y) = H(Y)$, and the inequality reduces to our main result.
+
+% ==================================================
+\section{Exploratory Entropy: Formal Treatment}
+\label{app:exploratory}
+% ==================================================
+
+\subsection{Setup}
+
+Let $\calS = \{s_1, \ldots, s_n\}$ be a finite set of informational sources and $P$ a
+probability distribution over $\calS$ representing the discovery probability. The exploratory
+entropy is
+\[
+\HE(P) = -\sum_{i=1}^n P(s_i) \log P(s_i).
+\]
+
+\subsection{Maximum Entropy and the Uniform Distribution}
+
+By the maximum-entropy principle, $\HE(P)$ is uniquely maximized by the uniform distribution
+$P_0(s_i) = 1/n$, at which point $\HE(P_0) = \log n$.
+
+\subsection{Entropy Under Ranking}
+
+Let $R : \calS \to \{1, \ldots, n\}$ be a bijective ranking function and $f : \{1,\ldots,n\}
+\to (0, \infty)$ a strictly decreasing exposure function. Define the rank-weighted distribution:
+\[
+P'(s_i) = \frac{f(R(s_i))}{\sum_{j=1}^n f(R(s_j))}.
+\]
+Since $f$ is strictly decreasing, $P'$ is nonuniform, and therefore $\HE(P') < \log n =
+\HE(P_0)$.
+
+\begin{lemma}[Rank Concentration]
+For any strictly decreasing $f$, the rank-mediated distribution $P'$ satisfies
+\[
+\HE(P') < \HE(P_0).
+\]
+Moreover, as $f$ becomes more steeply decreasing (as $f(1)/f(n)$ increases),
+$\HE(P')$ decreases monotonically toward zero.
+\end{lemma}
+
+\begin{proof}
+The first claim follows from the strict concavity of the entropy function on the probability
+simplex: the unique maximizer of $\HE$ is $P_0$, and $P' \neq P_0$ for any nonconstant $f$.
+The second claim follows from the observation that as $f(1)/f(n) \to \infty$, all probability
+mass concentrates on the top-ranked source, and $\HE(P') \to 0$.
+\end{proof}
+
+\subsection{Entropy Under Summarization}
+
+Let $G : \mathcal{P}(\calS) \to \calS_*$ be a generative summarization operator that maps
+subsets of $\calS$ to a summary space $\calS_*$. If $\calS_* = \{*\}$ (a single canonical
+summary), the discovery distribution degenerates to a point mass with $\HE = 0$.
+
+In the realistic mixed case where users access the summary with probability $\alpha$ and
+access original sources (distributed according to $P'$) with probability $1 - \alpha$, the
+effective discovery distribution is the mixture
+\[
+P_\alpha = \alpha \cdot \delta_* + (1 - \alpha) \cdot P',
+\]
+where $\delta_*$ is the point mass on the summary. The entropy of this mixture satisfies
+\[
+\HE(P_\alpha) \leq (1 - \alpha)\HE(P') + h(\alpha),
+\]
+where $h(\alpha) = -\alpha \log \alpha - (1-\alpha)\log(1-\alpha)$ is the binary entropy
+function. This bound shows that increasing $\alpha$ (greater reliance on AI summaries)
+monotonically reduces the upper bound on exploratory entropy.
+
+% ==================================================
+\section{A Unified Proposition on Normalization and Exploration}
+\label{app:unified}
+% ==================================================
+
+\begin{proposition}[Multilayer Independence of Expressive Diversity]
+The following hold simultaneously:
+
+\begin{enumerate}[label=(\roman*)]
+\item Normalization layers may reduce observable linguistic entropy $H(Y)$ while leaving
+generative cognitive entropy $H(X)$ unchanged (Theorem A.1).
+
+\item Algorithmic discovery systems may reduce exploratory entropy $\HE$ even when both
+$H(X)$ and $H(Y)$ remain unchanged (Lemma B.1).
+
+\item Linguistic normalization does not constrain conceptual trajectory structure in
+$\Delta^{m-1}$: distinct conceptual toolchains can produce similar normalized outputs,
+but the converse inference from output similarity to toolchain similarity is not warranted.
+
+\item The space of intellectually innovative configurations grows exponentially with
+$|\calT|$, independently of $H(Y)$.
+
+\item Consequently, $H(X)$, $H(Y)$, $\HE$, and conceptual trajectory structure are
+mutually logically independent variables in AI-mediated communication systems.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Claims (i) and (ii) follow from Theorem A.1 and Lemma B.1 respectively.
+
+For claim (iii): the mapping $F : \calC \to \calL$ is many-to-one, and the composition
+$T \circ F$ compounds this non-injectivity. Therefore $T(F(C_1)) = T(F(C_2))$ is consistent
+with $C_1 \neq C_2$ for arbitrary pairs of conceptual configurations.
+
+For claim (iv): the number of subsets of $\calT$ is $2^{|\calT|}$, which grows exponentially
+in $|\calT|$ regardless of the value of $H(Y)$.
+
+For claim (v), independence follows from the construction of explicit examples:
+
+\emph{High $H(X)$, low $H(Y)$, low $\HE$, homogeneous trajectories}: Diverse authors use
+the same AI editor and same AI-mediated discovery channel, drawing from the same canonical
+sources.
+
+\emph{High $H(X)$, low $H(Y)$, high $\HE$, diverse trajectories}: Diverse authors use the
+same AI editor but explore independently through physically distributed archives.
+
+\emph{High $H(X)$, high $H(Y)$, low $\HE$}: Authors with diverse expression and minimal AI
+editing all rely on the same AI-curated news feed, producing diverse prose about a small set
+of concepts.
+
+\emph{Low $H(X)$, low $H(Y)$, high $\HE$}: Authors with narrow stylistic range and heavy
+AI editing nevertheless encounter ideas through a diverse and decentralized discovery network.
+\end{proof}
+
+\begin{remark}
+This proposition clarifies the structure of the homogenization debate. The three quantities
+$H(X)$, $H(Y)$, and $\HE$ capture three distinct dimensions of diversity in an AI-mediated
+knowledge system: the diversity of generative cognitive processes, the diversity of observable
+linguistic outputs, and the diversity of epistemic discovery pathways. Each is a meaningful
+and distinct object of study. Conflating them---as the homogenization thesis tends to
+do---produces a misdirected research program that measures the wrong variables and draws
+unwarranted conclusions.
+\end{remark}
+
+\newpage
+\bibliographystyle{plainnat}
+
+\begin{thebibliography}{99}
+
+\bibitem[Shannon(1948)]{shannon1948}
+C.~E. Shannon.
+\newblock A mathematical theory of communication.
+\newblock \emph{Bell System Technical Journal}, 27:379--423, 1948.
+
+\bibitem[Cover and Thomas(2006)]{cover2006}
+T.~M. Cover and J.~A. Thomas.
+\newblock \emph{Elements of Information Theory}.
+\newblock Wiley-Interscience, 2nd edition, 2006.
+
+\bibitem[Boyd and Richerson(2005)]{boyd2005}
+R.~Boyd and P.~J. Richerson.
+\newblock \emph{The Origin and Evolution of Cultures}.
+\newblock Oxford University Press, 2005.
+
+\bibitem[Henrich(2015)]{henrich2015}
+J.~Henrich.
+\newblock \emph{The Secret of Our Success: How Culture Is Driving Human Evolution,
+Domesticating Our Species, and Making Us Smarter}.
+\newblock Princeton University Press, 2015.
+
+\bibitem[Lazer et al.(2009)]{lazer2009}
+D.~Lazer, A.~Pentland, L.~Adamic, S.~Aral, A.~Barabasi, D.~Brewer,
+N.~Christakis, N.~Contractor, J.~Fowler, M.~Gutmann, T.~Jebara, G.~King,
+M.~Macy, D.~Roy, and M.~Van~Alstyne.
+\newblock Computational social science.
+\newblock \emph{Science}, 323(5915):721--723, 2009.
+
+\bibitem[Sourati et al.(2026)]{sourati2026}
+A.~Sourati, J.~Kim, T.~Westberg, and M.~T. Corey.
+\newblock The homogenizing effect of large language models on human expression
+and thought.
+\newblock \emph{Trends in Cognitive Sciences}, 30(2):112--128, 2026.
+
+\bibitem[Bender et al.(2021)]{bender2021}
+E.~M. Bender, T.~Gebru, A.~McMillan-Major, and S.~Shmitchell.
+\newblock On the dangers of stochastic parrots: Can language models be too big?
+\newblock In \emph{Proceedings of the 2021 ACM Conference on Fairness,
+Accountability, and Transparency (FAccT)}, pages 610--623, 2021.
+
+\bibitem[Raghavan and Hanna(2023)]{raghavan2023}
+M.~Raghavan and K.~Hanna.
+\newblock Mechanisms of algorithmic influence on human decisions.
+\newblock \emph{Annual Review of Economics}, 15:327--362, 2023.
+
+\bibitem[Eisenstein(1979)]{eisenstein1979}
+E.~L. Eisenstein.
+\newblock \emph{The Printing Press as an Agent of Change}.
+\newblock Cambridge University Press, 1979.
+
+\bibitem[Clark(1997)]{clark1997}
+A.~Clark.
+\newblock \emph{Being There: Putting Brain, Body, and World Together Again}.
+\newblock MIT Press, 1997.
+
+\bibitem[Hutchins(1995)]{hutchins1995}
+E.~Hutchins.
+\newblock \emph{Cognition in the Wild}.
+\newblock MIT Press, 1995.
+
+\bibitem[Olson(1994)]{olson1994}
+D.~R. Olson.
+\newblock \emph{The World on Paper: The Conceptual and Cognitive Implications of
+Writing and Reading}.
+\newblock Cambridge University Press, 1994.
+
+\bibitem[Sperber(1996)]{sperber1996}
+D.~Sperber.
+\newblock \emph{Explaining Culture: A Naturalistic Approach}.
+\newblock Blackwell, 1996.
+
+\bibitem[Sunstein(2017)]{sunstein2017}
+C.~R. Sunstein.
+\newblock \emph{\#Republic: Divided Democracy in the Age of Social Media}.
+\newblock Princeton University Press, 2017.
+
+\end{thebibliography}
+
+\end{document}

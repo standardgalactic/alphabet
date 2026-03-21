@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asymmetric Exposure</title>
+
+<style>
+
+:root { --vh:1vh; }
+
+body{
+margin:0;
+min-height:calc(var(--vh)*100);
+background:#000;
+color:#7cff7c;
+font-family:monospace;
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+padding:20px;
+}
+
+canvas{
+width:340px;
+height:340px;
+background:#000;
+border-radius:50%;
+margin-bottom:20px;
+box-shadow:0 0 10px #00ff0030,0 0 40px #00ff0010 inset;
+}
+
+.controls{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+margin-bottom:12px;
+}
+
+button{
+background:#001400;
+border:1px solid #00ff00;
+color:#7cff7c;
+padding:8px 14px;
+font-size:.8em;
+cursor:pointer;
+}
+
+button:hover{
+background:#002200;
+}
+
+.timer{
+min-width:80px;
+font-size:1.1em;
+}
+
+.captions{
+max-width:720px;
+min-height:2.4em;
+border:1px solid #00ff0030;
+background:#001000;
+padding:10px;
+margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Asymmetric Exposure</h2>
+
+<canvas id="scope"></canvas>
+
+<div class="controls">
+
+<button id="play">Play</button>
+<button id="pause">Pause</button>
+<button id="loop">Loop Off</button>
+
+<div class="timer" id="timer">--:--</div>
+
+</div>
+
+<div id="captions" class="captions"></div>
+
+<audio id="audio"></audio>
+
+<script>
+
+/* ===== Canvas setup ===== */
+
+const canvas=document.getElementById("scope")
+const ctx=canvas.getContext("2d")
+
+const dpr = window.devicePixelRatio || 1
+
+canvas.width = 340 * dpr
+canvas.height = 340 * dpr
+
+ctx.setTransform(dpr,0,0,dpr,0,0)
+
+/* ===== Elements ===== */
+
+const audio=document.getElementById("audio")
+const captions=document.getElementById("captions")
+
+const play=document.getElementById("play")
+const pause=document.getElementById("pause")
+const loop=document.getElementById("loop")
+
+const timer=document.getElementById("timer")
+
+/* ===== Audio engine ===== */
+
+let audioCtx
+let analyser
+let buffer
+
+function initAudio(){
+
+if(audioCtx) return
+
+audioCtx=new (window.AudioContext||window.webkitAudioContext)()
+
+analyser=audioCtx.createAnalyser()
+analyser.fftSize=2048
+
+const src=audioCtx.createMediaElementSource(audio)
+
+src.connect(analyser)
+analyser.connect(audioCtx.destination)
+
+buffer=new Uint8Array(analyser.fftSize)
+
+}
+
+/* ===== Load audio + subtitles ===== */
+
+function loadEssay(){
+
+audio.pause()
+
+audio.src="The_mathematical_proof_against_going_viral.mp3"
+
+audio.innerHTML=`<track kind="captions" src="The_mathematical_proof_against_going_viral.vtt" srclang="en" default>`
+
+captions.textContent=""
+
+audio.load()
+
+audio.addEventListener("loadedmetadata",attachTrack,{once:true})
+
+}
+
+/* ===== Subtitles ===== */
+
+function attachTrack(){
+
+const track=audio.textTracks[0]
+
+if(!track) return
+
+track.mode="hidden"
+
+track.oncuechange=()=>{
+
+const cue=track.activeCues[0]
+
+captions.textContent=cue?cue.text:""
+
+}
+
+}
+
+/* ===== Timer ===== */
+
+function formatTime(sec){
+
+const m=Math.floor(sec/60)
+const s=Math.floor(sec%60)
+
+return`${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`
+
+}
+
+function updateTimer(){
+
+if(audio.duration){
+
+timer.textContent=formatTime(audio.duration-audio.currentTime)
+
+}
+
+requestAnimationFrame(updateTimer)
+
+}
+
+updateTimer()
+
+/* ===== Controls ===== */
+
+play.onclick=()=>{
+initAudio()
+audioCtx.resume().then(()=>audio.play())
+}
+
+pause.onclick=()=>audio.pause()
+
+loop.onclick=()=>{
+audio.loop=!audio.loop
+loop.textContent=audio.loop?"Loop On":"Loop Off"
+}
+
+/* ===== Oscilloscope renderer ===== */
+
+let rot=0
+
+function draw(){
+
+if(analyser){
+
+analyser.getByteTimeDomainData(buffer)
+
+/* persistence */
+
+ctx.fillStyle="rgba(0,0,0,0.12)"
+ctx.fillRect(0,0,340,340)
+
+ctx.beginPath()
+
+for(let i=0;i<buffer.length-1;i++){
+
+const x=(buffer[i]-128)/128*150
+const y=(buffer[(i+buffer.length/2)%buffer.length]-128)/128*150
+
+const cos=Math.cos(rot)
+const sin=Math.sin(rot)
+
+const xr=x*cos-y*sin
+const yr=x*sin+y*cos
+
+const px=170+xr
+const py=170+yr
+
+if(i===0) ctx.moveTo(px,py)
+else ctx.lineTo(px,py)
+
+}
+
+ctx.strokeStyle="#00ff66"
+ctx.lineWidth=1.5
+ctx.stroke()
+
+rot+=0.002
+
+}
+
+requestAnimationFrame(draw)
+
+}
+
+draw()
+
+/* load on startup */
+
+loadEssay()
+
+</script>
+
+</body>
+</html>

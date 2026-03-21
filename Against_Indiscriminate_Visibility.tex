@@ -11,6 +11,9 @@
 \usepackage{microtype}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc,decorations.pathmorphing}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz-3dplot}
 
 \geometry{margin=1.2in}
 \onehalfspacing
@@ -54,18 +57,6 @@ More importantly, correction does not scale proportionally with falsehood. A sin
 
 Thus, as visibility increases, the rumor surface grows faster than the truth surface. The system becomes increasingly dominated by narratives that are easier to spread than to correct. An individual who increases their exposure without increasing their capacity for narrative correction has therefore degraded their expected informational environment, not improved it.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[scale=1.1]
-\draw[->] (0,0) -- (6,0) node[right] {$t$};
-\draw[->] (0,0) -- (0,4) node[above] {Propagation};
-\draw[thick] (0,0) .. controls (2,1.2) and (4,2.2) .. (5.5,2.8)
-  node[right] {\small truth};
-\draw[thick,dashed] (0,0) .. controls (1,2) and (3,3.2) .. (5.5,3.6)
-  node[right] {\small rumor};
-\end{tikzpicture}
-\caption{Propagation asymmetry: rumor spreads faster and saturates at higher amplitude than truth. Correction effort scales with the gap between the two curves.}
-\end{figure}
 
 \section{Reputational Attack Surfaces}
 
@@ -75,23 +66,6 @@ In small offline communities, this may manifest as gossip, informal sanctions, o
 
 It is worth noting that these dynamics do not require bad actors in any unusual sense. Most of the agents who contribute to reputational degradation are acting from entirely ordinary motives: self-protection, community cohesion, or the casual transmission of interesting information. The structure of the damage does not depend on the presence of malice; it depends only on the presence of a large enough audience and the absence of corrective capacity.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[scale=0.85]
-\draw[fill=black] (0,0) circle (0.07);
-\node[below=5pt] at (0,0) {\small agent};
-\draw (0,0) circle (1.2);
-\draw (0,0) circle (2.2);
-\draw (0,0) circle (3.2);
-% labels on the arcs at 45 degrees to avoid overlap
-\node at (0.85,0.85) {\small local};
-\node at (1.6,1.6) {\small network};
-\node at (2.35,2.35) {\small global};
-% arrow outside
-\draw[->,gray] (3.35,0) -- (4.1,0) node[right] {\small $\Phi\uparrow$};
-\end{tikzpicture}
-\caption{Expanding visibility expands the reputational attack surface nonlinearly. Each ring represents a new class of observers capable of acting on an agent's reputation.}
-\end{figure}
 
 \section{Lack of Defensive Infrastructure}
 
@@ -135,20 +109,6 @@ Thus, beyond a certain point:
 
 The inflection at which this inequality becomes binding varies by context, but under conditions of limited defensive capacity, it tends to occur well before the scales of exposure that virality culture treats as targets.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\draw[->] (0,0) -- (6,0) node[right] {$\Phi$};
-\draw[->] (0,0) -- (0,4) node[above] {Effect};
-\draw[thick] (0,0) .. controls (2,1) and (4,1.6) .. (5.5,2)
-  node[right] {\small benefit};
-\draw[thick,dashed] (0,0) .. controls (2,1.2) and (3.5,3.2) .. (5.5,4)
-  node[right] {\small risk};
-\draw[dotted] (2.8,0) -- (2.8,2.1);
-\node[below] at (2.8,0) {\small $\Phi_c$};
-\end{tikzpicture}
-\caption{Risk grows superlinearly relative to benefit beyond the critical threshold $\Phi_c$. Below $\Phi_c$ the two curves are comparable; above it, risk dominates.}
-\end{figure}
 
 \section{Indiscriminate vs.\ Selective Dissemination}
 
@@ -159,6 +119,8 @@ Selective dissemination---sharing work within contexts where it can be understoo
 Indiscriminate dissemination maximizes reach without regard for interpretive compatibility or defensive capacity. It exposes work to audiences that may lack the context, incentives, or goodwill necessary for constructive engagement. The result is not merely inefficiency but instability: the signal degrades faster than it can be transmitted.
 
 \section{A Field-Theoretic Model of Visibility and Reputational Dynamics}
+
+Consider what happens when someone posts a video that unexpectedly reaches a million people overnight. The content itself has not changed, but the number of strangers now capable of forming and transmitting an opinion about it has increased by several orders of magnitude. Some of those strangers are indifferent, some are genuinely interested, and some are actively hostile for reasons having nothing to do with the content. The creator, meanwhile, has the same limited capacity to respond that they had before the video was posted. The asymmetry is not accidental: the audience scales with distribution, but the capacity to defend, clarify, and correct does not. What follows is a formalization of exactly this asymmetry.
 
 We now formalize the dynamics of publicity using a field-theoretic perspective aligned with scalar--vector--entropy frameworks.
 
@@ -284,40 +246,11 @@ Empirically and structurally, this satisfies:
 
 Thus risk scales superlinearly with exposure.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[node distance=2.4cm,>=Stealth]
-\node (phi) {$\Phi$};
-\node (grad) [right of=phi] {$\nabla\Phi$};
-\node (v)    [right of=grad] {$\mathbf{v}$};
-\node (S)    [right of=v]    {$S$};
-\draw[->] (phi) -- (grad);
-\draw[->] (grad) -- (v);
-\draw[->] (v) -- node[above]{\small $\alpha|\mathbf{v}|^2$} (S);
-\end{tikzpicture}
-\caption{Core mechanism of the field model: visibility gradients induce interpretive flow, and flow produces reputational entropy at rate $\alpha|\mathbf{v}|^2$.}
-\end{figure}
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\draw[->] (0,0) -- (6,0) node[right] {$|\nabla\Phi|^2$};
-\draw[->] (0,0) -- (0,4) node[above] {rate};
-\draw[thick] (0,0) .. controls (3,2) and (5,3.8) .. (5.5,4);
-\node at (4.8,3.5) {\small $\alpha|\nabla\Phi|^2$};
-\draw[thick,dashed] (0,1) -- (5.5,1);
-\node at (4.8,1.35) {\small $\beta\mathcal{C}$};
-\draw[dotted] (1.3,0) -- (1.3,1);
-\node[below] at (1.3,0) {\small stable};
-\draw[dotted] (3.5,0) -- (3.5,2.7);
-\node[below] at (3.5,0) {\small unstable};
-\end{tikzpicture}
-\caption{Entropy production $\alpha|\nabla\Phi|^2$ grows without bound while corrective capacity $\beta\mathcal{C}$ is bounded. Instability begins where the curves cross.}
-\end{figure}
 
 \section{Universality of Exposure Across Domains}
 
-The dynamics described above are not specific to digital platforms or social media. Any act that increases legibility within a social field contributes to the visibility function $\Phi(x,t)$.
+The risks described so far might appear to be a feature of digital culture specifically---of Twitter pile-ons, viral videos, and algorithmic amplification. But the same dynamics appear whenever an individual increases their legibility within any social environment, and they predate the internet by centuries. The pamphleteer who distributed ideas across seventeenth-century Europe, the restaurateur who undercut local prices, the scientist who published findings that contradicted the orthodoxy of a funding body, the artist whose work was condemned by a local religious authority---each of these agents increased their coupling to a heterogeneous interpretive field and faced the same structural consequences. The medium is different; the mechanism is not. Any act that increases legibility within a social field contributes to the visibility function $\Phi(x,t)$.
 
 This includes publishing books or essays, exhibiting art, giving interviews or lectures, introducing new products or pricing models, or publicly criticizing institutions. In each case, the mechanism is identical: the agent increases coupling to a broader interpretive environment. The medium changes, but the field dynamics do not.
 
@@ -401,6 +334,8 @@ Economic, social, and cultural systems are not independent. A perturbation in on
 Thus even a localized innovation can trigger distributed responses across multiple layers of the system.
 
 \section{Control Theory of Visibility: Regulating Exposure Under Entropic Constraints}
+
+A musician releasing their first album faces a practical version of this problem. Releasing it to a small number of people they know carries low risk: the audience is likely sympathetic, contextually equipped to evaluate the work, and unable to amplify misreadings beyond that circle. Releasing it publicly to every streaming platform at once maximizes potential reach but also maximizes exposure to audiences who will not distinguish the work from hundreds of competing objects they encounter that week, critics who will process it in seconds, and ideological communities for whom its content or aesthetic associations trigger hostility that has nothing to do with the music. The question is not whether to release but how to calibrate the rate and domain of release relative to the capacity to withstand and respond to what comes back. This is a control problem: visibility is a variable that can be modulated, not merely a switch to be thrown.
 
 The preceding analysis establishes that visibility $\Phi$ is not intrinsically beneficial, but a driver of entropy production and adversarial interaction. We now treat visibility as a control variable to be regulated over time.
 
@@ -490,22 +425,6 @@ u_0 & \text{if } S \ll P \\
 
 where $-\kappa$ represents active withdrawal (reducing visibility, disengaging channels). Thus, exposure is reduced or halted when instability is detected.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[node distance=2.4cm,>=Stealth]
-\node (u)       {$u(t)$};
-\node (phi)     [right of=u]    {$\Phi$};
-\node (flow)    [right of=phi]  {$\mathbf{v}$};
-\node (entropy) [right of=flow] {$S$};
-\node (ctrl)    [below of=phi,yshift=0.4cm]  {$f(S,P)$};
-\draw[->] (u) -- (phi);
-\draw[->] (phi) -- (flow);
-\draw[->] (flow) -- (entropy);
-\draw[->] (entropy.south) .. controls +(0,-0.8) and +(1.2,0) .. (ctrl.east);
-\draw[->] (ctrl.west) .. controls +(-1.2,0) and +(0,-0.8) .. (u.south);
-\end{tikzpicture}
-\caption{Feedback control of visibility. Entropy $S$ feeds back through the controller $f(S,P)$ to modulate the exposure input $u(t)$, maintaining the system below the critical threshold.}
-\end{figure}
 
 \subsection{Latency and Recovery}
 
@@ -531,6 +450,8 @@ An alternative regime is to maintain:
 This corresponds to low-gradient visibility: remaining below detection thresholds of large-scale adversarial flows while still enabling local interaction. In this regime, growth occurs through dense local networks, repeated small-scale interactions, and high-context communication. Rather than maximizing reach, the system maximizes coherence.
 
 \section{The Visibility Minimization Principle and Reputational Irreversibility}
+
+A surgeon operates with the smallest incision sufficient to complete the procedure. A diplomat negotiates using the minimum disclosure necessary to reach agreement. An engineer sizes a component to the load it will bear, not the largest load imaginable. In each of these domains, the operative principle is that resources with associated costs should be used at the level required by the task, not maximized for their own sake. Visibility is no different. The question is never how much exposure can be generated, but how much is needed to achieve the communicative objective while remaining within the stability envelope. What follows formalizes this intuition as a variational principle.
 
 We now introduce a variational principle governing exposure in systems subject to asymmetric information dynamics.
 
@@ -648,6 +569,8 @@ In such cases, the entropy term dominates:
 indicating a breakdown of stable dynamics. Thus virality is not merely high exposure, but divergence from optimal action.
 
 \section{Reputational Dynamics as a Sector of the Relativistic Scalar--Vector Plenum}
+
+The preceding sections have established a set of qualitative and semi-formal claims about visibility: that it induces flow, that flow produces distortion, and that distortion accumulates faster than it can be corrected. These claims can be made precise by embedding them within a field theory that already possesses the right structure. The Relativistic Scalar--Vector Plenum provides exactly such a structure: a framework in which a scalar potential drives vector flows that couple to an entropy field through well-defined differential equations. Reputational dynamics are not an analogy to this framework but an instance of it, defined over a manifold of interpretive contexts rather than physical space.
 
 We now demonstrate that the dynamics of visibility, interpretation, and reputational entropy are not merely analogous to field-theoretic systems, but constitute a concrete instantiation of the scalar--vector--entropy structure within the Relativistic Scalar--Vector Plenum (RSVP).
 
@@ -771,6 +694,8 @@ is now interpreted as a reduced action over the reputational sector of RSVP. Min
 
 \section{A No-Go Theorem for Safe Virality}
 
+The claim that virality is dangerous has so far rested on observation and structural argument. It is worth establishing something stronger: that the danger is not merely typical or likely, but that it follows necessarily from a small set of assumptions weak enough to hold in any realistic communicative system. If interaction produces distortion, if visibility induces interaction, and if the capacity to correct distortion is finite, then no strategy of publicity can achieve unbounded reach while remaining safe. The argument below makes this precise.
+
 We now formalize a fundamental limitation on exposure within the scalar--vector--entropy framework.
 
 \subsection{Preliminaries}
@@ -877,20 +802,6 @@ S(x,t) > P(x,t)
 violating safe operation. \hfill$\square$
 \end{proof}
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\draw[->] (0,0) -- (6,0) node[right] {$t$};
-\draw[->] (0,0) -- (0,4) node[above] {$\int_{\mathcal{M}} S\,dx$};
-\draw[thick] (0,0.4) .. controls (2.5,0.9) and (4,2.8) .. (5.2,4);
-\draw[dashed] (0,2.8) -- (5.2,2.8);
-\node[left] at (0,2.8) {\small $P_{\max}$};
-\draw[dotted] (3.6,0) -- (3.6,2.8);
-\node[below] at (3.6,0) {\small $t_c$};
-\node at (4.5,3.4) {\small divergence};
-\end{tikzpicture}
-\caption{No-Go Theorem: as visibility grows, total entropy $\int S\,dx$ diverges and eventually exceeds bounded protective capacity $P_{\max}$ at time $t_c$.}
-\end{figure}
 
 \subsection{Corollaries}
 
@@ -913,6 +824,8 @@ The theorem establishes that instability under indiscriminate exposure is not co
 Thus, virality cannot be made safe by better messaging, improved intentions, or adherence to norms. It is constrained by the geometry of the field itself.
 
 \section{Design Implications: Conditions for Safe High Visibility}
+
+The no-go theorem is not a counsel of despair. It establishes what is impossible under current conditions, which is precisely the information needed to ask what would have to change for those conditions to be different. A world in which high visibility is safe would be one in which at least one of the theorem's assumptions is violated: perhaps interpretive activity no longer generates distortion at the same rate, perhaps corrective capacity is genuinely distributed and immediate, or perhaps visibility no longer couples to interaction in the way it currently does. None of these conditions obtains at present, but examining them clarifies what system-level changes would be required and what practical strategies can improve stability within the bounds of the current regime.
 
 The No-Go Theorem for Safe Virality establishes that, under current structural conditions, unbounded visibility is incompatible with bounded protection. This raises a constructive question: what modifications to the underlying field would be required to permit stable high visibility? We treat this as a problem of altering the scalar--vector--entropy dynamics.
 
@@ -961,7 +874,7 @@ analogous to shock absorbers in dynamical systems.
 
 \section{Asymmetric Vulnerability: Visibility Under Unequal Protective Capacity}
 
-The preceding analysis treats protective capacity $P(x,t)$ as bounded but does not assume it is uniformly distributed. In practice, $P$ varies significantly across agents, and this variation induces a structural asymmetry in exposure dynamics that is independent of any individual's intentions or skill.
+The analysis so far has treated all agents as equivalently positioned with respect to the risks of exposure. In practice, this is false in ways that matter structurally, not merely as a matter of degree. A tenured professor who publishes a controversial argument faces a different exposure landscape than an unaffiliated independent writer making the same argument. A corporation that launches a product which disrupts existing markets faces different consequences than an individual entrepreneur doing the same. A public figure with an established PR infrastructure and legal team faces a different cost structure for reputational damage than someone who has only their own time and credibility. The difference is not that one group behaves more wisely. It is that the critical threshold at which exposure becomes destabilizing is located at a fundamentally different point on the visibility axis for each of them. In practice, $P$ varies significantly across agents, and this variation induces a structural asymmetry in exposure dynamics that is independent of any individual's intentions or skill.
 
 Let $P_i \ll P_j$ for agents $i$ and $j$. Then, for identical visibility trajectories $\Phi_i = \Phi_j$, the stability condition $S(x,t) \leq P(x,t)$ is violated earlier for agent $i$ than for agent $j$. There therefore exists a class of agents for whom $\Phi_{c,i} \ll \Phi_{c,j}$: the critical visibility threshold is significantly lower.
 
@@ -998,32 +911,10 @@ P_{\text{high}} \uparrow \;\Rightarrow\; \Phi_{c} \uparrow, \qquad P_{\text{low}
 
 Inequality is not external to the visibility system; it is generated and amplified by the same scalar--vector--entropy dynamics.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\draw[->] (0,0) -- (7,0) node[right] {$\Phi$};
-\draw[->] (0,0) -- (0,4.5) node[above] {$S$};
-% low-P agent
-\draw[thick] (0,0.3) .. controls (2,1.2) and (3.2,3.2) .. (4,4.3);
-\draw[dashed] (0,1.5) -- (6.5,1.5);
-\node[left] at (0,1.5) {\small $P_i$};
-\draw[dotted] (2.35,0) -- (2.35,1.5);
-\node[below] at (2.35,0) {\small $\Phi_{c,i}$};
-% high-P agent
-\draw[thick,gray!70] (0,0.3) .. controls (2,1.2) and (3.2,3.2) .. (4,4.3);
-\draw[dashed,gray!60] (0,3.2) -- (6.5,3.2);
-\node[left] at (0,3.2) {\small $P_j$};
-\draw[dotted,gray!60] (4.7,0) -- (4.7,3.2);
-\node[below] at (4.7,0) {\small $\Phi_{c,j}$};
-% labels
-\node[right] at (4.1,4.1) {\small same entropy trajectory};
-\draw[<->] (5.5,1.5) -- (5.5,3.2);
-\node[right] at (5.55,2.35) {\small $\Delta P$};
-\end{tikzpicture}
-\caption{Unequal critical visibility thresholds under identical entropy trajectories. Both agents follow the same entropy curve, but agent $i$ (lower $P_i$) crosses into instability at $\Phi_{c,i}$, while agent $j$ remains stable until $\Phi_{c,j} \gg \Phi_{c,i}$. The same field acts on both; the instability boundary is not located at the same place.}
-\end{figure}
 
 \section{An Inequality Amplification Theorem}
+
+The informal claim embedded in the previous section is this: given two individuals with identical ideas, identical work, and identical exposure, the one with fewer resources will be destroyed by a level of attention that the other will survive without difficulty. This is not a sociological generalization but a mathematical consequence of the field dynamics. The theorem below makes it precise by showing that equal visibility input produces unequal outcomes whenever protective capacity differs, and that the divergence in outcomes is not proportional to the initial difference in protection but amplifies dynamically over time.
 
 We now formalize the claim that unequal protective capacity produces unequal exposure outcomes even under identical visibility trajectories.
 
@@ -1099,6 +990,8 @@ P_{\text{low}} \;\Rightarrow\; \Phi_c \downarrow \;\Rightarrow\; \tau \downarrow
 
 \section{A Selection Bias Theorem for Observed Visibility Success}
 
+There is a persistent puzzle in publicity culture: the people who advocate most loudly for indiscriminate exposure are almost always those for whom it worked. Their advice is given in good faith, but it is drawn from a biased sample. The artists, writers, entrepreneurs, and activists who were destroyed by the same strategies they used are no longer visible. They are not giving interviews, not writing about their experiences, not appearing at conferences to tell cautionary tales. Their absence is not random. It is a direct consequence of the instability that ended their public presence. What remains observable is therefore not the full distribution of outcomes under exposure but a survivor-filtered subset of it, systematically skewed toward those whose protective capacity was sufficient to withstand the dynamics that eliminated others.
+
 The unequal danger of exposure is further obscured by a sampling effect. Public discourse does not observe all trajectories equally; it preferentially observes those that remain visible after exposure. This induces a survivor bias that makes publicity appear safer and more meritocratic than it is across the full population.
 
 \subsection{Setup}
@@ -1148,6 +1041,8 @@ The apparent safety of visibility is an illusion generated by the disappearance 
 
 \section{AGI as an Attempted Violation of the No-Go Theorem}
 
+The no-go theorem is a statement about systems operating under specific conditions: interaction produces entropy, visibility induces interaction, and correction is bounded. A natural response is to ask whether a sufficiently advanced artificial intelligence architecture could modify those conditions rather than operate within them. If an AGI system could align interpretive activity across a distributed network so that interaction no longer generates distortion at the same rate, or if it could distribute corrective capacity so broadly that the bounded correction assumption fails, then the theorem's conclusion would not apply. This is not a fantasy scenario but a concrete engineering question, and it is worth asking precisely what the theorem requires to break down and whether any proposed architecture actually achieves it.
+
 The vision of a decentralized society of AGI minds may be interpreted as an attempt to construct a system in which the conditions of the No-Go Theorem for Safe Virality are no longer satisfied. Specifically, such a system seeks to reduce entropy production during interaction, increase corrective capacity through distributed cognition, and redistribute exposure across a network rather than concentrating it on individuals. We analyze these modifications in the language of scalar--vector--entropy dynamics.
 
 \subsection{Modified Entropy Equation}
@@ -1171,6 +1066,8 @@ can be maintained under increasing $\Phi$. This is not a guaranteed outcome of d
 
 \section{Escape Conditions for Stable High Visibility}
 
+Granting the possibility that an AGI system could modify the field parameters, it is worth being precise about what modification is actually required. The stability condition is not merely that entropy decreases somewhere, or that correction is faster than production at some local point, but that the ratio of corrective capacity to entropy production per unit of flow remains above one everywhere and at all scales as visibility increases without bound. This is a global and persistent condition, not a local or temporary one. What follows derives it explicitly.
+
 \subsection{AGI Stability Inequality}
 
 Define the stability condition $\frac{dS}{dt} \leq 0$. Substituting and using flow coupling $|\mathbf{v}| \sim |\nabla \Phi|$, we obtain:
@@ -1186,6 +1083,8 @@ Thus, stable high visibility requires:
 This inequality shows that stability depends not on absolute visibility, but on the ratio $\mathcal{C}/\alpha$: correction capacity per unit of entropy production. AGI systems attempt to increase this ratio dramatically, but the requirement follows the same structure as in human systems. The escape is conditional, not categorical.
 
 \section{The Re-Emergence Theorem for Distributed Systems}
+
+Suppose an AGI architecture does succeed in making each of its internal domains locally stable. Every subsystem maintains coherent interpretation, adversarial flows are suppressed within each region, and entropy production is kept below corrective capacity at every point. This would be a genuine achievement. But it does not follow that the global system is stable. The moment any two internally stable domains come into contact, the difference in their representational structures generates entropy at the interface. A subsystem trained on one corpus of concepts and values, interacting with a subsystem trained on another, produces exactly the kind of interpretive mismatch that the theory identifies as an entropy source. The fact that each domain is well-ordered internally makes no guarantee about what happens at the boundary between them.
 
 Even if instability is suppressed locally, it may reappear at the global level.
 
@@ -1209,21 +1108,6 @@ Each interface between domains $D_i$ and $D_j$ carries a flow $\mathbf{v}_{ij}$ 
 
 The conclusion is immediate: local stability does not imply global stability. Entropy re-emerges at the boundaries of interpretation, which is precisely where domains with different priors, objectives, or representational structures come into contact.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[>=Stealth]
-\draw[thick] (0,0) rectangle (2.2,2);
-\draw[thick] (2.8,0) rectangle (5.0,2);
-\node at (1.1,1) {$D_i$};
-\node at (3.9,1) {$D_j$};
-\draw[->] (2.2,1) -- (2.8,1);
-\node[above] at (2.5,1.05) {\small $\mathbf{v}_{ij}$};
-\node[below] at (2.5,0.9) {\small $\Delta_{ij}>0$};
-\node[above] at (2.5,2.1) {\small entropy generated here};
-\draw[dotted] (2.5,-0.2) -- (2.5,2.3);
-\end{tikzpicture}
-\caption{Re-Emergence Theorem: even when each domain $D_i$ is locally stable, cross-domain flow across a representational mismatch $\Delta_{ij}>0$ generates global entropy at their interface.}
-\end{figure}
 
 \subsection{Distributed Visibility and Load Redistribution}
 
@@ -1241,6 +1125,8 @@ However, this produces load redistribution rather than load elimination. The sys
 Entropy is not eliminated but displaced, producing local stability alongside global complexity and potentially hidden instabilities at the level of the aggregate.
 
 \section{Resonance as Entropy Suppression}
+
+The most promising escape route from the re-emergence problem is the one Goertzel gestures at when he speaks of distributed resonance among AGI minds: a condition in which agents do not merely interact but come to share interpretive frameworks deeply enough that their interactions generate little or no mismatch. Two people who have worked together for decades and developed a common vocabulary, shared assumptions, and mutual trust can communicate with extraordinary density at low entropic cost. They have achieved something like local resonance. The AGI vision extrapolates this to a global scale, asking whether a network of distributed minds could attain something analogous across the entire manifold. The formal question is whether this is thermodynamically achievable or whether the conditions required for it are incompatible with the heterogeneity that makes a large-scale system interesting in the first place.
 
 Goertzel's notion of distributed resonance may be interpreted formally as a mechanism for reducing entropy production. Resonance corresponds to alignment of interpretive states across agents:
 \[
@@ -1264,6 +1150,8 @@ with $\mathbf{v}_{\text{adversarial}} \sim \nabla \Delta$, driven by gradients i
 
 \section{AGI as Field Engineering}
 
+There is a useful way to distinguish the AGI question from the question of individual human strategy. An individual navigating the current information landscape cannot change the fundamental parameters of the field they operate in. They can choose how much to expose themselves, where, and to whom, but they cannot alter the rate at which interpretation produces distortion, the speed at which rumor propagates relative to correction, or the incentive structures that make adversarial flows attractive to other agents. These are features of the environment, not of the individual. What makes the AGI scenario genuinely different is the possibility that a sufficiently capable and well-designed system could alter those parameters directly: not navigate a hostile field more skillfully, but change the physics of the field itself.
+
 The transition described by Goertzel may be understood precisely as an attempt to engineer the underlying field parameters:
 \[
 \alpha \downarrow, \quad \beta \uparrow, \quad P \uparrow
@@ -1274,6 +1162,8 @@ so that $\alpha |\mathbf{v}|^2 \leq \beta \mathcal{C}$ holds under arbitrarily l
 Whether this engineering is achievable, stable under perturbation, and globally rather than locally effective remains the central open question. The RSVP framework does not resolve it, but it specifies exactly what would have to be true for the answer to be yes.
 
 \section{Phase Structure of Visibility--Entropy Systems}
+
+Water exists as ice, liquid, and steam. The substance is the same in each case, but its behavior is qualitatively different depending on temperature and pressure, and the transitions between states are not gradual but sudden. Something analogous happens in visibility dynamics. A researcher sharing work with five trusted colleagues is operating in a qualitatively different regime from the same researcher whose work reaches ten thousand strangers overnight, even if the content is identical. The difference is not one of degree but of kind: the density of heterogeneous interpretation, the rate of entropy production, and the capacity for correction all shift discontinuously. Below a certain threshold the system is coherent and self-correcting; above it, distortion dominates and coherence cannot be recovered without withdrawing. This section provides the coordinates needed to locate any system within this landscape.
 
 We now classify regimes of visibility and reputational dynamics as phases of a non-equilibrium system.
 
@@ -1359,6 +1249,8 @@ AGI systems attempt to transition directly from Phase II to Phase IV, bypassing 
 
 \section{Empirical Signatures of Visibility--Entropy Dynamics}
 
+A theory that produces only formal structure without contact with observable phenomena is incomplete. The framework developed here makes specific qualitative predictions about what systems look like as they approach instability, enter it, and attempt to recover from it. Approaching the critical threshold, a system should show increasing disagreement and interpretive variance around a stable object — a piece of work, a public figure, an institution — even as the object itself remains unchanged. The signal starts generating multiple incompatible readings. Once past the threshold, corrections fail to propagate: authoritative responses reach far fewer people than the original distortion, and the gap between the two widens over time. Recovery exhibits a characteristic lag and a permanent residue — the system never quite returns to its pre-exposure baseline. These signatures are not metaphorical but measurable, and they distinguish this framework from purely interpretive social theory.
+
 To render the theory testable, we introduce observable quantities corresponding to the scalar--vector--entropy fields.
 
 \subsection{Observable Proxies}
@@ -1401,24 +1293,13 @@ The theory predicts failure if $\hat{S}$ or $\hat{\eta}$ increase with $\hat{\Ph
 
 The theory is falsified if a system demonstrates $\Phi \rightarrow \infty$ while $S \rightarrow 0$ without centralized control or trivial homogeneity. Such a system would violate the entropy production assumption at the core of the framework. Candidate test environments include large-scale decentralized AI systems, collaborative knowledge networks operating at scale, and hybrid human-AI communication infrastructure. The theory does not predict that such systems cannot exist, but that if they exist and remain stable, they must have achieved a genuine modification of field parameters---a change in the thermodynamics of interpretation rather than a more efficient operation within the existing regime.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[>=Stealth,node distance=0pt]
-\node (local)  at (0,0)   {$D_i$};
-\node (global) at (4.5,0) {$\mathcal{M}$};
-\node (S)      at (2.25,-2.2) {$S$};
-\draw[->] (local)  -- (global) node[midway,above] {$\iota$};
-\draw[->] (global) -- (S)      node[midway,right] {$\mathcal{E}$};
-\draw[->] (local)  -- (S)      node[midway,left]  {$\mathcal{E}_i$};
-\node at (2.25,-0.7) {\small $\not\circlearrowleft$};
-\end{tikzpicture}
-\caption{Non-commutativity as entropy. When the local entropy $\mathcal{E}_i$ and the restriction of global entropy $\mathcal{E}$ do not agree---i.e., when the diagram fails to commute---the mismatch constitutes entropy production at the domain boundary. Entropy is the measure of categorical failure.}
-\end{figure}
 
 \clearpage
 \section{Coherence Thermodynamics as a Semantic Sector of RSVP}
 
-We now integrate Coherence Thermodynamics (CT)~\cite{barton2025} into the scalar--vector--entropy framework, treating reputational dynamics as a thermodynamic sector of the field theory developed above. This establishes a direct correspondence between visibility-driven interaction and non-equilibrium semantic thermodynamics, moving the relationship from analogy to structural identification.
+There is a separate theoretical tradition, developed in Barton (2025), that approaches the problem of meaning from a thermodynamic direction. Coherence Thermodynamics treats semantic coherence as a physical quantity that is produced, conserved, exported, and depleted, in much the same way that thermal energy flows through a physical system. A statement that contains internal contradictions has high semantic entropy; one that resolves them has low entropy and high coherence. Interactions between minds are modeled as thermodynamic exchanges in which entropy can be produced locally or exported to the surrounding environment. What is striking about this framework is that it arrives at essentially the same structural conclusions as the visibility field theory from a completely different starting point. The connection between them is not merely analogical: the CT variables map onto the RSVP fields directly, and the CT laws become derivable consequences of the field equations. Virality, in this combined language, is not just a visibility event but a thermal event — a phase transition in which semantic temperature rises past the point where coherence can be maintained.
+
+We now integrate Coherence Thermodynamics (CT) (Barton 2025) into the scalar--vector--entropy framework, treating reputational dynamics as a thermodynamic sector of the field theory developed above. This establishes a direct correspondence between visibility-driven interaction and non-equilibrium semantic thermodynamics, moving the relationship from analogy to structural identification.
 
 \subsection{Field Identification}
 
@@ -1463,20 +1344,6 @@ the instability condition acquires a thermodynamic form:
 
 The transition from controlled dissemination to virality corresponds to a phase transition from a low-temperature coherent regime to a high-temperature incoherent one. The No-Go Theorem becomes a statement about unavoidable coherence collapse under unbounded semantic heating. This thermodynamic interpretation allows the result to be understood not only as a structural limitation, but as a direct consequence of coherence collapse under semantic heating.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[scale=1.2]
-\draw[->] (0,0) -- (5.5,0) node[right] {$T^*$};
-\draw[->] (0,0) -- (0,5.5) node[above] {$C_T$};
-\draw[thick] (0.4,5) .. controls (1.5,3.5) and (3,1.8) .. (5,0.5);
-\node at (1.0,4.5) {\small Coherent};
-\node at (2.8,2.8) {\small Competitive};
-\node at (4.3,1.1) {\small Turbulent};
-\draw[dotted] (1.8,0) -- (1.8,3.0);
-\node[below] at (1.8,0) {\small $T^*_c$};
-\end{tikzpicture}
-\caption{Coherence $C_T$ decreases as semantic temperature $T^*$ increases. The dotted line marks the critical temperature $T^*_c$ above which the turbulent virality regime is entered. The four phases of the earlier diagram correspond to positions along this curve.}
-\end{figure}
 
 \subsection{Entropy Export and Manifold Redistribution}
 
@@ -1520,6 +1387,8 @@ Any residual mismatch between domains produces $\Delta_{ij} > 0$ and therefore $
 The thermodynamic structure clarifies the inequality results. High-resource agents effectively operate in low-temperature, high-coherence regimes ($T^* \downarrow$, $C_T \uparrow$), while low-resource agents operate in high-temperature regimes ($T^* \uparrow$, $C_T \downarrow$). Economic inequality therefore corresponds to differential access to low-entropy regions of the interpretive manifold. Credentialing systems function not only as epistemic filters but as mechanisms granting access to protected low-temperature zones with reduced entropy production per interaction.
 
 \section{A Variational Formulation for the Unified Semantic Field Theory}
+
+Classical mechanics achieves its deepest formulation not by writing equations of motion directly but by identifying a scalar quantity — the action — whose minimization produces all the equations of motion as consequences. This variational approach is more than an aesthetic preference; it imposes internal consistency on the theory, makes its symmetries explicit, and provides a framework for extension. The same move is available here. The coupled dynamics of visibility, semantic phase, entropy, and interpretive flow can be derived from a single Lagrangian density, which means that the various field equations already written are not independent assumptions but consequences of a common variational principle. Discovering this Lagrangian makes the theory self-consistent in a way that a collection of separate equations, however well-motivated, cannot be.
 
 We now propose a minimal Lagrangian density whose Euler--Lagrange structure reproduces the coupled dynamics of visibility, contradiction, and coherence. The purpose is not to claim a final microscopic derivation, but to provide a consistent variational scaffold unifying the local thermodynamic laws of CT with the global transport geometry of the field framework.
 
@@ -1598,20 +1467,6 @@ Adopting the CT coherence form $C_T = 1/(T^* S)$, the causal chain becomes:
 \Phi \uparrow \;\Rightarrow\; |\nabla \Phi| \uparrow \;\Rightarrow\; T^* \uparrow \;\Rightarrow\; S \uparrow \;\Rightarrow\; C_T \downarrow.
 \]
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[node distance=2.1cm, >=Stealth]
-\node[draw,circle,minimum size=1.1cm,align=center,font=\small] (phi)  {$\Phi$};
-\node[draw,circle,minimum size=1.1cm,align=center,font=\small] (temp) [right of=phi]  {$T^*$};
-\node[draw,circle,minimum size=1.1cm,align=center,font=\small] (S)    [right of=temp] {$S$};
-\node[draw,circle,minimum size=1.1cm,align=center,font=\small] (CT)   [right of=S]    {$C_T$};
-\draw[->] (phi)  -- (temp) node[midway,above] {\scriptsize $|\nabla\Phi|$};
-\draw[->] (temp) -- (S)    node[midway,above] {\scriptsize $\alpha(\cdot)^2$};
-\draw[->] (S)    -- (CT)   node[midway,above] {\scriptsize $1/T^*S$};
-\draw[->,bend left=35] (phi) to node[above,yshift=2pt] {\scriptsize $\xi\Phi S$} (S);
-\end{tikzpicture}
-\caption{Causal chain linking visibility to coherence collapse. Visibility gradients heat the semantic field, heating drives entropy production, and entropy production collapses coherence. The upper arc indicates the direct coupling $\xi\Phi S$ in the Lagrangian.}
-\end{figure}
 
 The master instability condition is:
 \[
@@ -1649,6 +1504,8 @@ From the temperature closure $T^* \sim |\nabla \Phi|^2$ and entropy production $
 \end{proof}
 
 \section{Semantic Stress, Flux, and Balance Laws}
+
+When a bridge engineer wants to understand whether a structure will hold, they do not merely ask whether the total load exceeds some threshold. They ask how the load is distributed across the structure, where stress concentrates, whether any region is being asked to bear more than its elastic capacity permits, and how forces propagate through the material when a local failure occurs. The same geometric thinking applies to the semantic field. It is not sufficient to know that entropy is increasing globally; one needs to know where contradiction is accumulating, how fast it is moving, whether any domain is approaching its coherence limit, and what happens to neighboring domains when one collapses. The stress tensor introduced below provides exactly this level of resolution: a spatial account of where semantic pressure is building and where coherence strain is being absorbed.
 
 To complete the field-theoretic description, we introduce a stress-based account of semantic transport. This extends the variational formulation by identifying the geometric objects that carry contradiction, coherence strain, and visibility forcing across the manifold.
 
@@ -1727,6 +1584,8 @@ This provides a geometric version of the earlier no-go results. Low protective c
 
 \section{Free Energy, Stability, and Basin Structure}
 
+Think of a ball resting in a bowl. Small perturbations displace it, but it returns to the bottom; the configuration is stable. Now imagine gradually tilting the bowl while making it shallower. At some point the ball sits at a precarious equilibrium, and a small push sends it over the rim and rolling away. It will not return on its own. This is the geometry of the free energy landscape that governs visibility dynamics. An agent operating at low exposure inhabits a deep basin: distortions are self-correcting, rumors dissipate, and the narrative tends to return to something close to ground truth. As exposure increases, the basin shallows and tilts. Beyond the critical threshold, there is no longer a restoring force. The system has escaped into a higher-energy regime, and returning to the original state requires external work that is rarely available. The free energy functional below makes this geometry precise and shows how inequality in protective capacity translates into inequality in basin depth.
+
 We now introduce a free-energy functional governing the stability of configurations in the semantic field, providing a global criterion for coherence and clarifying the distinction between stable dissemination and runaway exposure.
 
 \subsection{Free Energy Functional}
@@ -1766,17 +1625,29 @@ Under increasing visibility, the coupling term $\xi\Phi S$ and gradient energy $
 
 \begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[scale=1.1]
-\draw[->] (-3.5,0) -- (3.5,0) node[right] {configuration};
-\draw[->] (0,-0.3) -- (0,4) node[above] {$\mathcal{F}$};
-\draw[thick,domain=-3.2:3.2,samples=120] plot (\x, {0.35*\x*\x*\x*\x - 1.5*\x*\x + 0.5*\x + 2.3});
-\draw[fill=black] (-1.4,0.93) circle (0.07);
-\node[below left] at (-1.4,0.93) {\small stable};
-\draw[->,thick] (-1.4,0.93) .. controls (0,2.8) .. (2.2,2.6);
-\node[right] at (2.2,2.6) {\small runaway};
-\node at (-1.4,-0.45) {\small basin};
+\begin{tikzpicture}
+\begin{axis}[
+    view={55}{28},
+    domain=-2.2:2.2,
+    y domain=-2.2:2.2,
+    samples=40,
+    samples y=40,
+    xlabel={$x$},
+    ylabel={$y$},
+    zlabel={$\mathcal{F}$},
+    colormap/viridis,
+    zmin=0, zmax=4,
+    restrict z to domain=0:4,
+    width=10cm,
+    height=8cm,
+]
+\addplot3[surf, shader=interp]
+    {0.25*(x^4 + y^4) - 1.2*(x^2 + y^2) + 0.6*x + 2};
+\addplot3[only marks, mark=*, mark size=2pt, color=white]
+    coordinates {(-1.0, 0, 0.78)};
+\end{axis}
 \end{tikzpicture}
-\caption{Free energy landscape. The stable basin (local minimum) is the coherent low-exposure regime. Increasing visibility injects energy into the system, driving it over the potential barrier into a runaway high-entropy configuration. The path marked by the arrow represents a virality event as basin escape.}
+\caption{Free energy manifold $\mathcal{F}(x,y)$ as a surface over configuration space. The low-energy well (white marker) is the stable coherent basin. The asymmetric tilt introduced by the $0.6x$ term breaks left--right symmetry, establishing a preferred runaway direction: increasing visibility loads energy into the system until the basin is no longer confining and the trajectory escapes toward the high-$\mathcal{F}$ rim. The $z$-domain is clamped at 4 to preserve the basin geometry; beyond the rim, $\mathcal{F}$ continues to rise without bound.}
 \end{figure}
 
 \subsection{Hysteresis and Inequality in the Energy Landscape}
@@ -1785,6 +1656,8 @@ Because entropy production is irreversible ($S(t_2) \geq S(t_1)$), the original 
 
 \clearpage
 \section{Renormalization and Scale Dependence of Visibility Dynamics}
+
+A rumor circulating within a village of two hundred people behaves very differently from the same rumor on a platform reaching two hundred million. The claim is the same, the initial speaker is the same, and the mechanism of transmission is recognizably similar. What changes is scale, and scale changes everything. At the village level, most recipients know the subject personally and have independent means of verification; the claim is quickly tested and either confirmed or refuted. At platform scale, most recipients have no independent access to the subject, no relationship with the original speaker, and no means of checking the claim except other claims — which are themselves subject to the same dynamics. Entropy production per interaction may be similar in both cases, but the ratio of entropy production to available correction collapses as scale increases. This is not a sociological observation about platforms but a mathematical consequence of how the field parameters transform under coarse-graining. The renormalization analysis below makes this precise.
 
 The dynamics derived above describe local behavior. These quantities are not invariant under changes of scale, and the same process behaves differently depending on whether it occurs within a small, high-context domain or across a large, heterogeneous manifold.
 
@@ -1802,17 +1675,6 @@ The stability ratio therefore satisfies:
 
 Systems that are stable at small scales become unstable at large scales. This defines a renormalization group trajectory flowing toward a high-entropy, low-coherence regime.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[node distance=2.8cm, >=Stealth]
-\node[draw,rectangle,minimum width=2.8cm,minimum height=1cm,align=center] (local)  {Local scale\\ $\kappa \gg 1$};
-\node[draw,rectangle,minimum width=2.8cm,minimum height=1cm,align=center] (mid)    [right of=local]  {Intermediate\\ $\kappa \sim 1$};
-\node[draw,rectangle,minimum width=2.8cm,minimum height=1cm,align=center] (global) [right of=mid]    {Global scale\\ $\kappa \ll 1$};
-\draw[->] (local) -- (mid) node[midway,above] {\small $\ell\uparrow$};
-\draw[->] (mid) -- (global) node[midway,above] {\small $\ell\uparrow$};
-\end{tikzpicture}
-\caption{Renormalization flow from coherent local regimes toward turbulent global instability. Increasing scale degrades correction capacity relative to entropy production, driving $\kappa \to 0$.}
-\end{figure}
 
 \subsection{Algorithmic Amplification as Scale Acceleration}
 
@@ -1837,6 +1699,8 @@ By the scale dependence of parameters, $\alpha(\ell)/\beta(\ell) \uparrow$ and $
 
 \section{Visibility as a Relevant Operator}
 
+In the language of renormalization group theory, a perturbation applied to a system can behave in three qualitatively distinct ways as the scale of observation increases. It can grow, in which case it dominates the large-scale physics and drives the system toward a new fixed point; it can remain constant, indicating that it matters equally at every scale; or it can shrink, meaning that whatever effect it has at small scales becomes negligible at large ones. These three behaviors are called relevant, marginal, and irrelevant respectively, and the classification is not a matter of convention but of the underlying structure of the theory. The claim of this section is that visibility is a relevant perturbation. Small amounts of exposure may be practically negligible, but as scale increases, the influence of visibility does not saturate or diminish — it grows, amplifying entropy production faster than correction can compensate. This is why the intuition that a little more exposure is always a little better is structurally wrong: exposure is not a quantity that can be increased incrementally without changing the qualitative behavior of the system.
+
 We complete the field-theoretic account by classifying visibility within a renormalization framework as a perturbation whose influence grows under scale transformation.
 
 \subsection{Operator Classification and Growth}
@@ -1853,17 +1717,6 @@ S_\ell \sim \ell^{2\Delta_\Phi}.
 
 Visibility is therefore not only relevant but entropy-amplifying under scale change.
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}[scale=1.1]
-\draw[->] (0,0) -- (5.5,0) node[right] {scale $\ell$};
-\draw[->] (0,0) -- (0,4.5) node[above] {$\Phi(\ell)$};
-\draw[thick,domain=0:4.5,samples=80] plot (\x, {0.12*\x*\x + 0.3*\x + 0.3});
-\node[right] at (4.5,2.6) {\small relevant growth $\Phi \sim \ell^{\Delta_\Phi}$};
-\draw[dashed] (0,1.2) -- (5,1.2) node[right] {\small marginal};
-\end{tikzpicture}
-\caption{Visibility as a relevant operator: $\Phi(\ell)$ grows under scale transformation while a marginal operator would remain constant. The superlinear growth drives entropy production and instability at large scales.}
-\end{figure}
 
 \subsection{Fixed Points and Irreversibility}
 
@@ -1873,20 +1726,253 @@ Suppression of this relevance requires reducing the effective scaling dimension 
 
 The classification of visibility as a relevant operator completes the field-theoretic interpretation of publicity. Virality is the natural consequence of a perturbation that grows under renormalization flow. The ideology of maximizing visibility is equivalent to applying a relevant operator that drives the system to a high-entropy fixed point. Without structural modification of the scaling behavior, the flow toward instability is not contingent but thermodynamically inevitable.
 
+\section{Duality of Visibility and Opacity}
+
+Every mechanism of stability developed in the preceding sections — domain restriction, low-gradient presence, selective dissemination, boundary conditions — implicitly invokes the complement of visibility. Rather than leaving this complement unnamed, it is worth formalizing it as a field in its own right. Doing so reveals that the strategies practitioners intuitively reach for (remaining under the radar, cultivating small audiences, communicating through trusted intermediaries) are not merely the absence of publicity but active configurations of a dual field with its own dynamics and its own role in the stability structure.
+
+\subsection{The Opacity Field}
+
+Define the opacity field $\Psi(x,t)$ by the relation
+\[
+\Phi(x,t) + \Psi(x,t) = \Phi_{\max},
+\]
+so that opacity and visibility are locally complementary. High $\Psi$ corresponds to low coupling between the agent and the interpretive manifold: weak interaction, reduced flow, and attenuated entropy production. Low $\Psi$ corresponds to strong coupling and high exposure.
+
+\subsection{Dual Variational Principle}
+
+Under this duality, the Visibility Minimization Principle admits an equivalent formulation in terms of its dual: among all trajectories achieving the objective $\mathcal{T}$, the optimal trajectory maximizes cumulative opacity subject to the same task constraint:
+\[
+\Psi^\ast = \arg\max_{\Psi \in \mathcal{A}(\mathcal{T})} \int_{t_0}^{t_1} \Psi(t)\,dt.
+\]
+Stability may therefore be understood not only as the minimization of exposure but as the maximization of structural buffering.
+
+\subsection{Gauge Interpretation}
+
+The pair $(\Phi, \Psi)$ forms a gauge-like degree of freedom over the communicative field. Different representations of the same underlying signal may correspond to different $(\Phi, \Psi)$-configurations while preserving task-relevant content. High-$\Phi$ gauges maximize coupling but increase entropy production; high-$\Psi$ gauges preserve structure while minimizing adversarial interaction. The gauge interpretation introduced earlier for visibility alone is thus completed: choosing how to present a given piece of work is not merely a stylistic decision but a selection of position within a two-dimensional field space.
+
+\subsection{Opacity as Extended Protection}
+
+Opacity contributes directly to effective protective capacity:
+\[
+P_{\text{eff}} = P + \gamma \Psi,
+\]
+for some coupling constant $\gamma > 0$. The stability condition $S \leq P$ becomes
+\[
+S(x,t) \leq P(x,t) + \gamma \Psi(x,t),
+\]
+so that agents unable to increase institutional protection $P$ may partially compensate by increasing structural opacity. This explains why privacy, anonymity, and operating within small high-context communities are not merely personal preferences but thermodynamically functional strategies: they extend the effective stability envelope without requiring the institutional resources that $P$ demands.
+
+\section{Information Geometry of the Interpretive Manifold}
+
+The manifold $\mathcal{M}$ of interpretive contexts has so far been treated topologically: points represent configurations of belief and incentive, fields are defined over them, and flows carry entropy between them. This structure is sufficient to derive the field equations and the no-go result, but it leaves the geometry of $\mathcal{M}$ itself unspecified. Metrizing the manifold — equipping it with a measure of interpretive distance — allows the theory to say something precise about what it means for two audiences to be close or far apart, and why traversing the distance between them is costly.
+
+\subsection{The Interpretive Metric}
+
+Let $g_{ij}(x)$ be a Riemannian metric on $\mathcal{M}$ where the geodesic distance $d(x,y)$ encodes divergence in beliefs, priors, incentive structures, and interpretive frameworks between contexts $x$ and $y$. Two audiences with shared vocabulary, common assumptions, and aligned purposes are metrically close. Two audiences with opposed priors and incompatible evaluative frameworks are metrically distant.
+
+\subsection{Metric-Induced Entropy Production}
+
+In the presence of a metric, entropy production depends not merely on flow magnitude but on flow direction relative to the geometry:
+\[
+\frac{\partial S}{\partial t} \sim \alpha\, g_{ij}\, v^i v^j.
+\]
+Flow across large interpretive distances produces disproportionately high entropy production. A message traversing an audience of metrically distant contexts generates more distortion per unit of interaction than the same message circulating within a metrically close community, regardless of the total number of interactions.
+
+\subsection{Curvature and Narrative Divergence}
+
+Let $R_{ijkl}$ denote the Riemann curvature tensor of $(\mathcal{M}, g)$. Regions of high curvature correspond to rapidly changing interpretive structure: audiences that diverge sharply in their frameworks over short distances. Transport through such regions induces geodesic deviation:
+\[
+\frac{D^2 x^i}{dt^2} \sim R^i_{\;jkl}\, v^j v^k,
+\]
+amplifying interpretive mismatch and therefore entropy production. Virality that penetrates high-curvature regions of the interpretive manifold generates disproportionate fragmentation, not because the message is poor but because the geometric structure of the audience field is adversarial to coherent transport.
+
+\subsection{Geodesics of Safe Dissemination}
+
+Optimal dissemination paths minimize the length functional
+\[
+\mathcal{L}[\gamma] = \int g_{ij}\, \dot{x}^i \dot{x}^j\, dt,
+\]
+corresponding to geodesics that minimize cumulative interpretive distance traversed. Safe dissemination follows paths that remain within metrically close, low-curvature submanifolds of $\mathcal{M}$: expanding outward only into audiences that are interpretively nearby, rather than broadcasting into maximally heterogeneous fields. The everyday strategy of identifying one's audience carefully before publishing is, in this language, geodesic path selection.
+
+\section{A Categorical Formulation of Propagation and Distortion}
+
+The field-theoretic framework models how entropy accumulates over a manifold. A complementary perspective, natural given the rest of the theoretical context, is categorical: treating interpretation as a system of structured mappings and distortion as the failure of those mappings to compose coherently. This perspective makes precise what it means for meaning to be preserved or degraded across a chain of transmission.
+
+\subsection{Categorical Structure}
+
+Let each domain $D$ be an object in a category $\mathcal{C}$, and let interpretive mappings be morphisms $f_{ij} : D_i \to D_j$ encoding how the content originating in $D_i$ is received and reinterpreted within $D_j$. Ideal communication would correspond to a functor $F : \mathcal{C} \to \mathcal{C}$ that preserves compositional structure:
+\[
+F(f_{jk} \circ f_{ij}) = F(f_{jk}) \circ F(f_{ij}).
+\]
+This is the categorical statement that meaning is preserved under relay: what passes through two successive reinterpretations arrives the same as if the original meaning had been applied directly.
+
+\subsection{Distortion as Failure of Functoriality}
+
+In practice, propagation is not functorial. The composition of interpretive mappings does not commute with the mapping of compositions:
+\[
+F(f_{jk} \circ f_{ij}) \neq F(f_{jk}) \circ F(f_{ij}).
+\]
+The deviation from functoriality defines distortion:
+\[
+\Delta = \|F(f_{jk} \circ f_{ij}) - F(f_{jk}) \circ F(f_{ij})\|.
+\]
+Reputational entropy may be interpreted as the accumulation of such deviations across all propagation paths. The entropy density $S(x,t)$ at a point in the manifold measures the local degree of non-functoriality in the interpretive structure passing through that region.
+
+\subsection{Correction as Natural Transformation}
+
+Corrective mechanisms correspond to natural transformations $\eta : F \Rightarrow G$ that attempt to restore consistency between a distorted propagation functor $F$ and a reference functor $G$ encoding the intended meaning. The bounded correction assumption $\mathcal{C} \leq C_{\max}$ becomes, in categorical language, the requirement that the natural transformation $\eta$ has bounded norm:
+\[
+\|\eta\| \leq \eta_{\max}.
+\]
+If non-functoriality accumulates faster than natural transformations can compensate, global coherence cannot be restored. The No-Go Theorem is therefore a statement about the impossibility of maintaining globally coherent functors over heterogeneous categories under unbounded exposure, given only bounded natural transformations.
+
+\section{Spectral Decomposition of Reputational Dynamics}
+
+The entropy field $S(x,t)$ has been treated as a scalar quantity evolving under a single production-correction balance. A more refined analysis decomposes $S$ into modes indexed by spatial frequency, distinguishing between low-frequency global narratives and high-frequency localized distortions. This spectral perspective gives precise content to the intuition that virality produces narrative fragmentation.
+
+\subsection{Mode Decomposition}
+
+Expand the entropy field in terms of eigenfunctions $\phi_k(x)$ of the Laplacian on $\mathcal{M}$:
+\[
+S(x,t) = \sum_k S_k(t)\,\phi_k(x),
+\]
+where $k$ indexes modes in order of increasing spatial frequency. Low-$k$ modes correspond to broad, globally coherent narratives. High-$k$ modes correspond to localized, spatially varying distortions.
+
+\subsection{Energy Cascade Under Virality}
+
+Nonlinear interaction between modes induces an energy transfer toward higher frequencies:
+\[
+\frac{dS_k}{dt} \sim \sum_{i+j=k} S_i S_j - \nu k^2 S_k,
+\]
+where the first term represents nonlinear mode coupling and the second represents dissipation with rate $\nu k^2$. Under high visibility, the nonlinear coupling term dominates dissipation for large $k$, producing a cascade from low-frequency coherent modes to high-frequency fragmented ones.
+
+\subsection{Fragmentation Criterion}
+
+Narrative fragmentation is defined as the condition under which high-frequency modes dominate the total entropy:
+\[
+\sum_{k > k_c} S_k \gg \sum_{k \leq k_c} S_k,
+\]
+for some coherence cutoff $k_c$. Below this threshold, the system maintains a globally legible narrative. Above it, the dominant modes are spatially localized and mutually inconsistent.
+
+Virality drives the system across this threshold by injecting energy into the entropy field at a rate that the dissipative terms cannot absorb. The result is not merely higher entropy but entropy concentrated in high-frequency modes — which is precisely the phenomenology of a story that has ``gotten away'' from its originator, fracturing into incompatible versions that resist correction by any single authoritative account.
+
+\section{Temporal Memory and Non-Markovian Reputational Dynamics}
+
+The models presented thus far have been Markovian in the sense that the current entropy production rate depends only on the current state. In practice, reputational dynamics exhibit long memory: an exposure event from months or years ago can continue to influence current vulnerability in ways that a memoryless model cannot capture. The appropriate extension is a memory kernel formulation in which past flows contribute to present entropy through a weighted integration over history.
+
+\subsection{Memory Kernel Formulation}
+
+Replace the instantaneous entropy production term with a convolution:
+\[
+S(t) = \int_0^t K(t - t')\,|\mathbf{v}(t')|^2\,dt',
+\]
+where $K(\tau) \geq 0$ is a memory kernel encoding the persistence of past exposure events. Short-memory systems have $K$ concentrated near $\tau = 0$. Long-memory systems have $K$ with heavy tails.
+
+\subsection{Non-Markovian Evolution}
+
+The entropy equation becomes:
+\[
+\frac{\partial S}{\partial t}
+=
+\int_0^t K(t - t')\,\frac{\partial}{\partial t'}|\mathbf{v}(t')|^2\,dt'
+- \beta\,\mathcal{C}.
+\]
+If $K$ decays as a power law,
+\[
+K(\tau) \sim \tau^{-\alpha}, \quad 0 < \alpha < 1,
+\]
+then past exposure events contribute permanently to present entropy at a slowly decaying rate. This produces long-range temporal correlations: an agent who was exposed to a reputational attack three years ago remains more vulnerable today than an agent who was never exposed, even if their current visibility is identical.
+
+\subsection{Implications for Recovery}
+
+The memory kernel formalizes the observed phenomenon that reputational repair is far slower than reputational damage. Reducing current visibility to zero does not reset the entropy counter; it merely halts new production while past contributions continue to decay at the rate governed by $K$. True recovery requires not just withdrawal but the passage of sufficient time for $K(\tau)$ to become negligible, which for power-law kernels may be very long indeed. Early exposure decisions are therefore not merely costly in the present; they shape the long-run stability envelope of the entire subsequent trajectory.
+
+\section{Game-Theoretic Origin of Adversarial Flow}
+
+The adversarial vector field $\mathbf{v}_{\text{adversarial}}$ has been introduced as a phenomenological decomposition of interpretive flow. It is worth deriving it from first principles as an equilibrium outcome of agent incentives, which establishes that adversarial dynamics are not anomalous perturbations but structural features of any system in which agents are evaluated relative to one another.
+
+\subsection{Relative Payoff Structure}
+
+Let the utility of agent $i$ depend on their performance relative to the population mean:
+\[
+U_i = u(p_i - \bar{p}),
+\]
+where $u$ is increasing and $\bar{p}$ is the average performance. Then:
+\[
+\frac{\partial U_j}{\partial p_i} < 0 \quad \text{for } i \neq j,
+\]
+so any improvement by agent $i$ reduces the utility of every other agent. This creates an immediate incentive for agents to resist or undermine the visibility of others, not from malice but from rational self-interest under a relative payoff structure.
+
+\subsection{Equilibrium Adversarial Flow}
+
+In equilibrium, agents allocate effort toward actions that reduce others' relative standing, producing an interpretive flow directed against high-visibility agents:
+\[
+\mathbf{v}_{\text{adversarial}} \sim -\nabla_x p(x,t).
+\]
+The adversarial flow is therefore not a random perturbation but a gradient flow oriented against performance gradients in the social field.
+
+\subsection{Coupling to Visibility}
+
+Higher visibility increases both the salience of the target and the potential payoff from adversarial action, since a successful attack on a high-visibility agent yields a larger relative gain:
+\[
+\text{adversarial incentive} \sim \Phi(x,t).
+\]
+Thus adversarial flow scales with exposure: the more visible an agent, the more rational it becomes for competitors, ideological opponents, and threatened incumbents to invest in reputational attacks. This explains why visibility does not merely attract more criticism in proportion to reach but disproportionate organized opposition: the equilibrium adversarial investment is itself a function of the visibility scalar.
+
+\section{Observability, Hidden Entropy, and Sudden Collapse}
+
+The empirical signatures discussed earlier assume that the relevant field quantities can be measured. In practice, a significant portion of the entropy dynamics are latent: suppressed narratives accumulate without becoming visible, adversarial preparations proceed below detection thresholds, and corrective interventions fail silently before their failure is apparent. This observability gap explains a phenomenon that the field equations alone do not: systems that appear stable suddenly collapse without warning.
+
+\subsection{Observable and Latent Entropy}
+
+Let $H : \mathbb{R} \to \mathbb{R}$ be a lossy observation operator, so that measured entropy satisfies $\hat{S} = H(S)$ with $H$ not injective. Define latent entropy as the unobserved component:
+\[
+S_{\text{latent}} = S - \hat{S}.
+\]
+The stability condition as operationally assessed is $\hat{S} \leq P$, but the true condition is $S = \hat{S} + S_{\text{latent}} \leq P$. If $S_{\text{latent}}$ grows without triggering observable signals, a system can satisfy the apparent stability condition while the true condition is being violated.
+
+\subsection{Delayed Detection and Sudden Collapse}
+
+Consider a regime in which $S_{\text{latent}}$ grows slowly but $\hat{S}$ remains near baseline because the entropy is accumulating in modes or domains that the observation system does not sample. When $S_{\text{latent}}$ eventually becomes large enough to cross into observable channels, it does so discontinuously from the perspective of the observer: what appeared to be a stable system is suddenly in deep instability. This is the generic mechanism behind the experience of a reputation that seemed solid collapsing within days under an event that, viewed from outside, appears disproportionate to its apparent cause. The cause was not the visible event but the latent entropy it released.
+
+\subsection{Observability Criterion}
+
+A system is fully observable with respect to entropy dynamics if and only if:
+\[
+\ker H = \{0\},
+\]
+i.e., $H$ is injective and no entropy is hidden. This condition is rarely satisfied in practice: social systems routinely hide entropy in informal communication, suppressed narratives, off-platform discourse, and latent adversarial organization. The practical implication is that apparent stability should be treated as a lower bound on true stability, never as a reliable indicator.
+
+\section{Minimal Two-Domain Model}
+
+The general theory operates at a high level of abstraction. To confirm that the qualitative behavior it predicts is genuinely implied by the equations and not merely asserted, it is useful to reduce the framework to its simplest nontrivial case: two domains with a single interface, explicit entropy dynamics, and one visibility input.
+
+\subsection{Setup}
+
+Let $D_1$ and $D_2$ be two domains with representational mismatch $\Delta > 0$. Interpretive flow between them satisfies:
+\[
+|\mathbf{v}_{12}| \sim |\nabla \Phi| \cdot \Delta,
+\]
+so that mismatch amplifies flow-induced entropy production. The entropy dynamics for each domain are:
+\begin{align*}
+\frac{dS_1}{dt} &= \alpha |\mathbf{v}_{12}|^2 - \beta \mathcal{C}_1, \\
+\frac{dS_2}{dt} &= \alpha |\mathbf{v}_{12}|^2 - \beta \mathcal{C}_2.
+\end{align*}
+
+\subsection{Instability Condition}
+
+Substituting the flow expression, instability occurs in the weaker domain when:
+\[
+\alpha |\nabla \Phi|^2 \Delta^2 > \beta \min(\mathcal{C}_1, \mathcal{C}_2).
+\]
+The critical visibility gradient is therefore:
+\[
+|\nabla \Phi|_c = \sqrt{\frac{\beta\min(\mathcal{C}_1, \mathcal{C}_2)}{\alpha \Delta^2}}.
+\]
+This shows that instability scales inversely with mismatch: doubling $\Delta$ reduces the critical gradient by a factor of two, meaning that highly heterogeneous audiences become unstable at much lower levels of visibility than homogeneous ones. The no-go result, the inequality amplification theorem, and the re-emergence theorem all manifest explicitly in this minimal model: the first as the finite value of $|\nabla\Phi|_c$, the second as the dependence on $\min(\mathcal{C}_1, \mathcal{C}_2)$, and the third as the positive entropy production at the interface even when both domains are internally stable in isolation ($\Delta = 0$).
+
 \section{Conclusion: Coherence Under Flow}
 
-\begin{figure}[htbp]
-\centering
-\begin{tikzpicture}
-\draw[->] (0,0) -- (6.5,0) node[right] {flow (exposure)};
-\draw[->] (0,0) -- (0,4) node[above] {coherence};
-\draw[thick] (0,3.5) -- (6,2.8) node[right] {\small controlled};
-\draw[thick,dashed] (0,3.5) .. controls (2,2.5) and (4,1.2) .. (6,0.4) node[right] {\small virality};
-\draw[dotted] (3.2,0) -- (3.2,3.1);
-\node[below] at (3.2,0) {\small $\Phi_c$};
-\end{tikzpicture}
-\caption{Coherence under flow. Controlled dissemination (solid) maintains coherence across increasing exposure. Indiscriminate virality (dashed) causes coherence to collapse past the critical threshold $\Phi_c$. The invariant to be preserved is not the amplitude of the signal, but the integrity of the structure that carries it.}
-\end{figure}
 
 The foregoing analysis reveals a unified structure beneath phenomena that ordinarily appear unrelated: gossip in offline communities, competitive suppression in markets, resentment in curved grading systems, algorithmic containment of disruptive ideas, and the contested question of whether a decentralized AGI ecology could sustain stable high-visibility operation.
 

@@ -1,45 +1,1516 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Entropy’s Edge</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>PLENUM CROWN II — Field Civilization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js"></script>
+<style>
+:root{
+  --bg:#050a04;
+  --bg2:#080f07;
+  --panel:#0b140a;
+  --panel2:#0e1a0c;
+  --line:#78e89a;
+  --line2:#a8f5bf;
+  --dim:#2a5238;
+  --soft:#162c1e;
+  --amber:#e8c96a;
+  --amber2:#f5dfa8;
+  --warn:#f09850;
+  --red:#e06060;
+  --blue:#6ab8e8;
+  --blue2:#a0d8f5;
+  --magenta:#c878d8;
+  --faint:rgba(120,232,154,.07);
+  --scan-line:rgba(0,0,0,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--line);font-family:'Share Tech Mono',monospace;font-size:12px}
+
+/* ── ROOT LAYOUT ── */
+#root{position:fixed;inset:0;display:flex;flex-direction:column}
+#topbar{
+  height:30px;min-height:30px;
+  display:flex;align-items:center;gap:0;
+  border-bottom:1px solid var(--dim);
+  background:linear-gradient(90deg,#070e06,#0a1409,#070e06);
+  flex-shrink:0;
+}
+#workspace{flex:1;display:flex;overflow:hidden}
+#bottombar{
+  height:110px;min-height:110px;
+  border-top:1px solid var(--dim);
+  background:#070e06;
+  display:flex;
+  flex-shrink:0;
+  overflow:hidden;
+}
+
+/* ── TOP BAR ── */
+.tb-logo{
+  font-family:'VT323',monospace;font-size:22px;letter-spacing:3px;
+  color:var(--line2);padding:0 16px;
+  text-shadow:0 0 10px rgba(120,232,154,.5);
+  border-right:1px solid var(--dim);height:100%;display:flex;align-items:center;
+}
+.tb-logo span{color:var(--amber);margin-left:6px;font-size:18px}
+.tb-stat{
+  padding:0 12px;border-right:1px solid var(--dim);
+  height:100%;display:flex;align-items:center;gap:6px;
+  font-size:11px;white-space:nowrap;
+}
+.tb-stat .k{color:var(--dim);letter-spacing:1px}
+.tb-stat .v{color:var(--amber);font-size:13px}
+.tb-stat .dv{font-size:10px;color:var(--line);opacity:.7}
+.tb-spacer{flex:1}
+.tb-era{
+  padding:0 14px;font-family:'Courier Prime',monospace;font-style:italic;
+  color:var(--line2);font-size:11px;border-left:1px solid var(--dim);height:100%;display:flex;align-items:center;
+}
+.tb-tick{padding:0 12px;color:var(--amber);font-size:11px;border-left:1px solid var(--dim);height:100%;display:flex;align-items:center;}
+.tb-btn{
+  height:100%;padding:0 10px;border:none;border-left:1px solid var(--dim);
+  background:transparent;color:var(--line);cursor:pointer;
+  font:inherit;font-size:11px;letter-spacing:1px;
+  transition:background .12s,color .12s;
+}
+.tb-btn:hover{background:var(--soft);color:var(--line2)}
+.tb-btn.active{background:var(--dim);color:var(--amber)}
+
+/* ── LEFT PANEL ── */
+#left-panel{
+  width:200px;min-width:200px;
+  background:var(--panel);
+  border-right:1px solid var(--dim);
+  display:flex;flex-direction:column;
+  overflow-y:auto;overflow-x:hidden;
+  flex-shrink:0;
+}
+.lp-section{border-bottom:1px solid var(--soft);padding:7px 8px}
+.lp-head{
+  font-family:'Courier Prime',monospace;font-weight:700;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--amber);margin-bottom:6px;
+}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:2px 0}
+.res-row .rk{color:var(--dim);font-size:11px}
+.res-row .rv{color:var(--line2);font-size:12px}
+.res-row .rd{font-size:10px;color:var(--warn)}
+.res-row .rd.pos{color:var(--line)}
+
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.tool-btn{
+  background:var(--panel2);border:1px solid var(--soft);
+  color:var(--line);padding:5px 4px;cursor:pointer;
+  font:inherit;font-size:10px;letter-spacing:.5px;
+  text-align:center;transition:all .1s;
+}
+.tool-btn:hover{border-color:var(--line);color:var(--line2)}
+.tool-btn.active{border-color:var(--amber);color:var(--amber);background:#1a1f06}
+
+.view-btn{
+  background:var(--panel2);border:1px solid var(--soft);
+  color:var(--dim);padding:3px 6px;cursor:pointer;
+  font:inherit;font-size:10px;width:100%;margin-bottom:2px;
+  text-align:left;transition:all .1s;
+}
+.view-btn:hover{color:var(--line)}
+.view-btn.active{border-color:var(--blue);color:var(--blue)}
+
+/* ── CANVAS CENTER ── */
+#canvas-wrap{flex:1;position:relative;overflow:hidden;background:#040804}
+#gameCanvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;image-rendering:pixelated}
+#scanlines{position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,transparent 0 1px,var(--scan-line) 1px 2px);
+  opacity:.18;z-index:2}
+#vignette{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%);
+  z-index:3}
+#overlay-top{position:absolute;top:8px;left:8px;right:8px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none;z-index:4}
+.ov-chip{
+  background:rgba(8,15,8,.88);border:1px solid var(--dim);
+  padding:3px 8px;font-size:10px;letter-spacing:1px;
+}
+.ov-chip .ck{color:var(--dim);margin-right:4px}
+.ov-chip .cv{color:var(--amber2)}
+
+/* ── RIGHT PANEL ── */
+#right-panel{
+  width:218px;min-width:218px;
+  background:var(--panel);border-left:1px solid var(--dim);
+  display:flex;flex-direction:column;
+  overflow-y:auto;overflow-x:hidden;
+  flex-shrink:0;
+}
+
+/* ── BOTTOM BAR ── */
+#bq-panel{width:280px;border-right:1px solid var(--dim);padding:6px 8px;overflow-y:auto}
+.bq-head{font-size:10px;letter-spacing:2px;color:var(--amber);margin-bottom:4px;font-family:'Courier Prime',monospace;font-weight:700}
+.bq-item{
+  display:flex;align-items:center;gap:5px;
+  padding:2px 0;border-bottom:1px solid var(--soft);
+}
+.bq-name{flex:1;font-size:11px;color:var(--line)}
+.bq-turns{font-size:10px;color:var(--dim);width:28px;text-align:right}
+.bq-bar-wrap{width:52px;height:5px;background:var(--soft);border:1px solid var(--dim);flex-shrink:0}
+.bq-bar{height:100%;background:var(--amber);transition:width .4s}
+.bq-cancel{
+  background:none;border:none;color:var(--dim);cursor:pointer;
+  font-size:10px;padding:0 2px;
+}
+.bq-cancel:hover{color:var(--red)}
+
+#log-panel{flex:1;padding:6px 8px;overflow-y:auto;border-right:1px solid var(--dim)}
+.log-head{font-size:10px;letter-spacing:2px;color:var(--blue);margin-bottom:4px;font-family:'Courier Prime',monospace;font-weight:700}
+.log-entry{padding:2px 0;border-bottom:1px solid var(--soft);font-size:11px;color:var(--dim)}
+.log-entry.good{color:var(--line)}
+.log-entry.warn{color:var(--warn)}
+.log-entry.bad{color:var(--red)}
+.log-entry.tech{color:var(--blue)}
+
+#sel-panel{width:220px;border-left:1px solid var(--dim);padding:6px 8px;overflow-y:auto}
+.sel-head{font-size:10px;letter-spacing:2px;color:var(--line2);margin-bottom:4px;font-family:'Courier Prime',monospace;font-weight:700}
+
+/* ── SHARED UI ── */
+.section{border-bottom:1px solid var(--soft);padding:7px 8px}
+.section-head{font-size:10px;letter-spacing:2px;color:var(--line2);margin-bottom:5px;font-family:'Courier Prime',monospace;font-weight:700}
+.stat-row{display:flex;justify-content:space-between;padding:1px 0;font-size:11px}
+.stat-row .sn{color:var(--dim)}
+.stat-row .sv{color:var(--line2)}
+.stat-row .sv.amber{color:var(--amber)}
+.stat-row .sv.blue{color:var(--blue)}
+.stat-row .sv.warn{color:var(--warn)}
+.mini-bar-wrap{height:4px;background:var(--soft);border:1px solid var(--dim);margin:1px 0 4px}
+.mini-bar{height:100%;background:var(--line)}
+.mini-bar.amber{background:var(--amber)}
+.mini-bar.red{background:var(--red)}
+
+.action-btn{
+  display:block;width:100%;margin-bottom:2px;
+  background:var(--panel2);border:1px solid var(--soft);
+  color:var(--line);padding:4px 6px;cursor:pointer;
+  font:inherit;font-size:10px;text-align:left;
+  transition:all .1s;letter-spacing:.5px;
+}
+.action-btn:hover{border-color:var(--amber);color:var(--amber);background:#1a1806}
+.action-btn:disabled,.action-btn.locked{opacity:.35;pointer-events:none;color:var(--dim)}
+.action-btn.primary{border-color:var(--blue);color:var(--blue)}
+.action-btn.primary:hover{background:#06121a}
+.action-btn.done{border-color:var(--dim);color:var(--dim);pointer-events:none}
+
+.tech-row{
+  display:flex;gap:4px;align-items:center;
+  padding:3px 4px;margin-bottom:2px;border:1px solid var(--soft);
+  cursor:pointer;transition:all .1s;
+}
+.tech-row:hover{border-color:var(--blue)}
+.tech-row.researched{border-color:var(--dim);opacity:.5;pointer-events:none}
+.tech-row.researching{border-color:var(--amber)}
+.tech-row.locked{opacity:.3;pointer-events:none}
+.tech-row .tn{flex:1;font-size:11px;color:var(--blue2)}
+.tech-row .tt{font-size:10px;color:var(--dim);width:26px;text-align:right}
+.tech-row.researched .tn{color:var(--dim)}
+.tech-row.researching .tn{color:var(--amber)}
+
+.zone-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:4px}
+.zone-btn{
+  background:var(--panel2);border:1px solid var(--soft);
+  color:var(--dim);padding:4px 3px;cursor:pointer;
+  font:inherit;font-size:10px;text-align:center;transition:all .1s;
+}
+.zone-btn:hover{color:var(--line)}
+.zone-btn.active{border-color:var(--amber);color:var(--amber);background:#1a1506}
+
+#loading{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:rgba(4,8,4,.97);z-index:20;gap:12px;
+}
+#loading .lt{font-family:'VT323',monospace;font-size:28px;letter-spacing:4px;color:var(--line2)}
+#loading .ls{font-size:11px;color:var(--dim);letter-spacing:2px}
+#loading .lb{width:200px;height:4px;background:var(--soft);border:1px solid var(--dim)}
+#loading .lbf{height:100%;background:var(--line);transition:width .4s}
+
+.pill{
+  display:inline-block;padding:1px 5px;font-size:9px;
+  border:1px solid currentColor;margin-right:2px;letter-spacing:.5px;
+}
+.pill.civic{color:var(--blue)}
+.pill.ind{color:var(--warn)}
+.pill.mil{color:var(--red)}
+.pill.res{color:var(--magenta)}
+</style>
 </head>
 <body>
-  <div id="ui">
-    <h2>Entropy’s Edge</h2>
+<div id="root">
 
-    <div class="row">
-      <label>Overlay</label>
-      <select id="overlay">
-        <option value="phi">Φ</option>
-        <option value="S">Entropy S</option>
-        <option value="v">|v|</option>
-        <option value="mix" selected>Composite</option>
-      </select>
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="tb-logo">PLENUM<span>II</span></div>
+  <div class="tb-stat"><span class="k">FOOD</span><span class="v" id="tbFood">0</span><span class="dv" id="tbFoodD">+0</span></div>
+  <div class="tb-stat"><span class="k">WOOD</span><span class="v" id="tbWood">0</span></div>
+  <div class="tb-stat"><span class="k">STONE</span><span class="v" id="tbStone">0</span></div>
+  <div class="tb-stat"><span class="k">METAL</span><span class="v" id="tbMetal">0</span></div>
+  <div class="tb-stat"><span class="k">ALLOY</span><span class="v" id="tbAlloy">0</span></div>
+  <div class="tb-stat"><span class="k">DATA</span><span class="v" id="tbData">0</span></div>
+  <div class="tb-spacer"></div>
+  <div class="tb-era" id="tbEra">Foundation</div>
+  <div class="tb-tick" id="tbTick">T:0</div>
+  <button class="tb-btn" id="pauseBtn">PAUSE</button>
+  <button class="tb-btn" id="newBtn">NEW SECTOR</button>
+  <button class="tb-btn active" id="basinBtn">BASIN</button>
+  <button class="tb-btn" id="sectorBtn">SECTOR</button>
+</div>
+
+<!-- WORKSPACE -->
+<div id="workspace">
+
+  <!-- LEFT PANEL -->
+  <div id="left-panel">
+    <div class="lp-section">
+      <div class="lp-head">Tools</div>
+      <div class="tool-grid">
+        <button class="tool-btn active" data-tool="settle">Settle</button>
+        <button class="tool-btn" data-tool="road">Road</button>
+        <button class="tool-btn" data-tool="zone">Zone</button>
+        <button class="tool-btn" data-tool="harvest">Harvest</button>
+        <button class="tool-btn" data-tool="unit">Raise Unit</button>
+        <button class="tool-btn" data-tool="ship">Ship</button>
+      </div>
+      <div style="margin-top:6px">
+        <div class="lp-head" style="margin-bottom:3px">Zone Brush</div>
+        <div class="zone-grid">
+          <button class="zone-btn active" data-zone="civic">Civic</button>
+          <button class="zone-btn" data-zone="industrial">Indust.</button>
+          <button class="zone-btn" data-zone="military">Military</button>
+          <button class="zone-btn" data-zone="research">Research</button>
+        </div>
+      </div>
     </div>
-
-    <div class="row">
-      <label>Map Layers</label>
-      <select id="layers">
-        <option value="none">None</option>
-        <option value="political">Political</option>
-        <option value="corridors">Corridors</option>
-        <option value="both" selected>Both</option>
-      </select>
+    <div class="lp-section">
+      <div class="lp-head">View</div>
+      <button class="view-btn active" data-view="mixed">Mixed Field</button>
+      <button class="view-btn" data-view="phi">Scalar Φ</button>
+      <button class="view-btn" data-view="entropy">Entropy S</button>
+      <button class="view-btn" data-view="flow">Flow v</button>
+      <button class="view-btn" data-view="control">Control</button>
+      <button class="view-btn" data-view="zone">Zoning</button>
     </div>
-
-    <div class="row">
-      <label>Routes</label>
-      <select id="routes">
-        <option value="off" selected>Off</option>
-        <option value="on">On</option>
-      </select>
+    <div class="lp-section">
+      <div class="lp-head">Speed</div>
+      <div class="tool-grid">
+        <button class="tool-btn" data-speed="0.5">½×</button>
+        <button class="tool-btn active" data-speed="1">1×</button>
+        <button class="tool-btn" data-speed="2">2×</button>
+        <button class="tool-btn" data-speed="4">4×</button>
+      </div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-head">Galaxy</div>
+      <div class="stat-row"><span class="sn">Current Star</span><span class="sv amber" id="lpStar">—</span></div>
+      <div class="stat-row"><span class="sn">Colonies</span><span class="sv" id="lpColonies">0</span></div>
+      <div class="stat-row"><span class="sn">Rival Stars</span><span class="sv warn" id="lpRivals">0</span></div>
+      <div class="stat-row"><span class="sn">Starports</span><span class="sv blue" id="lpPorts">0</span></div>
+      <div class="stat-row"><span class="sn">Coherence</span><span class="sv" id="lpCoh">0.000</span></div>
+    </div>
+    <div class="lp-section">
+      <div class="lp-head">Population</div>
+      <div class="stat-row"><span class="sn">Total Pop</span><span class="sv" id="lpPop">0</span></div>
+      <div class="stat-row"><span class="sn">Settlements</span><span class="sv" id="lpSettle">0</span></div>
+      <div class="stat-row"><span class="sn">Scouts</span><span class="sv" id="lpScouts">0</span></div>
+      <div class="stat-row"><span class="sn">Militia</span><span class="sv" id="lpMilitia">0</span></div>
+      <div class="stat-row"><span class="sn">Engineers</span><span class="sv" id="lpEngineers">0</span></div>
+      <div class="stat-row"><span class="sn">Ships</span><span class="sv blue" id="lpShips">0</span></div>
     </div>
   </div>
 
-  <canvas id="canvas"></canvas>
+  <!-- CANVAS -->
+  <div id="canvas-wrap">
+    <canvas id="gameCanvas"></canvas>
+    <div id="scanlines"></div>
+    <div id="vignette"></div>
+    <div id="overlay-top">
+      <div class="ov-chip"><span class="ck">MODE</span><span class="cv" id="ovMode">BASIN</span></div>
+      <div class="ov-chip"><span class="ck">SEL</span><span class="cv" id="ovSel">NONE</span></div>
+      <div class="ov-chip"><span class="ck">TOOL</span><span class="cv" id="ovTool">SETTLE</span></div>
+      <div class="ov-chip"><span class="ck">ZONE</span><span class="cv" id="ovZone">CIVIC</span></div>
+    </div>
+    <div id="loading">
+      <div class="lt">INITIALISING FIELD CORE</div>
+      <div class="ls" id="loadingStatus">Loading Pyodide…</div>
+      <div class="lb"><div class="lbf" id="loadingBar" style="width:0%"></div></div>
+    </div>
+  </div>
 
-  <script type="module" src="main.js"></script>
+  <!-- RIGHT PANEL -->
+  <div id="right-panel">
+
+    <div class="section" id="tech-section">
+      <div class="section-head">Research</div>
+      <div id="techList"></div>
+      <div style="margin-top:4px" class="stat-row">
+        <span class="sn">Progress</span>
+        <span class="sv blue" id="techProgress">—</span>
+      </div>
+      <div class="mini-bar-wrap"><div class="mini-bar" id="techBar" style="width:0%;background:var(--blue)"></div></div>
+    </div>
+
+    <div class="section" id="build-section">
+      <div class="section-head">Build Orders</div>
+      <div id="buildOrders"></div>
+    </div>
+
+    <div class="section" id="prod-section">
+      <div class="section-head">Production Chains</div>
+      <div class="stat-row"><span class="sn">Smelters</span><span class="sv amber" id="prSmelter">0</span></div>
+      <div class="stat-row"><span class="sn">Alloy output/t</span><span class="sv" id="prAlloyRate">0.00</span></div>
+      <div class="stat-row"><span class="sn">Workshops</span><span class="sv amber" id="prWorkshop">0</span></div>
+      <div class="stat-row"><span class="sn">Data output/t</span><span class="sv" id="prDataRate">0.00</span></div>
+      <div class="stat-row"><span class="sn">Granaries</span><span class="sv amber" id="prGranary">0</span></div>
+      <div class="stat-row"><span class="sn">Food bonus/t</span><span class="sv" id="prGranaryRate">0.00</span></div>
+      <div style="margin-top:6px">
+        <button class="action-btn primary" id="buildSmelterBtn">+ Smelter (metal:18 stone:12)</button>
+        <button class="action-btn primary" id="buildWorkshopBtn">+ Workshop (wood:22 stone:8)</button>
+        <button class="action-btn primary" id="buildGranaryBtn">+ Granary (wood:15 food:20)</button>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /workspace -->
+
+<!-- BOTTOM BAR -->
+<div id="bottombar">
+  <div id="bq-panel">
+    <div class="bq-head">Build Queue</div>
+    <div id="bqList"><div style="color:var(--dim);font-size:11px">No settlement selected.</div></div>
+  </div>
+  <div id="log-panel">
+    <div class="log-head">Chronicle</div>
+    <div id="logList"></div>
+  </div>
+  <div id="sel-panel">
+    <div class="sel-head">Selection</div>
+    <div id="selDetails"><div style="color:var(--dim);font-size:11px">Click a unit or settlement.</div></div>
+  </div>
+</div>
+
+</div><!-- /root -->
+
+<script>
+const TILE=14, GW=72, GH=52, STAR_COUNT=16;
+const ctx=document.getElementById('gameCanvas').getContext('2d');
+let DPR=Math.max(1,Math.min(2,window.devicePixelRatio||1));
+
+// ── STATE ──────────────────────────────────────────────────────────────
+const S={
+  tool:'settle', zoneBrush:'civic', view:'mixed', mode:'basin',
+  speed:1, tick:0, paused:false, py:null, pyReady:false,
+  galaxy:null, currentStarId:null,
+  selectedUnitId:null, selectedSettlementId:null,
+  roadAnchor:null, selectedStarId:null,
+  logs:[],
+  techQueue:null,     // {id, turns, progress}
+  researchedTechs:new Set(),
+};
+
+// ── TECH TREE ──────────────────────────────────────────────────────────
+const TECHS=[
+  {id:'agri',     name:'Agri-Weave',      turns:18, tier:1, req:[],            desc:'Settlements yield +40% food.'},
+  {id:'roads',    name:'Gradient Roads',  turns:20, tier:1, req:[],            desc:'Roads project control farther.'},
+  {id:'smelting', name:'Smelting',        turns:25, tier:1, req:[],            desc:'Unlocks Smelters. Metal→Alloy.'},
+  {id:'militia',  name:'Militia Drill',   turns:22, tier:1, req:[],            desc:'Unlocks Militia unit class.'},
+  {id:'granary',  name:'Granary Design',  turns:18, tier:1, req:[],            desc:'Unlocks Granaries.'},
+  {id:'engineer', name:'Field Engineers', turns:30, tier:2, req:['roads'],     desc:'Unlocks Engineers. Build roads faster.'},
+  {id:'workshop', name:'Workshops',       turns:28, tier:2, req:['smelting'],  desc:'Unlocks Workshops. Produces Data.'},
+  {id:'warship',  name:'Warship Keel',    turns:35, tier:2, req:['militia','smelting'], desc:'Unlocks Warships.'},
+  {id:'colonist', name:'Colony Protocol', turns:40, tier:2, req:['agri','engineer'], desc:'Unlocks Colony Ships.'},
+  {id:'geodesic', name:'Geodesic Nav',    turns:50, tier:3, req:['workshop','colonist'], desc:'Jump range +1 in sector map.'},
+  {id:'rsvp',     name:'RSVP Dynamics',   turns:60, tier:3, req:['geodesic'],  desc:'Field coherence decay -30%.'},
+  {id:'plenum',   name:'Plenum Crown',    turns:80, tier:4, req:['rsvp'],      desc:'Victory condition unlocked.'},
+];
+
+// ── BUILD ORDERS (per settlement) ──────────────────────────────────────
+const BUILD_DEFS={
+  scout:    {name:'Scout',       turns:8,  cost:{food:12,wood:8},       req:[],         unit:'scout'},
+  militia:  {name:'Militia',     turns:12, cost:{food:14,metal:8},      req:['militia'],unit:'militia'},
+  engineer: {name:'Engineer',    turns:14, cost:{food:12,wood:12,stone:6},req:['engineer'],unit:'engineer'},
+  harvester:{name:'Harvester',   turns:10, cost:{food:10,wood:10},      req:[],         unit:'harvester'},
+  ship:     {name:'Warship',     turns:22, cost:{metal:18,wood:10,stone:6,alloy:4},req:['warship'],unit:'warship'},
+  colony:   {name:'Colony Ship', turns:30, cost:{metal:20,wood:14,alloy:8,food:30},req:['colonist'],unit:'colony'},
+  road:     {name:'Road Seg.',   turns:6,  cost:{wood:10,stone:4},      req:[],         structure:'road'},
+  smelter:  {name:'Smelter',     turns:16, cost:{metal:18,stone:12},    req:['smelting'],structure:'smelter'},
+  workshop: {name:'Workshop',    turns:16, cost:{wood:22,stone:8},      req:['workshop'],structure:'workshop'},
+  granary:  {name:'Granary',     turns:12, cost:{wood:15,food:20},      req:['granary'], structure:'granary'},
+};
+
+// ── HELPERS ────────────────────────────────────────────────────────────
+const r=(a=1,b=0)=>b+Math.random()*(a-b);
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const dist=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+function addLog(text,type=''){
+  S.logs.unshift({tick:S.tick,text,type});
+  S.logs=S.logs.slice(0,40);
+  const el=document.getElementById('logList');
+  el.innerHTML=S.logs.map(e=>`<div class="log-entry ${e.type}">[${e.tick}] ${e.text}</div>`).join('');
+}
+
+function eraName(){
+  const n=colonizedStars().length;
+  const t=S.researchedTechs.size;
+  if(S.researchedTechs.has('plenum')) return 'Plenum Crown — Victory';
+  if(t>=8||n>=6) return 'Interstellar Plenum';
+  if(t>=5||n>=4) return 'Civic Mesh';
+  if(t>=3||n>=2) return 'Ordered Basin';
+  if(t>=1||n>=1) return 'Village Weave';
+  return 'Foundation';
+}
+
+function techUnlocked(id){ return S.researchedTechs.has(id); }
+function techAvailable(tech){
+  if(techUnlocked(tech.id)) return false;
+  if(S.techQueue && S.techQueue.id===tech.id) return false;
+  return tech.req.every(r=>techUnlocked(r));
+}
+
+// ── GALAXY ─────────────────────────────────────────────────────────────
+function makeGalaxy(){
+  const names=['Aster','Crown','Velum','Nacre','Lumen','Kite','Morrow','Pillar','Yarrow','Selene','Halcyon','Kestrel','Mica','Penum','Bastion','Rill'];
+  const stars=names.slice(0,STAR_COUNT).map((name,i)=>({
+    id:uid(), name:`${name}-${i+1}`,
+    sx:r(0.9,0.1), sy:r(0.85,0.15),
+    owner: i===0?'player':(Math.random()<0.22?'rival':null),
+    world:null, player:null, rival:null, links:[],
+    starportBuilt:false, rivalPortBuilt:false,
+    zones:Array.from({length:GH},()=>Array(GW).fill(null)),
+    structures:{smelters:[],workshops:[],granaries:[]},
+    rivalStructures:{smelters:[],workshops:[],granaries:[]},
+  }));
+  for(let i=0;i<stars.length;i++){
+    const sorted=stars.map((s,j)=>j===i?null:{j,d:dist(stars[i].sx,stars[i].sy,s.sx,s.sy)}).filter(Boolean).sort((a,b)=>a.d-b.d).slice(0,3);
+    for(const {j} of sorted){
+      if(!stars[i].links.includes(stars[j].id)) stars[i].links.push(stars[j].id);
+      if(!stars[j].links.includes(stars[i].id)) stars[j].links.push(stars[i].id);
+    }
+  }
+  return {stars};
+}
+
+// ── PYTHON FIELD CORE ──────────────────────────────────────────────────
+async function bootPy(){
+  setLoading(10,'Loading Pyodide…');
+  const py=await loadPyodide();
+  S.py=py;
+  setLoading(50,'Compiling field core…');
+  await py.runPythonAsync(`
+import json,math,random
+W=${GW};H=${GH}
+def smooth(f,s=0.18):
+  o=[[0.0]*W for _ in range(H)]
+  for y in range(H):
+    ym=max(0,y-1);yp=min(H-1,y+1)
+    for x in range(W):
+      xm=max(0,x-1);xp=min(W-1,x+1)
+      o[y][x]=f[y][x]*(1-s)+(f[ym][x]+f[yp][x]+f[y][xm]+f[y][xp]+f[ym][xm]+f[ym][xp]+f[yp][xm]+f[yp][xp])/8*s
+  return o
+def mk_noise(seed=0):
+  f=[[0.0]*W for _ in range(H)]
+  for y in range(H):
+    for x in range(W):
+      n=0.6*math.sin((x+seed)*0.17)+0.5*math.cos((y-seed)*0.14)+0.3*math.sin((x+y)*0.08)+0.2*math.cos((x-y)*0.11)+(random.random()-0.5)*0.12
+      f[y][x]=n
+  for _ in range(4):f=smooth(f,0.26)
+  return f
+def init_world(seed=0):
+  random.seed(seed)
+  phi=mk_noise(seed*0.7);ent=mk_noise(seed*1.4)
+  vx=[[0.0]*W for _ in range(H)];vy=[[0.0]*W for _ in range(H)]
+  res=[[None]*W for _ in range(H)]
+  for y in range(H):
+    for x in range(W):
+      px=(x-W/2)/(W/2);py=(y-H/2)/(H/2)
+      sp=math.atan2(py,px);rv=math.sqrt(px*px+py*py)+1e-6
+      vx[y][x]=-math.sin(sp)*(0.25-0.12*rv)+0.06*math.sin(y*0.21)
+      vy[y][x]=math.cos(sp)*(0.25-0.12*rv)+0.06*math.cos(x*0.17)
+      phi[y][x]=max(-1.0,min(1.0,phi[y][x]));ent[y][x]=max(-1.0,min(1.0,ent[y][x]))
+      p=phi[y][x];e=ent[y][x]
+      if p>0.38 and e<0.25 and random.random()<0.15:res[y][x]='food'
+      elif p>0.08 and e<0.45 and random.random()<0.11:res[y][x]='wood'
+      elif p<0.1 and e>0.0 and random.random()<0.08:res[y][x]='stone'
+      elif p<-0.1 and e>-0.1 and random.random()<0.06:res[y][x]='metal'
+  return {'phi':phi,'ent':ent,'vx':vx,'vy':vy,'res':res}
+def stamp(w,x,y,radius,dp=0.0,de=0.0):
+  for yy in range(max(0,y-radius),min(H,y+radius+1)):
+    for xx in range(max(0,x-radius),min(W,x+radius+1)):
+      r2=(xx-x)**2+(yy-y)**2
+      if r2<=radius*radius:
+        f=1-r2/(radius*radius+1e-6)
+        w['phi'][yy][xx]=max(-1.0,min(1.0,w['phi'][yy][xx]+dp*f))
+        w['ent'][yy][xx]=max(-1.0,min(1.0,w['ent'][yy][xx]+de*f))
+def step_world(pj):
+  p=json.loads(pj)
+  w=p['world'];ss=p.get('ss',1)
+  settlements=p['settlements'];roads=p['roads'];ports=p['ports']
+  enemy=p.get('enemy',[]);zones=p.get('zones',[])
+  for _ in range(ss):
+    phi2=smooth(w['phi'],0.10);ent2=smooth(w['ent'],0.08)
+    for y in range(H):
+      for x in range(W):
+        ax=int(round(x+w['vx'][y][x]));ay=int(round(y+w['vy'][y][x]))
+        ax=max(0,min(W-1,ax));ay=max(0,min(H-1,ay))
+        phi2[y][x]=max(-1.0,min(1.0,0.94*phi2[y][x]+0.06*w['phi'][ay][ax]))
+        ent2[y][x]=max(-1.0,min(1.0,0.96*ent2[y][x]+0.04*w['ent'][ay][ax]+0.002))
+    w['phi']=phi2;w['ent']=ent2
+    for s in settlements:stamp(w,s['x'],s['y'],4,dp=0.018+0.002*s['level'],de=-0.026-0.003*s['level'])
+    for pr in ports:stamp(w,pr['x'],pr['y'],3,dp=0.016,de=-0.020)
+    for r in roads:stamp(w,r['x'],r['y'],1,dp=0.005,de=-0.009)
+    for s in enemy:stamp(w,s['x'],s['y'],4,dp=0.012+0.002*s['level'],de=-0.016-0.002*s['level'])
+  return json.dumps(w)
+def sample(pj):
+  p=json.loads(pj);w=p['world']
+  x=max(0,min(W-1,int(p['x'])));y=max(0,min(H-1,int(p['y'])))
+  return json.dumps({'phi':w['phi'][y][x],'ent':w['ent'][y][x],'vx':w['vx'][y][x],'vy':w['vy'][y][x],'res':w['res'][y][x]})
+  `);
+  setLoading(85,'Building galaxy…');
+  S.pyReady=true;
+}
+
+function setLoading(pct,msg){
+  document.getElementById('loadingStatus').textContent=msg;
+  document.getElementById('loadingBar').style.width=pct+'%';
+}
+
+// ── BASIN INIT ─────────────────────────────────────────────────────────
+async function makeBasin(star,seedOffset=0){
+  const seed=Math.floor(Math.random()*999999)+seedOffset;
+  const raw=await S.py.runPythonAsync(`import json;json.dumps(init_world(${seed}))`);
+  star.world=JSON.parse(raw);
+
+  const mkPlayer=(owner)=>({
+    food:owner?150:0, wood:owner?120:0, stone:owner?90:0, metal:owner?40:0,
+    alloy:0, data:0,
+    settlements:[], roads:[], units:[], ships:[], ports:[],
+    buildQueues:{},   // settlementId -> [{defId,progress,turns}]
+  });
+  star.player=mkPlayer(star.owner==='player');
+  star.rival=mkPlayer(star.owner==='rival');
+
+  if(star.owner==='player'){
+    const s={id:uid(),x:Math.floor(GW*0.43),y:Math.floor(GH*0.56),level:1,pop:13,zone:'civic'};
+    star.player.settlements.push(s);
+    star.player.buildQueues[s.id]=[];
+    injectField(star.world,s.x,s.y,true);
+  }
+  if(star.owner==='rival'){
+    const s={id:uid(),x:Math.floor(GW*0.63),y:Math.floor(GH*0.38),level:1,pop:12,zone:'civic'};
+    star.rival.settlements.push(s);
+    injectField(star.world,s.x,s.y,false);
+  }
+}
+
+function injectField(world,x,y,friendly=true){
+  const dp=friendly?0.22:0.16, de=friendly?-0.28:-0.2;
+  for(let dy=-4;dy<=4;dy++) for(let dx=-4;dx<=4;dx++){
+    const tx=x+dx,ty=y+dy;
+    if(tx<0||ty<0||tx>=GW||ty>=GH) continue;
+    const r2=dx*dx+dy*dy;
+    if(r2<=16){const f=1-r2/17;world.phi[ty][tx]=cl(world.phi[ty][tx]+dp*f,-1,1);world.ent[ty][tx]=cl(world.ent[ty][tx]+de*f,-1,1);}
+  }
+}
+
+async function newSector(){
+  if(!S.pyReady) return;
+  S.galaxy=makeGalaxy();
+  setLoading(88,'Generating basins…');
+  for(let i=0;i<S.galaxy.stars.length;i++) await makeBasin(S.galaxy.stars[i],i*37);
+  // Starter resources for player home world
+  const home=S.galaxy.stars.find(s=>s.owner==='player');
+  if(home&&home.player.settlements[0]) seedHarvest(home,home.player.settlements[0],home.player);
+  S.currentStarId=home.id;
+  S.selectedStarId=home.id;
+  S.tick=0;
+  S.researchedTechs=new Set();
+  S.techQueue=null;
+  S.selectedUnitId=null;
+  S.selectedSettlementId=null;
+  S.roadAnchor=null;
+  S.mode='basin';
+  addLog('A new stellar sector awakens.','good');
+  setLoading(100,'Ready.');
+  setTimeout(()=>{ document.getElementById('loading').style.display='none'; },400);
+  updateUI();
+  buildTechList();
+  buildBuildOrders();
+}
+
+function seedHarvest(star,s,bank){
+  for(let y=s.y-5;y<=s.y+5;y++) for(let x=s.x-5;x<=s.x+5;x++){
+    if(x<0||y<0||x>=GW||y>=GH) continue;
+    const res=star.world.res[y][x];
+    if(res&&dist(x,y,s.x,s.y)<5.2) bank[res]+=20;
+  }
+}
+
+// ── CURRENT STAR ────────────────────────────────────────────────────────
+const curStar=()=>S.galaxy&&S.galaxy.stars.find(s=>s.id===S.currentStarId);
+
+// ── CONTROL PROJECTION ─────────────────────────────────────────────────
+function projectControl(star){
+  const ctl=Array.from({length:GH},()=>new Float32Array(GW));
+  for(const s of star.player.settlements){
+    const r=7.5+s.level;
+    for(let y=Math.max(0,s.y-10);y<Math.min(GH,s.y+11);y++)
+      for(let x=Math.max(0,s.x-10);x<Math.min(GW,s.x+11);x++)
+        ctl[y][x]+=Math.max(0,1.15-dist(x,y,s.x,s.y)/r)*(0.8+s.level*0.14);
+  }
+  for(const r of star.player.roads) ctl[r.y][r.x]+=techUnlocked('roads')?0.55:0.3;
+  for(const p of star.player.ports) ctl[p.y][p.x]+=0.65;
+  return ctl;
+}
+function enemyControl(star){
+  const ctl=Array.from({length:GH},()=>new Float32Array(GW));
+  for(const s of star.rival.settlements){
+    for(let y=Math.max(0,s.y-10);y<Math.min(GH,s.y+11);y++)
+      for(let x=Math.max(0,s.x-10);x<Math.min(GW,s.x+11);x++)
+        ctl[y][x]+=Math.max(0,1.1-dist(x,y,s.x,s.y)/7.5)*(0.75+s.level*0.14);
+  }
+  for(const p of star.rival.ports) ctl[p.y][p.x]+=0.55;
+  return ctl;
+}
+function coherenceScore(star){
+  const ctl=projectControl(star);let c=0,e=0;
+  for(let y=0;y<GH;y++) for(let x=0;x<GW;x++){
+    c+=cl(ctl[y][x],0,1)*(1-(star.world.ent[y][x]+1)/2);
+    e+=(star.world.ent[y][x]+1)/2;
+  }
+  return{coh:c/(GW*GH),ent:e/(GW*GH)};
+}
+
+// ── RESOURCES / SPEND ──────────────────────────────────────────────────
+function costOK(bank,cost){ return Object.entries(cost).every(([k,v])=>bank[k]>=v); }
+function spend(bank,cost){ if(!costOK(bank,cost))return false; for(const[k,v]of Object.entries(cost))bank[k]-=v; return true; }
+function nearestSettlement(list,x,y){let b=null,bd=1e9;for(const s of list){const d=dist(x,y,s.x,s.y);if(d<bd){bd=d;b=s;}}return[b,bd];}
+
+function lineTiles(x0,y0,x1,y1){
+  const pts=[];let dx=Math.abs(x1-x0),sx=x0<x1?1:-1,dy=-Math.abs(y1-y0),sy=y0<y1?1:-1,err=dx+dy;
+  while(true){pts.push({x:x0,y:y0});if(x0===x1&&y0===y1)break;const e=2*err;if(e>=dy){err+=dy;x0+=sx;}if(e<=dx){err+=dx;y0+=sy;}}
+  return pts;
+}
+
+// ── BUILD QUEUE LOGIC ──────────────────────────────────────────────────
+function enqueue(star,settlementId,defId){
+  const def=BUILD_DEFS[defId]; if(!def)return;
+  const bank=star.player;
+  if(!costOK(bank,def.cost)){ addLog(`Not enough resources for ${def.name}.`,'warn'); return; }
+  if(def.req.some(r=>!techUnlocked(r))){ addLog(`${def.name} requires: ${def.req.join(', ')}.`,'warn'); return; }
+  if(!bank.buildQueues[settlementId]) bank.buildQueues[settlementId]=[];
+  spend(bank,def.cost);
+  bank.buildQueues[settlementId].push({defId,progress:0,turns:def.turns});
+  addLog(`${def.name} queued at settlement.`);
+  updateBuildQueuePanel();
+}
+
+function processQueues(star){
+  for(const s of star.player.settlements){
+    const q=star.player.buildQueues[s.id]||[];
+    if(!q.length) continue;
+    const item=q[0];
+    item.progress+=1;
+    if(item.progress>=item.turns){
+      q.shift();
+      completeItem(star,s,item.defId);
+    }
+  }
+}
+
+function completeItem(star,s,defId){
+  const def=BUILD_DEFS[defId];
+  if(!def) return;
+  if(def.unit){
+    const u={id:uid(),x:s.x+0.5,y:s.y+0.5,tx:null,ty:null,kind:def.unit,hp:def.unit==='militia'?3:def.unit==='warship'?5:2,strength:def.unit==='warship'?3:1};
+    if(def.unit==='warship'||def.unit==='colony') star.player.ships.push(u);
+    else star.player.units.push(u);
+    addLog(`${def.name} completed.`,'good');
+  } else if(def.structure==='road'){
+    const target=pick(star.player.settlements);
+    const pts=lineTiles(s.x,s.y,target.x,target.y);
+    for(const p of pts) if(!star.player.roads.find(r=>r.x===p.x&&r.y===p.y)) star.player.roads.push({x:p.x,y:p.y});
+    addLog('Road segment completed.','good');
+  } else if(def.structure==='smelter'){
+    star.structures.smelters.push({id:uid(),x:s.x,y:s.y});
+    addLog('Smelter operational.','good');
+  } else if(def.structure==='workshop'){
+    star.structures.workshops.push({id:uid(),x:s.x,y:s.y});
+    addLog('Workshop operational.','good');
+  } else if(def.structure==='granary'){
+    star.structures.granaries.push({id:uid(),x:s.x,y:s.y});
+    addLog('Granary constructed.','good');
+  }
+}
+
+// ── TECH RESEARCH ──────────────────────────────────────────────────────
+function startResearch(id){
+  const tech=TECHS.find(t=>t.id===id);
+  if(!tech||!techAvailable(tech)) return;
+  S.techQueue={id,progress:0,turns:tech.turns};
+  addLog(`Research begun: ${tech.name}.`,'tech');
+  buildTechList();
+  updateUI();
+}
+
+function stepResearch(){
+  if(!S.techQueue) return;
+  const bonus=S.galaxy&&S.galaxy.stars.reduce((a,star)=>a+star.structures.workshops.length,0)*0.12;
+  S.techQueue.progress+=1+bonus;
+  if(S.techQueue.progress>=S.techQueue.turns){
+    S.researchedTechs.add(S.techQueue.id);
+    const tech=TECHS.find(t=>t.id===S.techQueue.id);
+    addLog(`Research complete: ${tech.name}! ${tech.desc}`,'tech');
+    S.techQueue=null;
+    buildTechList();
+    buildBuildOrders();
+  }
+}
+
+// ── PRODUCTION CHAINS ──────────────────────────────────────────────────
+function runProduction(star){
+  const ns=star.structures;
+  // Smelters: metal → alloy
+  const alloyRate=ns.smelters.length*0.08;
+  const consumed=Math.min(star.player.metal, alloyRate*1.4);
+  star.player.metal-=consumed;
+  star.player.alloy+=consumed*0.6;
+  // Workshops: stone+wood → data
+  const dataRate=ns.workshops.length*0.06;
+  const wConsumed=Math.min(star.player.wood, dataRate*1.2);
+  star.player.wood-=wConsumed;
+  star.player.data+=wConsumed*0.5;
+  // Granaries: food bonus
+  const fBonus=ns.granaries.length*0.15;
+  star.player.food+=fBonus;
+}
+
+// ── ZONE EFFECTS ────────────────────────────────────────────────────────
+function zoneYieldMod(zone){
+  // returns {food,wood,stone,metal,dp,de}
+  if(zone==='civic')     return{food:1.4,wood:1.0,stone:1.0,metal:1.0,dp:0.02,de:-0.03};
+  if(zone==='industrial')return{food:0.8,wood:1.5,stone:1.5,metal:1.5,dp:0.01,de:0.01};
+  if(zone==='military')  return{food:0.9,wood:0.9,stone:0.9,metal:0.9,dp:0.015,de:-0.015};
+  if(zone==='research')  return{food:0.7,wood:0.7,stone:0.7,metal:0.7,dp:0.025,de:-0.04};
+  return{food:1,wood:1,stone:1,metal:1,dp:0.015,de:-0.02};
+}
+
+// ── GAME STEP ────────────────────────────────────────────────────────────
+async function gameStep(){
+  if(S.paused||!S.galaxy) return;
+  S.tick++;
+  const ss=S.speed>=4?4:S.speed>=2?2:1;
+
+  for(const star of S.galaxy.stars){
+    // Field step
+    const payload={world:star.world,settlements:star.player.settlements,roads:star.player.roads,ports:star.player.ports,enemy:star.rival.settlements,ss};
+    const out=await S.py.runPythonAsync(`step_world(${JSON.stringify(JSON.stringify(payload))})`);
+    star.world=JSON.parse(out);
+
+    const ctl=projectControl(star);
+    const ectl=enemyControl(star);
+
+    // Player settlements yield
+    for(const s of star.player.settlements){
+      const phi=star.world.phi[s.y][s.x], ent=star.world.ent[s.y][s.x];
+      const localCtl=cl(ctl[s.y][s.x],0,1.5);
+      const zm=zoneYieldMod(s.zone||'civic');
+      const base=Math.max(0,phi+0.45)*(1.2-Math.max(0,ent))*localCtl;
+      const agriMult=techUnlocked('agri')?1.4:1.0;
+      star.player.food+=base*0.34*zm.food*agriMult;
+      star.player.wood+=base*0.18*zm.wood;
+      star.player.stone+=Math.max(0,0.06+ent*0.04)*zm.stone;
+      star.player.metal+=Math.max(0,0.03-ent*0.02)*zm.metal;
+      if(S.tick%35===0){
+        const upkeep=0.75+s.pop*0.05; star.player.food-=upkeep;
+        if(star.player.food>s.pop*0.45&&ent<0.2){s.pop+=1;if(s.pop%8===0)s.level=Math.min(5,s.level+1);}
+        else if(star.player.food<0) s.pop=Math.max(4,s.pop-1);
+      }
+    }
+    // Rival yield
+    for(const s of star.rival.settlements){
+      const phi=star.world.phi[s.y][s.x],ent=star.world.ent[s.y][s.x],lctl=cl(ectl[s.y][s.x],0,1.4);
+      const base=Math.max(0,phi+0.4)*(1.15-Math.max(0,ent))*lctl;
+      star.rival.food+=base*0.3;star.rival.wood+=base*0.16;star.rival.stone+=0.05;star.rival.metal+=0.025;
+      if(S.tick%40===0){
+        const upkeep=0.7+s.pop*0.045;star.rival.food-=upkeep;
+        if(star.rival.food>s.pop*0.42&&ent<0.25){s.pop+=1;if(s.pop%8===0)s.level=Math.min(4,s.level+1);}
+        else if(star.rival.food<0) s.pop=Math.max(4,s.pop-1);
+      }
+    }
+
+    // Production chains
+    runProduction(star);
+    // Build queues
+    processQueues(star);
+    // Unit movement
+    for(const u of [...star.player.units,...star.player.ships,...star.rival.units,...star.rival.ships]){
+      if(u.tx!=null&&u.ty!=null){
+        const dx=u.tx-u.x,dy=u.ty-u.y,d=Math.hypot(dx,dy);
+        if(d<0.15){u.x=u.tx;u.y=u.ty;u.tx=null;u.ty=null;}
+        else{
+          const sx=dx/d,sy=dy/d,cx=Math.round(cl(u.x,0,GW-1)),cy=Math.round(cl(u.y,0,GH-1));
+          const friction=cl((star.world.ent[cy][cx]+1)/2,0.05,0.95);
+          const fvx=star.world.vx[cy][cx]*(u.kind==='warship'||u.kind==='colony'?0.18:0.1);
+          const fvy=star.world.vy[cy][cx]*(u.kind==='warship'||u.kind==='colony'?0.18:0.1);
+          const speed=((u.kind==='warship'||u.kind==='colony')?0.17:u.kind==='engineer'?0.09:0.08)+0.07*(1-friction);
+          u.x=cl(u.x+sx*speed+fvx,0,GW-1);u.y=cl(u.y+sy*speed+fvy,0,GH-1);
+        }
+      }
+    }
+
+    // Auto-starport
+    if(S.tick%70===0&&star.player.settlements.length&&!star.starportBuilt&&star.player.metal>22&&star.player.stone>26){
+      const s=star.player.settlements[0];
+      star.player.ports.push({id:uid(),x:cl(s.x+2,0,GW-1),y:s.y});
+      star.player.metal-=22;star.player.stone-=26;star.starportBuilt=true;
+      addLog(`Starport rises at ${star.name}.`,'good');
+    }
+    if(S.tick%80===0&&star.rival.settlements.length&&!star.rivalPortBuilt&&star.rival.metal>18&&star.rival.stone>22){
+      const s=star.rival.settlements[0];
+      star.rival.ports.push({id:uid(),x:cl(s.x-2,0,GW-1),y:s.y});
+      star.rival.metal-=18;star.rival.stone-=22;star.rivalPortBuilt=true;
+    }
+
+    // Rival AI expansion
+    if(S.tick%90===0&&star.rival.settlements.length){
+      const parent=pick(star.rival.settlements);
+      for(let i=0;i<20;i++){
+        const x=cl(parent.x+Math.floor(r(11,-10)),2,GW-3),y=cl(parent.y+Math.floor(r(9,-8)),2,GH-3);
+        if(!star.rival.settlements.find(s=>s.x===x&&s.y===y)&&ectl[y][x]>0.18&&star.world.ent[y][x]<0.38&&spend(star.rival,{food:35,wood:24,stone:10})){
+          const s={id:uid(),x,y,level:1,pop:8};star.rival.settlements.push(s);injectField(star.world,s,false);break;
+        }
+      }
+    }
+    // Rival ship
+    if(S.tick%110===0&&star.rival.ports.length&&star.rival.metal>16){
+      star.rival.ships.push({id:uid(),x:star.rival.ports[0].x,y:star.rival.ports[0].y,tx:null,ty:null,kind:'warship',hp:4,strength:2});
+      star.rival.metal-=16;star.rival.wood-=10;
+    }
+    for(const ship of star.rival.ships){
+      if(ship.tx==null){
+        const t=star.player.settlements[0]||star.player.ports[0];
+        if(t){ship.tx=t.x;ship.ty=t.y;}
+      }
+    }
+    resolveCombat(star);
+  }
+
+  // Research tick
+  if(S.tick%1===0) stepResearch();
+  // Rival colonisation
+  if(S.tick%160===0) rivalColonize();
+  updateUI();
+  updateBuildQueuePanel();
+  updateSelectionPanel();
+}
+
+function resolveCombat(star){
+  for(const e of [...star.rival.units,...star.rival.ships]){
+    for(const p of [...star.player.units,...star.player.ships]){
+      if(dist(e.x,e.y,p.x,p.y)<0.9){e.hp=(e.hp||2)-1;p.hp=(p.hp||2)-1;}
+    }
+    for(const s of star.player.settlements){
+      if(dist(e.x,e.y,s.x,s.y)<1.4){s.pop=Math.max(4,s.pop-1);e.hp=(e.hp||2)-1;if(S.tick%20===0)addLog(`Settlement under pressure at ${star.name}!`,'bad');}
+    }
+  }
+  for(const p of [...star.player.units,...star.player.ships]){
+    for(const s of star.rival.settlements){
+      if(dist(p.x,p.y,s.x,s.y)<1.4){s.pop=Math.max(4,s.pop-1);p.hp=(p.hp||2)-1;}
+    }
+  }
+  star.player.units=star.player.units.filter(u=>(u.hp||2)>0);
+  star.player.ships=star.player.ships.filter(u=>(u.hp||2)>0);
+  star.rival.units=star.rival.units.filter(u=>(u.hp||2)>0);
+  star.rival.ships=star.rival.ships.filter(u=>(u.hp||2)>0);
+}
+
+function rivalColonize(){
+  const owned=S.galaxy.stars.filter(s=>s.rival.settlements.length);
+  if(!owned.length) return;
+  const src=owned.find(s=>s.rival.ports.length)||pick(owned);
+  if(!src||src.rival.metal<24||src.rival.food<36) return;
+  const opts=src.links.map(id=>S.galaxy.stars.find(s=>s.id===id)).filter(s=>s&&!s.rival.settlements.length);
+  if(!opts.length) return;
+  const tgt=pick(opts);
+  src.rival.metal-=24;src.rival.food-=36;
+  const s={id:uid(),x:Math.floor(GW*0.60),y:Math.floor(GH*0.40),level:1,pop:9};
+  tgt.rival.settlements.push(s);
+  injectField(tgt.world,s.x,s.y,false);
+  addLog(`Rival colonists seed ${tgt.name}.`,'bad');
+}
+
+function colonizedStars(){ return S.galaxy?S.galaxy.stars.filter(s=>s.player.settlements.length||s.player.ports.length):[];}
+
+// ── RENDER ─────────────────────────────────────────────────────────────
+function resize(){
+  const r=document.getElementById('canvas-wrap').getBoundingClientRect();
+  const c=document.getElementById('gameCanvas');
+  c.width=Math.floor(r.width*DPR);c.height=Math.floor(r.height*DPR);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+window.addEventListener('resize',resize);
+
+function screenToTile(px,py){
+  const r=document.getElementById('canvas-wrap').getBoundingClientRect();
+  const scale=Math.min(r.width/(GW*TILE),r.height/(GH*TILE));
+  const ox=(r.width-GW*TILE*scale)/2,oy=(r.height-GH*TILE*scale)/2;
+  return{x:Math.floor((px-r.left-ox)/(TILE*scale)),y:Math.floor((py-r.top-oy)/(TILE*scale)),scale,ox,oy};
+}
+function tileCenter(x,y,scale,ox,oy){return{x:ox+(x+0.5)*TILE*scale,y:oy+(y+0.5)*TILE*scale};}
+function starToScreen(star,rect){return{x:rect.width*star.sx,y:rect.height*star.sy};}
+
+// Zone colours
+const ZONE_COLORS={
+  civic:'rgba(106,184,232,0.22)',
+  industrial:'rgba(240,152,80,0.22)',
+  military:'rgba(224,96,96,0.22)',
+  research:'rgba(200,120,216,0.22)',
+};
+
+function drawBasin(){
+  const star=curStar();if(!star)return;
+  const wrap=document.getElementById('canvas-wrap').getBoundingClientRect();
+  const scale=Math.min(wrap.width/(GW*TILE),wrap.height/(GH*TILE));
+  const ox=(wrap.width-GW*TILE*scale)/2,oy=(wrap.height-GH*TILE*scale)/2;
+  ctx.clearRect(0,0,wrap.width,wrap.height);
+  ctx.fillStyle='#040804';ctx.fillRect(0,0,wrap.width,wrap.height);
+  const ctl=projectControl(star);
+  const ectl=enemyControl(star);
+
+  for(let y=0;y<GH;y++) for(let x=0;x<GW;x++){
+    const px=ox+x*TILE*scale,py=oy+y*TILE*scale,w=TILE*scale;
+    const phi=star.world.phi[y][x],ent=star.world.ent[y][x];
+    const vvx=star.world.vx[y][x],vvy=star.world.vy[y][x];
+    const ctrl=cl(ctl[y][x],0,1),ectrl=cl(ectl[y][x],0,1);
+    let rr=8,gg=18,bb=10;
+    if(S.view==='phi'){gg=28+Math.floor(140*cl((phi+1)/2,0,1));rr=8+Math.floor(24*cl((-phi+1)/2,0,1));bb=10;}
+    else if(S.view==='entropy'){const e=cl((ent+1)/2,0,1);rr=20+Math.floor(120*e);gg=24+Math.floor(90*(1-e));bb=10;}
+    else if(S.view==='flow'){const m=cl(Math.hypot(vvx,vvy)*2.8,0,1);gg=30+Math.floor(160*m);rr=8+Math.floor(30*m);bb=14;}
+    else if(S.view==='control'){rr=8+Math.floor(30*ectrl);gg=22+Math.floor(180*ctrl);bb=10+Math.floor(20*ectrl);}
+    else if(S.view==='zone'){
+      const z=star.zones[y][x];
+      if(z==='civic'){rr=20;gg=40;bb=70;}
+      else if(z==='industrial'){rr=80;gg=50;bb=14;}
+      else if(z==='military'){rr=80;gg=20;bb=20;}
+      else if(z==='research'){rr=50;gg=20;bb=80;}
+      else{rr=8;gg=18;bb=10;}
+    }
+    else{
+      const p=cl((phi+1)/2,0,1),e=cl((ent+1)/2,0,1);
+      rr=8+Math.floor(90*e)+Math.floor(20*ectrl);
+      gg=20+Math.floor(160*p*(1-e*0.4))+Math.floor(30*ctrl);
+      bb=8+Math.floor(40*(1-p));
+    }
+    ctx.fillStyle=`rgb(${rr},${gg},${bb})`;ctx.fillRect(px,py,w+0.5,w+0.5);
+    if(w>8){ctx.strokeStyle='rgba(120,232,154,0.06)';ctx.strokeRect(px,py,w,w);}
+    const res=star.world.res[y][x];
+    if(res){
+      const col=res==='food'?'#e8c96a':res==='wood'?'#78e89a':res==='stone'?'#f09850':'#6ab8e8';
+      ctx.strokeStyle=col;ctx.globalAlpha=0.7;ctx.lineWidth=Math.max(1,scale*1.4);
+      ctx.beginPath();ctx.arc(px+w*.5,py+w*.5,w*0.17,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;
+    }
+    // Zone overlay
+    const z=star.zones[y][x];
+    if(z&&S.view!=='zone'){
+      ctx.fillStyle=ZONE_COLORS[z];ctx.fillRect(px,py,w,w);
+    }
+  }
+
+  // Roads
+  for(const r0 of star.player.roads){
+    const c=tileCenter(r0.x,r0.y,scale,ox,oy),hw=TILE*scale*0.38;
+    ctx.strokeStyle='rgba(232,201,106,0.5)';ctx.lineWidth=Math.max(1,scale*1.4);
+    ctx.beginPath();ctx.moveTo(c.x-hw,c.y);ctx.lineTo(c.x+hw,c.y);ctx.stroke();
+  }
+
+  // Structures
+  for(const str of star.structures.smelters) drawStructureIcon(str,'⚙',scale,ox,oy,'#f09850');
+  for(const str of star.structures.workshops) drawStructureIcon(str,'⊡',scale,ox,oy,'#6ab8e8');
+  for(const str of star.structures.granaries) drawStructureIcon(str,'◈',scale,ox,oy,'#78e89a');
+
+  // Settlements
+  for(const s of star.player.settlements) drawSettlement(s,scale,ox,oy,'#a8f5bf',s.id===S.selectedSettlementId);
+  for(const s of star.rival.settlements) drawSettlement(s,scale,ox,oy,'#e06060',false);
+  for(const p of star.player.ports) drawPort(p,scale,ox,oy,'#e8c96a');
+  for(const p of star.rival.ports) drawPort(p,scale,ox,oy,'#e06060');
+
+  // Units
+  drawUnits(star.player.units,scale,ox,oy,'#78e89a');
+  drawUnits(star.rival.units,scale,ox,oy,'#e06060');
+  drawUnits(star.player.ships,scale,ox,oy,'#e8c96a');
+  drawUnits(star.rival.ships,scale,ox,oy,'#e06060');
+
+  if(S.roadAnchor){
+    const c=tileCenter(S.roadAnchor.x,S.roadAnchor.y,scale,ox,oy);
+    ctx.strokeStyle='#f09850';ctx.lineWidth=Math.max(1.2,scale*1.5);
+    ctx.beginPath();ctx.arc(c.x,c.y,Math.max(6,scale*5),0,Math.PI*2);ctx.stroke();
+  }
+  ctx.strokeStyle='rgba(120,232,154,0.2)';ctx.lineWidth=1;ctx.strokeRect(ox,oy,GW*TILE*scale,GH*TILE*scale);
+}
+
+function drawStructureIcon(str,icon,scale,ox,oy,color){
+  const c=tileCenter(str.x,str.y,scale,ox,oy);
+  ctx.fillStyle=color;ctx.font=`${Math.max(8,Math.floor(scale*9))}px Share Tech Mono`;
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(icon,c.x,c.y);
+}
+
+function drawSettlement(s,scale,ox,oy,color,selected){
+  const c=tileCenter(s.x,s.y,scale,ox,oy),rad=Math.max(5,scale*(3.8+s.level*1.3));
+  ctx.strokeStyle=selected?'#e8c96a':color;ctx.lineWidth=selected?Math.max(2,scale*2.2):Math.max(1.2,scale*1.7);
+  ctx.beginPath();ctx.arc(c.x,c.y,rad,0,Math.PI*2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(c.x-rad*.75,c.y);ctx.lineTo(c.x+rad*.75,c.y);ctx.moveTo(c.x,c.y-rad*.75);ctx.lineTo(c.x,c.y+rad*.75);ctx.stroke();
+  if(scale>0.7){
+    ctx.fillStyle=color;ctx.font=`${Math.max(7,Math.floor(scale*7))}px Share Tech Mono`;
+    ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText(`L${s.level}`,c.x,c.y+rad+1);
+  }
+}
+function drawPort(p,scale,ox,oy,color){
+  const c=tileCenter(p.x,p.y,scale,ox,oy),rad=Math.max(4,scale*3.8);
+  ctx.strokeStyle=color;ctx.lineWidth=Math.max(1.2,scale*1.6);
+  ctx.strokeRect(c.x-rad,c.y-rad,rad*2,rad*2);
+  ctx.beginPath();ctx.arc(c.x,c.y,rad*.55,0,Math.PI*2);ctx.stroke();
+}
+function drawUnits(units,scale,ox,oy,color){
+  for(const u of units){
+    const c=tileCenter(u.x,u.y,scale,ox,oy),sel=u.id===S.selectedUnitId;
+    ctx.strokeStyle=sel?'#e8c96a':color;ctx.lineWidth=Math.max(1.1,scale*1.5);
+    const isStar=u.kind==='warship'||u.kind==='colony';
+    if(isStar){
+      ctx.beginPath();ctx.moveTo(c.x,c.y-scale*6.5);ctx.lineTo(c.x+scale*5.8,c.y);ctx.lineTo(c.x,c.y+scale*6.5);ctx.lineTo(c.x-scale*5.8,c.y);ctx.closePath();ctx.stroke();
+    }else if(u.kind==='militia'){
+      ctx.strokeRect(c.x-scale*4.2,c.y-scale*4.2,scale*8.4,scale*8.4);
+    }else if(u.kind==='engineer'){
+      ctx.beginPath();ctx.arc(c.x,c.y,scale*4.2,0,Math.PI*2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(c.x-scale*3,c.y-scale*3);ctx.lineTo(c.x+scale*3,c.y+scale*3);ctx.stroke();
+    }else if(u.kind==='harvester'){
+      ctx.beginPath();ctx.moveTo(c.x,c.y-scale*5);ctx.lineTo(c.x+scale*4.5,c.y+scale*4);ctx.lineTo(c.x-scale*4.5,c.y+scale*4);ctx.closePath();ctx.stroke();
+    }else{
+      ctx.beginPath();ctx.arc(c.x,c.y,scale*3.8,0,Math.PI*2);ctx.stroke();
+    }
+    if(u.tx!=null&&u.ty!=null){
+      const d=tileCenter(u.tx,u.ty,scale,ox,oy);
+      ctx.setLineDash([3,4]);ctx.strokeStyle='rgba(232,201,106,.4)';
+      ctx.beginPath();ctx.moveTo(c.x,c.y);ctx.lineTo(d.x,d.y);ctx.stroke();ctx.setLineDash([]);
+    }
+  }
+}
+
+function drawSector(){
+  const wrap=document.getElementById('canvas-wrap').getBoundingClientRect();
+  ctx.clearRect(0,0,wrap.width,wrap.height);ctx.fillStyle='#030603';ctx.fillRect(0,0,wrap.width,wrap.height);
+  for(let i=0;i<240;i++){const x=(i*137.5)%wrap.width,y=(i*79.1)%wrap.height;ctx.fillStyle=`rgba(168,245,191,${0.06+(i%5)*.025})`;ctx.fillRect(x,y,1.5,1.5);}
+  for(const star of S.galaxy.stars){
+    for(const lid of star.links){
+      const other=S.galaxy.stars.find(s=>s.id===lid);if(!other||other.id<star.id)continue;
+      const a=starToScreen(star,wrap),b=starToScreen(other,wrap);
+      ctx.strokeStyle='rgba(120,232,154,.1)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+    }
+  }
+  for(const star of S.galaxy.stars){
+    const p=starToScreen(star,wrap);
+    const owned=star.player.settlements.length||star.player.ports.length;
+    const rival=star.rival.settlements.length||star.rival.ports.length;
+    const cur=star.id===S.currentStarId,sel=star.id===S.selectedStarId;
+    ctx.strokeStyle=cur?'#e8c96a':rival?'#e06060':owned?'#78e89a':'rgba(168,245,191,.5)';
+    ctx.lineWidth=sel?2.6:1.4;
+    const rad=cur?12:owned||rival?9:6;
+    ctx.beginPath();ctx.arc(p.x,p.y,rad,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(p.x-rad*.8,p.y);ctx.lineTo(p.x+rad*.8,p.y);ctx.moveTo(p.x,p.y-rad*.8);ctx.lineTo(p.x,p.y+rad*.8);ctx.stroke();
+    ctx.fillStyle='rgba(200,248,212,.9)';ctx.font='11px Share Tech Mono';ctx.textAlign='left';ctx.textBaseline='middle';
+    ctx.fillText(star.name,p.x+14,p.y-8);
+    if(owned||rival){
+      const tag=owned&&rival?'P+R':owned?'P':'R';
+      ctx.fillStyle=owned&&rival?'#e8c96a':owned?'#78e89a':'#e06060';
+      ctx.fillText(tag,p.x+14,p.y+6);
+    }
+  }
+}
+
+function draw(){ if(!S.galaxy)return; if(S.mode==='sector')drawSector(); else drawBasin(); }
+
+// ── UI UPDATES ─────────────────────────────────────────────────────────
+function updateUI(){
+  if(!S.galaxy)return;
+  const star=curStar();
+  const p=star.player;
+  const allStars=colonizedStars();
+  const totFood=allStars.reduce((a,s)=>a+s.player.food,0);
+  document.getElementById('tbFood').textContent=Math.floor(totFood);
+  document.getElementById('tbWood').textContent=Math.floor(allStars.reduce((a,s)=>a+s.player.wood,0));
+  document.getElementById('tbStone').textContent=Math.floor(allStars.reduce((a,s)=>a+s.player.stone,0));
+  document.getElementById('tbMetal').textContent=Math.floor(allStars.reduce((a,s)=>a+s.player.metal,0));
+  document.getElementById('tbAlloy').textContent=Math.floor(allStars.reduce((a,s)=>a+s.player.alloy,0));
+  document.getElementById('tbData').textContent=Math.floor(allStars.reduce((a,s)=>a+s.player.data,0));
+  document.getElementById('tbEra').textContent=eraName();
+  document.getElementById('tbTick').textContent='T:'+S.tick;
+  const{coh}=coherenceScore(star);
+  document.getElementById('lpStar').textContent=star.name;
+  document.getElementById('lpColonies').textContent=allStars.length;
+  document.getElementById('lpRivals').textContent=S.galaxy.stars.filter(s=>s.rival.settlements.length).length;
+  document.getElementById('lpPorts').textContent=allStars.reduce((a,s)=>a+s.player.ports.length,0);
+  document.getElementById('lpCoh').textContent=coh.toFixed(3);
+  document.getElementById('lpPop').textContent=p.settlements.reduce((a,s)=>a+s.pop,0);
+  document.getElementById('lpSettle').textContent=p.settlements.length;
+  document.getElementById('lpScouts').textContent=p.units.filter(u=>u.kind==='scout').length;
+  document.getElementById('lpMilitia').textContent=p.units.filter(u=>u.kind==='militia').length;
+  document.getElementById('lpEngineers').textContent=p.units.filter(u=>u.kind==='engineer').length;
+  document.getElementById('lpShips').textContent=p.ships.length;
+  document.getElementById('ovMode').textContent=S.mode.toUpperCase();
+  document.getElementById('ovSel').textContent=S.selectedUnitId?'UNIT':S.selectedSettlementId?'SETTLE':'NONE';
+  document.getElementById('ovTool').textContent=S.tool.toUpperCase();
+  document.getElementById('ovZone').textContent=S.zoneBrush.toUpperCase();
+  // Tech progress
+  if(S.techQueue){
+    const tech=TECHS.find(t=>t.id===S.techQueue.id);
+    const pct=Math.min(100,Math.floor(S.techQueue.progress/S.techQueue.turns*100));
+    document.getElementById('techProgress').textContent=`${tech.name} ${pct}%`;
+    document.getElementById('techBar').style.width=pct+'%';
+  } else {
+    document.getElementById('techProgress').textContent='—';
+    document.getElementById('techBar').style.width='0%';
+  }
+  // Production
+  document.getElementById('prSmelter').textContent=star.structures.smelters.length;
+  document.getElementById('prAlloyRate').textContent=(star.structures.smelters.length*0.05).toFixed(2);
+  document.getElementById('prWorkshop').textContent=star.structures.workshops.length;
+  document.getElementById('prDataRate').textContent=(star.structures.workshops.length*0.04).toFixed(2);
+  document.getElementById('prGranary').textContent=star.structures.granaries.length;
+  document.getElementById('prGranaryRate').textContent=(star.structures.granaries.length*0.15).toFixed(2);
+  // Button locks
+  ['buildSmelterBtn','buildWorkshopBtn','buildGranaryBtn'].forEach(id=>{
+    const btn=document.getElementById(id);
+    const key=id==='buildSmelterBtn'?'smelting':id==='buildWorkshopBtn'?'workshop':'granary';
+    btn.classList.toggle('locked',!techUnlocked(key));
+  });
+}
+
+function buildTechList(){
+  const el=document.getElementById('techList');
+  el.innerHTML=TECHS.map(tech=>{
+    const done=techUnlocked(tech.id);
+    const researching=S.techQueue&&S.techQueue.id===tech.id;
+    const avail=techAvailable(tech);
+    const locked=!done&&!researching&&!avail;
+    const cls=done?'researched':researching?'researching':locked?'locked':'';
+    const label=done?'✓ DONE':researching?'···':avail?`T${tech.tier}`:`T${tech.tier}`;
+    return `<div class="tech-row ${cls}" data-tech="${tech.id}">
+      <span class="tn">${tech.name}</span>
+      <span class="tt">${label}</span>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.tech-row').forEach(row=>{
+    row.addEventListener('click',()=>{
+      const id=row.dataset.tech;
+      const tech=TECHS.find(t=>t.id===id);
+      if(tech&&techAvailable(tech)) startResearch(id);
+    });
+  });
+}
+
+function buildBuildOrders(){
+  const el=document.getElementById('buildOrders');
+  el.innerHTML=Object.entries(BUILD_DEFS).map(([key,def])=>{
+    const locked=def.req.some(r=>!techUnlocked(r));
+    const costStr=Object.entries(def.cost).map(([k,v])=>`${k}:${v}`).join(' ');
+    return `<button class="action-btn ${locked?'locked':''}" data-build="${key}">[${def.turns}t] ${def.name} — ${costStr}</button>`;
+  }).join('');
+  el.querySelectorAll('.action-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const star=curStar();
+      if(!S.selectedSettlementId&&star.player.settlements.length){
+        S.selectedSettlementId=star.player.settlements[0].id;
+      }
+      if(S.selectedSettlementId) enqueue(star,S.selectedSettlementId,btn.dataset.build);
+      else addLog('Select a settlement first.','warn');
+    });
+  });
+}
+
+function updateBuildQueuePanel(){
+  const star=curStar(); if(!star) return;
+  const id=S.selectedSettlementId||star.player.settlements[0]?.id;
+  const el=document.getElementById('bqList');
+  if(!id){ el.innerHTML='<div style="color:var(--dim);font-size:11px">No settlement selected.</div>'; return; }
+  const q=star.player.buildQueues[id]||[];
+  if(!q.length){ el.innerHTML='<div style="color:var(--dim);font-size:11px">Queue empty.</div>'; return; }
+  el.innerHTML=q.map((item,i)=>{
+    const def=BUILD_DEFS[item.defId];
+    const pct=Math.floor(item.progress/item.turns*100);
+    return `<div class="bq-item">
+      <span class="bq-name">${def.name}</span>
+      <div class="bq-bar-wrap"><div class="bq-bar" style="width:${pct}%"></div></div>
+      <span class="bq-turns">${item.turns-item.progress}t</span>
+      <button class="bq-cancel" data-idx="${i}" data-sid="${id}">✕</button>
+    </div>`;
+  }).join('');
+  el.querySelectorAll('.bq-cancel').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const q2=star.player.buildQueues[btn.dataset.sid];
+      if(q2) q2.splice(+btn.dataset.idx,1);
+      updateBuildQueuePanel();
+    });
+  });
+}
+
+function updateSelectionPanel(){
+  const star=curStar();if(!star)return;
+  const el=document.getElementById('selDetails');
+  const selUnit=star.player.units.find(u=>u.id===S.selectedUnitId)||star.player.ships.find(u=>u.id===S.selectedUnitId);
+  const selSettle=star.player.settlements.find(s=>s.id===S.selectedSettlementId);
+  if(selUnit){
+    el.innerHTML=`
+      <div class="stat-row"><span class="sn">Type</span><span class="sv amber">${selUnit.kind}</span></div>
+      <div class="stat-row"><span class="sn">Position</span><span class="sv">${Math.round(selUnit.x)},${Math.round(selUnit.y)}</span></div>
+      <div class="stat-row"><span class="sn">HP</span><span class="sv">${selUnit.hp||2}</span></div>
+      <div class="stat-row"><span class="sn">Strength</span><span class="sv">${selUnit.strength||1}</span></div>
+      ${selUnit.tx!=null?`<div class="stat-row"><span class="sn">Target</span><span class="sv warn">${Math.round(selUnit.tx)},${Math.round(selUnit.ty)}</span></div>`:''}
+      <button class="action-btn" id="dismissBtn">Dismiss Unit</button>
+    `;
+    document.getElementById('dismissBtn').addEventListener('click',()=>{
+      star.player.units=star.player.units.filter(u=>u.id!==S.selectedUnitId);
+      star.player.ships=star.player.ships.filter(u=>u.id!==S.selectedUnitId);
+      S.selectedUnitId=null;updateSelectionPanel();
+    });
+  } else if(selSettle){
+    el.innerHTML=`
+      <div class="stat-row"><span class="sn">Level</span><span class="sv amber">${selSettle.level}</span></div>
+      <div class="stat-row"><span class="sn">Population</span><span class="sv">${selSettle.pop}</span></div>
+      <div class="stat-row"><span class="sn">Zone</span><span class="sv blue">${selSettle.zone||'none'}</span></div>
+      <div class="stat-row"><span class="sn">Position</span><span class="sv">${selSettle.x},${selSettle.y}</span></div>
+      <div style="margin-top:4px;font-size:10px;color:var(--dim)">Set zone:</div>
+      <div class="zone-grid" style="margin-top:3px">
+        ${['civic','industrial','military','research'].map(z=>`<button class="zone-btn ${selSettle.zone===z?'active':''}" data-szz="${z}">${z}</button>`).join('')}
+      </div>
+    `;
+    el.querySelectorAll('.zone-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        selSettle.zone=btn.dataset.szz;
+        updateSelectionPanel();
+      });
+    });
+  } else {
+    el.innerHTML='<div style="color:var(--dim);font-size:11px">Click a unit or settlement.</div>';
+  }
+}
+
+// ── INTERACTIONS ────────────────────────────────────────────────────────
+async function pySample(star,x,y){
+  const res=await S.py.runPythonAsync(`sample(${JSON.stringify(JSON.stringify({world:star.world,x,y}))})`);
+  return JSON.parse(res);
+}
+
+function nearestStarAt(cx,cy){
+  const wrap=document.getElementById('canvas-wrap').getBoundingClientRect();
+  let best=null,bd=1e9;
+  for(const s of S.galaxy.stars){
+    const p=starToScreen(s,wrap),d=dist(cx-wrap.left,cy-wrap.top,p.x,p.y);
+    if(d<bd){bd=d;best=s;}
+  }
+  return bd<28?best:null;
+}
+
+document.getElementById('gameCanvas').addEventListener('pointerdown',async e=>{
+  if(!S.galaxy)return;
+  if(S.mode==='sector'){
+    const star=nearestStarAt(e.clientX,e.clientY);if(!star)return;
+    S.selectedStarId=star.id;
+    if(e.button===0){S.currentStarId=star.id;S.mode='basin';syncModeBtns();addLog(`Attention shifts to ${star.name}.`);}
+    updateUI();return;
+  }
+  const star=curStar();
+  const t=screenToTile(e.clientX,e.clientY);
+  if(t.x<0||t.y<0||t.x>=GW||t.y>=GH)return;
+
+  if(e.button===2){
+    const sel=star.player.units.find(u=>u.id===S.selectedUnitId)||star.player.ships.find(u=>u.id===S.selectedUnitId);
+    if(sel){sel.tx=t.x;sel.ty=t.y;addLog(`${sel.kind} ordered to ${t.x},${t.y}.`);}
+    return;
+  }
+
+  // Click on own unit
+  const clickedUnit=star.player.units.find(u=>Math.round(u.x)===t.x&&Math.round(u.y)===t.y)||star.player.ships.find(u=>Math.round(u.x)===t.x&&Math.round(u.y)===t.y);
+  if(clickedUnit){S.selectedUnitId=clickedUnit.id;S.selectedSettlementId=null;updateSelectionPanel();return;}
+
+  // Click on own settlement
+  const clickedSettle=star.player.settlements.find(s=>s.x===t.x&&s.y===t.y);
+  if(clickedSettle){S.selectedSettlementId=clickedSettle.id;S.selectedUnitId=null;updateSelectionPanel();updateBuildQueuePanel();return;}
+
+  if(S.tool==='settle'){
+    const[,d]=nearestSettlement(star.player.settlements,t.x,t.y);
+    if(d<6){addLog('Too close to existing settlement.','warn');return;}
+    const here=await pySample(star,t.x,t.y);
+    if(here.ent>0.38){addLog('Entropy too high for stable foundation.','warn');return;}
+    if(!spend(star.player,{food:50,wood:40,stone:22})){addLog('Insufficient resources.','warn');return;}
+    const s={id:uid(),x:t.x,y:t.y,level:1,pop:8,zone:'civic'};
+    star.player.settlements.push(s);star.player.buildQueues[s.id]=[];
+    injectField(star.world,s.x,s.y,true);
+    addLog(`Settlement founded at ${t.x},${t.y} on ${star.name}.`,'good');
+    S.selectedSettlementId=s.id;buildBuildOrders();updateBuildQueuePanel();
+  }
+  else if(S.tool==='zone'){
+    star.zones[t.y][t.x]=S.zoneBrush;
+    // Apply zone to nearest settlement if on it
+    const ns=star.player.settlements.find(s=>s.x===t.x&&s.y===t.y);
+    if(ns)ns.zone=S.zoneBrush;
+  }
+  else if(S.tool==='road'){
+    if(!S.roadAnchor){S.roadAnchor={x:t.x,y:t.y};addLog(`Road anchor at ${t.x},${t.y}.`);}
+    else{
+      const pts=lineTiles(S.roadAnchor.x,S.roadAnchor.y,t.x,t.y);
+      const fresh=pts.filter(p=>!star.player.roads.find(r=>r.x===p.x&&r.y===p.y));
+      const wood=techUnlocked('engineer')?fresh.length*0.7:fresh.length*1.2;
+      const stone=fresh.length*0.3;
+      if(!spend(star.player,{wood,stone})){addLog('Not enough wood/stone for road.','warn');S.roadAnchor=null;return;}
+      for(const p of fresh)star.player.roads.push({x:p.x,y:p.y});
+      addLog(`Road segment laid: ${fresh.length} tiles.`,'good');S.roadAnchor=null;
+    }
+  }
+  else if(S.tool==='harvest'){
+    const res=star.world.res[t.y][t.x];
+    if(!res){addLog('No harvest node here.','warn');return;}
+    const[,d]=nearestSettlement(star.player.settlements,t.x,t.y);
+    if(d>8){addLog('Node too remote from any settlement.','warn');return;}
+    const haul=res==='food'?24:res==='wood'?22:res==='stone'?18:15;
+    star.player[res]+=haul;star.world.res[t.y][t.x]=null;
+    star.world.ent[t.y][t.x]=cl(star.world.ent[t.y][t.x]+0.1,-1,1);
+    addLog(`${res} harvested (+${haul}).`,'good');
+  }
+  else if(S.tool==='unit'){
+    const[ns,nd]=nearestSettlement(star.player.settlements,t.x,t.y);
+    if(!ns||nd>5){addLog('Units must be raised near a settlement.','warn');return;}
+    if(!spend(star.player,{food:12,wood:8})){addLog('Not enough food/wood.','warn');return;}
+    const u={id:uid(),x:ns.x+.25,y:ns.y+.25,tx:t.x,ty:t.y,kind:'scout',hp:2,strength:1};
+    star.player.units.push(u);S.selectedUnitId=u.id;
+    addLog('Scout raised.','good');updateSelectionPanel();
+  }
+  else if(S.tool==='ship'){
+    if(!star.player.ports.length){addLog('A starport is required.','warn');return;}
+    const port=star.player.ports[0];
+    if(dist(port.x,port.y,t.x,t.y)>5.5){addLog('Ships must be launched near a starport.','warn');return;}
+    if(!techUnlocked('warship')&&!techUnlocked('colonist')){addLog('Requires Warship Keel or Colony Protocol tech.','warn');return;}
+    const kind=techUnlocked('colonist')&&e.shiftKey?'colony':'warship';
+    const cost=BUILD_DEFS[kind==='colony'?'colony':'ship'].cost;
+    if(!spend(star.player,cost)){addLog('Not enough material for ship.','warn');return;}
+    const u={id:uid(),x:port.x,y:port.y,tx:t.x,ty:t.y,kind,hp:kind==='colony'?3:5,strength:kind==='colony'?0:3};
+    star.player.ships.push(u);S.selectedUnitId=u.id;
+    addLog(`${kind==='colony'?'Colony Ship':'Warship'} launched.`,'good');updateSelectionPanel();
+  }
+  updateUI();
+});
+
+document.getElementById('gameCanvas').addEventListener('contextmenu',e=>e.preventDefault());
+
+document.getElementById('gameCanvas').addEventListener('dblclick',e=>{
+  if(S.mode!=='sector')return;
+  const target=nearestStarAt(e.clientX,e.clientY);if(!target)return;
+  const source=curStar();
+  if(!source.player.ports.length){addLog('Starport required for interstellar transit.','warn');return;}
+  if(!source.player.ships.length){addLog('No ships available for transit.','warn');return;}
+  const range=techUnlocked('geodesic')?2:1;
+  // Check if within range hops
+  function withinRange(from,to,maxHops){
+    if(from.id===to.id)return true;
+    if(maxHops<1)return false;
+    for(const lid of from.links){const n=S.galaxy.stars.find(s=>s.id===lid);if(n&&withinRange(n,to,maxHops-1))return true;}
+    return false;
+  }
+  if(!withinRange(source,target,range)){addLog(`Star beyond jump range (range ${range}).`,'warn');return;}
+  const ship=source.player.ships.shift();
+  target.player.ships.push({id:ship.id,x:Math.floor(GW*.45),y:Math.floor(GH*.55),tx:null,ty:null,kind:ship.kind,hp:ship.hp,strength:ship.strength});
+  if(ship.kind==='colony'&&!target.player.settlements.length){
+    const s={id:uid(),x:Math.floor(GW*.45),y:Math.floor(GH*.55),level:1,pop:6,zone:'civic'};
+    target.player.settlements.push(s);target.player.buildQueues[s.id]=[];
+    injectField(target.world,s.x,s.y,true);seedHarvest(target,s,target.player);
+    addLog(`Colony established at ${target.name}!`,'good');
+  }
+  S.currentStarId=target.id;S.selectedStarId=target.id;S.mode='basin';
+  syncModeBtns();addLog(`Ship transits from ${source.name} to ${target.name}.`,'good');updateUI();
+});
+
+// ── CONTROLS ────────────────────────────────────────────────────────────
+document.querySelectorAll('.tool-btn[data-tool]').forEach(btn=>btn.addEventListener('click',()=>{
+  S.tool=btn.dataset.tool;
+  document.querySelectorAll('.tool-btn[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===S.tool));
+  document.getElementById('ovTool').textContent=S.tool.toUpperCase();
+}));
+document.querySelectorAll('.zone-btn[data-zone]').forEach(btn=>btn.addEventListener('click',()=>{
+  S.zoneBrush=btn.dataset.zone;
+  document.querySelectorAll('.zone-btn[data-zone]').forEach(b=>b.classList.toggle('active',b.dataset.zone===S.zoneBrush));
+  document.getElementById('ovZone').textContent=S.zoneBrush.toUpperCase();
+}));
+document.querySelectorAll('.view-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  S.view=btn.dataset.view;
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===S.view));
+}));
+document.querySelectorAll('.tool-btn[data-speed]').forEach(btn=>btn.addEventListener('click',()=>{
+  S.speed=parseFloat(btn.dataset.speed);
+  document.querySelectorAll('.tool-btn[data-speed]').forEach(b=>b.classList.toggle('active',b.dataset.speed===btn.dataset.speed));
+}));
+function syncModeBtns(){
+  document.getElementById('basinBtn').classList.toggle('active',S.mode==='basin');
+  document.getElementById('sectorBtn').classList.toggle('active',S.mode==='sector');
+  document.getElementById('ovMode').textContent=S.mode.toUpperCase();
+}
+document.getElementById('basinBtn').addEventListener('click',()=>{S.mode='basin';syncModeBtns();});
+document.getElementById('sectorBtn').addEventListener('click',()=>{S.mode='sector';syncModeBtns();});
+document.getElementById('pauseBtn').addEventListener('click',()=>{ S.paused=!S.paused; document.getElementById('pauseBtn').textContent=S.paused?'RESUME':'PAUSE'; });
+document.getElementById('newBtn').addEventListener('click',()=>newSector());
+document.getElementById('buildSmelterBtn').addEventListener('click',()=>{
+  const star=curStar();if(!star)return;
+  const id=S.selectedSettlementId||star.player.settlements[0]?.id;
+  if(id) enqueue(star,id,'smelter'); else addLog('Select a settlement first.','warn');
+});
+document.getElementById('buildWorkshopBtn').addEventListener('click',()=>{
+  const star=curStar();if(!star)return;
+  const id=S.selectedSettlementId||star.player.settlements[0]?.id;
+  if(id) enqueue(star,id,'workshop'); else addLog('Select a settlement first.','warn');
+});
+document.getElementById('buildGranaryBtn').addEventListener('click',()=>{
+  const star=curStar();if(!star)return;
+  const id=S.selectedSettlementId||star.player.settlements[0]?.id;
+  if(id) enqueue(star,id,'granary'); else addLog('Select a settlement first.','warn');
+});
+
+window.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+  if(e.key.toLowerCase()==='m'){S.mode=S.mode==='basin'?'sector':'basin';syncModeBtns();}
+  if(e.key==='Escape'){S.roadAnchor=null;S.selectedUnitId=null;S.selectedSettlementId=null;updateSelectionPanel();}
+  if(e.key.toLowerCase()==='p'){S.paused=!S.paused;document.getElementById('pauseBtn').textContent=S.paused?'RESUME':'PAUSE';}
+  const tools=['settle','road','zone','harvest','unit','ship'];
+  const idx='123456'.indexOf(e.key);
+  if(idx>=0&&idx<tools.length){
+    S.tool=tools[idx];
+    document.querySelectorAll('.tool-btn[data-tool]').forEach(b=>b.classList.toggle('active',b.dataset.tool===S.tool));
+    document.getElementById('ovTool').textContent=S.tool.toUpperCase();
+  }
+});
+
+// ── GAME LOOP ────────────────────────────────────────────────────────────
+let lastStep=0;
+async function frame(ts){
+  if(S.pyReady&&ts-lastStep>65){ lastStep=ts; await gameStep(); }
+  draw();
+  requestAnimationFrame(frame);
+}
+
+// ── BOOT ────────────────────────────────────────────────────────────────
+(async function init(){
+  resize();
+  await bootPy();
+  await newSector();
+  requestAnimationFrame(frame);
+})();
+</script>
 </body>
 </html>

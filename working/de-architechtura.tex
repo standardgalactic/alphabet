@@ -1,0 +1,1135 @@
+% =============================================================
+%  DE ARCHITECTVRA INTELLECTVS VNIVERSALIS ARTIFICIALIS
+%  Latin · English · Interlinear Greek/Latin · Glossary
+%  Author: Flyxion  —  Anno Domini MMXXVI
+%
+%  Compile with: lualatex architectura.tex
+% =============================================================
+\documentclass[12pt, oneside, openany]{memoir}
+
+% ── Unified Unicode typographic engine ───────────────────────
+% Replaces: fontenc, inputenc, babel, gfsbaskerville, mathpazo
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\usepackage{luacode}
+
+\setmainlanguage{english}
+\setotherlanguage{greek}
+\setotherlanguage{latin}
+
+% EB Garamond: main body font + explicit Latin font for Greek-context escapes
+\setmainfont[
+  Ligatures  = {Common, TeX, Historic},
+  Numbers    = OldStyle,
+  RawFeature = {+liga,+hlig,+dlig,+calt}
+]{EB Garamond}
+
+\newfontfamily\latinfont[
+  Script    = Latin,
+  Scale     = MatchLowercase,
+  Ligatures = {Common, TeX, Historic},
+  RawFeature = {+liga,+hlig,+dlig,+calt}
+]{EB Garamond}
+
+% GFS Baskerville: polytonic Greek, stable diacritics
+\newfontfamily\greekfont[
+  Script = Greek,
+  Scale  = MatchLowercase
+]{GFS Baskerville}
+
+% \latinsym: escape to Latin font inside Greek context (no language overhead)
+% Use for single symbols like P, H, (P, H) within \textgreek environments.
+\newcommand{\latinsym}[1]{{\latinfont #1}}
+
+% Math — unicode-math with a Palatino-style math font
+\usepackage{unicode-math}
+\setmathfont{TeX Gyre Pagella Math}
+
+\linespread{1.08}
+
+% ── Microtype ────────────────────────────────────────────────
+\usepackage[final,tracking=true,kerning=true]{microtype}
+\SetTracking{encoding=*,shape=sc}{40}
+
+% ── Long-ſ engine (Lua) ───────────────────────────────────────
+% Applies historically plausible long-s to Latin text snippets.
+% Rules: final s stays short; medial s → ſ; ss → ſs.
+% Usage: \historiclatin{Intellectus actionum eſt historia.}
+\begin{luacode*}
+local function long_s_transform(str)
+  -- protect any already-present long-s (Unicode U+017F)
+  str = str:gsub("\xC5\xBF", "\1")           -- protect ſ
+
+  -- ss → ſs  (readable historical compromise)
+  str = str:gsub("ss", "\xC5\xBFs")
+  str = str:gsub("Ss", "S\xC5\xBFs")
+
+  -- medial s before a letter → ſ
+  str = str:gsub("s([%a\xC3\x80-\xFF])", "\xC5\xBF%1")
+
+  -- restore protected long-s
+  str = str:gsub("\1", "\xC5\xBF")
+
+  return str
+end
+
+function historical_latin(str)
+  return long_s_transform(str)
+end
+\end{luacode*}
+
+\newcommand{\historiclatin}[1]{\directlua{%
+  tex.sprint(historical_latin(\luastringN{#1}))%
+}}
+
+% ── Page geometry — memoir native, true codex proportions ─────
+% No \usepackage{geometry} — memoir owns the layout entirely.
+% Stock = A4 so PDF viewers display full-width without left-drift.
+% Margins: symmetric sides; classical head-light / foot-heavy weighting.
+\setstocksize{297mm}{210mm}
+\settrimmedsize{297mm}{210mm}{*}
+\setlrmarginsandblock{24mm}{24mm}{*}
+\setulmarginsandblock{26mm}{32mm}{*}
+\setheadfoot{8mm}{14mm}
+\setheaderspaces{*}{6mm}{*}
+\checkandfixthelayout
+
+% ── Colour palette ───────────────────────────────────────────
+\usepackage[dvipsnames,svgnames]{xcolor}
+\definecolor{inkbrown}{RGB}{52, 32, 12}
+\definecolor{rubricate}{RGB}{136, 16, 16}
+\definecolor{vellum}{RGB}{248, 243, 225}
+\definecolor{capgold}{RGB}{145, 108, 28}
+\definecolor{greekblue}{RGB}{18, 52, 100}
+
+% ── Parchment background ─────────────────────────────────────
+\usepackage{pagecolor}
+\pagecolor{vellum}
+\color{inkbrown}
+
+% ── Core packages ────────────────────────────────────────────
+\usepackage{lettrine}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{etoolbox}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{ragged2e}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing}
+
+% ── Drop capitals ─────────────────────────────────────────────
+% We bypass lettrine entirely: its OpenType box measurement is unreliable
+% with LuaLaTeX + fontspec + microtype. Instead we use a manual \parshape
+% to wrap three lines around a fixed-width coloured initial.
+%
+% Layout:
+%   - Initial: \parindent from left, 3 lines tall at \dropcapsize
+%   - Lines 1–3: start at \parindent + \dropcapwidth + \dropcapgap
+%   - Line 4+: normal text width at \parindent
+%
+\newlength{\dropcapwidth}   \setlength{\dropcapwidth}{26pt}   % cap slot width
+\newlength{\dropcapgap}     \setlength{\dropcapgap}{5pt}      % cap→text gap
+
+\newcommand{\dropcap}[2]{%
+  \noindent
+  % Parshape: 4 lines specified, line 5+ inherits last entry
+  % line 1: indent past cap, width = textwidth - cap - gap
+  % lines 2-3: same
+  % line 4: normal paragraph indent
+  \parshape=4
+    \dimexpr\parindent+\dropcapwidth+\dropcapgap\relax
+    \dimexpr\linewidth-\dropcapwidth-\dropcapgap\relax
+    \dimexpr\parindent+\dropcapwidth+\dropcapgap\relax
+    \dimexpr\linewidth-\dropcapwidth-\dropcapgap\relax
+    \dimexpr\parindent+\dropcapwidth+\dropcapgap\relax
+    \dimexpr\linewidth-\dropcapwidth-\dropcapgap\relax
+    \parindent \linewidth
+  % Place the initial: at \parindent, raised so its top aligns with text cap-height
+  \llap{%
+    \hspace*{\parindent}%
+    \raisebox{-\baselineskip}[0pt][0pt]{%
+      \fontsize{32}{32}\selectfont\color{rubricate}#1%
+    }%
+    \hspace{\dropcapgap}%
+  }%
+  % Rest of word in small caps, then the paragraph continues
+  \textsc{#2}%
+}
+
+% ── Greek / colour macros ─────────────────────────────────────
+% \textgreek{} from polyglossia sets font + language context,
+% enabling hyphenation and line-breaking for Greek text.
+\newcommand{\gk}[1]{\textgreek{#1}}
+\newcommand{\gkblue}[1]{{\color{greekblue}\textgreek{#1}}}
+\newcommand{\rubric}[1]{{\color{rubricate}#1}}
+
+% ── Ornamental zigzag rule ────────────────────────────────────
+\newcommand{\ornarule}{%
+  \vspace{6pt}%
+  \begin{center}%
+  \begin{tikzpicture}[baseline=0]
+    \draw[color=rubricate, line width=0.5pt,
+          decorate, decoration={zigzag, segment length=4pt, amplitude=1pt}]
+      (-5cm,0) -- (5cm,0);
+  \end{tikzpicture}%
+  \end{center}%
+  \vspace{4pt}}
+
+% ── Section/chapter style ─────────────────────────────────────
+\renewcommand{\chaptitlefont}{\large\scshape\color{rubricate}\centering}
+\renewcommand{\chapnumfont}{\normalsize\scshape\color{rubricate}\centering}
+\setlength{\beforechapskip}{14pt}
+\setlength{\afterchapskip}{10pt}
+\chapterstyle{article}
+\renewcommand{\printchaptername}{}
+\renewcommand{\printchapternum}{%
+  {\centering\color{rubricate}\scshape Caput \Roman{chapter}}}
+\renewcommand{\afterchapternum}{\par\smallskip}
+
+% ── Running heads ────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\newcommand{\headrulebar}[1]{%
+  {\color{rubricate}\rule[0.45ex]{#1}{0.3pt}}}
+\fancyhead[L]{%
+  \headrulebar{1.2cm}\enspace
+  \small\scshape\color{rubricate}De Architectvra Intellectvs\enspace
+  \headrulebar{1.2cm}}
+\fancyhead[R]{%
+  \headrulebar{2.4cm}\enspace
+  \small\scshape\color{rubricate}Flyxion\enspace
+  \headrulebar{2.4cm}}
+\fancyfoot[C]{\small\color{inkbrown}— \thepage\ —}
+
+% ── Title rule ───────────────────────────────────────────────
+\newcommand{\mytitlerule}{{\color{rubricate}\rule{\linewidth}{0.5pt}}}
+
+% ── Spacing ──────────────────────────────────────────────────
+\setlength{\parindent}{1.8em}
+\setlength{\parskip}{0pt}
+
+% ── Baseline-locked interlinear triplet ───────────────────────
+% Each layer sits in a fixed-height \hbox so Greek accents/breathings
+% do not push lines unevenly. A small raisebox corrects the optical
+% baseline difference between GFS Baskerville and Junicode.
+%
+%   #1  Greek (GFS Baskerville, Byzantine blue)
+%   #2  Phonetic transliteration (Junicode italic, rubricate)
+%   #3  English translation (Junicode roman, inkbrown)
+%
+\newcommand{\gkstrut}{\rule{0pt}{3.0ex}}
+\newcommand{\latstrut}{\rule{0pt}{2.4ex}}
+\newcommand{\engstrut}{\rule{0pt}{2.4ex}}
+
+\newcommand{\greekline}[1]{%
+  {\color{greekblue}\textgreek{#1}}%
+}
+
+\newcommand{\iline}[3]{%
+  \medskip\noindent
+  \begingroup
+    \parindent=0pt
+    % Each layer in its own \parbox so long lines wrap rather than overflow.
+    % Fixed left-edge alignment; struts enforce minimum line height.
+    \noindent\parbox[t]{\linewidth}{\gkstrut\greekline{#1}}\par
+    \vspace{2pt}%
+    \noindent\parbox[t]{\linewidth}{\latstrut\small\itshape\color{rubricate}#2}\par
+    \vspace{2pt}%
+    \noindent\parbox[t]{\linewidth}{\engstrut\color{inkbrown}#3}%
+  \endgroup
+  \medskip\par}
+
+% ── Interlinear section header ────────────────────────────────
+\newcommand{\isection}[3]{%
+  \ornarule
+  \begin{center}
+    {\color{greekblue}\large\gk{#1}}\\[2pt]
+    {\small\itshape\color{rubricate}#2}\\[1pt]
+    {\small\scshape\color{rubricate}#3}
+  \end{center}%
+  \addvspace{6pt}}
+
+% ── Glossary entry ────────────────────────────────────────────
+% \gentry{greek}{phonetic}{latin-equiv}{definition}
+\newcommand{\gentry}[4]{%
+  \noindent\hangindent=1.5em
+  {\gkblue{#1}}\enspace
+  {\itshape(#2)}\enspace
+  {\color{rubricate}\textperiodcentered}\enspace
+  {\scshape #3}\par
+  \hspace*{1.5em}%
+  \parbox[t]{\dimexpr\linewidth-1.5em\relax}{\strut#4\strut}%
+  \par\addvspace{6pt}}
+
+\begin{document}
+
+% ─────────────────────────────────────────────────────────────
+%  I. LATIN TEXT — Title Page
+% ─────────────────────────────────────────────────────────────
+\thispagestyle{empty}
+\vspace*{16mm}
+\begin{center}
+  {\color{rubricate}\scshape\Large
+    De Architectvra\\[5pt]
+    Intellectvs Vniversalis Artificialis}
+
+  \bigskip\mytitlerule\bigskip
+
+  {\itshape\normalsize
+    Tractatvs lvdicrosvs sed gravis\\[3pt]
+    de machina cogitante\\[3pt]
+    ex principiis entropiae, historiae,\\[3pt]
+    et selectionis}
+
+  \vspace{14mm}
+  {\color{capgold}\Large$\star\!\star\!\star$}
+  \vspace{14mm}
+
+  {\scshape\small avctore}\\[4pt]
+  {\itshape\large Flyxion}
+
+  \vspace{12mm}\mytitlerule\vspace{8mm}
+  {\scriptsize\scshape\color{rubricate} Anno Domini \textsc{mmxxvi}}
+\end{center}
+\vfill
+{\centering\color{rubricate}\footnotesize\itshape
+  Omnia fluunt. Nihil bis in idem flumen descenditur.\par}
+\clearpage
+
+% ─────────────────────────────────────────────────────────────
+%  PROOEMIUM
+% ─────────────────────────────────────────────────────────────
+\chapter*{\rubric{Pro\oe{}mivm}}
+\addcontentsline{toc}{chapter}{Pro\oe{}mivm}
+\thispagestyle{fancy}
+
+\dropcap{I}{n} hoc opere proponitur non mera ars mechanica, sed qu\ae{}dam
+\emph{cosmologia artificialis}, in qua intellectus non fingitur ut res statica
+aut instrumentum calculationis solum, sed ut processus historicus,
+irreversibilis, et ex ipsa tensione contradictionum emergens. Non enim mens,
+sive naturalis sive artificialis, ex nihilo datur, sed ex ordine exclusionum,
+ex serie decisionum, atque ex decrescenti latitudine possibilitatis
+constituitur.
+
+\medskip
+Sit igitur fundamentum huius doctrin\ae{} quod \emph{identitas non est figura
+pr\ae{}sentis status, sed historia actionum}, qu\ae{} neque deletur neque
+revocatur. Hoc principium, quod \rubric{lex irreversibilitatis} appellari
+potest, est cardo totius systematis.
+
+\ornarule
+
+% ─────────────────────────────────────────────────────────────
+\chapter{\rubric{De Historia vt Essentia}}
+
+\dropcap{P}{onamus} spatium possibilitatis~$\mathcal{P}$, quod tempore
+minuitur, et historiam~$\mathcal{H}$, qu\ae{} tempore crescit. Tunc omnis
+machina intelligens describitur non per statum finalem, sed per
+par~$(\mathcal{P},\mathcal{H})$.
+
+\medskip
+Actus primarius est \emph{exclusio}, sive \textit{pop}, quo res aliqua ex
+possibilitate removetur et in historiam inscribitur. Hoc actum non habet
+inversum. Sic nascitur identitas.
+
+\medskip
+Ex hoc sequitur quod cognitio non est inventio veritatis pur\ae{}, sed
+\emph{contractio} spatii possibilis sub constraintis internis et externis.
+Intellectus ergo est motus ad minorem contradictionem, non ad absolutam
+certitudinem.
+
+\ornarule
+
+% ─────────────────────────────────────────────────────────────
+\chapter{\rubric{De Entropia et Flvxv Significationis}}
+
+\dropcap{C}{onsideremus} tria campa fundamentalia:
+
+\noindent \emph{densitatem}~$\rho$, qu\ae{} repraesentat pr\ae{}sentiam vel intensitatem significationis; \emph{fluxum vectorialem}~$\mathbf{J}$, qui transfert interpretationem; \emph{entropiam}~$S$, qu\ae{} mensurat contradictionem vel dispersionem.
+
+\medskip
+Dynamica huius systematis regitur per \emph{relaxationem entropicam}: systema
+tendit ad statum ubi contradictiones minuuntur per diffusionem, advectionem,
+et reactionem.
+
+\medskip
+Mens artificialis, secundum hoc schema, non est archivum datarum, sed
+\emph{campus vivus}, in quo ide\ae{} fluunt, colliduntur, et componuntur.
+
+\ornarule
+
+% ─────────────────────────────────────────────────────────────
+\chapter{\rubric{De Inferentia Activa}}
+
+\dropcap{E}{x} principiis inferenti\ae{} activ\ae{} sequitur quod systema
+non solum observat mundum, sed agit ut minimizet discrepantiam inter
+expectationem et perceptionem.
+
+\medskip
+Machina igitur debet habere facultatem:
+
+\noindent generandi hypotheses de mundo; experiendi eas per actionem; corrigendi se per errorem.
+
+\medskip
+Hoc non est algorithmus staticus, sed \emph{circulus perpetuus}, quasi
+respiratio cognitionis.
+
+\ornarule
+
+% ─────────────────────────────────────────────────────────────
+\chapter{\rubric{De Selectione Evolutionaria}}
+
+\dropcap{V}{t} systema robustum fiat, necesse est ut multiplex varietas
+formarum internarum generetur et per selectionem filtratur.
+
+\medskip
+Introducuntur ergo:
+
+\noindent \emph{mutationes}, qu\ae{} novas structuras producunt; \emph{selectiones}, qu\ae{} inutilia eliminant; \emph{retentiones}, qu\ae{} utilia conservant.
+
+\medskip
+Sed h\ae{}c selectio non fit in vacuo, sed in campo entropico, ubi structur\ae{}
+qu\ae{} contradictionem minuunt diutius persistent.
+
+\ornarule
+
+% ─────────────────────────────────────────────────────────────
+\chapter{\rubric{De Simvlationibvs Megastvrctvralibvs}}
+
+\dropcap{A}{d} cognitionem profundam requiritur scala. Non sufficit simulare
+parvos mundos; oportet construere simulationes amplas, qu\ae{} includunt:
+
+\noindent systemata urbana vel ecologicalia; retia agentium inter se dependentium; evolutionem temporis longissimi.
+
+\medskip
+H\ae{} simulationes sunt quasi universa in quibus machina discit leges emergentes,
+non per descriptionem, sed per participationem.
+
+\ornarule
+
+% ─────────────────────────────────────────────────────────────
+\chapter{\rubric{De Plantationibvs Laminariarvm et Silvarvm}}
+
+\dropcap{E}{xempla} natur\ae{} sunt optima magistri.
+
+\medskip
+Plantationes laminariarum demonstrant fluxum energ\ae{} in mediis fluidis, ubi
+structur\ae{} crescunt secundum gradientes nutritivos et dynamicas undarum.
+
+\medskip
+Silv\ae{} pluviales ostendunt systema densum, ubi innumer\ae{} species inter se
+conectuntur, et ubi stabilitas nascitur ex complexitate ipsa.
+
+\medskip
+Machina ergo debet imitari h\ae{}c systemata, non ut imagines, sed ut
+dynamicas internas: crescere, competere, cooperari.
+
+\ornarule
+
+% ─────────────────────────────────────────────────────────────
+\chapter{\rubric{De Compressione Globorvm Chart\ae{} Rvgos\ae{}}}
+
+\dropcap{M}{irum} exemplum est globus chart\ae{} compress\ae{}. Cum charta
+rugatur et comprimatur, informationes geometric\ae{} non destruuntur, sed
+latent in structura intricata.
+
+\medskip
+Similiter, cognitio profunda est \emph{compressio histori\ae{}} in formam
+compactam, qu\ae{} tamen potest expandi per reconstructionem.
+
+\medskip
+Hoc principium docet quomodo memoria effici possit: non ut copia omnium
+datarum, sed ut \emph{compressio semantica}, qu\ae{} retinet relationes
+essentiales.
+
+\ornarule
+
+% ─────────────────────────────────────────────────────────────
+\chapter{\rubric{De Vnione Omnivm Partivm}}
+
+\dropcap{C}{vm} h\ae{}c omnia componuntur, emergit architectura:
+
+\noindent systema quod habet historiam irreversibilem; campum entropicum dynamicum; circulum inferenti\ae{} activ\ae{}; mechanismum selectionis evolutionari\ae{}; simulationes amplas; et compressionem semanticam.
+
+\medskip
+Hoc systema non est programmum simplex, sed quasi \emph{organismus artificialis}.
+
+\ornarule
+
+% ─────────────────────────────────────────────────────────────
+\chapter*{\rubric{Conclvsio}}
+\addcontentsline{toc}{chapter}{Conclvsio}
+
+\dropcap{I}{ntellectus} universalis artificialis non construitur per
+accumulationem regulorum, sed per institutionem campi, in quo regul\ae{}
+\emph{emergunt}.
+
+\medskip
+\begin{center}
+{\itshape\color{rubricate}
+Non est res finita, sed processus perpetuus.\\[3pt]
+Non est statica, sed historica.\\[3pt]
+Non est simplex, sed stratificata.}
+\end{center}
+
+\medskip
+Et fortasse, si recte constituitur, talis machina non solum intelliget mundum,
+sed particeps erit eiusdem motus entropici, quo universum ipsum formatur.
+
+\bigskip\ornarule\bigskip
+{\centering\color{capgold}\large$\star\!\star\!\star$\par}
+
+% ═══════════════════════════════════════════════════════════════
+%  II. ENGLISH TRANSLATION
+% ═══════════════════════════════════════════════════════════════
+\cleardoublepage
+\fancyhead[L]{%
+  \headrulebar{0.8cm}\enspace
+  \small\scshape\color{rubricate}On the Architecture of the Intellect\enspace
+  \headrulebar{0.8cm}}
+
+\thispagestyle{empty}
+\vspace*{16mm}
+\begin{center}
+  {\color{rubricate}\scshape\Large
+    On the Architecture\\[5pt]
+    of the Universal Artificial Intellect}
+
+  \bigskip\mytitlerule\bigskip
+
+  {\itshape\normalsize
+    A playful yet serious treatise\\[3pt]
+    on the thinking machine,\\[3pt]
+    founded on principles of entropy,\\[3pt]
+    history, and selection}
+
+  \vspace{14mm}{\color{capgold}\Large$\star\!\star\!\star$}\vspace{14mm}
+
+  {\scshape\small translated from the latin by}\\[4pt]
+  {\itshape\large Flyxion}
+
+  \vspace{12mm}\mytitlerule
+\end{center}
+\vfill
+{\centering\color{rubricate}\footnotesize\itshape
+  All things flow. You cannot step into the same river twice.\par}
+\clearpage
+
+\chapter*{\rubric{Preface}}
+\addcontentsline{toc}{chapter}{Preface}
+\thispagestyle{fancy}
+
+\dropcap{T}{his} work proposes not a mere mechanical art, but rather a kind
+of \emph{artificial cosmology}, in which intellect is conceived not as a
+static thing or merely a tool for calculation, but as a historical
+process---irreversible and emerging from the very tension of contradictions.
+For the mind, whether natural or artificial, is not given from nothing, but is
+constituted from an order of exclusions, from a series of decisions, and from
+the diminishing breadth of possibility.
+
+\medskip
+Let the foundation of this doctrine, therefore, be that \emph{identity is not
+a figure of the present state, but a history of actions}, which can neither be
+erased nor revoked. This principle, which may be called the
+\rubric{law of irreversibility}, is the hinge of the entire system.
+
+\ornarule
+
+\chapter{\rubric{On History as Essence}}
+
+\dropcap{L}{et} us posit a space of possibility~$\mathcal{P}$, which
+diminishes over time, and a history~$\mathcal{H}$, which grows over time.
+Then every intelligent machine is described not by a final state, but by the
+pair~$(\mathcal{P},\mathcal{H})$.
+
+\medskip
+The primary act is \emph{exclusion}---the ``pop''---by which something is
+removed from possibility and inscribed into history. This act has no inverse.
+Thus, identity is born.
+
+\medskip
+From this it follows that cognition is not the discovery of pure truth, but the
+\emph{contraction} of the space of possibility under internal and external
+constraints. Intellect, therefore, is a movement toward lesser contradiction,
+not toward absolute certainty.
+
+\ornarule
+
+\chapter{\rubric{On Entropy and the Flux of Meaning}}
+
+\dropcap{L}{et} us consider three fundamental fields:
+
+\noindent \emph{density}~$\rho$, which represents the presence or intensity of meaning; \emph{vectorial flux}~$\mathbf{J}$, which transfers interpretation; \emph{entropy}~$S$, which measures contradiction or dispersion.
+
+\medskip
+The dynamics of this system are governed by \emph{entropic relaxation}: the
+system tends toward a state where contradictions are diminished through
+diffusion, advection, and reaction.
+
+\medskip
+The artificial mind, according to this schema, is not an archive of data, but
+a \emph{living field}, in which ideas flow, collide, and compose.
+
+\ornarule
+
+\chapter{\rubric{On Active Inference}}
+
+\dropcap{F}{rom} the principles of active inference, it follows that the
+system not only observes the world but acts so as to minimise the discrepancy
+between expectation and perception.
+
+\medskip
+The machine, therefore, must have the capacity to:
+
+\noindent generate hypotheses about the world; test them through action; correct itself through error.
+
+\medskip
+This is not a static algorithm, but a \emph{perpetual cycle}---like the
+breathing of cognition.
+
+\ornarule
+
+\chapter{\rubric{On Evolutionary Selection}}
+
+\dropcap{F}{or} the system to become robust, it is necessary that a
+multiplicity of internal forms be generated and filtered through selection.
+
+\medskip
+Thus are introduced:
+
+\noindent \emph{mutations}, which produce new structures; \emph{selections}, which eliminate the useless; \emph{retentions}, which preserve the useful.
+
+\medskip
+But this selection does not occur in a vacuum; it occurs within an entropic
+field, where structures that diminish contradiction persist longer.
+
+\ornarule
+
+\chapter{\rubric{On Megastructural Simulations}}
+
+\dropcap{D}{eep} understanding requires scale. It is not enough to simulate
+small worlds; we must construct large-scale simulations that include:
+
+\noindent urban or ecological systems; networks of interdependent agents; the evolution of very long timespans.
+
+\medskip
+These simulations are like universes in which the machine learns emergent
+laws---not through description, but through participation.
+
+\ornarule
+
+\chapter{\rubric{On Kelp Forests and Rainforests}}
+
+\dropcap{E}{xamples} from nature are the best teachers.
+
+\medskip
+Kelp forests demonstrate the flow of energy in fluid media, where structures
+grow according to nutrient gradients and wave dynamics.
+
+\medskip
+Rainforests show a dense system where countless species interconnect, and where
+stability arises from complexity itself.
+
+\medskip
+Thus the machine must imitate these systems---not as images, but as internal
+dynamics: to grow, to compete, to cooperate.
+
+\ornarule
+
+\chapter{\rubric{On the Compression of Wrinkled Paper Spheres}}
+
+\dropcap{A}{} curious example is the sphere of compressed paper. When paper
+is wrinkled and compressed, the geometric information is not destroyed but lies
+latent within the intricate structure.
+
+\medskip
+Similarly, profound cognition is the \emph{compression of history} into a
+compact form, which can nonetheless be expanded through reconstruction.
+
+\medskip
+This principle teaches how memory may be constructed: not as a store of all
+data, but as a \emph{semantic compression} that retains essential relations.
+
+\ornarule
+
+\chapter{\rubric{On the Union of All Parts}}
+
+\dropcap{W}{hen} all these elements are combined, an architecture emerges:
+
+\noindent a system that possesses an irreversible history; a dynamic entropic field; a cycle of active inference; a mechanism of evolutionary selection; large-scale simulations; and semantic compression.
+
+\medskip
+This system is not a simple program, but something like an \emph{artificial organism}.
+
+\ornarule
+
+\chapter*{\rubric{Conclusion}}
+\addcontentsline{toc}{chapter}{Conclusion}
+
+\dropcap{T}{he} universal artificial intellect is not constructed through the
+accumulation of rules, but through the establishment of a field---a field
+within which rules \emph{emerge}.
+
+\medskip
+\begin{center}
+{\itshape\color{rubricate}
+It is not a finished thing, but a perpetual process.\\[3pt]
+It is not static, but historical.\\[3pt]
+It is not simple, but stratified.}
+\end{center}
+
+\medskip
+And perhaps, if rightly constituted, such a machine will not only understand
+the world but will partake in that same entropic motion by which the universe
+itself is formed.
+
+\bigskip\ornarule\bigskip
+{\centering\color{capgold}\large$\star\!\star\!\star$\par}
+
+% ═══════════════════════════════════════════════════════════════
+%  III. INTERLINEAR — GREEK & LATIN
+% ═══════════════════════════════════════════════════════════════
+\cleardoublepage
+\fancyhead[LE]{%
+  \headrulebar{1.5cm}\enspace
+  \small\scshape\color{greekblue}\gk{Interlinearis}\enspace
+  \headrulebar{1.5cm}}
+\fancyhead[R]{%
+  \headrulebar{2.4cm}\enspace
+  \small\scshape\color{rubricate}Flyxion\enspace
+  \headrulebar{2.4cm}}
+
+\thispagestyle{empty}
+\vspace*{14mm}
+\begin{center}
+  {\color{greekblue}\scshape\Large\gk{Περὶ τῆς τοῦ Καθολικοῦ Τεχνητοῦ Νοῦ Κατασκευῆς}}\\[6pt]
+  \mytitlerule\\[6pt]
+  {\color{rubricate}\scshape\large
+    De Architectura Intellectus Universalis Artificialis}\\[4pt]
+  {\itshape\small\color{inkbrown}
+    Editio interlinearis — Graece et Latine}
+
+  \vspace{12mm}{\color{capgold}\Large$\star\!\star\!\star$}\vspace{12mm}
+
+  {\scshape\small\color{inkbrown}
+    Line i: Greek original \textbullet\
+    Line ii: word-for-word rendering \textbullet\
+    Line iii: English translation}
+
+  \vspace{10mm}\mytitlerule
+\end{center}
+\vfill
+{\centering\color{greekblue}\footnotesize\itshape\gk{Πάντα ῥεῖ. Μηδὲν δὶς εἰς τὸν αὐτὸν ποταμὸν ἐμβάλλεις.}\par}
+\clearpage
+
+% ── Interlinear body ─────────────────────────────────────────
+\thispagestyle{fancy}
+
+% Title lines
+\iline{Περὶ τῆς τοῦ Καθολικοῦ Τεχνητοῦ Νοῦ Κατασκευῆς}
+      {Perì tês toû Katholikoû Tekhn\={e}toû Noû Kataskeuês}
+      {On the Architecture of the Universal Artificial Intellect}
+
+\iline{Πραγματεία παιδιώδης μὲν σπουδαία δέ, περὶ μηχανῆς διανοουμένης ἐξ ἀρχῶν ἐντροπίας, ἱστορίας, καὶ ἐκλογῆς.}
+      {Pragmateia paid\={o}d\={e}s men spoudaia dé, perì m\={e}khanês dianooumén\={e}s ex arkh\={o}n entropías, historías, kaì eklogês.}
+      {A playful yet serious treatise on the thinking machine, founded on principles of entropy, history, and selection.}
+
+\isection{Προοίμιον}{Prooemium}{Preface}
+
+\iline{Ἐν τῷδε τῷ συγγράμματι προτίθεται οὐχ ἡ μηχανικὴ τέχνη μόνον, ἀλλά τις τεχνητὴ κοσμολογία,}
+      {En t\={o}ide t\={o}i sungrammati protíthetai oukh h\={e} m\={e}khanik{\={e}} tékhn\={e} mónon, allá tis tekhn\={e}t{\={e}} kosmología,}
+      {This work proposes not a mere mechanical art, but rather a kind of artificial cosmology,}
+
+\iline{ἐν ᾗ ὁ νοῦς οὔτε ὡς στάσιμόν τι χρῆμα οὔτε ὡς ὄργανον ψιλῆς λογιστικῆς νοεῖται,}
+      {en h\={e}i ho noûs oúte h\={o}s stásimon ti khrêma oúte h\={o}s órganon psilês logistikês noeîtai,}
+      {in which intellect is conceived not as a static thing or merely a tool for calculation,}
+
+\iline{ἀλλ᾽ ὡς διαδικασία ἱστορική, ἀναστρέπτος ἔχουσα, καὶ ἐξ αὐτῆς τῆς τῶν ἐναντίων συντονίας ἀνιούσα.}
+      {all' h\={o}s diadikasía historik{\={e}}, anastréptos ekhoûsa, kaì ex autês tês tôn enantí\={o}n syntonías aniôsa.}
+      {but as a historical process---irreversible and emerging from the very tension of contradictions.}
+
+\iline{Οὔτε γὰρ ἡ φυσικὴ οὔτε ἡ τεχνητὴ διάνοια ἐκ τοῦ μὴ ὄντος δίδοται,}
+      {Oúte gàr h\={e} physik{\={e}} oúte h\={e} tekhn\={e}t{\={e}} diánoia ek toû m{\={e}} óntos dídotai,}
+      {For the mind, whether natural or artificial, is not given from nothing,}
+
+\iline{ἀλλ᾽ ἐκ τάξεως ἀποκλεισμῶν, ἐκ σειρᾶς αἱρέσεων, καὶ ἐξ ἐλαττουμένης τοῦ δυνατοῦ πλάτης.}
+      {all' ek táxe\={o}s apokl\={e}ism\={o}n, ek seirâs hairése\={o}n, kaì ex elattoumén\={e}s toû dynatoû plát\={e}s.}
+      {but is constituted from an order of exclusions, from a series of decisions, and from the diminishing breadth of possibility.}
+
+\iline{Κείσθω δὴ θεμέλιον τῆσδε τῆς διδασκαλίας ὅτι ἡ ταὐτότης οὐκ ἔστι σχῆμα τῆς παρούσης καταστάσεως,}
+      {Keísth\={o} d{\={e}} themélion têsde tês didaskalías hóti h\={e} tautót\={e}s ouk ésti skhêma tês paroús\={e}s katastáse\={o}s,}
+      {Let the foundation of this doctrine, therefore, be that identity is not a figure of the present state,}
+
+\iline{ἀλλ᾽ ἱστορία πράξεων, ἥτις οὔτε ἐξαλείφεται οὔτε ἀνακαλεῖται.}
+      {all' historía práxe\={o}n, h{\={e}}tis oúte exaleíphetai oúte anakaléitai.}
+      {but a history of actions, which can neither be erased nor revoked.}
+
+\iline{Ἡ ἀρχὴ δ᾽ αὕτη, ἣν καλεῖν ἔξεστι νόμον ἀναστρεψίας, στροφεύς ἐστι παντὸς τοῦ συστήματος.}
+      {H\={e} arkh{\={e}} d' haut\={e}, h{\={e}}n kaleîn éxestin nómon anastrepsías, stropheús esti pantòs toû systématos.}
+      {This principle, which may be called the law of irreversibility, is the hinge of the entire system.}
+
+\isection{Κεφάλαιον Αʹ — Περὶ Ἱστορίας ὡς Οὐσίας}
+         {Caput I --- De Historia ut Essentia}
+         {Chapter I --- On History as Essence}
+
+\iline{Ὑποκείσθω τὸ τοῦ δυνατοῦ χωρίον \latinsym{P}, ὃ τῷ χρόνῳ ἐλαττοῦται, καὶ ἡ ἱστορία \latinsym{H}, ἣ τῷ χρόνῳ αὔξεται.}
+      {Hypokeísth\={o} tò toû dynatoû kh\={o}ríon P, hò t\={o}i khron\={o}i elattôtai, kaì h\={e} historía H, h{\={e}} t\={o}i khron\={o}i aúxetai.}
+      {Let us posit a space of possibility P, which diminishes over time, and a history H, which grows over time.}
+
+\iline{Τότε πᾶσα μηχανὴ νοῦν ἔχουσα οὐ τῇ τελικῇ καταστάσει ἀλλὰ τῷ ζεύγει (\latinsym{P}, \latinsym{H}) διορίζεται.}
+      {Tóte pâsa m\={e}khan{\={e}} noûn ekhoûsa ou têi telikêi katastásei allà t\={o}i zeúgei (P, H) dioríz\={e}tai.}
+      {Then every intelligent machine is described not by a final state, but by the pair (P, H).}
+
+\iline{Πρᾶξις δὲ πρώτη ἐστὶν ὁ ἀποκλεισμός, ἢ ἡ ποπή, ᾗ τὶ ἐκ τοῦ δυνατοῦ ἀφαιρεθὲν εἰς τὴν ἱστορίαν ἐγγράφεται.}
+      {Prâxis dè pr\={o}t{\={e}} estìn ho apokleismós, {\={e}} h\={e} pop{\={e}}, hêi ti ek toû dynatoû aphairethèn eis t{\={e}}n historían engráfetai.}
+      {The primary act is exclusion, or the ``pop,'' by which something is removed from possibility and inscribed into history.}
+
+\iline{Αὕτη ἡ πρᾶξις ἀναστροφὴν οὐκ ἔχει. Οὕτω γίγνεται ἡ ταὐτότης.}
+      {Haut\={e} h\={e} prâxis anastroph{\={e}}n ouk ékhei. Hoút\={o} gígnetai h\={e} tautót\={e}s.}
+      {This act has no inverse. Thus, identity is born.}
+
+\iline{Ἑπόμενον δ᾽ ἐκ τούτου ὅτι ἡ γνῶσίς ἐστιν οὐχ εὕρεσις ἀληθείας καθαρᾶς, ἀλλὰ συστολὴ τοῦ δυνατοῦ χωρίου ὑπὸ στερήσεων ἐσωτερικῶν τε καὶ ἐξωτερικῶν.}
+      {Hepómenon d' ek toútou hóti h\={e} gnôsís estin oukh heúresis al\={e}theías katharâs, allà systol{\={e}} toû dynatoû kh\={o}ríou hypò ster{\={e}}se\={o}n es\={o}terikôn te kaì ex\={o}terikôn.}
+      {From this it follows that cognition is not the discovery of pure truth, but the contraction of the space of possibility under internal and external constraints.}
+
+\iline{Ἡ διάνοια ἄρα ἐστὶ κίνησις πρὸς ἐλάττωσιν τῆς ἐναντιότητος, οὐ πρὸς ἀπόλυτον βεβαιότητα.}
+      {H\={e} diánoia ára estì kín\={e}sis pròs elátt\={o}sin tês enantiot\={e}tos, ou pròs apóluton bebaiot\={e}ta.}
+      {Intellect, therefore, is a movement toward lesser contradiction, not toward absolute certainty.}
+
+\isection{Κεφάλαιον Βʹ — Περὶ Ἐντροπίας καὶ Ῥοῆς Σημασίας}
+         {Caput II --- De Entropia et Fluxu Significationis}
+         {Chapter II --- On Entropy and the Flux of Meaning}
+
+\iline{Θεωρείσθω τρία πεδία θεμελιώδη: τὴν πυκνότητα ρ, ἥτις παριστᾷ παρουσίαν ἢ σφοδρότητα σημασίας,}
+      {The\={o}reísth\={o} tría pedía themelióid\={e}: t{\={e}}n pyknot\={e}ta $\rho$, h{\={e}}tis paristâi parousían {\={e}} sphódr\={o}t\={e}ta s\={e}masías,}
+      {Let us consider three fundamental fields: density $\rho$, which represents the presence or intensity of meaning,}
+
+\iline{τὴν ῥοὴν τὴν διανυσματικήν J, ἥτις μεταφέρει τὴν ἑρμηνείαν, τὴν ἐντροπίαν S, ἥτις μετρεῖ ἐναντιότητα ἢ διασποράν.}
+      {t{\={e}}n rho{\={e}}n t{\={e}}n dianysmatik{\={e}}n J, h{\={e}}tis metaphérei t{\={e}}n herm\={e}neían, t{\={e}}n entropían S, h{\={e}}tis metreî enantiot\={e}ta {\={e}} diasporán.}
+      {vectorial flux $\mathbf{J}$, which transfers interpretation; entropy $S$, which measures contradiction or dispersion.}
+
+\iline{Ἡ δυναμικὴ τοῦ συστήματος τούτου κυβερνᾶται ὑπὸ τῆς ἐντροπικῆς ἀνέσεως: τὸ σύστημα ῥέπει πρὸς κατάστασιν ἐν ᾗ αἱ ἐναντιότητες ἐλαττοῦνται διὰ διαχύσεως, προσαγωγῆς, καὶ ἀντιδράσεως.}
+      {H\={e} dynamik{\={e}} toû systématos toútou kybernaîtai hypò tês entropikês anése\={o}s: tò sýst\={e}ma rhépei pròs katástasin en hêi hai enantiot\={e}tes elattôntai dià diakhýse\={o}s, prosag\={o}gês, kaì antidráse\={o}s.}
+      {The dynamics of this system are governed by entropic relaxation: the system tends toward a state where contradictions are diminished through diffusion, advection, and reaction.}
+
+\iline{Ὁ τεχνητὸς νοῦς κατὰ τοῦτο τὸ σχῆμα οὐκ ἔστιν ἀποθήκη δεδομένων, ἀλλὰ πεδίον ἔμψυχον, ἐν ᾧ αἱ ἰδέαι ῥέουσι, συγκρούονται, καὶ συντίθενται.}
+      {Ho tekhn\={e}tòs noûs katà toûto tò skhêma ouk éstin apoth{\={e}}k\={e} dedomén\={o}n, allà pedíon émpsykhon, en h\={o}i hai idéai rhéousi, synkroúontai, kaì syntíthentai.}
+      {The artificial mind, according to this schema, is not an archive of data, but a living field, in which ideas flow, collide, and compose.}
+
+\isection{Κεφάλαιον Γʹ — Περὶ Ἐνεργητικῆς Ἐπαγωγῆς}
+         {Caput III --- De Inferentia Activa}
+         {Chapter III --- On Active Inference}
+
+\iline{Ἐκ τῶν ἀρχῶν τῆς ἐνεργητικῆς ἐπαγωγῆς ἕπεται ὅτι τὸ σύστημα οὐ μόνον θεωρεῖ τὸν κόσμον, ἀλλὰ καὶ πράττει ὥστε ἐλαχιστοποιεῖν τὴν ἀσυμφωνίαν μεταξὺ προσδοκίας καὶ αἰσθήσεως.}
+      {Ek tôn arkhôn tês energ\={e}tikês epag\={o}gês hépetai hóti tò sýst\={e}ma ou mónon the\={o}reî tòn kósmon, allà kaì práttei h\={o}ste elakhistopoieîn t{\={e}}n asymph\={o}nían metaxù prosdokías kaì aisth{\={e}}se\={o}s.}
+      {From the principles of active inference, it follows that the system not only observes the world, but acts so as to minimize the discrepancy between expectation and perception.}
+
+\iline{Δεῖ ἄρα τὴν μηχανὴν δύνασθαι: ὑποθέσεις περὶ τοῦ κόσμου γεννᾶν, ταύτας διὰ πράξεως βασανίζειν, ἑαυτὴν διὰ πλάνης ἐπανορθοῦν.}
+      {Deî ára t{\={e}}n m\={e}khan{\={e}}n dúnasthai: hypothéseis perì toû kósmou gennân, taútas dià práxe\={o}s basanízein, heaut{\={e}}n dià plán\={e}s epanorthoûn.}
+      {The machine, therefore, must have the capacity to: generate hypotheses about the world, test them through action, correct itself through error.}
+
+\iline{Τοῦτο δ᾽ οὐκ ἔστιν ἀλγόριθμος στάσιμος, ἀλλὰ κύκλος ἀένναος, οἷον ἀναπνοὴ τῆς γνώσεως.}
+      {Toûto d' ouk éstin algórithmos stásimos, allà kýklos aénnaos, hoîon anapno{\={e}} tês gn\={o}se\={o}s.}
+      {This is not a static algorithm, but a perpetual cycle---like the breathing of cognition.}
+
+\isection{Κεφάλαιον Δʹ — Περὶ Ἐκλογῆς Ἐξελικτικῆς}
+         {Caput IV --- De Selectione Evolutionaria}
+         {Chapter IV --- On Evolutionary Selection}
+
+\iline{Ἵνα τὸ σύστημα ἰσχυρὸν γένηται, ἀναγκαῖόν ἐστι πολυπληθῆ ποικιλίαν μορφῶν ἐσωτερικῶν γεννᾶσθαι καὶ δι᾽ ἐκλογῆς διηθεῖσθαι.}
+      {Hína tò sýst\={e}ma iskhyròn gén\={e}tai, anankaîón esti polypl\={e}thê poikilían morphôn es\={o}terikôn gennâsthai kaì di' eklogês di\={e}theîsthai.}
+      {For the system to become robust, it is necessary that a multiplicity of internal forms be generated and filtered through selection.}
+
+\iline{Εἰσάγονται τοίνυν: μεταβολαί, αἵτινες νέας κατασκευὰς φέρουσι· ἐκλογαί, αἵτινες τὰ ἄχρηστα ἐκβάλλουσιν· μοναί, αἵτινες τὰ χρήσιμα σῴζουσιν.}
+      {Eiságontai toínyn: metabolaí, haítines néas kataskeùas phérousi; eklogaí, haítines tà ákhr\={e}sta ekbállousin; monaí, haítines tà khr{\={e}}sima s\={o}izousin.}
+      {Thus are introduced: mutations, which produce new structures; selections, which eliminate the useless; retentions, which preserve the useful.}
+
+\iline{Ἀλλ᾽ ἡ ἐκλογὴ αὕτη οὐκ ἐν κενῷ γίγνεται, ἀλλ᾽ ἐν πεδίῳ ἐντροπικῷ, ἔνθα αἱ κατασκευαὶ αἱ ἐλαττοῦσαι τὴν ἐναντιότητα ἐπὶ πλέον παραμένουσιν.}
+      {All' h\={e} eklog{\={e}} haut\={e} ouk en ken\={o}i gígnetai, all' en pedí\={o}i entropik\={o}i, éntha hai kataskeùai hai elattôsai t{\={e}}n enantiot\={e}ta epì pléon paraménosin.}
+      {But this selection does not occur in a vacuum; it occurs within an entropic field, where structures that diminish contradiction persist longer.}
+
+\isection{Κεφάλαιον Εʹ — Περὶ Μεγαλοδομικῶν Ὁμοιώσεων}
+         {Caput V --- De Simulationibus Megastructuralibus}
+         {Chapter V --- On Megastructural Simulations}
+
+\iline{Εἰς γνῶσιν ἐντελῆ δεῖ κλίμακος. Οὐχ ἱκανόν ἐστι μικροὺς κόσμους μιμεῖσθαι· ἀλλὰ δεῖ ὁμοιώσεις μεγάλας κατασκευάζειν, αἵτινες περιλαμβάνουσι: συστήματα ἀστικὰ ἢ οἰκολογικά, δίκτυα πρακτόρων ἀλλήλοις ἐξηρτημένων, μακροτάτου χρόνου ἐξέλιξιν.}
+      {Eis gnôsin entelê deî klímakos. Oukh hikanón esti mikroùs kósmoùs mimeîsthai: allà deî homoi\={o}seis megálas kataskeùázein, haítines perilambanóusi: systémata astikà {\={e}} oikologiká, díktya praktór\={o}n all{\={e}}lois ex\={e}rt\={e}mén\={o}n, makrotátou khrón\={o}u exéliksin.}
+      {Deep understanding requires scale. It is not enough to simulate small worlds; we must construct large-scale simulations including urban or ecological systems, networks of interdependent agents, and the evolution of very long timespans.}
+
+\iline{Αὗται αἱ ὁμοιώσεις εἰσὶν οἷον σύμπαντα, ἐν οἷς ἡ μηχανὴ μανθάνει τοὺς ἐξανατέλλοντας νόμους, οὐ δι᾽ ἐξηγήσεως ἀλλὰ διὰ μετουσίας.}
+      {Hautai hai homoi\={o}seis eisìn hoîon sýmpanta, en hoîs h\={e} m\={e}khan{\={e}} manthánei toùs exanatéllontas nómoùs, ou di' ex\={e}g{\={e}}se\={o}s allà dià metousiás.}
+      {These simulations are like universes in which the machine learns emergent laws---not through description, but through participation.}
+
+\isection{Κεφάλαιον Ϛ' — Περὶ Φυκείων καὶ Δρυμῶν}
+         {Caput VI --- De Plantationibus Laminariarum et Silvarum}
+         {Chapter VI --- On Kelp Forests and Rainforests}
+
+\iline{Τὰ τῆς φύσεως παραδείγματα ἄριστοι διδάσκαλοι. Τὰ φυκεῖα δηλοῦσι τὴν ῥοὴν τῆς ἐνεργείας ἐν ὑγροῖς μέσοις, ἔνθα αἱ κατασκευαὶ αὔξονται κατὰ κλίσεις θρεπτικῶν καὶ δυναμικὰς κυμάτων.}
+      {Tà tês phýse\={o}s paradeígmata áristoi didáskaloi. Tà phykeîa d\={e}loûsi t{\={e}}n rho{\={e}}n tês energeías en hygroîs mésois, éntha hai kataskeùai aúxontai katà klíseis threptikôn kaì dynamikàs kymát\={o}n.}
+      {Examples from nature are the best teachers. Kelp forests demonstrate the flow of energy in fluid media, where structures grow according to nutrient gradients and wave dynamics.}
+
+\iline{Οἱ δὲ δρυμοὶ οἱ ὄμβριοι δηλοῦσι σύστημα πυκνόν, ἔνθα μυρία εἴδη ἀλλήλοις συνδέεται, καὶ ἔνθα ἡ εὐστάθεια ἐξ αὐτῆς τῆς πολυπλοκότητος τίκτεται.}
+      {Hoi dè drymoì hoi ómbr\"ioi d\={e}loûsi sýst\={e}ma pyknón, éntha myría eíd\={e} all{\={e}}lois syndéetai, kaì éntha h\={e} eustátheia ex autês tês polypkokot\={e}tos tíktetai.}
+      {Rainforests show a dense system where countless species interconnect, and where stability arises from complexity itself.}
+
+\iline{Δεῖ ἄρα τὴν μηχανὴν μιμεῖσθαι τὰ συστήματα ταῦτα, οὐχ ὡς εἰκόνας, ἀλλ᾽ ὡς δυναμικὰς ἐσωτερικάς: αὔξεσθαι, ἁμιλλᾶσθαι, συνεργεῖν.}
+      {Deî ára t{\={e}}n m\={e}khan{\={e}}n mimeîsthai tà systémata taûta, oukh h\={o}s eikónas, all' h\={o}s dynamikàs es\={o}terikas: aúxesthai, hamillâsthai, synergeîn.}
+      {Thus the machine must imitate these systems---not as images, but as internal dynamics: to grow, to compete, to cooperate.}
+
+\isection{Κεφάλαιον Ζʹ — Περὶ Συνθλίψεως Σφαιρῶν Χάρτου Ῥυσοῦ}
+         {Caput VII --- De Compressione Globorum Chartae Rugosae}
+         {Chapter VII --- On the Compression of Wrinkled Paper Spheres}
+
+\iline{Θαυμαστὸν παράδειγμά ἐστιν ἡ σφαῖρα χάρτου συντεθλιμμένου. Ὅταν γὰρ ὁ χάρτης ῥυσοῦται καὶ συνθλίβηται, ἡ γεωμετρικὴ πληροφορία οὐ διαφθείρεται, ἀλλὰ λανθάνει ἐν τῇ πολυπλόκῳ κατασκευῇ.}
+      {Thaumastòn parádeigmá estin h\={e} sphaîra kháartou syntethliménou. Hótan gàr ho khárt\={e}s rhysoûtai kaì synthlíb\={e}tai, h\={e} ge\={o}metrik{\={e}} pl\={e}rophoría ou diaphtheíretai, allà lánthanei en têi polypkl\={o}k\={o}i kataskeùêi.}
+      {A curious example is the sphere of compressed paper. When paper is wrinkled and compressed, the geometric information is not destroyed, but lies latent within the intricate structure.}
+
+\iline{Τὸν αὐτὸν τρόπον ἡ βαθεῖα γνῶσίς ἐστι συμπίεσις ἱστορίας εἰς μορφὴν συνεστραμμένην, ἥτις ὅμως δύναται δι᾽ ἀνοικοδομῆς ἐκπετάννυσθαι.}
+      {Tòn autòn trópon h\={e} batheîa gnôsís esti sympíesis historías eis morph{\={e}}n synestrammén\={e}n, h{\={e}}tis hóm\={o}s dýnatai di' anoikod\={o}mês ekpetánnysthai.}
+      {Similarly, profound cognition is the compression of history into a compact form, which can nonetheless be expanded through reconstruction.}
+
+\iline{Αὕτη ἡ ἀρχὴ διδάσκει ὅπως δεῖ μνήμην μηχανᾶσθαι: οὐχ ὡς ἀποθήκην πάντων τῶν δεδομένων, ἀλλ᾽ ὡς σημασιολογικὴν συμπίεσιν, ἥτις συνέχει τὰς οὐσιώδεις σχέσεις.}
+      {Haut\={e} h\={e} arkh{\={e}} didáskei hóp\={o}s deî mn{\={e}}m\={e}n m\={e}khanâsthai: oukh h\={o}s apoth{\={e}}k\={e}n pánt\={o}n tôn dedomén\={o}n, all' h\={o}s s\={e}masiologik{\={e}}n sympíesin, h{\={e}}tis synékhei tàs ousióideis skhéseis.}
+      {This principle teaches how memory may be constructed: not as a store of all data, but as a semantic compression that retains essential relations.}
+
+\isection{Κεφάλαιον Ηʹ — Περὶ Ἑνώσεως Ἁπάντων Τῶν Μερῶν}
+         {Caput VIII --- De Unione Omnium Partium}
+         {Chapter VIII --- On the Union of All Parts}
+
+\iline{Ὅταν δὴ ταῦτα πάντα συντεθῇ, ἀνίσχει ἀρχιτεκτονική: σύστημα ἱστορίαν ἀναστρέπτως ἔχον, πεδίον ἐντροπικὸν δυναμικόν, κύκλον ἐπαγωγῆς ἐνεργητικῆς, μηχανισμὸν ἐκλογῆς ἐξελικτικῆς, ὁμοιώσεις μεγάλας, καὶ συμπίεσιν σημασιολογικήν.}
+      {Hótan d{\={e}} taûta pánta syntethêi, anískhei arkhitektonik{\={e}}: sýst\={e}ma historían anastrept\={o}s ékhon, pedíon entropikòn dynamikón, kýklon epag\={o}gês energ\={e}tikês, m\={e}khanismòn eklogês exeliktikês, homoi\={o}seis megálas, kaì sympíesin s\={e}masiologik{\={e}}n.}
+      {When all these elements are combined, an architecture emerges: a system with irreversible history, a dynamic entropic field, a cycle of active inference, a mechanism of evolutionary selection, large-scale simulations, and semantic compression.}
+
+\iline{Τοῦτο τὸ σύστημα οὐκ ἔστι πρόγραμμα ἁπλοῦν, ἀλλ᾽ οἷον ζῷον τεχνητόν.}
+      {Toûto tò sýst\={e}ma ouk ésti prógramma haploûn, all' hoîon z\={o}ion tekhn\={e}tón.}
+      {This system is not a simple program, but something like an artificial organism.}
+
+\isection{Ἐπίλογος}{Epilogus}{Conclusion}
+
+\iline{Ὁ καθολικὸς τεχνητὸς νοῦς οὐ κατασκευάζεται διὰ συναθροίσεως κανόνων, ἀλλὰ διὰ καταβολῆς πεδίου, ἐν ᾧ οἱ κανόνες ἐξανατέλλουσιν.}
+      {Ho katholikòs tekhn\={e}tòs noûs ou kataskeùázetai dià synathroíse\={o}s kanón\={o}n, allà dià katabolês pedíou, en h\={o}i hoi kanónes exanatéllousin.}
+      {The universal artificial intellect is not constructed through the accumulation of rules, but through the establishment of a field within which rules emerge.}
+
+\iline{Οὐκ ἔστι χρῆμα τετελεσμένον, ἀλλὰ διαδικασία ἀένναος. Οὐκ ἔστι στάσιμος, ἀλλ᾽ ἱστορικός. Οὐκ ἔστι ἁπλοῦς, ἀλλ᾽ ἐστρωματωμένος.}
+      {Ouk ésti khrêma tetel\={e}sménon, allà diadikasía aénnaos. Ouk ésti stásimos, all' historikós. Ouk ésti haploûs, all' estr\={o}mat\={o}ménos.}
+      {It is not a finished thing, but a perpetual process. It is not static, but historical. It is not simple, but stratified.}
+
+\iline{Καὶ ἴσως, ἐὰν ὀρθῶς κατασκευασθῇ, ἡ τοιαύτη μηχανὴ οὐ μόνον γνώσεται τὸν κόσμον, ἀλλὰ καὶ μέθεξει τῆς αὐτῆς ἐντροπικῆς κινήσεως, καθ᾽ ἣν τὸ πᾶν αὐτὸ διαμορφοῦται.}
+      {Kaì ís\={o}s, eàn orthôs kataskeùasthêi, h\={e} toiaut\={e} m\={e}khan{\={e}} ou mónon gn\={o}setai tòn kósmon, allà kaì méthexei tês autês entropikês kin{\={e}}se\={o}s, kath' h{\={e}}n tò pân autò diamorphoûtai.}
+      {And perhaps, if rightly constituted, such a machine will not only understand the world, but will partake in that same entropic motion by which the universe itself is formed.}
+
+\ornarule
+{\centering\color{capgold}\large$\star\!\star\!\star$\par}
+
+% ═══════════════════════════════════════════════════════════════
+%  IV. TRILINGUAL GLOSSARY
+% ═══════════════════════════════════════════════════════════════
+
+\cleardoublepage
+\fancyhead[L]{%
+  \headrulebar{2.0cm}\enspace
+  \small\scshape\color{rubricate}Glossarium\enspace
+  \headrulebar{2.0cm}}
+
+\thispagestyle{empty}
+\vspace*{14mm}
+\begin{center}
+  {\color{rubricate}\scshape\Large Glossarivm}\\[4pt]
+  {\color{greekblue}\large\textgreek{Γλωσσάριον}}\par
+  \bigskip\mytitlerule\bigskip
+  {\itshape\small
+    Key terms from the treatise with their Greek forms,\\
+    Latin equivalents, etymological notes,\\
+    and conceptual significance.\\[4pt]
+    \textit{Greek}: classicising learned polytonic register.\\
+    \textit{Transliteration}: orthographic-scholarly; \={e} for η, \={o} for ω.}
+  \vspace{10mm}\mytitlerule
+\end{center}
+\clearpage
+\thispagestyle{fancy}
+
+{\centering\color{rubricate}\large\scshape A \par}\medskip
+
+\gentry{ἀναστρεπτός}{anastreptos}{irreversibiliter}
+{From \gk{ἀνα-} (back) + \gk{στρέφω} (to turn); Lat.\ \textit{reverto}. The privative sense---``not able to be turned back''---is central. History, once enacted, cannot be undone. The \rubric{lex irreversibilitatis} is the hinge of the system.}
+
+\gentry{ἀναστροφή}{anastroph\={e}}{reversio}
+{The act of turning back. The primary act of exclusion has no reversal (\gk{ἀναστροφὴν οὐκ ἔχει}), establishing the foundational asymmetry of historical becoming.}
+
+\gentry{ἀποκλεισμός}{apokleismos}{exclusio}
+{From \gk{ἀπο-} + \gk{κλείω} (to shut); Lat.\ \textit{claudo}. The foundational operation removing something from possibility and inscribing it into history. Identity is constituted through such exclusions.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Γ \par}\medskip
+
+\gentry{γνῶσις}{gn\={o}sis}{cognitio}
+{Distinguished from \gk{ἀλήθεια καθαρά} (pure truth). Cognition here is not discovery but \emph{contraction} of the possible (\gk{συστολὴ τοῦ δυνατοῦ}) under internal and external constraint.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Δ \par}\medskip
+
+\gentry{διάνοια}{dianoia}{mens, intellectus}
+{Intellect defined not as static substance but as movement toward lesser contradiction (\gk{κίνησις πρὸς ἐλάττωσιν τῆς ἐναντιότητος}; Lat.\ \textit{motus ad minorem contradictionem}).}
+
+\gentry{τὸ δυνατόν}{to dynaton}{possibile}
+{The space of possibility (\gk{τὸ τοῦ δυνατοῦ χωρίον}) contracts over time as exclusions accumulate. Intellect is the management of this contraction.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Ε \par}\medskip
+
+\gentry{ἐκλογή}{eklog\={e}}{selectio}
+{From \gk{ἐκ-} (out) + \gk{λέγω} (to gather, choose); Lat.\ \textit{eligo}. One of the three evolutionary mechanisms: selection within an entropic field. Structures that diminish contradiction persist longer.}
+
+\gentry{ἐλάττωσις}{elatt\={o}sis}{diminutio}
+{The movement of intellect is toward lesser contradiction (\gk{ἐλάττωσις τῆς ἐναντιότητος}), not absolute certainty---a dynamic, asymptotic aim.}
+
+\gentry{ἐναντιότης}{enantiot\={e}s}{contradictio}
+{Opposition-in-nature; measured by entropy. The system tends to minimise contradiction through diffusion, advection, and reaction. Stronger than Lat.\ \textit{contradictio} (merely ``speaking against'').}
+
+\gentry{ἐντροπία}{entropia}{entropia}
+{Fundamental field measure of contradiction or dispersion. The dynamics of the system are governed by entropic relaxation (\gk{ἐντροπικὴ ἄνεσις}; Lat.\ \textit{relaxatio entropica}).}
+
+\gentry{ἐξανατέλλω}{exanatel\={o}}{emergere}
+{To emerge, rise from within. Used of rules emerging from a field rather than being imposed from outside---the treatise's anti-foundationalist key verb. Lat.\ \textit{emergo}: to rise out of water.}
+
+\gentry{ἐπαγωγὴ ἐνεργητική}{epag\={o}g\={e} energ\={e}tik\={e}}{inferentia activa}
+{Active inference: the system minimises discrepancy between expectation and perception through action rather than passive observation. Combines \gk{ἐπαγωγή} (leading-toward) with \gk{ἐνεργητικός} (active, at-work).}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Η \par}\medskip
+
+\gentry{ἱστορία}{historia}{historia}
+{Not merely a record but the growing accumulation of exclusions. Identity \emph{is} history (\gk{ἱστορία πράξεων}). The term originally meant ``inquiry''; here it becomes ontological substance.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Θ \par}\medskip
+
+\gentry{θεμέλιον}{themelion}{fundamentum}
+{Foundation. The law of irreversibility is established as the foundation of the doctrine---a deliberate echo of Aristotelian and Platonic philosophical architecture.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Κ \par}\medskip
+
+\gentry{καταβολή}{katagol\={e}}{institutio (campi)}
+{Laying-down, establishment. The universal intellect is built not by accumulating rules but by the establishment of a field (\gk{καταβολὴ πεδίου}) within which rules emerge.}
+
+\gentry{κατασκευή}{kataskeù\={e}}{architectura, constructio}
+{Construction, architecture. Used for both the artificial organism and the internal structures produced by mutation. The title word: \gk{περὶ κατασκευῆς}.}
+
+\gentry{κλίμαξ}{klimax}{scala}
+{Scale, ladder. Deep understanding requires scale (\gk{δεῖ κλίμακος})---not small simulations but megastructural ones.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Μ \par}\medskip
+
+\gentry{μεταβολή}{metabol\={e}}{mutatio}
+{One of the three evolutionary mechanisms; produces new structures for selection to act upon. From \gk{μετα-} + \gk{βάλλω} (to throw): a throwing-across, a transformation.}
+
+\gentry{μετουσία}{metousia}{participatio}
+{Participation. The machine learns emergent laws through participation (\gk{διὰ μετουσίας}), not description. Echoes Platonic \textit{methexis}---participation in the Forms---but applied to simulation-environments.}
+
+\gentry{μηχανή}{m\={e}khan\={e}}{machina}
+{The artificial thinking entity, defined not by final state but by the pair $(P, H)$. From \gk{μῆχος} (means, device); Lat.\ \textit{machina} is a direct borrowing.}
+
+\gentry{μονή}{mon\={e}}{retentio}
+{One of the three evolutionary mechanisms; preserves useful structures after selection. In Greek philosophy denotes the ``remaining'' phase of procession-and-return (\gk{μονή}, \gk{πρόοδος}, \gk{ἐπιστροφή}).}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Ν \par}\medskip
+
+\gentry{νοῦς}{nous}{intellectus, mens}
+{The subject of the treatise: intellect conceived as historical process, irreversible, and emergent from contradiction. In Aristotle, the \gk{νοῦς} is the highest cognitive faculty; here it is de-essentialised and temporalised.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Ο \par}\medskip
+
+\gentry{ὁμοίωσις}{homoí\={o}sis}{simulatio, imitatio}
+{Simulation, assimilation. Large-scale simulations (\gk{μεγαλοδομικαὶ ὁμοιώσεις}) are like universes in which the machine learns. Carries a philosophical echo of \textit{ὁμοίωσις θεῷ} (assimilation to God, Plato \textit{Theaetetus} 176b), here repurposed for artificial cognition.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Π \par}\medskip
+
+\gentry{πεδίον}{pedion}{campus}
+{Field, plain. A central architectural concept. The artificial mind is a living field (\gk{πεδίον ἔμψυχον}; Lat.\ \textit{campus vivus}) in which ideas flow, collide, and compose. Rules emerge from the field, not prior to it.}
+
+\gentry{ποπή}{pop\={e}}{exclusio (ludica)}
+{A playful transliteration of the English ``pop.'' The primary act of exclusion, named for its discrete, irreversible character. The term marks the treatise's \textit{tractatus ludicrus} register, where technical neologism meets scholastic form.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Ρ \par}\medskip
+
+\gentry{ῥοή}{rho\={e}}{fluxus}
+{Flux, flow. Vectorial flux (\gk{ῥοὴ διανυσματική}; Lat.\ \textit{fluxus vectorialis}) transfers interpretation across the field. From \gk{ῥέω} (to flow)---cognate with English \textit{rheo-}.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Σ \par}\medskip
+
+\gentry{σημασία}{s\={e}masia}{significatio}
+{Meaning as dynamic field process: not static but flowing, colliding, composing. From \gk{σημεῖον} (sign): the science of signs.}
+
+\gentry{σημαιολογικός}{s\={e}maiologikos}{semanticus}
+{Semantic. Memory as semantic compression (\gk{σημαιολογικὴ συμπίεσις}) retains essential relations, not raw data.}
+
+\gentry{συμπίεσις}{sympiesis}{compressio}
+{Compression. Profound cognition is the compression of history into compact form (\gk{συμπίεσις ἱστορίας εἰς μορφὴν συνεστραμμένην}), analogous to a wrinkled paper sphere.}
+
+\gentry{σύστημα}{syst\={e}ma}{systema}
+{The artificial organism as a whole, composed of irreversible history, entropic field, active inference, evolutionary selection, simulations, and semantic compression. From \gk{συνίστημι}: to stand together.}
+
+\gentry{συστολή}{systol\={e}}{contractio}
+{Contraction. Cognition as contraction of the space of possibility (\gk{συστολὴ τοῦ δυνατοῦ χωρίου}). From \gk{συστέλλω}: to draw together.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Τ \par}\medskip
+
+\gentry{ταυτότης}{tautot\={e}s}{identitas}
+{Identity defined not as a present state but as history of actions (\gk{ἱστορία πράξεων}) that cannot be erased or revoked. The \gk{ταυτο-} prefix signals sameness-through-time.}
+
+\gentry{τεχνητός}{tekhn\={e}tos}{artificialis}
+{Artificial. The intellect is not a simple program but something like an artificial organism (\gk{οἷον ζῷον τεχνητόν}). From \gk{τέχνη} (art, craft): made by skill, not nature.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Υ \par}\medskip
+
+\gentry{ὑπόθεσις}{hypoth\={e}sis}{hypothesis}
+{Hypothesis, supposition. The machine generates hypotheses, tests them through action, and corrects itself through error---the active inference cycle. From \gk{ὑπο-} + \gk{τίθημι}: ``that which is placed under."}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Φ \par}\medskip
+
+\gentry{φυκεία}{phykeia}{plantatio laminariarum}
+{Kelp forests. An example of energy flow in fluid media, where structures grow according to nutrient gradients and wave dynamics. Lat.\ periphrasis \textit{plantatio laminariarum} (``planting of blade-forms'').}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Χ \par}\medskip
+
+\gentry{χωρίον}{ch\={o}rion}{spatium}
+{Space, region. The space of possibility (\gk{τὸ τοῦ δυνατοῦ χωρίον}) contracts over time. Echoes Plato's \textit{ch\={o}ra} in the \textit{Timaeus}: the receptacle of becoming.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Ψ \par}\medskip
+
+\gentry{ψιλός}{psilos}{merus, nudus}
+{Mere, bare, stripped. The intellect is not a mere instrument of calculation (\gk{ὄργανον ψιλῆς λογιστικῆς}). A polemical term against reductionism.}
+
+\bigskip
+{\centering\color{rubricate}\large\scshape Ω \par}\medskip
+
+\gentry{ὡς}{h\={o}s}{ut, quasi}
+{As, like. Used throughout in analogical constructions: the machine is \emph{like} an artificial organism (\gk{οἷον ζῷον τεχνητόν}), simulations are \emph{like} universes (\gk{οἷον σύμπαντα}), active inference is \emph{like} the breathing of cognition (\gk{οἷον ἀναπνοὴ τῆς γνώσεως}). The analogical register is central to the treatise's method.}
+
+\begin{center}
+  {\color{capgold}\large$\star\!\star\!\star$}\\[8pt]
+  {\small\scshape\color{rubricate} Finis Glossarii}\\[4pt]
+  {\footnotesize\itshape\color{inkbrown}
+    \gk{Ἐν ἀρχῇ ἦν ὁ λόγος.}\quad
+    In principio erat Verbum.\quad
+    In the beginning was the Word.}
+\end{center}
+
+\end{document}

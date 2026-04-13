@@ -1,0 +1,302 @@
+% ============================================================
+%  THE FIXED POINT
+%  An experimental novel in four parts
+%  Author: Flyxion
+% ============================================================
+
+\documentclass[12pt, openany]{book}
+
+% ── Core packages ───────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}           % Palatino — elegant for literary prose
+\usepackage[scaled=0.95]{helvet}
+\usepackage{geometry}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{fancyhdr}
+\usepackage{emptypage}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{epigraph}
+\usepackage{tocloft}
+\usepackage{etoolbox}
+\usepackage{changepage}
+\usepackage{ragged2e}
+\usepackage{csquotes}
+\usepackage{lettrine}
+\usepackage{hyperref}
+\setlength{\headheight}{14pt}
+
+% ── Page geometry ────────────────────────────────────────────
+\geometry{
+  paperwidth=5.5in,
+  paperheight=8.5in,
+  top=0.85in,
+  bottom=0.95in,
+  inner=0.80in,
+  outer=0.65in,
+  headsep=0.25in,
+  footskip=0.40in,
+}
+
+% ── TOC depth (parts and chapters only) ─────────────────────
+\setcounter{tocdepth}{0}
+\setcounter{secnumdepth}{0}
+
+% ── TOC depth (parts and chapters only) ─────────────────────
+\setcounter{tocdepth}{0}
+\setcounter{secnumdepth}{0}
+
+% ── Colours ──────────────────────────────────────────────────
+\definecolor{ruledline}{gray}{0.62}
+\definecolor{partnum}{gray}{0.28}
+\definecolor{sectionrule}{gray}{0.75}
+\definecolor{echoink}{gray}{0.32}
+
+% ── Spacing ──────────────────────────────────────────────────
+\setstretch{1.22}
+\setlength{\parindent}{1.4em}
+\setlength{\parskip}{0pt}
+
+% ── Epigraph ─────────────────────────────────────────────────
+\setlength{\epigraphwidth}{0.72\textwidth}
+\renewcommand{\epigraphflush}{flushright}
+\renewcommand{\epigraphrule}{0pt}
+\setlength{\beforeepigraphskip}{2.4ex}
+\setlength{\afterepigraphskip}{4.8ex}
+
+% ── Hyperref ─────────────────────────────────────────────────
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = black,
+  urlcolor   = black,
+  pdftitle   = {The Fixed Point},
+  pdfauthor  = {Flyxion},
+}
+
+% ── Header / footer ──────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[LE]{\small\itshape\leftmark}
+\fancyhead[RO]{\small\itshape\rightmark}
+\fancyfoot[C]{\small\thepage}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyfoot[C]{\small\thepage}
+}
+
+% ── Part titles ──────────────────────────────────────────────
+\titleformat{\part}[display]
+  {\centering\large\scshape\color{partnum}}
+  {\MakeLowercase{part} \thepart}
+  {1.6ex}
+  {\vspace{0.5ex}\LARGE\mdseries\upshape\color{black}}
+  []
+
+\titlespacing*{\part}{0pt}{3cm}{2.5cm}
+
+% ── Chapter titles ───────────────────────────────────────────
+% Continuous numbering across all parts.
+\titleformat{\chapter}[block]
+  {}
+  {}
+  {0pt}
+  {%
+    \begin{center}
+      {\color{ruledline}\rule{0.38\textwidth}{0.3pt}}\\[1.2ex]
+      {\footnotesize\color{ruledline}\scshape chapter \thechapter}\\[0.9ex]
+      \large\scshape
+    \end{center}
+  }
+  [%
+    \begin{center}
+      \vspace{0.9ex}{\color{ruledline}\rule{0.38\textwidth}{0.3pt}}
+    \end{center}
+    \vspace{2.4ex}
+  ]
+
+\titlespacing*{\chapter}{0pt}{2.6cm}{0pt}
+
+% ── Scene break command ──────────────────────────────────────
+% \section{} conflicts with titlesec when empty; use \scenebreak instead.
+\newcommand{\scenebreak}{%
+  \vspace{2.4ex}
+  \begin{center}
+    \color{sectionrule}%
+    \rule{0.14\textwidth}{0.2pt}\quad
+    {\normalfont$\cdot$}\quad
+    \rule{0.14\textwidth}{0.2pt}
+  \end{center}
+  \vspace{2.4ex}
+}
+
+% ── Table of contents ────────────────────────────────────────
+\renewcommand{\cftpartfont}{\scshape\small}
+\renewcommand{\cftchapfont}{\small}
+\renewcommand{\cftpartpagefont}{\small}
+\renewcommand{\cftchappagefont}{\small}
+\setlength{\cftbeforepartskip}{1.4ex}
+\setlength{\cftbeforechapskip}{0.4ex}
+\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+
+% ── Interlude environment ────────────────────────────────────
+% No named characters. Object-focused. Slightly lighter type via spacing.
+\newenvironment{interlude}[1]{%
+  \clearpage
+  \thispagestyle{plain}
+  \begin{center}
+    {\small\scshape object}\\[0.8ex]
+    {\normalsize\itshape #1}\\[2.0ex]
+    {\color{ruledline}\rule{0.52\textwidth}{0.25pt}}
+  \end{center}
+  \vspace{1.8ex}
+  \begin{adjustwidth}{1.4em}{1.4em}
+  \setstretch{1.16}%
+}{%
+  \end{adjustwidth}
+  \vspace{2.0ex}
+  \begin{center}
+    {\color{ruledline}\rule{0.52\textwidth}{0.25pt}}
+  \end{center}
+  \clearpage
+}
+
+% ── Formal echo environment ──────────────────────────────────
+% Boole, Bayes, Feyerabend.
+\newenvironment{formalecho}[2]{%
+  \clearpage
+  \thispagestyle{plain}
+  \begin{center}
+    {\small\scshape echo}\\[0.8ex]
+    {\normalsize #1}\\[0.35ex]
+    {\small\itshape\color{echoink} #2}\\[1.8ex]
+    {\color{ruledline}\rule{0.28\textwidth}{0.4pt}}
+  \end{center}
+  \vspace{1.4ex}
+  \begin{adjustwidth}{2.4em}{2.4em}
+  \small\setstretch{1.14}%
+}{%
+  \end{adjustwidth}
+  \vspace{1.8ex}
+  \begin{center}
+    {\color{ruledline}\rule{0.28\textwidth}{0.4pt}}
+  \end{center}
+  \clearpage
+}
+
+% ── Strand marker ────────────────────────────────────────────
+\newcommand{\strandmarker}[2]{%
+  \begin{center}
+    \vspace{-1.4ex}
+    {\small\scshape\MakeLowercase{#1}}\enspace
+    {\color{ruledline}$\cdot$}\enspace
+    {\small\itshape #2}
+    \vspace{2.4ex}
+  \end{center}
+}
+
+% ── Drop cap ─────────────────────────────────────────────────
+\setcounter{DefaultLines}{2}
+\renewcommand{\DefaultLoversize}{0.06}
+\renewcommand{\DefaultLraise}{0.0}
+\renewcommand{\LettrineFontHook}{\scshape}
+
+% ── Custom title page macro ──────────────────────────────────
+\newcommand{\customtitlepage}{%
+  \thispagestyle{empty}
+  \vspace*{3.5cm}
+  \begin{center}
+    {\Large\scshape the fixed point}\\[2.8ex]
+    {\color{ruledline}\rule{0.38\textwidth}{0.4pt}}\\[2.8ex]
+    {\normalsize\itshape a novel}\\[5.2cm]
+    {\small\scshape flyxion}
+  \end{center}
+  \vfill
+  \begin{center}
+    {\footnotesize\color{ruledline}Independent Researcher}
+  \end{center}
+  \clearpage
+}
+
+% ============================================================
+\begin{document}
+
+\frontmatter
+
+\customtitlepage
+
+% ── Epigraph page ────────────────────────────────────────────
+\thispagestyle{empty}
+\vspace*{4.8cm}
+\epigraph{%
+  A system that cannot come to rest is not a system at all.
+  It is only the record of its own failing.%
+}{%
+  \textit{attributed}%
+}
+\clearpage
+
+\tableofcontents
+\clearpage
+
+% ============================================================
+\mainmatter
+
+\input{interlude-00-opening}
+
+% ────────────────────────────────────────────────────────────
+\part{The Quiet Machine}
+% ────────────────────────────────────────────────────────────
+\input{part1/chapter-01}
+\input{part1/chapter-02}
+\input{part1/chapter-03}
+\input{echoes/echo-boole}
+\input{part1/chapter-04}
+\input{part1/chapter-05}
+\input{interludes/interlude-01-inscription}
+
+% ────────────────────────────────────────────────────────────
+\part{The Hidden Network}
+% ────────────────────────────────────────────────────────────
+\input{part2/chapter-01}
+\input{part2/chapter-02}
+\input{part2/chapter-03}
+\input{echoes/echo-bayes}
+\input{part2/chapter-04}
+\input{part2/chapter-05}
+\input{interludes/interlude-02-transformation}
+
+% ────────────────────────────────────────────────────────────
+\part{The Spectral Field}
+% ────────────────────────────────────────────────────────────
+\input{part3/chapter-01}
+\input{part3/chapter-02}
+\input{part3/chapter-03}
+\input{echoes/echo-feyerabend}
+\input{part3/chapter-04}
+\input{part3/chapter-05}
+\input{interludes/interlude-03-frame}
+
+% ────────────────────────────────────────────────────────────
+\part{The Constructed Engine}
+% ────────────────────────────────────────────────────────────
+\input{part4/chapter-01}
+\input{part4/chapter-02}
+\input{part4/chapter-03}
+\input{part4/chapter-04}
+\input{part4/chapter-05}
+\input{interludes/interlude-04-closing}
+
+% ============================================================
+\backmatter
+
+\input{backmatter/note}
+
+\end{document}

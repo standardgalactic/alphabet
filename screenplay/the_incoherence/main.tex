@@ -1,0 +1,409 @@
+% =============================================================================
+% THE INCOHERENCE
+% Author: Flyxion
+% Engine: LuaLaTeX (required — do not use pdfLaTeX or XeLaTeX)
+% Compile: lualatex main.tex  (run twice for cross-references)
+%
+% FONT REQUIREMENTS — place all files in ./fonts/
+%   NovaMonoStandardGalactic.ttf    Sga-Regular.ttf
+%   CursiveGalactic-Regular.ttf     Amiri-Regular.ttf
+%   Amiri-Bold.ttf                  Amiri-Italic.ttf
+%   Amiri-BoldItalic.ttf            Cheiro-Regular.ttf
+%   Clypto-Regular.ttf              Logico_philosophicus-Regular.ttf
+%   Systada-Regular.ttf             Lingojam_cipher-Regular.ttf
+%   dactyl.ttf                      shapeform.ttf
+% =============================================================================
+
+\documentclass[12pt,twoside,openany]{book}
+
+\usepackage{fontspec}
+\usepackage{unicode-math}
+
+\usepackage[
+  a4paper,
+  top=2.5cm, bottom=3.0cm,
+  inner=2.8cm, outer=2.2cm,
+  twoside
+]{geometry}
+
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+\setotherlanguage[locale=mashriq]{arabic}
+% luabidi required for RTL: sudo apt-get install texlive-lang-arabic
+
+\newcommand{\fontdir}{fonts/}
+
+% --- Primary font regimes ---
+\setmainfont{NovaMonoStandardGalactic.ttf}[Path=\fontdir, Scale=1.0]
+\newfontfamily\SGA{Sga-Regular.ttf}[Path=\fontdir, Scale=1.05]
+\newfontfamily\CursiveSGA{CursiveGalactic-Regular.ttf}[Path=\fontdir, Scale=1.05]
+\newfontfamily\AmiriFont{Amiri-Regular.ttf}[Path=\fontdir, Script=Arabic, Scale=1.15]
+\newfontfamily\arabicfont{Amiri-Regular.ttf}[Path=\fontdir, Script=Arabic, Scale=1.15]
+
+% --- Derived font regimes ---
+\newfontfamily\Logico{Logico_philosophicus-Regular.ttf}[Path=\fontdir, Scale=1.0]
+\newfontfamily\Cheiro{Cheiro-Regular.ttf}[Path=\fontdir, Scale=1.0]
+\newfontfamily\Clypto{Clypto-Regular.ttf}[Path=\fontdir, Scale=1.0]
+\newfontfamily\Systada{Systada-Regular.ttf}[Path=\fontdir, Scale=1.0]
+\newfontfamily\Dactyl{dactyl.ttf}[Path=\fontdir, Scale=1.0]
+\newfontfamily\Shapeform{shapeform.ttf}[Path=\fontdir, Scale=1.0]
+
+% --- Inline switching macros ---
+\newcommand{\sga}[1]{{\SGA #1}}
+\newcommand{\cga}[1]{{\CursiveSGA #1}}
+\newcommand{\logico}[1]{{\Logico #1}}
+\newcommand{\cheiro}[1]{{\Cheiro #1}}
+\newcommand{\clypto}[1]{{\Clypto #1}}
+\newcommand{\sys}[1]{{\Systada #1}}
+
+% --- Arabic block environment ---
+% AR environment: works with or without luabidi
+% Uses explicit Amiri font + LuaTeX paragraph direction
+\newenvironment{AR}{%
+  \begingroup
+  \AmiriFont
+  \textdir TRT\pardir TRT\relax
+}{%
+  \endgroup
+}
+
+% --- Typography packages ---
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{ragged2e}
+\usepackage{calc}
+
+% --- Layout packages ---
+\usepackage{multicol}
+\usepackage{paracol}
+\usepackage{marginnote}
+\usepackage{changepage}
+\usepackage{afterpage}
+\usepackage{atbegshi}
+
+% --- Spatial packages ---
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning}
+\usepackage{rotating}
+\usepackage{graphicx}
+
+% TikZ positioned text (for drift effects)
+\newcommand{\drifttext}[3]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node at ($(current page.center)+(#1,#2)$) {#3};
+  \end{tikzpicture}%
+}
+\newcommand{\rotblock}[1]{\rotatebox{180}{#1}}
+\newcommand{\tiltblock}[2]{\rotatebox{#1}{#2}}
+
+% =============================================================================
+% DUAL PAGINATION SYSTEM
+%
+% Left margin (outer):  Western Arabic-numeral page numbers
+% Right margin (inner): Eastern Arabic-script numerals via Amiri
+%
+% Read direction: outside-in on both sides.
+%
+% BYOBU DRIFT CYCLE (chapters XII-XIV then XV-XVII):
+%   Drift:  right pages step Arabic counter TWICE → Arabic runs ahead
+%           Arabic numerals rendered in Dactyl font
+%   Return: left pages hold Arabic counter → English catches up
+%           Western numerals rendered in Dactyl font
+%   One cycle only. No announcement.
+% =============================================================================
+
+\usepackage{fancyhdr}
+
+\newcounter{arabicpagectr}
+\setcounter{arabicpagectr}{0}
+
+% Eastern Arabic numeral rendering via polyglossia
+\newcommand{\arabicpagenum}{%
+  {\AmiriFont\arabicnumerals{\arabic{arabicpagectr}}}%
+}
+
+\newcommand{\stepArabicPage}{\stepcounter{arabicpagectr}}
+
+% Dactyl numeral commands for byobu pagination
+\newcommand{\dactylwestern}{{\Dactyl\thepage}}
+\newcommand{\dactylarabic}{{\AmiriFont\arabicnumerals{\arabic{arabicpagectr}}}}
+
+% Normal synchronized pagestyle
+\fancypagestyle{incoherence}{%
+  \fancyhf{}
+  \fancyfoot[LE]{\small\thepage}
+  \fancyfoot[RO]{\small\thepage}
+  \fancyfoot[RE]{\small\arabicpagenum}
+  \fancyfoot[LO]{\small\arabicpagenum}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+% Byobu drift: Arabic runs ahead, rendered in Dactyl
+\fancypagestyle{byobu-drift}{%
+  \fancyhf{}
+  \fancyfoot[LE]{\small\thepage}
+  \fancyfoot[RO]{\small\thepage}
+  \fancyfoot[RE]{\small\dactylarabic}
+  \fancyfoot[LO]{\small\dactylarabic}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+% Byobu return: Western numerals in Dactyl, English catching up
+\fancypagestyle{byobu-return}{%
+  \fancyhf{}
+  \fancyfoot[LE]{\small\dactylwestern}
+  \fancyfoot[RO]{\small\dactylwestern}
+  \fancyfoot[RE]{\small\arabicpagenum}
+  \fancyfoot[LO]{\small\arabicpagenum}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+% Empty pagestyle for high-fragmentation chapters
+\fancypagestyle{incoherence-empty}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\pagestyle{incoherence}
+
+% Byobu mechanics
+% Right-page split: Arabic counter steps twice (drift phase)
+\newcommand{\rightpagesplit}{%
+  \stepArabicPage%
+  \stepArabicPage%
+}
+% Left-page catch: Arabic counter NOT stepped; English advances via \thepage
+\newcommand{\leftpagecatch}{}
+
+% =============================================================================
+% GLOBAL STYLE
+% =============================================================================
+
+\setstretch{1.05}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+\usepackage{titlesec}
+\titleformat{\chapter}[block]{\normalfont\normalsize}{}{0pt}{}
+\titlespacing*{\chapter}{0pt}{2em}{1.5em}
+\titleformat{\section}[block]{\normalfont\small}{}{0pt}{}
+\titlespacing*{\section}{0pt}{1.5em}{1em}
+
+% =============================================================================
+% DOCUMENT BODY
+% =============================================================================
+
+\begin{document}
+
+\setcounter{arabicpagectr}{1}
+
+% --------------------------------------------------------------------------
+% FRONT MATTER
+% --------------------------------------------------------------------------
+
+\pagestyle{incoherence-empty}
+
+\begin{titlepage}
+\vspace*{6cm}
+\begin{center}
+{\large\sga{THE INCOHERENCE}}
+
+\vspace{1.5em}
+
+{\normalsize Flyxion}
+
+\vspace{1em}
+
+{\small Independent Researcher}
+
+\vspace{3em}
+
+{\footnotesize\textit{Based on the life and work of
+Ibn Rushd (Averroes, 1126--1198)}}
+\end{center}
+\end{titlepage}
+
+\cleardoublepage
+
+% Epigraph
+\thispagestyle{incoherence-empty}
+\vspace*{8cm}
+\begin{flushright}
+\begin{minipage}{0.6\textwidth}
+\begin{AR}
+التهافت والتهافت
+\end{AR}
+
+\vspace{1em}
+
+\cga{The incoherence of the incoherence.}
+
+\vspace{1em}
+
+\sga{What binds the world does not explain itself.}
+\end{minipage}
+\end{flushright}
+
+\cleardoublepage
+\pagestyle{incoherence}
+
+% ==========================================================================
+% PART ONE — STABLE SYSTEM
+% Chapters: scenery intercalation, I, II
+% Typography: Nova Mono dominant, first SGA anomaly (Chapter I only)
+% ==========================================================================
+
+\stepArabicPage
+\input{chapters/inter-de-loco-et-rebus}
+
+\stepArabicPage
+\input{chapters/01-de-pulsu-et-causa}
+
+\stepArabicPage
+\input{chapters/02-de-lege-et-negligentia}
+
+% ==========================================================================
+% PART TWO — BIFURCATION
+% Chapters III–VIII
+% Cursive SGA enters; Arabic enters; spatial fragmentation begins;
+% SGA propagates into connective tissue; drip desynchronizes
+% ==========================================================================
+
+\stepArabicPage
+\input{chapters/03-de-voce-et-flumine}
+
+\stepArabicPage
+\input{chapters/04-de-scriptura-et-fragmento}
+
+\stepArabicPage
+\input{chapters/05-de-multiplicatione-narrationum}
+
+\stepArabicPage
+\input{chapters/06-de-defectu-et-calibratione}
+
+\stepArabicPage
+\input{chapters/07-de-observatione-et-dispositione}
+
+\stepArabicPage
+\input{chapters/08-de-necessitate-retroactiva}
+
+% ==========================================================================
+% PART THREE — MIDPOINT COLLAPSE
+% Chapters IX–XI
+% Non-commuting columns; character identity fractures; Clypto enters;
+% cognitive ontology destabilized; Averroes no longer globally coherent
+% ==========================================================================
+
+\stepArabicPage
+\input{chapters/09-de-compositione-regiminum}
+
+\stepArabicPage
+\input{chapters/10-de-iteratione-et-deriva}
+
+\stepArabicPage
+\input{chapters/11-de-cognitione-non-universali}
+
+% ==========================================================================
+% BYOBU DRIFT — Chapters XII, XIII, apparatus intercalation, XIV
+% Arabic counter runs ahead (stepped twice per chapter)
+% Pagestyle: byobu-drift
+% Scholastic font excursus; Prosecutor's doubt; bureaucratic apparatus;
+% peak instability and exposure
+% ==========================================================================
+
+\cleardoublepage
+\pagestyle{byobu-drift}
+
+\rightpagesplit
+\input{chapters/12-de-scripturis-et-formis}
+
+\rightpagesplit
+\input{chapters/13-de-interruptione-et-aula}
+
+\stepArabicPage
+\input{chapters/inter-de-apparatu}
+
+\rightpagesplit
+\input{chapters/14-de-confrontatione}
+
+% ==========================================================================
+% BYOBU RETURN — Chapters XV, XVI (inventory intercalation), fuga, XVII
+% English catches up (Arabic counter held)
+% Pagestyle: byobu-return
+% Sparse equilibrium; drip irreversible transformation; exile; departure
+% ==========================================================================
+
+\cleardoublepage
+\pagestyle{byobu-return}
+
+\leftpagecatch
+\input{chapters/15-de-expositione-miraculi}
+
+\leftpagecatch
+\input{chapters/16-de-silentio-et-exilio}
+
+\stepArabicPage
+\input{chapters/inter-de-inventario}
+
+\stepArabicPage
+\input{chapters/inter-de-fuga}
+
+\leftpagecatch
+\input{chapters/17-de-porta-et-transitu}
+
+% ==========================================================================
+% RESYNCHRONIZED — Chapters XVIII–XXIII + interstitials
+% Both counters back in alignment
+% Pagestyle: incoherence (normal)
+% Transmission; multilingual chapters; dialogue; fable; normalized incoherence
+% ==========================================================================
+
+\cleardoublepage
+\pagestyle{incoherence}
+
+\stepArabicPage
+\input{chapters/18-de-itinere-et-resolutione}
+
+\stepArabicPage
+\input{chapters/inter-de-transitu-ii}
+
+\stepArabicPage
+\input{chapters/19-de-fez-et-continuatione}
+
+\stepArabicPage
+\input{chapters/inter-de-continuatione-arabic}
+
+\stepArabicPage
+\input{chapters/20-de-portu-et-translatione}
+
+\stepArabicPage
+\input{chapters/inter-de-transmision-spanish}
+
+\stepArabicPage
+\input{chapters/21-de-scriptorium-et-copia}
+
+\stepArabicPage
+\input{chapters/inter-de-arbore-et-volatu}
+
+\stepArabicPage
+\input{chapters/inter-dialogus-post-ignem}
+
+\stepArabicPage
+\input{chapters/22-de-parisiis-et-dissolutione}
+
+\stepArabicPage
+\input{chapters/inter-de-insula-animalium}
+
+\stepArabicPage
+\input{chapters/inter-de-continuitate-apparente}
+
+\stepArabicPage
+\input{chapters/inter-de-repetitione}
+
+\stepArabicPage
+\input{chapters/23-de-fine-quod-non-est-finis}
+
+\end{document}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RSVP Audio Scope</title>
+
+<style>
+body{
+margin:0;
+background:#000;
+color:#7cff7c;
+font-family:monospace;
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+padding:20px;
+}
+
+.scope-wrap{
+position:relative;
+width:360px;
+height:360px;
+margin-bottom:20px;
+}
+
+.scope-wrap::before{
+content:"";
+position:absolute;
+inset:0;
+border-radius:50%;
+background:
+radial-gradient(circle at 50% 50%, #003300 60%, #001100 70%, #000 100%);
+}
+
+canvas{
+position:absolute;
+inset:20px;
+width:320px;
+height:320px;
+border-radius:50%;
+background:#000;
+}
+
+/* controls */
+
+.controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
+margin-bottom:12px;
+}
+
+button{
+background:#001400;
+border:1px solid #00ff00;
+color:#7cff7c;
+padding:8px 14px;
+font-size:.8em;
+cursor:pointer;
+}
+
+.timer{
+min-width:80px;
+font-size:1.1em;
+}
+
+/* subtitles */
+
+.subtitles{
+max-width:600px;
+min-height:60px;
+margin-top:10px;
+font-size:1.1em;
+line-height:1.4;
+color:#aaffaa;
+}
+</style>
+</head>
+
+<body>
+
+<h2>The Invisible Frames That Filter Reality</h2>
+
+<div class="scope-wrap">
+<canvas id="scope"></canvas>
+</div>
+
+<div class="controls">
+<button id="toggle">Play</button>
+<button id="loop">Loop Off</button>
+<div class="timer" id="timer">--:--</div>
+</div>
+
+<div class="subtitles" id="subs"></div>
+
+<audio id="audio" crossorigin="anonymous">
+<source src="The_invisible_frames_that_filter_reality.mp3" type="audio/mpeg">
+<track id="track" src="The_invisible_frames_that_filter_reality.vtt" kind="subtitles" srclang="en" default>
+</audio>
+
+<script>
+const audio = document.getElementById("audio")
+const toggle = document.getElementById("toggle")
+const loop = document.getElementById("loop")
+const timer = document.getElementById("timer")
+const subs = document.getElementById("subs")
+
+/* playback */
+
+toggle.onclick = ()=>{
+if(audio.paused){
+audio.play()
+toggle.textContent="Pause"
+}else{
+audio.pause()
+toggle.textContent="Play"
+}
+}
+
+loop.onclick = ()=>{
+audio.loop = !audio.loop
+loop.textContent = audio.loop ? "Loop On" : "Loop Off"
+}
+
+/* timer */
+
+function fmt(t){
+const m=Math.floor(t/60)
+const s=Math.floor(t%60)
+return`${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`
+}
+
+function updateTimer(){
+if(audio.duration){
+timer.textContent = fmt(audio.duration - audio.currentTime)
+}
+requestAnimationFrame(updateTimer)
+}
+updateTimer()
+
+/* ===== subtitle handling (robust) ===== */
+
+audio.addEventListener("loadedmetadata", () => {
+
+const track = audio.textTracks[0]
+
+if(!track){
+subs.textContent = "[no subtitle track found]"
+return
+}
+
+/* important */
+track.mode = "hidden"
+
+/* wait for cues to actually load */
+const waitForCues = setInterval(() => {
+
+if(track.cues && track.cues.length > 0){
+
+clearInterval(waitForCues)
+
+/* update when cue changes */
+track.addEventListener("cuechange", () => {
+const active = track.activeCues
+subs.textContent = active.length ? active[0].text : ""
+})
+
+}
+
+}, 100)
+
+})
+
+/* ===== simple scope ===== */
+
+const canvas = document.getElementById("scope")
+const ctx = canvas.getContext("2d")
+canvas.width = 320
+canvas.height = 320
+
+function draw(){
+ctx.fillStyle="rgba(0,0,0,0.2)"
+ctx.fillRect(0,0,320,320)
+
+ctx.beginPath()
+for(let i=0;i<100;i++){
+const t=i/100*Math.PI*2
+const r=80 + Math.sin(t*3 + audio.currentTime)*20
+const x=160 + Math.cos(t)*r
+const y=160 + Math.sin(t)*r
+if(i===0) ctx.moveTo(x,y)
+else ctx.lineTo(x,y)
+}
+ctx.strokeStyle="#00ff88"
+ctx.stroke()
+
+requestAnimationFrame(draw)
+}
+draw()
+
+/* debug help */
+
+audio.addEventListener("error",()=>{
+subs.textContent = "Audio failed to load"
+})
+</script>
+
+</body>
+</html>

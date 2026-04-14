@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TARTAN — Constraint Closure</title>
+
+<style>
+html,body{
+  margin:0;
+  background:#000;
+  overflow:hidden;
+  font-family:monospace;
+}
+
+canvas{ position:fixed; inset:0; }
+
+#overlay{
+  position:fixed; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:4em; color:#7cff7c;
+  background:rgba(0,0,0,0.9);
+  transition:opacity 0.6s;
+  z-index:10; cursor:pointer;
+}
+
+#overlay.hidden{ opacity:0; pointer-events:none; }
+
+#controls{
+  position:fixed; bottom:70px; left:50%;
+  transform:translateX(-50%);
+  background:#001000cc; border:1px solid #00ff00;
+  padding:10px 16px; color:#7cff7c;
+  display:none; z-index:6;
+}
+
+#controls.visible{ display:block; }
+
+.description{
+  position:fixed; top:20px; left:50%;
+  transform:translateX(-50%);
+  max-width:800px;
+  color:#aaffaa;
+  background:#001000cc;
+  border:1px solid #00ff0030;
+  padding:12px;
+  font-size:0.85em;
+  transition:opacity 2s ease;
+}
+
+.description.fade{ opacity:0; pointer-events:none; }
+
+#subtitle-box{
+  position:fixed;
+  bottom:160px;
+  left:50%;
+  transform:translateX(-50%);
+  max-width:820px;
+  width:90%;
+  text-align:center;
+  color:#7cff7c;
+  font-family:monospace;
+  font-size:1.1em;
+  text-shadow:0 0 6px #00ff88;
+  background:rgba(0,0,0,0.55);
+  padding:6px 12px;
+  border-radius:4px;
+  pointer-events:none;
+  z-index:8;
+  min-height:1.4em;
+}
+
+#track-selector{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#001000cc;
+  border:1px solid #00ff0030;
+  padding:10px;
+  z-index:6;
+}
+
+select{
+  background:black;
+  color:#7cff7c;
+  border:1px solid #00ff00;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="canvas"></canvas>
+
+<div id="overlay">▶</div>
+<div id="controls">Paused — tap anywhere</div>
+
+<div id="desc" class="description">
+  TARTAN reframes inference as constraint-consistent reconstruction. Hallucination is unresolved structure.
+</div>
+
+<div id="subtitle-box"></div>
+
+<select id="trackSelect">
+  <option value="0">Simplicity is Just Compressed Work</option>
+  <option value="1">Why Truth Survives Through Historical Errors</option>
+  <option value="2">Why Animals Reason Better Than Humans</option>
+</select>
+
+<audio id="audio" crossorigin="anonymous"></audio>
+
+<script>
+
+/* ===== fade description ===== */
+setTimeout(()=>{
+  document.getElementById("desc").classList.add("fade")
+}, 12000)
+
+/* ===== TRACK DATA ===== */
+const tracks = [
+  { audio: "Simplicity_is_just_compressed_work.mp3", vtt: "Simplicity_is_just_compressed_work.vtt" },
+  { audio: "Why_truth_survives_through_historical_errors.mp3", vtt: "Why_truth_survives_through_historical_errors.vtt" },
+  { audio: "Why_animals_reason_better_than_humans.mp3", vtt: "Why_animals_reason_better_than_humans.vtt" }
+]
+
+/* ===== audio setup ===== */
+const audio       = document.getElementById("audio")
+const subtitleBox = document.getElementById("subtitle-box")
+
+let ctx, analyser, source, buffer
+
+function initAudio(){
+  if(ctx) return
+  ctx      = new (window.AudioContext || window.webkitAudioContext)()
+  source   = ctx.createMediaElementSource(audio)
+  analyser = ctx.createAnalyser()
+  analyser.fftSize = 2048
+  source.connect(analyser)
+  analyser.connect(ctx.destination)
+  buffer   = new Uint8Array(analyser.fftSize)
+  audio.playbackRate   = 0.92
+  audio.preservesPitch = false
+}
+
+/* ===== VTT parser ===== */
+function parseVTT(text){
+  const cues = []
+  const blocks = text.replace(/\r\n/g,"\n").split(/\n\n+/)
+  for(const block of blocks){
+    const lines = block.trim().split("\n")
+    // find the timestamp line
+    const tsIdx = lines.findIndex(l => l.includes("-->"))
+    if(tsIdx === -1) continue
+    const [start, end] = lines[tsIdx].split("-->").map(s => parseTime(s.trim()))
+    const text = lines.slice(tsIdx+1).join(" ").replace(/<[^>]+>/g,"").trim()
+    if(text) cues.push({ start, end, text })
+  }
+  return cues
+}
+
+function parseTime(s){
+  // handles HH:MM:SS.mmm or MM:SS.mmm
+  const parts = s.split(":").map(Number)
+  if(parts.length === 3) return parts[0]*3600 + parts[1]*60 + parts[2]
+  return parts[0]*60 + parts[1]
+}
+
+/* ===== subtitle state ===== */
+let cues = []
+let subtitleTimer = null
+
+function tickSubtitles(){
+  const t = audio.currentTime
+  const cue = cues.find(c => t >= c.start && t < c.end)
+  subtitleBox.textContent = cue ? cue.text : ""
+}
+
+function startSubtitleTick(){
+  if(subtitleTimer) clearInterval(subtitleTimer)
+  subtitleTimer = setInterval(tickSubtitles, 100)
+}
+
+/* ===== load track ===== */
+async function loadTrack(index){
+  index = parseInt(index)
+  const wasPlaying = !audio.paused
+
+  audio.pause()
+  subtitleBox.textContent = ""
+  cues = []
+
+  audio.src = tracks[index].audio
+  audio.load()
+
+  // fetch and parse VTT manually
+  try {
+    const res  = await fetch(tracks[index].vtt)
+    const text = await res.text()
+    cues = parseVTT(text)
+  } catch(e) {
+    console.warn("Could not load VTT:", e)
+  }
+
+  audio.addEventListener("canplay", ()=>{
+    if(wasPlaying) audio.play()
+  }, { once: true })
+
+  startSubtitleTick()
+}
+
+/* ===== selector ===== */
+document.getElementById("trackSelect").addEventListener("change", e => {
+  loadTrack(e.target.value)
+})
+
+loadTrack(0)
+
+/* ===== interaction ===== */
+let started = false, paused = true
+const overlay  = document.getElementById("overlay")
+const controls = document.getElementById("controls")
+
+function toggle(){
+  if(!started){
+    initAudio()
+    ctx.resume().then(()=> audio.play())
+    overlay.classList.add("hidden")
+    started = true
+    paused  = false
+    startSubtitleTick()
+    return
+  }
+  if(paused){
+    audio.play()
+    controls.classList.remove("visible")
+    paused = false
+  } else {
+    audio.pause()
+    controls.classList.add("visible")
+    paused = true
+  }
+}
+document.body.addEventListener("click", toggle)
+
+/* ===== canvas ===== */
+const canvas = document.getElementById("canvas")
+const c      = canvas.getContext("2d")
+
+let w, h
+function resize(){
+  w = canvas.width  = innerWidth
+  h = canvas.height = innerHeight
+}
+resize()
+addEventListener("resize", resize)
+
+let hist = []
+const LOOK = 20
+
+function energy(buf){
+  let s = 0
+  for(let i = 0; i < buf.length; i++){
+    let v = (buf[i] - 128) / 128
+    s += v * v
+  }
+  return s / buf.length
+}
+
+let pts = [], vel = [], rest = []
+let count = 6
+
+function initShape(n){
+  pts = []; vel = []; rest = []
+  count = n
+  for(let i = 0; i < n; i++){
+    let x = Math.random() * w
+    let y = Math.random() * h
+    pts.push({x, y})
+    rest.push({x, y})
+    vel.push({x: (Math.random()*2-1)*2, y: (Math.random()*2-1)*2})
+  }
+}
+initShape(count)
+
+let scale = 1, hue = 0, t = 0
+
+function draw(){
+  if(analyser){
+    analyser.getByteTimeDomainData(buffer)
+
+    let e = energy(buffer)
+    let s = e
+    if(hist.length) s = hist[hist.length-1] * 0.9 + e * 0.1
+    hist.push(s)
+    if(hist.length > LOOK) hist.shift()
+
+    let peak   = Math.max(...hist)
+    let target = 1 + peak * 6
+    scale += (target - scale) * 0.08
+
+    c.fillStyle = "rgba(0,0,0,0.12)"
+    c.fillRect(0, 0, w, h)
+
+    let cx = w/2, cy = h/2
+
+    for(let i = 0; i < pts.length; i++){
+      let j  = (i+1) % pts.length
+      let dx = pts[j].x - pts[i].x
+      let dy = pts[j].y - pts[i].y
+      let d  = Math.sqrt(dx*dx + dy*dy) + 0.001
+      let desired = 120
+      let diff    = (d - desired) / d
+      let force   = 0.002
+      pts[i].x += dx * force * diff
+      pts[i].y += dy * force * diff
+      pts[j].x -= dx * force * diff
+      pts[j].y -= dy * force * diff
+    }
+
+    c.beginPath()
+
+    for(let i = 0; i < pts.length; i++){
+      let r = rest[i]
+      r.x += Math.sin(t * 0.2 + i) * 0.2
+      r.y += Math.cos(t * 0.15 + i) * 0.2
+
+      let dx = Math.sin(t + i) * 20
+      let dy = Math.cos(t * 1.2 + i) * 20
+
+      pts[i].x += (r.x + dx - pts[i].x) * 0.02
+      pts[i].y += (r.y + dy - pts[i].y) * 0.02
+
+      vel[i].x += (Math.random() - 0.5) * peak * 0.5
+      vel[i].y += (Math.random() - 0.5) * peak * 0.5
+      vel[i].x *= 0.98
+      vel[i].y *= 0.98
+
+      pts[i].x += vel[i].x
+      pts[i].y += vel[i].y
+
+      if(pts[i].x < 0 || pts[i].x > w) vel[i].x *= -1
+      if(pts[i].y < 0 || pts[i].y > h) vel[i].y *= -1
+
+      let x = cx + (pts[i].x - cx) * scale
+      let y = cy + (pts[i].y - cy) * scale
+
+      if(i === 0) c.moveTo(x, y)
+      else        c.lineTo(x, y)
+    }
+
+    c.closePath()
+    c.strokeStyle  = `hsl(${hue},100%,60%)`
+    c.lineWidth    = 2 + peak * 3
+    c.shadowColor  = "#00ff88"
+    c.shadowBlur   = 15 + peak * 30
+    c.stroke()
+    c.shadowBlur   = 0
+
+    hue += 0.3 + peak * 2
+    t   += 0.01
+  }
+
+  requestAnimationFrame(draw)
+}
+
+draw()
+
+</script>
+</body>
+</html>

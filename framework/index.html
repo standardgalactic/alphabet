@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Descent Into Reality</title>
+
+<style>
+:root{
+  --fg:#7cffc4;
+  --fg-dim:rgba(124,255,196,0.5);
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  color:var(--fg);
+  font-family:monospace;
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+
+/* subtle CRT overlay */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.05) 0px,
+      rgba(255,255,255,0.05) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+  opacity:0.15;
+}
+
+/* HUD */
+.hud{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+  width:min(92vw,800px);
+  text-align:center;
+}
+
+button{
+  background:#000;
+  color:var(--fg);
+  border:1px solid var(--fg);
+  padding:10px 16px;
+  font-family:monospace;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#021;
+}
+
+.title{
+  font-size:13px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  text-shadow:0 0 8px var(--fg);
+}
+
+/* subtitles */
+#sub{
+  min-height:2.5em;
+  font-size:14px;
+  color:#baffea;
+  text-shadow:0 0 6px var(--fg);
+}
+
+/* link */
+.essay-link{
+  color:var(--fg);
+  text-decoration:none;
+  border-bottom:1px solid var(--fg-dim);
+}
+
+.essay-link:hover{
+  color:#fff;
+  border-bottom-color:#fff;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="view"></canvas>
+
+<div class="hud">
+  <button id="playBtn">PLAY</button>
+  <div class="title">Reality Is What Survives Elimination</div>
+  <div id="sub"></div>
+  <div>
+    <a class="essay-link" href="https://standardgalactic.github.io/alphabet/framework/descent-into-reality.pdf" target="_blank">
+      Descent into Reality
+    </a>
+  </div>
+</div>
+
+<audio id="audio" preload="auto" playsinline>
+  <source src="Reality-is-what-survives-elimination.mp3" type="audio/mpeg">
+  <track src="Reality-is-what-survives-elimination.vtt" kind="subtitles" default>
+</audio>
+
+<script>
+const canvas = document.getElementById('view')
+const ctx = canvas.getContext('2d')
+const audio = document.getElementById('audio')
+const playBtn = document.getElementById('playBtn')
+const subEl = document.getElementById('sub')
+
+let w,h,cx,cy
+function resize(){
+  w = canvas.width = innerWidth
+  h = canvas.height = innerHeight
+  cx = w/2
+  cy = h/2
+}
+resize()
+addEventListener('resize', resize)
+
+/* audio */
+let audioCtx, analyser, buf
+
+function initAudio(){
+  if(audioCtx) return
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)()
+  analyser = audioCtx.createAnalyser()
+  analyser.fftSize = 1024
+  buf = new Uint8Array(analyser.fftSize)
+
+  const src = audioCtx.createMediaElementSource(audio)
+  src.connect(analyser)
+  analyser.connect(audioCtx.destination)
+}
+
+playBtn.onclick = async ()=>{
+  initAudio()
+  if(audioCtx.state==='suspended') await audioCtx.resume()
+
+  if(audio.paused){
+    audio.play()
+    playBtn.textContent='PAUSE'
+  }else{
+    audio.pause()
+    playBtn.textContent='PLAY'
+  }
+}
+
+/* subtitles */
+function bindSubs(){
+  const tt = audio.textTracks[0]
+  if(!tt) return
+  tt.mode='hidden'
+  tt.oncuechange = ()=>{
+    const cue = tt.activeCues && tt.activeCues[0]
+    subEl.textContent = cue ? cue.text : ''
+  }
+}
+
+audio.addEventListener('loadedmetadata', bindSubs)
+audio.addEventListener('canplay', bindSubs)
+
+/* tunnel */
+function draw(){
+  ctx.fillStyle='rgba(0,0,0,0.2)'
+  ctx.fillRect(0,0,w,h)
+
+  if(analyser){
+    analyser.getByteTimeDomainData(buf)
+
+    let amp = 0
+    for(let i=0;i<buf.length;i+=8){
+      amp += Math.abs((buf[i]-128)/128)
+    }
+    amp /= (buf.length/8)
+
+    const depth = 40
+    const R = Math.min(w,h)*0.5
+
+    for(let i=depth;i>=0;i--){
+      const z = (i/depth + performance.now()*0.0003) % 1
+      const r = (1-z)*R
+
+      ctx.beginPath()
+      ctx.arc(cx, cy, r, 0, Math.PI*2)
+      ctx.strokeStyle = `rgba(124,255,196,${0.05 + amp*0.2})`
+      ctx.lineWidth = 1.5
+      ctx.stroke()
+    }
+
+    /* waveform overlay */
+    ctx.beginPath()
+    for(let i=0;i<buf.length;i++){
+      const x = (i/buf.length)*w
+      const y = h*0.85 + (buf[i]-128)*0.4
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y)
+    }
+    ctx.strokeStyle = '#7cffc4'
+    ctx.stroke()
+  }
+
+  requestAnimationFrame(draw)
+}
+
+draw()
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1994 @@
+WEBVTT
+
+00:00.000 --> 00:04.800
+Welcome back to the Deep Dive. Today we are going to look at something that is sitting right in
+
+00:04.800 --> 00:09.040
+front of you. Maybe it's in your pocket, maybe it's on your desk. Right there on the desk.
+
+00:09.360 --> 00:14.920
+It's the screen you're looking at, the apps you use, the entire digital world that feels so
+
+00:14.920 --> 00:22.020
+incredibly simple. You tap a glass surface and a car shows up. You type a question and an answer
+
+00:22.020 --> 00:31.720
+appears. It feels frictionless. It feels like magic. But today we are going to shatter that
+
+00:31.720 --> 00:36.880
+illusion. It is a very comforting illusion, isn't it? The idea that we have mastered complexity.
+
+00:37.180 --> 00:42.380
+Yes. We've somehow tamed the chaos of the world. Exactly. We have this narrative, right? The
+
+00:42.380 --> 00:48.380
+triumphalist narrative of computer science. We tell ourselves that technology is the story of us
+
+00:48.380 --> 00:53.800
+conquering difficulty. We take impossible problems, we automate them, and poof, the difficulty is gone.
+
+00:54.400 --> 01:00.940
+But we've got a stack of papers here today that argue the exact opposite. They do. We are looking
+
+01:00.940 --> 01:07.060
+at two really dense, fascinating papers by an author named Flictioner. One is called Order and Obfuscation,
+
+01:07.320 --> 01:12.700
+and the other is The Mortality of Computation. And if I had to boil them down to a single,
+
+01:12.700 --> 01:19.960
+slightly terrifying sentence, it would be this. Computer science does not destroy difficulty.
+
+01:20.880 --> 01:26.200
+It just moves it around. The conservation of difficulty. That sounds like a law of physics.
+
+01:26.600 --> 01:33.100
+In many ways, it behaves exactly like one. Just like energy and physics, difficulty in computing
+
+01:33.100 --> 01:38.800
+is conserved. You can't create it, and you certainly can't destroy it. So you can only displace it.
+
+01:38.800 --> 01:43.080
+You can only displace it. You can push it down. You can push it sideways, or you can put it into
+
+01:43.080 --> 01:46.840
+the future. But it never, ever vanishes.
+
+01:47.160 --> 01:49.900
+Okay, hold on though. I want to push back on that immediately.
+
+01:50.060 --> 01:50.560
+Go for it.
+
+01:50.740 --> 01:57.100
+Because when I use a calculator to multiply massive numbers, or when I use Google Maps to find a route,
+
+01:57.480 --> 02:02.840
+that is objectively easier for me than doing it by hand. The difficulty for me is gone.
+
+02:03.260 --> 02:03.620
+Yes.
+
+02:03.620 --> 02:05.820
+So isn't that destroying difficulty?
+
+02:06.040 --> 02:13.380
+That is the crucial distinction. The difficulty for you, the user, is gone. But the difficulty of
+
+02:13.380 --> 02:20.820
+the task hasn't evaporated. It has been migrated. That smoothness you feel at the surface is purchased
+
+02:20.820 --> 02:27.900
+by burying a massive amount of turbulence somewhere else. And the scary part, which these papers argue,
+
+02:27.900 --> 02:34.080
+is that we are burying so much complexity, that the rug we're sweeping it under is starting to get
+
+02:34.080 --> 02:35.220
+very, very lumpy.
+
+02:35.220 --> 02:40.900
+I love that image, but I also find it kind of ominous. The lumpy rug of modern technology.
+
+02:41.220 --> 02:41.600
+Great metaphor.
+
+02:41.920 --> 02:50.340
+So our mission today is to unpack this architecture of concealment. We need to figure out if the difficulty
+
+02:50.340 --> 02:53.700
+isn't disappearing, where exactly is it going?
+
+02:53.900 --> 02:54.100
+Right.
+
+02:54.100 --> 02:57.340
+And what happens when the places we hide it get full?
+
+02:57.920 --> 03:02.680
+That is the multi-trillion dollar question. And it forces us to look at the architecture
+
+03:02.680 --> 03:08.340
+of our world not as a magic show, but as a waste management system for complexity.
+
+03:08.580 --> 03:12.160
+A waste management system. Wow. Okay, let's start with that rug metaphor,
+
+03:12.380 --> 03:17.540
+because fliction uses it right out of the gate in order and obfuscation. The quote is,
+
+03:17.540 --> 03:23.500
+The metaphor of sweeping problems under rugs captures this phenomenon. A rug does not remove
+
+03:23.500 --> 03:26.120
+what lies beneath it. It makes the surface navigable.
+
+03:26.120 --> 03:33.540
+Right. Think about walking across a floor. If there's debris everywhere, cables, dirt, unfinished
+
+03:33.540 --> 03:36.500
+floorboards, sharp nails, you can't walk.
+
+03:36.640 --> 03:38.280
+You trip. It's unusable.
+
+03:38.460 --> 03:44.980
+You trip. The rug makes the room usable. In computer science, we call the rug an interface.
+
+03:44.980 --> 03:50.100
+And the debris underneath is the complexity. But isn't that the whole point? I don't want
+
+03:50.100 --> 03:53.060
+to see the nails in the dirt. I just want to walk across the room.
+
+03:53.060 --> 03:56.900
+Absolutely. That is the utility of the rug. That's why we build interfaces.
+
+03:57.620 --> 04:02.480
+But here is the nuance that Flixson points out. It's not just ignoring the debris.
+
+04:02.480 --> 04:08.540
+Oh, okay. It's what the paper calls controlled reduction. You aren't just pretending the mess
+
+04:08.540 --> 04:14.760
+isn't there. You are actively engaging in a process to stabilize it just enough so you can
+
+04:14.760 --> 04:17.440
+put a lid on it. You have to do work to hide the work.
+
+04:17.580 --> 04:20.340
+It takes effort to hold the rug down. It's an active process.
+
+04:20.680 --> 04:25.140
+Okay, let's get specific. Because complexity is a buzzword we throw around a lot.
+
+04:25.400 --> 04:26.400
+It really is.
+
+04:26.400 --> 04:29.340
+I want to know what this debris actually looks like in a computer.
+
+04:29.700 --> 04:32.740
+Let's look at memory. The RAM in your computer.
+
+04:32.880 --> 04:34.760
+Okay. The short-term memory.
+
+04:35.200 --> 04:41.360
+To a modern programmer, or even to the user, memory feels like this infinite clean slate.
+
+04:41.960 --> 04:47.820
+You open a document. You save it. You declare a variable in code. It exists. It's an illusion
+
+04:47.820 --> 04:48.460
+of abundance.
+
+04:48.640 --> 04:48.860
+Sure.
+
+04:48.860 --> 04:56.140
+But physically, physically, memory is a nightmare. It is a chaotic mess of decaying electrical states.
+
+04:56.340 --> 04:58.620
+How so? I mean, it's just chips, right?
+
+04:59.040 --> 05:06.100
+It is charged states. Think about dynamic RAM or DRAM. It stores data as a tiny electrical charge
+
+05:06.100 --> 05:09.640
+in a capacitor. But capacitors are imperfect. They leak.
+
+05:09.820 --> 05:10.940
+They leak electricity.
+
+05:10.940 --> 05:16.460
+Constantly. If you just wrote data to RAM and walked away, the electrons would leak out in
+
+05:16.460 --> 05:19.040
+milliseconds, and your data would turn into random noise.
+
+05:19.280 --> 05:21.740
+So it's like writing on sand as the tide is coming in.
+
+05:21.780 --> 05:26.220
+That's a perfect analogy. So the hardware has to wake up thousands of times a second,
+
+05:26.380 --> 05:31.660
+literally thousands, and read every single cell, check its charge, and refresh it. It screams
+
+05:31.660 --> 05:34.760
+the data back to itself just to keep it from fading away.
+
+05:34.760 --> 05:40.320
+So while I'm sitting here staring at a static photo on my screen, thinking nothing is happening,
+
+05:40.320 --> 05:44.560
+my computer is frantically panic-refreshing billions of capacitors.
+
+05:45.080 --> 05:50.800
+Billions of them. In a constant state of managed panic. And that's just the physics.
+
+05:51.180 --> 05:52.380
+Then you have cosmic rays.
+
+05:52.800 --> 05:55.420
+Come on. Cosmic rays. Really?
+
+05:55.540 --> 06:02.260
+I'm serious. This is a real problem in systems engineering. High-energy particles from space
+
+06:02.260 --> 06:06.840
+occasionally hit a chip and flip a bit from a zero to a one.
+
+06:06.960 --> 06:08.180
+A single bit.
+
+06:08.180 --> 06:14.640
+A single bit. But if that happens in the wrong place in memory, your system crashes. Or worse,
+
+06:14.820 --> 06:21.100
+it gives you the wrong answer silently. So we have layers of error-correcting code, ECC,
+
+06:21.500 --> 06:25.180
+to detect that and silently fix it before you notice.
+
+06:25.460 --> 06:27.040
+And I see none of that.
+
+06:27.140 --> 06:27.940
+You see none of it.
+
+06:28.060 --> 06:28.260
+Yeah.
+
+06:28.300 --> 06:31.940
+Because there are layers. You have the hardware layer dealing with the voltage and the refresh
+
+06:31.940 --> 06:32.460
+cycles.
+
+06:32.560 --> 06:32.800
+Right.
+
+06:32.800 --> 06:37.140
+The firmware is dealing with the addressing. The operating system is managing the allocation,
+
+06:37.580 --> 06:40.320
+making sure two programs don't try to write to the same spot.
+
+06:40.380 --> 06:42.400
+And then even in the code itself, there are more layers.
+
+06:42.600 --> 06:46.720
+Exactly. The programming language has a garbage collector that runs around cleaning up memory
+
+06:46.720 --> 06:47.820
+you aren't using anymore.
+
+06:47.940 --> 06:49.600
+The janitor hidden under the road.
+
+06:49.600 --> 06:56.280
+Precisely. So Fliction formalizes this. The paper introduces two variables that I think are
+
+06:56.280 --> 06:58.320
+really helpful for visualizing this.
+
+06:58.380 --> 06:58.620
+Okay.
+
+06:59.060 --> 07:03.780
+You have eighth the explicit difficulty. That is the difficulty you experience.
+
+07:04.000 --> 07:06.780
+Which ideally is zero. I just click save.
+
+07:06.900 --> 07:14.860
+Right. But then there is hide the hidden difficulty. This is the structural complexity required to make
+
+07:14.860 --> 07:19.620
+that click work. The refreshing, the error correction, the garbage collection.
+
+07:19.880 --> 07:20.480
+Oh, the janitor.
+
+07:20.640 --> 07:21.420
+All the janitors.
+
+07:21.560 --> 07:21.640
+Yeah.
+
+07:21.940 --> 07:27.120
+And the conservation principle states that you can drive I down down, but you almost always
+
+07:27.120 --> 07:33.720
+have to increase I high dollar to do it. The total structural burden, call it sci-hiner,
+
+07:34.720 --> 07:35.640
+is conserved.
+
+07:35.900 --> 07:41.080
+Actually, Fliction argues the total burden usually goes up, doesn't he? It's not a one-to-one trade.
+
+07:41.320 --> 07:42.640
+Yes. That's a key point.
+
+07:42.640 --> 07:47.340
+Right. It's not a zero-sum game where one goes down and the other goes up by the same amount.
+
+07:47.440 --> 07:48.660
+It's not perfectly efficient.
+
+07:48.900 --> 07:53.540
+Not at all. Usually, to make something 10% simpler for the user, you have to make the
+
+07:53.540 --> 07:55.780
+system 50% more complex underneath.
+
+07:56.020 --> 07:56.220
+Right.
+
+07:56.260 --> 07:59.980
+You have to build the garbage collector, maintain the OS, design the error correction.
+
+08:00.340 --> 08:02.480
+You're adding new systems just to manage the old ones.
+
+08:02.620 --> 08:10.160
+So we are buying local tractability, making things easy right here, right now, by paying for
+
+08:10.160 --> 08:11.680
+it with global displacement.
+
+08:11.680 --> 08:14.540
+It's like cleaning your room by shoving everything to the closet.
+
+08:15.020 --> 08:15.260
+Yeah.
+
+08:15.320 --> 08:16.200
+The room looks clean.
+
+08:16.320 --> 08:16.560
+Yeah.
+
+08:16.760 --> 08:18.480
+The closet is a disaster zone.
+
+08:19.140 --> 08:23.640
+And eventually, you need a bigger closet, where you open it one day and everything falls
+
+08:23.640 --> 08:24.100
+on your head.
+
+08:24.160 --> 08:27.540
+But as long as you keep the closet door shut, the room works.
+
+08:28.160 --> 08:30.380
+And the paper makes a crucial point.
+
+08:31.220 --> 08:32.940
+This isn't laziness.
+
+08:33.640 --> 08:34.680
+This is necessary.
+
+08:35.480 --> 08:36.420
+Absolutely essential.
+
+08:36.420 --> 08:42.560
+If you had to think about voltage states every time you wanted to type a letter A, you effectively
+
+08:42.560 --> 08:43.880
+couldn't use the computer.
+
+08:44.140 --> 08:44.960
+We couldn't function.
+
+08:45.380 --> 08:47.860
+We have to hide the complexity to get anything done.
+
+08:48.160 --> 08:49.800
+That is the value of abstraction.
+
+08:50.160 --> 08:50.340
+Yeah.
+
+08:50.520 --> 08:52.360
+But the cost is opacity.
+
+08:52.760 --> 08:53.240
+Opacity.
+
+08:53.600 --> 08:55.600
+We lose touch with what is actually happening.
+
+08:55.720 --> 08:58.400
+We start to believe the world actually is that simple.
+
+08:58.520 --> 09:00.100
+We forget the closet is even there.
+
+09:00.100 --> 09:05.860
+This brings us to a really interesting part of the paper about quarantining impossibility.
+
+09:06.220 --> 09:10.040
+Because I always thought computers were these omnipotent logic machines.
+
+09:10.300 --> 09:13.420
+If you have enough processing power, you can solve anything.
+
+09:14.080 --> 09:18.220
+But Fliction says there are some things that are just impossible.
+
+09:18.680 --> 09:20.600
+This is where we get into the hard math limits.
+
+09:21.500 --> 09:23.500
+Computer science isn't just about engineering.
+
+09:23.740 --> 09:25.280
+It's about fundamental logic.
+
+09:25.840 --> 09:27.760
+There are monsters in the math.
+
+09:28.440 --> 09:29.500
+Monsters like what?
+
+09:29.500 --> 09:30.940
+Like the halting problem.
+
+09:32.300 --> 09:34.820
+Alan Turing proved this back in the 30s.
+
+09:35.600 --> 09:37.300
+He asked a simple sounding question.
+
+09:38.180 --> 09:44.200
+Can you write a program that looks at another program and determines with 100% certainty if
+
+09:44.200 --> 09:46.600
+it will run forever or eventually stop?
+
+09:46.940 --> 09:48.640
+Like an infinite loop detector.
+
+09:48.820 --> 09:49.200
+Exactly.
+
+09:49.400 --> 09:50.540
+A perfect debugger.
+
+09:50.620 --> 09:51.780
+And the answer is no.
+
+09:52.000 --> 09:55.080
+The answer is logically, mathematically, no.
+
+09:55.740 --> 09:56.860
+It is undecidable.
+
+09:56.860 --> 10:01.660
+You cannot build a universal debugger that predicts the future of code.
+
+10:01.920 --> 10:05.460
+It's a proven impossibility, like squaring a circle.
+
+10:05.540 --> 10:10.340
+So if that's impossible, how do we write software that doesn't just crash constantly?
+
+10:10.600 --> 10:11.680
+How is anything stable?
+
+10:11.680 --> 10:14.400
+We cheat, or rather we restrict.
+
+10:14.800 --> 10:16.420
+The paper calls it quarantining.
+
+10:16.880 --> 10:21.420
+We design our programming languages so that you simply aren't allowed to ask those questions.
+
+10:21.540 --> 10:22.000
+What do you mean?
+
+10:22.200 --> 10:25.800
+We use type systems that forbid certain recursive structures.
+
+10:25.800 --> 10:37.320
+We say, okay, we can't solve the halting problem for all programs, so we will only allow you to write a specific subset of programs where the problem is manageable or where we can prove it will halt.
+
+10:37.540 --> 10:41.660
+We build a wall around the scary parts of logic and say, don't go there.
+
+10:41.980 --> 10:44.740
+We create a safe walled garden to play in.
+
+10:44.740 --> 10:45.420
+Exactly.
+
+10:46.180 --> 10:48.980
+And that wall is another form of hidden complexity.
+
+10:50.120 --> 10:52.640
+The difficulty of the halting problem didn't vanish.
+
+10:53.160 --> 10:57.140
+It was displaced into the design of the type system itself.
+
+10:57.340 --> 11:00.180
+So the language designer had to take on that burden.
+
+11:00.520 --> 11:09.020
+The language designer had to grapple with that impossibility so that the application developer, the user, didn't have to face the abyss.
+
+11:09.520 --> 11:13.520
+They swept one of the scariest monsters in logic under the rug.
+
+11:13.520 --> 11:19.480
+This feels like it leads perfectly into the biggest magic trick of our current era, artificial intelligence.
+
+11:19.560 --> 11:20.240
+Oh, absolutely.
+
+11:20.740 --> 11:27.020
+Because if ever there was a rug that looked smooth on top but had a chaotic, unexplainable mess underneath, it's AI.
+
+11:27.500 --> 11:27.860
+Yes.
+
+11:28.760 --> 11:32.760
+The paper Order and Obfuscation dedicates a whole section to this.
+
+11:33.380 --> 11:36.860
+And it argues we are going through a massive paradigm shift.
+
+11:36.860 --> 11:41.280
+We are moving from symbolic systems to statistical systems.
+
+11:41.760 --> 11:44.280
+And this changes the nature of the difficulty we are hiding.
+
+11:44.680 --> 11:45.560
+Okay, break that down.
+
+11:45.740 --> 11:47.360
+Symbolic versus statistical.
+
+11:48.100 --> 11:51.480
+Because symbolic sounds like something from a Dan Brown novel.
+
+11:51.920 --> 11:54.000
+It's a bit less mysterious than that.
+
+11:54.400 --> 12:02.540
+Classical AI, I think 1980s, 90s, the stuff running in banking mainframes or early video games was symbolic.
+
+12:02.760 --> 12:03.480
+It was rules.
+
+12:04.120 --> 12:04.440
+Logic.
+
+12:04.440 --> 12:06.220
+If X, then Y.
+
+12:06.380 --> 12:07.320
+Like a flow chart.
+
+12:07.480 --> 12:09.280
+An incredibly complicated flow chart.
+
+12:09.380 --> 12:09.820
+Exactly.
+
+12:10.020 --> 12:12.880
+A giant, messy, human-made flow chart.
+
+12:13.540 --> 12:17.360
+If the patient has a fever and a cough, then check for flu.
+
+12:18.080 --> 12:18.820
+It was explicit.
+
+12:18.960 --> 12:20.480
+You could open up the code and see the reasoning.
+
+12:20.640 --> 12:21.880
+So the logic was transparent.
+
+12:22.060 --> 12:22.700
+It was transparent.
+
+12:22.960 --> 12:26.160
+The difficulty was visible because a human had to write every single rule.
+
+12:26.520 --> 12:28.480
+And if the rule was wrong, you could find it.
+
+12:28.600 --> 12:32.100
+So the explicit difficulty for the programmer was high.
+
+12:32.520 --> 12:33.260
+Very high.
+
+12:33.260 --> 12:35.300
+But the hidden difficulty was low.
+
+12:35.420 --> 12:37.320
+The machine wasn't doing anything mysterious.
+
+12:37.320 --> 12:40.260
+It was just following orders, just running down the flow chart.
+
+12:40.640 --> 12:46.720
+Now, compare that to modern machine learning, to ChatGPT, Gemini, Claude.
+
+12:46.720 --> 12:48.680
+They don't have rules.
+
+12:48.880 --> 12:49.960
+Not in the same way.
+
+12:50.100 --> 12:51.320
+They have parameters.
+
+12:51.620 --> 12:51.960
+Weights.
+
+12:52.500 --> 12:53.180
+Billions of them.
+
+12:53.380 --> 12:54.700
+Billions and billions of numbers.
+
+12:55.120 --> 12:57.300
+We call this parametric encapsulation.
+
+12:57.820 --> 12:59.320
+We stopped writing the rules.
+
+12:59.920 --> 13:05.840
+Instead, we built a massive statistical engine, a neural network, and fed it the entire internet.
+
+13:05.980 --> 13:06.200
+Right.
+
+13:06.300 --> 13:08.160
+Said, here is all the text in the world.
+
+13:08.240 --> 13:09.420
+You figure out the patterns.
+
+13:09.420 --> 13:10.960
+So where is the logic?
+
+13:11.300 --> 13:12.440
+Where is the reasoning?
+
+13:12.960 --> 13:16.700
+If I ask it a question and it gives me an answer, where did that answer come from?
+
+13:16.980 --> 13:18.400
+It is smeared.
+
+13:18.700 --> 13:20.900
+That is the word Flixson uses, and I think it's perfect.
+
+13:21.780 --> 13:25.440
+The reasoning isn't in a specific line of code.
+
+13:25.680 --> 13:28.460
+It is distributed across those billions of weights.
+
+13:28.960 --> 13:32.540
+It's a statistical tendency, not a logical rule.
+
+13:32.540 --> 13:33.920
+It's a pattern, not a reason.
+
+13:34.120 --> 13:34.600
+Exactly.
+
+13:35.200 --> 13:39.180
+The system has learned that statistically, these words tend to follow those words.
+
+13:39.280 --> 13:43.160
+The paper talks about the free lunch illusion here, because when I ask a chatbot a question,
+
+13:43.280 --> 13:44.860
+the answer comes back in seconds.
+
+13:45.100 --> 13:46.180
+It feels effortless.
+
+13:46.640 --> 13:52.540
+The explicit difficulty, what he calls infer of getting an answer, is near zero.
+
+13:52.860 --> 13:53.780
+I don't have to think.
+
+13:53.980 --> 13:54.860
+I just ask.
+
+13:55.000 --> 13:55.900
+It feels free.
+
+13:56.060 --> 13:56.360
+Right.
+
+13:56.880 --> 13:58.740
+But remember the conservation law.
+
+13:58.740 --> 14:05.240
+Now, if the inference, the answering part, is cheap for you, the cost must have gone somewhere else.
+
+14:06.100 --> 14:11.960
+And in AI, it went into two specific places that are dangerously opaque.
+
+14:12.080 --> 14:12.280
+Okay.
+
+14:12.460 --> 14:13.020
+Where did it go?
+
+14:13.300 --> 14:15.660
+First, it went into training energy.
+
+14:16.100 --> 14:23.020
+The massive, massive amount of electricity, water, and computation required to build that model in the first place.
+
+14:23.440 --> 14:27.100
+Some of these models cost hundreds of millions of dollars to train.
+
+14:27.100 --> 14:29.060
+We paid the energy bill up front.
+
+14:29.240 --> 14:30.160
+A huge bill.
+
+14:30.700 --> 14:35.160
+Paid up front to create the illusion of effortless intelligence later.
+
+14:35.760 --> 14:39.060
+So the difficulty was displaced in time, into the path.
+
+14:39.160 --> 14:40.120
+And the second place?
+
+14:40.220 --> 14:41.640
+The second place is structure.
+
+14:42.380 --> 14:44.820
+Specifically, overparameterization.
+
+14:45.060 --> 14:45.900
+Yeah, talk about that.
+
+14:45.940 --> 14:48.620
+I saw that term in the notes, and it sounds like bloat.
+
+14:48.820 --> 14:50.720
+Like we built it too big on purpose.
+
+14:51.040 --> 14:52.120
+It sounds like waste.
+
+14:52.120 --> 14:55.440
+But in this new paradigm, it's actually a requirement.
+
+14:55.820 --> 14:57.140
+It's a feature, not a bug.
+
+14:57.540 --> 15:01.620
+Imagine you need to pack for a trip, but you have absolutely no idea where you're going.
+
+15:01.780 --> 15:02.540
+It could be Antarctica.
+
+15:02.880 --> 15:04.000
+It could be the Sahara.
+
+15:04.260 --> 15:05.720
+It could be a formal dinner.
+
+15:06.140 --> 15:07.220
+I'd have to pack everything.
+
+15:07.460 --> 15:10.260
+Parka, swimsuit, tuxedo, a huge suitcase.
+
+15:10.720 --> 15:11.120
+Exactly.
+
+15:11.300 --> 15:12.580
+You need excess capacity.
+
+15:13.500 --> 15:16.780
+Modern AI models are overparameterized.
+
+15:16.780 --> 15:23.960
+They have way more parameters, way more brain cells than they technically need for any single task.
+
+15:24.840 --> 15:27.300
+This slack acts as a reservoir.
+
+15:27.760 --> 15:30.140
+It absorbs the complexity of the world.
+
+15:30.520 --> 15:35.360
+So the complexity of human language, all the slang, sarcasm, grammar, poetry,
+
+15:35.360 --> 15:40.100
+it all gets soaked up by this massive sponge of parameters.
+
+15:40.160 --> 15:40.460
+Yes.
+
+15:40.820 --> 15:42.820
+But because it's a sponge, it's unstructured.
+
+15:43.360 --> 15:45.300
+It's a displacement reservoir.
+
+15:45.300 --> 15:51.280
+The difficulty of understanding language hasn't been solved in a way we can write down as a rule.
+
+15:51.540 --> 15:56.380
+It has been dissolved into a high-dimensional geometry that humans can't visualize.
+
+15:56.700 --> 15:58.780
+We've buried the logic so deep we can't find it.
+
+15:58.820 --> 16:00.040
+We just know the machine works.
+
+16:00.140 --> 16:00.960
+Until it doesn't.
+
+16:01.500 --> 16:02.960
+And that is the risk of opacity.
+
+16:03.620 --> 16:09.400
+When a symbolic system fails, when the flowchart is wrong, you find the broken rule and fix it.
+
+16:09.460 --> 16:10.200
+You can debug it?
+
+16:10.280 --> 16:11.000
+You can debug it.
+
+16:11.000 --> 16:18.000
+When a statistical system fails, when it hallucinates or acts weirdly, it's because the hidden burden of the environment has shifted.
+
+16:18.160 --> 16:19.080
+Give me an example of that.
+
+16:19.120 --> 16:20.500
+What do you mean by the environment shifting?
+
+16:20.960 --> 16:23.640
+Well, the model was trained on data from the past.
+
+16:24.160 --> 16:26.700
+It assumes the future looks like the training data.
+
+16:27.420 --> 16:30.300
+Fliction calls this the hidden environment assumptions.
+
+16:30.300 --> 16:41.440
+If the context changes, say a new slang term emerges, a major world event happens, or the political climate shifts, the model doesn't just fail.
+
+16:41.920 --> 16:43.560
+It fails weirdly.
+
+16:43.860 --> 16:47.460
+It starts saying things that are out of date or just plain wrong.
+
+16:47.460 --> 16:47.940
+Exactly.
+
+16:48.560 --> 16:55.320
+And because the reasoning is smeared across billions of weights, fixing it isn't like fixing code.
+
+16:55.460 --> 16:57.340
+You can't just edit line 402.
+
+16:57.460 --> 17:02.700
+You have to retrain or fine-tune or hope it prompt engineering covers up the crack.
+
+17:02.980 --> 17:09.340
+It's like trying to fix a recipe when you've already baked the cake and you don't even know what the ingredients were because a robot bought them for you.
+
+17:09.360 --> 17:11.400
+It baked it in a black box you can't open.
+
+17:11.640 --> 17:12.820
+That is the trade-off.
+
+17:12.820 --> 17:16.880
+We've got immense capability, but we paid for it with interpretability.
+
+17:17.460 --> 17:18.900
+The difficulty didn't go away.
+
+17:19.000 --> 17:19.840
+It went to the shadows.
+
+17:19.940 --> 17:20.940
+This is unsettling.
+
+17:21.260 --> 17:21.980
+It really is.
+
+17:22.060 --> 17:24.240
+It makes me look at these AI tools differently.
+
+17:24.600 --> 17:26.140
+They aren't magic geniuses.
+
+17:26.260 --> 17:28.740
+They are just massive complexity sponges.
+
+17:28.880 --> 17:31.420
+Sponges that are incredibly expensive to keep wet.
+
+17:31.720 --> 17:39.600
+Which is the perfect segue to the second paper because order and obfuscation is mostly about the logical architecture, the code.
+
+17:39.740 --> 17:40.040
+Right.
+
+17:40.200 --> 17:41.120
+The software side.
+
+17:41.120 --> 17:51.980
+But the second paper, The Mortality of Computation, takes this existential dread and turns it up to 11 because it stops talking about code and starts talking about physics.
+
+17:51.980 --> 17:59.620
+This is where we have to leave the abstract world of logic and enter the messy, hot, degrading world of thermodynamics.
+
+17:59.900 --> 18:04.600
+The title alone, The Mortality of Computation, is a provocation.
+
+18:04.940 --> 18:08.360
+Because we have this bias, software is forever.
+
+18:09.080 --> 18:10.640
+Digital implies immortal.
+
+18:11.160 --> 18:13.020
+If I write a poem on paper, it burns.
+
+18:13.120 --> 18:15.140
+If I write it in the cloud, it's there forever.
+
+18:15.580 --> 18:17.700
+And Fliction says, wrong.
+
+18:17.700 --> 18:21.420
+The paper challenges the myth of immortality.
+
+18:21.800 --> 18:30.660
+It argues that logical universality, the idea that a computer can do anything, that a Turing machine is universal, does not equal physical immortality.
+
+18:30.820 --> 18:32.520
+Because the computer is made of stuff.
+
+18:32.640 --> 18:33.400
+It's not a ghost.
+
+18:33.620 --> 18:37.060
+It's made of stuff that degrades, stuff that obeys the laws of physics.
+
+18:37.760 --> 18:40.420
+Specifically, the second law of thermodynamics.
+
+18:41.240 --> 18:41.640
+Entropy.
+
+18:41.980 --> 18:43.400
+Disorder always increases.
+
+18:44.120 --> 18:46.980
+The universe wants to turn everything into lukewarm soup.
+
+18:46.980 --> 18:47.580
+Right.
+
+18:47.940 --> 18:49.320
+And here is the kicker.
+
+18:49.640 --> 18:51.080
+The point that connects everything.
+
+18:52.080 --> 18:53.980
+Computation is a physical process.
+
+18:54.860 --> 18:59.700
+We tend to think of it as math, happening in some platonic realm of pure thought.
+
+19:00.260 --> 19:05.200
+But every time a bit flips from zero to one, electrons move.
+
+19:05.920 --> 19:06.840
+Resistance happens.
+
+19:07.340 --> 19:08.320
+Heat is generated.
+
+19:08.500 --> 19:10.500
+The paper mentions Landauer's principle.
+
+19:10.660 --> 19:15.120
+I want to spend a minute here because this feels like the foundational law for this entire argument.
+
+19:15.340 --> 19:15.680
+It is.
+
+19:15.680 --> 19:16.640
+It's the bedrock.
+
+19:16.980 --> 19:20.620
+Rolf Landauer was a physicist at IBM in the 60s.
+
+19:21.120 --> 19:23.980
+He changed everything by proving that information is physical.
+
+19:24.760 --> 19:31.320
+Specifically, he proved that logically irreversible operations like erasing information must generate heat.
+
+19:31.720 --> 19:31.980
+Wait.
+
+19:32.220 --> 19:33.940
+Erasing information creates heat.
+
+19:34.040 --> 19:35.940
+That feels completely counterintuitive.
+
+19:35.940 --> 19:41.680
+I feel like writing information should take effort, but erasing it should be easy, like knocking over a sandcastle.
+
+19:41.720 --> 19:42.580
+That's what everyone thought.
+
+19:42.780 --> 19:45.580
+But think about it in terms of entropy or information.
+
+19:46.580 --> 19:49.440
+A bit that can be either zero or one is disordered.
+
+19:49.800 --> 19:50.880
+It has two possibilities.
+
+19:51.100 --> 19:51.640
+It's uncertain.
+
+19:51.640 --> 19:57.600
+If I reset that bit to a known state, say zero-one, I have forced it into a single state.
+
+19:57.720 --> 19:58.720
+I have created order.
+
+19:58.860 --> 20:00.700
+I have reduced the entropy of that bit.
+
+20:01.160 --> 20:01.360
+Okay.
+
+20:01.440 --> 20:01.960
+I'm with you.
+
+20:02.280 --> 20:06.060
+Organizing things, creating certainty, reduces local entropy.
+
+20:06.060 --> 20:11.820
+But the second law of thermodynamics says the total entropy of the universe must always increase.
+
+20:12.300 --> 20:13.680
+You cannot destroy entropy.
+
+20:14.040 --> 20:15.380
+You can only move it.
+
+20:15.500 --> 20:15.580
+Yeah.
+
+20:15.760 --> 20:21.300
+So if you reduce entropy inside the chip by organizing the data...
+
+20:21.300 --> 20:22.740
+You have to increase it somewhere else.
+
+20:22.780 --> 20:25.900
+You must increase entropy outside the chip to compensate.
+
+20:26.260 --> 20:28.520
+And how does the universe increase entropy?
+
+20:28.940 --> 20:29.240
+Heat.
+
+20:29.740 --> 20:31.840
+Heat is just disorganized energy.
+
+20:31.840 --> 20:38.980
+So to make that bit a clean, organized zer, the computer spits out a tiny puff of heat into the room.
+
+20:39.420 --> 20:44.060
+So my computer getting hot isn't just because the battery is inefficient or the fan is dusty.
+
+20:44.280 --> 20:46.820
+It's a fundamental law of the universe.
+
+20:47.140 --> 20:49.900
+To think, to compute, is to create heat.
+
+20:50.100 --> 20:50.580
+Exactly.
+
+20:50.880 --> 20:54.800
+You cannot process information without polluting the environment with heat.
+
+20:55.500 --> 20:59.060
+Fliction calls computation constrained energy descent.
+
+20:59.180 --> 20:59.820
+What does that mean?
+
+20:59.820 --> 21:03.800
+It means we are fighting a constant uphill battle against nature.
+
+21:04.660 --> 21:05.780
+Nature wants chaos.
+
+21:06.020 --> 21:08.080
+Nature wants those bits to flip randomly.
+
+21:08.560 --> 21:09.560
+To maintain a state.
+
+21:10.000 --> 21:15.880
+To keep your spreadsheet a spreadsheet and not a pile of random static requires a constant throughput of energy.
+
+21:16.220 --> 21:20.300
+We are paying energy to keep the structure from dissolving into noise.
+
+21:20.440 --> 21:20.820
+We are.
+
+21:20.960 --> 21:24.200
+The paper calls it an energy-hungry negotiation with physics.
+
+21:24.200 --> 21:29.760
+And this leads to the very practical, very expensive concept of the cooling problem.
+
+21:30.160 --> 21:36.060
+If you can't get that entropy, that heat, out of the system fast enough, the system crashes.
+
+21:36.460 --> 21:37.080
+It melts.
+
+21:37.220 --> 21:37.620
+It melts.
+
+21:37.720 --> 21:41.080
+Or it just stops working reliably because the signals get noisy.
+
+21:41.080 --> 21:46.920
+The entire architecture of a data center is just a massive machine for exporting entropy.
+
+21:46.920 --> 21:51.560
+So bringing this back to the rug, the rug isn't just hiding complex code.
+
+21:51.720 --> 21:56.120
+It's hiding the fact that our digital world is basically an entropy furnace.
+
+21:56.380 --> 21:56.620
+Yes.
+
+21:57.080 --> 21:58.480
+We see the smooth screen.
+
+21:58.840 --> 22:01.880
+We don't see the air conditioners humming on the roof of the data center.
+
+22:02.100 --> 22:07.100
+We don't see the coal or gas burning to power the electricity that fights the entropy.
+
+22:07.100 --> 22:11.140
+The hidden burden, the dollars, isn't just code complexity anymore.
+
+22:11.460 --> 22:12.440
+It's thermal load.
+
+22:12.600 --> 22:13.280
+It's physical.
+
+22:13.840 --> 22:16.900
+This connects to something the paper calls mortal computation.
+
+22:17.540 --> 22:23.640
+The idea that because we are embedded in this degrading physical substrate, software itself is mortal.
+
+22:24.200 --> 22:25.780
+It creates a minestable state.
+
+22:26.160 --> 22:27.260
+Do you know what metastable means?
+
+22:27.660 --> 22:30.680
+It sounds like kind of stable or stable for now.
+
+22:30.780 --> 22:31.280
+Pretty much.
+
+22:31.540 --> 22:34.400
+Imagine a ball balancing in the very peak of a mountain.
+
+22:34.400 --> 22:38.120
+It's staying there, but only if you actively balance it.
+
+22:38.540 --> 22:42.100
+The second you stop paying attention, it rolls down into the valley.
+
+22:42.340 --> 22:42.600
+Okay.
+
+22:42.900 --> 22:44.180
+That is metastable.
+
+22:44.980 --> 22:46.580
+A rock in a valley is stable.
+
+22:46.860 --> 22:48.660
+It stays there forever without effort.
+
+22:49.500 --> 22:52.140
+Our digital world is the ball on the mountain.
+
+22:52.620 --> 22:56.320
+It looks stable, but it's only stable as long as you pump energy into it.
+
+22:56.460 --> 22:56.860
+Wow.
+
+22:56.860 --> 23:01.960
+Stop the energy or let the hardware degrade too much and the abstraction collapses.
+
+23:01.960 --> 23:05.720
+The universal Turing machine is a mathematical ideal.
+
+23:06.240 --> 23:09.080
+The physical laptop on your desk is a dying machine.
+
+23:09.440 --> 23:11.220
+That is surprisingly dark.
+
+23:11.440 --> 23:14.700
+But it really reframes how we look at optimization.
+
+23:15.520 --> 23:21.860
+We always talk about optimizing code to make it faster or smaller, but the paper argues there are hard limits here too.
+
+23:23.020 --> 23:24.060
+Ontological friction.
+
+23:24.300 --> 23:25.220
+Ontological friction.
+
+23:25.220 --> 23:26.180
+I love that term.
+
+23:26.400 --> 23:29.480
+It suggests that resistance is built into the nature of existence.
+
+23:29.480 --> 23:30.920
+You cannot escape friction.
+
+23:31.060 --> 23:32.540
+It's not a bug you can fix.
+
+23:32.800 --> 23:35.660
+This gets into the P versus NP problem, right?
+
+23:35.880 --> 23:39.520
+Which is a famous unsolved problem in computer science.
+
+23:39.860 --> 23:40.320
+It does.
+
+23:40.700 --> 23:42.960
+We don't need to solve P versus NP today.
+
+23:43.280 --> 23:44.760
+That's a Nobel Prize waiting to happen.
+
+23:45.200 --> 23:52.680
+But the gist is, there are classes of problems that are easy to check but seem to be incredibly hard to solve.
+
+23:52.800 --> 23:53.440
+Like a puzzle.
+
+23:53.740 --> 23:54.320
+Like a puzzle.
+
+23:54.320 --> 23:58.880
+It's easy to look at a completed jigsaw puzzle and say, yes, that fits.
+
+23:59.300 --> 24:03.020
+It is incredibly hard to take a pile of pieces and build the picture.
+
+24:03.580 --> 24:04.820
+PE are the easy problems.
+
+24:05.280 --> 24:07.500
+NP are the hard ones that are easy to check.
+
+24:07.620 --> 24:09.800
+And the paper argues you can't cheat this.
+
+24:09.900 --> 24:12.600
+You can't just optimize away the difficulty of the puzzle.
+
+24:12.820 --> 24:13.340
+You can't.
+
+24:13.620 --> 24:14.780
+And there are other hard limits.
+
+24:15.340 --> 24:16.700
+Like space-time trade-offs.
+
+24:17.080 --> 24:19.340
+This is a classic computer science rule.
+
+24:19.760 --> 24:20.960
+You want to save time.
+
+24:20.960 --> 24:23.840
+You usually have to use more space, more memory.
+
+24:24.080 --> 24:25.380
+You want to save memory.
+
+24:25.840 --> 24:28.800
+You usually have to spend more time recalculating things.
+
+24:29.120 --> 24:31.940
+You can move the bump under the rug, but you can't flatten it.
+
+24:32.040 --> 24:33.780
+You can shift it from one place to another.
+
+24:33.920 --> 24:34.320
+Exactly.
+
+24:35.160 --> 24:40.100
+And in distributed systems, like the cloud, there's communication complexity.
+
+24:41.060 --> 24:44.760
+You can't eliminate the time it takes to coordinate between two servers.
+
+24:45.240 --> 24:46.500
+There's the speed of light.
+
+24:46.820 --> 24:48.260
+There's network latency.
+
+24:48.260 --> 24:52.440
+You can optimize it, but you hit a floor, a hard mathematical floor.
+
+24:52.820 --> 24:55.940
+So optimization is really just moving the cost around.
+
+24:56.480 --> 24:57.900
+We aren't erasing difficulty.
+
+24:58.240 --> 25:03.120
+We are just shifting it from time to space or from calculation to energy.
+
+25:03.340 --> 25:06.980
+Which brings us to the philosophical core of the mortality paper.
+
+25:07.560 --> 25:10.960
+This is where fiction brings in the philosopher Martin Heidegger.
+
+25:11.400 --> 25:14.120
+Which is a bold move for a computer science paper.
+
+25:14.460 --> 25:17.260
+Usually we stick to math, not German existentialism.
+
+25:17.260 --> 25:20.420
+It is bold, but it fits perfectly.
+
+25:21.000 --> 25:23.960
+Heidegger had this concept of in-framing or gestel.
+
+25:24.480 --> 25:32.480
+He argued that modern technology forces us to look at the world in a very specific, limited way as standing reserve.
+
+25:32.800 --> 25:38.000
+Standing reserve, meaning everything is just a resource waiting to be used, a raw material.
+
+25:38.000 --> 25:38.620
+Precisely.
+
+25:39.020 --> 25:41.960
+A tree isn't a tree with its own history and ecology.
+
+25:42.280 --> 25:43.740
+It's lumber waiting to be cut.
+
+25:44.160 --> 25:45.260
+A river isn't a river.
+
+25:45.380 --> 25:47.720
+It's hydroelectric power waiting to be spun.
+
+25:48.140 --> 25:51.780
+The world only exists to the extent that it can be input into our system.
+
+25:51.960 --> 25:53.880
+And in computing, how does that apply?
+
+25:54.260 --> 25:57.720
+In computing, Flexion argues we do this to everything.
+
+25:57.720 --> 26:01.420
+We treat the world purely as inputs and outputs.
+
+26:01.740 --> 26:04.420
+We see the interface, not the reality.
+
+26:05.000 --> 26:08.300
+We demand that the world fit into our database schema.
+
+26:08.640 --> 26:10.620
+If it doesn't fit, we ignore it.
+
+26:10.820 --> 26:11.800
+Or we force it.
+
+26:12.000 --> 26:12.780
+We abstract it.
+
+26:12.780 --> 26:13.600
+We abstract it.
+
+26:13.760 --> 26:16.900
+And this leads to what Heidegger called the supreme danger.
+
+26:17.160 --> 26:18.220
+The supreme danger.
+
+26:18.220 --> 26:25.080
+The supreme danger is the belief that the interface is the reality, that the map is the territory.
+
+26:25.680 --> 26:30.000
+We confuse the smooth, easy app with the reality of the messy world.
+
+26:30.400 --> 26:33.680
+We think because we can click order pizza, the pizza just appears.
+
+26:33.920 --> 26:37.000
+We forget the driver, the traffic, the oven, the fuel.
+
+26:37.260 --> 26:38.860
+And the interface totalization.
+
+26:39.560 --> 26:42.780
+We start to believe that everything can be wrapped in an API.
+
+26:42.780 --> 26:49.360
+That we can abstract away hunger or climate change or social complexity just by building
+
+26:49.360 --> 26:50.080
+a better interface.
+
+26:50.320 --> 26:51.820
+As if it's just a coding problem.
+
+26:52.080 --> 26:55.280
+We think if we just code it right, the difficulty vanishes.
+
+26:55.880 --> 26:59.620
+But the substrate, the physical reality underneath, is still there.
+
+26:59.660 --> 27:00.680
+And it is heating up.
+
+27:00.880 --> 27:01.920
+It is heating up.
+
+27:02.000 --> 27:02.980
+It is degrading.
+
+27:03.120 --> 27:04.460
+It is accumulating error.
+
+27:05.460 --> 27:10.080
+When we treat the world as inputs and outputs, we forget the cost of the processing.
+
+27:10.260 --> 27:11.180
+We forget the entropy.
+
+27:11.180 --> 27:17.440
+And that forgetting is dangerous because it makes us blind to the risks we are building up.
+
+27:17.840 --> 27:22.100
+This leads perfectly to the inevitable conclusion of all this hiding and displacing.
+
+27:22.700 --> 27:23.760
+The crash.
+
+27:24.420 --> 27:25.680
+The exposure event.
+
+27:25.840 --> 27:27.400
+The moment the rug gets lifted.
+
+27:27.960 --> 27:29.700
+Or the closet door bursts open.
+
+27:29.980 --> 27:32.120
+The paper redefines technical debt.
+
+27:32.560 --> 27:37.600
+I usually think of technical debt as, you know, I wrote sloppy code to meet a deadline and
+
+27:37.600 --> 27:38.700
+I'll fix it later.
+
+27:38.980 --> 27:39.880
+It's laziness.
+
+27:39.880 --> 27:41.680
+That's the surface definition.
+
+27:42.020 --> 27:47.240
+Fliction defines it much more profoundly as deferred explicit burden.
+
+27:48.140 --> 27:50.260
+Or my favorite, temporal displacement.
+
+27:50.880 --> 27:53.140
+Worrowing stability from the future.
+
+27:53.300 --> 27:53.520
+Yes.
+
+27:53.940 --> 27:54.900
+You make it easy now.
+
+27:55.280 --> 27:59.600
+You achieve local tractability by pushing the complexity into the future.
+
+27:59.860 --> 28:02.740
+You say, I'll assume this library will always work.
+
+28:02.800 --> 28:05.460
+Or I'll assume the user count won't go above a million.
+
+28:05.460 --> 28:07.960
+You hide the difficulty of scaling.
+
+28:08.340 --> 28:13.620
+You lower the explicit difficulty now by increasing the hidden difficulty of the future.
+
+28:14.100 --> 28:14.640
+Exactly.
+
+28:14.920 --> 28:17.880
+You're taking out a loan against future stability.
+
+28:18.020 --> 28:19.600
+And then the future arrives.
+
+28:19.660 --> 28:20.560
+And the bill comes due.
+
+28:20.900 --> 28:22.280
+That is the exposure event.
+
+28:23.060 --> 28:29.020
+It happens when the hidden burden, the highlander, accumulates to a point where the rug can't hold
+
+28:29.020 --> 28:32.340
+it down anymore or the environment changes.
+
+28:32.660 --> 28:34.380
+The paper calls this drift.
+
+28:34.380 --> 28:38.260
+The world changes, but your hidden assumptions stayed the same.
+
+28:38.540 --> 28:39.000
+Exactly.
+
+28:39.360 --> 28:41.960
+Maybe you assume the network would always be fast.
+
+28:42.200 --> 28:44.680
+Then you go mobile and the network is flaky.
+
+28:45.360 --> 28:47.400
+Suddenly that hidden assumption is exposed.
+
+28:47.960 --> 28:48.960
+The app crashes.
+
+28:49.300 --> 28:50.500
+The abstraction fails.
+
+28:51.240 --> 28:54.400
+The user is suddenly staring at a raw error code.
+
+28:55.000 --> 28:56.020
+The illusion breaks.
+
+28:56.240 --> 28:58.380
+Security vulnerabilities feel like this too.
+
+28:58.520 --> 29:00.780
+They feel like a classic exposure event.
+
+29:00.780 --> 29:01.500
+Perfectly.
+
+29:01.780 --> 29:04.360
+A security flaw is often just a hole in the abstraction.
+
+29:04.620 --> 29:04.820
+Yeah.
+
+29:04.920 --> 29:07.680
+You thought you were dealing with a high-level object, like a username.
+
+29:08.440 --> 29:12.240
+But a hacker found a way to manipulate the low-level memory underneath.
+
+29:12.460 --> 29:13.640
+They reached under the rug.
+
+29:13.760 --> 29:16.820
+They lifted the rug and crawled under it to steal your data.
+
+29:17.280 --> 29:21.140
+They exploited the gap between the clean interface and the messy reality.
+
+29:21.140 --> 29:25.000
+The paper talks about cascades in large systems.
+
+29:26.000 --> 29:29.320
+Why do these exposure events tend to ripple out?
+
+29:29.460 --> 29:31.400
+Why doesn't just one thing break?
+
+29:31.740 --> 29:32.540
+Coupling density.
+
+29:33.500 --> 29:38.820
+As we build these towers of abstraction, layer upon layer upon layer, everything gets connected.
+
+29:39.680 --> 29:44.320
+The app depends on the framework, which depends on the language, which depends on the OS,
+
+29:44.680 --> 29:48.120
+which depends on the cloud provider, which depends on the power grid.
+
+29:48.300 --> 29:49.280
+It's a Jenga tower.
+
+29:49.280 --> 29:51.680
+A Jenga tower where all the blocks are glued together.
+
+29:52.140 --> 29:54.520
+A small shake at the bottom can bring the whole thing down.
+
+29:55.100 --> 29:57.480
+The paper uses a term from control theory.
+
+29:58.300 --> 29:59.300
+Spectral radius.
+
+29:59.500 --> 30:00.280
+That sounds cool.
+
+30:00.460 --> 30:01.320
+Spectral radius.
+
+30:01.700 --> 30:03.640
+It is cool, but scary.
+
+30:04.560 --> 30:09.400
+Basically, it's a measure of how much a vibration amplifies as it moves through a system.
+
+30:09.400 --> 30:15.720
+If the system is too tightly coupled, a small failure in a hidden layer, say a single cloud
+
+30:15.720 --> 30:21.920
+server overheating in Virginia, a tiny local problem, can ripple upward, amplify at each
+
+30:21.920 --> 30:26.320
+layer of abstraction, and take down an entire airline booking system globally.
+
+30:26.320 --> 30:31.480
+Because we hid the failure modes, we made the interface look smooth so the upper layers
+
+30:31.480 --> 30:33.020
+didn't know how to handle a bump.
+
+30:33.420 --> 30:35.620
+They assumed the lower layers were perfect.
+
+30:35.620 --> 30:36.640
+Precisely.
+
+30:37.040 --> 30:41.240
+We designed for success, assuming the abstraction would hold.
+
+30:41.920 --> 30:43.860
+We didn't design for the abstraction breaking.
+
+30:44.280 --> 30:48.260
+We optimized for the best case scenario and ignored the worst case.
+
+30:48.260 --> 30:53.280
+Because looking at the worst case increases explicit difficulty.
+
+30:53.680 --> 30:56.020
+It makes the job harder right now.
+
+30:56.440 --> 31:01.200
+It's another form of temporal displacement pushing risks into the future.
+
+31:01.200 --> 31:01.880
+Yes.
+
+31:02.160 --> 31:03.840
+So, what is the solution?
+
+31:04.080 --> 31:08.740
+Are we doomed to just build bigger and more dangerous Jenga towers?
+
+31:09.180 --> 31:12.600
+The paper proposes something called conservation architecture.
+
+31:12.960 --> 31:14.140
+That is the proposal.
+
+31:14.540 --> 31:15.780
+And it starts with acceptance.
+
+31:16.040 --> 31:17.320
+It's a philosophical shift.
+
+31:17.400 --> 31:18.620
+You can't eliminate difficulty.
+
+31:19.040 --> 31:22.540
+So you have to design systems that expect the difficulty to migrate.
+
+31:23.020 --> 31:25.320
+You have to design knowing that the rug is lumpy.
+
+31:25.440 --> 31:28.360
+It sounds like admitting defeat, but it's actually just being realistic.
+
+31:28.620 --> 31:29.220
+It's maturity.
+
+31:29.220 --> 31:34.560
+It's moving from the triumphalist narrative, where we claim we solved it, to a conservation
+
+31:34.560 --> 31:37.480
+perspective, where we admit we're just managing it.
+
+31:37.840 --> 31:38.980
+So what does that look like in practice?
+
+31:39.520 --> 31:42.800
+It means designing interfaces that leak a little bit of truth.
+
+31:43.180 --> 31:45.840
+It means building in circuit breakers and bulkheads.
+
+31:46.220 --> 31:51.680
+It means monitoring the hidden burden, checking the closet to make sure it's not about to burst.
+
+31:52.040 --> 31:54.260
+It's about resilience, not perfection.
+
+31:54.260 --> 32:00.360
+And accepting that the system needs to breathe, it needs maintenance, it needs energy, it's
+
+32:00.360 --> 32:00.960
+not magic.
+
+32:01.380 --> 32:02.140
+It is not magic.
+
+32:02.540 --> 32:03.420
+It is engineering.
+
+32:03.960 --> 32:05.520
+And engineering is about trade-offs.
+
+32:05.660 --> 32:09.020
+It's about managing complexity, not pretending it doesn't exist.
+
+32:09.220 --> 32:10.780
+Let's try to synthesize all of this.
+
+32:11.100 --> 32:12.380
+We've covered a lot of ground.
+
+32:12.520 --> 32:15.240
+We have these two massive papers by Fliction.
+
+32:15.240 --> 32:19.920
+What is the big picture here, the new ontology that Papel talks about?
+
+32:20.300 --> 32:24.200
+I think it comes down to a unified structural ontology that has three parts.
+
+32:24.580 --> 32:27.360
+It's like a three-step syllogism for our digital age.
+
+32:27.780 --> 32:29.680
+Number one, universality.
+
+32:29.900 --> 32:31.100
+We can compute anything.
+
+32:31.480 --> 32:32.940
+The promise of Turing is real.
+
+32:33.260 --> 32:35.580
+We can represent any process as code.
+
+32:35.840 --> 32:36.640
+We have the potential.
+
+32:36.800 --> 32:37.520
+And there's a price.
+
+32:37.640 --> 32:38.460
+There's always a price.
+
+32:38.460 --> 32:41.020
+Number two, irreversibility.
+
+32:42.220 --> 32:45.620
+Every time we do that computation, we are bound by physics.
+
+32:46.020 --> 32:47.080
+We generate entropy.
+
+32:47.580 --> 32:49.580
+We pay a cost in energy and heat.
+
+32:50.000 --> 32:51.500
+We cannot cheat Landauer.
+
+32:51.940 --> 32:53.040
+It is an iron law.
+
+32:53.520 --> 32:56.080
+And number three, the conclusion.
+
+32:57.340 --> 32:58.380
+Metastable order.
+
+32:59.360 --> 33:03.680
+The result isn't a permanent, immortal, abstract perfection.
+
+33:03.680 --> 33:11.480
+It is a temporary, fragile stability that we have to actively maintain against the flow of the universe.
+
+33:11.800 --> 33:13.440
+It's the ball on top of the mountain.
+
+33:13.980 --> 33:16.900
+Smoothness at the surface equals turbulence underneath.
+
+33:17.160 --> 33:17.440
+Always.
+
+33:18.140 --> 33:20.560
+The smoother the ride, the harder the engine is working.
+
+33:20.900 --> 33:25.060
+The more magical the interface, the more frantically the janitors are working in the basement.
+
+33:25.400 --> 33:28.100
+So here is my final thought for the listener.
+
+33:28.100 --> 33:33.600
+We started by looking at that screen in your pocket, that smooth glass interface.
+
+33:33.920 --> 33:35.000
+The magic glass.
+
+33:35.220 --> 33:36.800
+I want you to look at it differently now.
+
+33:36.900 --> 33:38.400
+I want you to see it as a battleground.
+
+33:38.540 --> 33:39.820
+The battleground against physics.
+
+33:40.700 --> 33:43.320
+Against the second law of thermodynamics itself.
+
+33:43.580 --> 33:51.320
+Every streamlined app, every effortless AI answer, every instant transaction, it's all silently accumulating hidden entropy.
+
+33:51.960 --> 33:53.800
+It's building up structural debt.
+
+33:53.880 --> 33:55.020
+It's heating up the planet.
+
+33:55.020 --> 33:58.380
+It is sweeping debris under a rug that is running out of room.
+
+33:58.860 --> 33:59.820
+It raises the question.
+
+33:59.820 --> 34:06.380
+We are building a world of mortal computation that masquerades as immortal.
+
+34:07.460 --> 34:13.500
+We are stacking deeper and deeper layers of abstraction, assuming the foundation will hold forever.
+
+34:13.500 --> 34:21.080
+But if the conservation of difficulty is real, if the debt is always conserved, when is the bill due?
+
+34:21.500 --> 34:23.540
+And are we solvent enough to pay it when it comes?
+
+34:24.100 --> 34:27.600
+Something to think about the next time your phone gets a little warm in your hand.
+
+34:27.940 --> 34:29.700
+That heat isn't a bug.
+
+34:30.060 --> 34:31.420
+It's the cost of thinking.
+
+34:31.740 --> 34:33.160
+It's the friction of reality.
+
+34:33.420 --> 34:34.800
+Thanks for diving deep with us.
+
+34:34.920 --> 34:35.760
+We'll see you next time.
+

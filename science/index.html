@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prismatic Consciousness Monitor</title>
+
+<style>
+:root{ --green:#00ff88; }
+
+html,body{
+  margin:0;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+  font-family:monospace;
+  color:var(--green);
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+
+/* Timeline */
+.timeline{
+  position:fixed;
+  top:0;
+  width:100%;
+  height:14px;
+  background:rgba(0,255,136,0.1);
+  z-index:10;
+}
+
+.progress{
+  height:100%;
+  width:0%;
+  background:#00ff88;
+  box-shadow:0 0 10px #00ff88;
+}
+
+.thumb{
+  position:absolute;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:10px;
+  height:10px;
+  background:#00ff88;
+  border-radius:50%;
+}
+
+/* Subtitles */
+.sub{
+  position:fixed;
+  bottom:60px;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(90vw,600px);
+  text-align:center;
+  font-size:14px;
+  white-space:pre-wrap;
+  text-shadow:0 0 6px #0f8;
+  z-index:10;
+}
+
+/* Buttons */
+.selector{
+  position:fixed;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:6px;
+  z-index:10;
+}
+
+button{
+  background:#000;
+  border:1px solid #0f8;
+  color:#0f8;
+  padding:6px;
+  cursor:pointer;
+}
+button.active{ background:#022; }
+</style>
+
+</head>
+
+<body>
+
+<div class="timeline" id="timeline">
+  <div class="progress" id="progress"></div>
+  <div class="thumb" id="thumb"></div>
+</div>
+
+<canvas id="c"></canvas>
+
+<div class="sub" id="sub"></div>
+<div class="selector" id="selector"></div>
+
+<audio id="audio"></audio>
+
+<script>
+const TRACKS = [
+  "Your_Brain_Refracts_Rather_Than_Creates_Consciousness",
+  "Your_Brain_Is_a_Refractive_Prism"
+]
+
+const audio = document.getElementById("audio")
+const timeline = document.getElementById("timeline")
+const progress = document.getElementById("progress")
+const thumb = document.getElementById("thumb")
+const subEl = document.getElementById("sub")
+const selector = document.getElementById("selector")
+
+let cues=[], lastText="", current=0, scrubbing=false
+
+/* TRACK */
+function loadTrack(i){
+  current=i
+  cues=[]
+  lastText=""
+  subEl.textContent=""
+
+  audio.src = TRACKS[i] + ".mp3"
+  audio.load()
+  loadVTT(TRACKS[i] + ".vtt")
+  updateUI()
+}
+
+/* VTT */
+async function loadVTT(file){
+  try{
+    const txt = await (await fetch(file)).text()
+    cues = parseVTT(txt)
+  }catch{ cues=[] }
+}
+
+function parseVTT(txt){
+  txt = txt.replace(/^\uFEFF/, "")
+  const lines = txt.split('\n')
+  const out=[]
+  let i=0
+
+  while(i<lines.length){
+    const l=lines[i].trim()
+    if(l.includes('-->')){
+      const [s,eRaw]=l.split('-->').map(x=>x.trim())
+      const e=eRaw.split(/\s+/)[0]
+      i++
+      const t=[]
+      while(i<lines.length && lines[i].trim()){
+        t.push(lines[i].trim()); i++
+      }
+      out.push({start:toSec(s),end:toSec(e),text:t.join('\n')})
+    } else i++
+  }
+  return out
+}
+
+function toSec(t){
+  t=t.replace(',', '.')
+  const p=t.split(':').map(Number)
+  return p.length===3 ? p[0]*3600+p[1]*60+p[2] :
+         p.length===2 ? p[0]*60+p[1] : 0
+}
+
+/* SCRUB */
+function setTime(e){
+  const rect = timeline.getBoundingClientRect()
+  const r = Math.min(Math.max((e.clientX-rect.left)/rect.width,0),1)
+  if(!isNaN(audio.duration)) audio.currentTime = r * audio.duration
+
+  const pct = r*100
+  progress.style.width = pct+"%"
+  thumb.style.left = pct+"%"
+}
+
+timeline.addEventListener("pointerdown", e=>{
+  e.stopPropagation()
+  timeline.setPointerCapture(e.pointerId)
+  scrubbing=true
+  setTime(e)
+})
+
+timeline.addEventListener("pointermove", e=>{
+  if(scrubbing) setTime(e)
+})
+
+timeline.addEventListener("pointerup", e=>{
+  scrubbing=false
+  timeline.releasePointerCapture(e.pointerId)
+})
+
+/* AUDIO */
+audio.ontimeupdate = ()=>{
+  const t=audio.currentTime
+  const d=audio.duration||1
+  const pct = (t/d)*100
+
+  progress.style.width=pct+"%"
+  thumb.style.left=pct+"%"
+
+  let active=null
+  for(let i=cues.length-1;i>=0;i--){
+    const c=cues[i]
+    if(t>=c.start-0.1){
+      if(t<=c.end+0.5) active=c
+      break
+    }
+  }
+
+  if(active) lastText=active.text
+  subEl.textContent=lastText
+}
+
+audio.onended = ()=>{
+  loadTrack((current+1)%TRACKS.length)
+  audio.play()
+}
+
+/* BUTTONS */
+TRACKS.forEach((_,i)=>{
+  const b=document.createElement("button")
+  b.textContent=i+1
+  b.onclick=e=>{
+    e.stopPropagation()
+    loadTrack(i)
+    audio.play()
+  }
+  selector.appendChild(b)
+})
+
+function updateUI(){
+  [...selector.children].forEach((b,i)=>{
+    b.classList.toggle("active", i===current)
+  })
+}
+
+/* PLAY TOGGLE */
+document.body.onclick = ()=>{
+  audio.paused ? audio.play() : audio.pause()
+}
+
+/* VISUALIZER — PRISM FIELD */
+const c=document.getElementById("c")
+const g=c.getContext("2d")
+
+let w,h,cx,cy
+function resize(){
+  w=c.width=innerWidth
+  h=c.height=innerHeight
+  cx=w/2; cy=h/2
+}
+resize()
+addEventListener("resize",resize)
+
+/* Beam state */
+let angle=0
+let drift=0
+
+function draw(){
+  g.fillStyle="rgba(0,0,0,0.12)"
+  g.fillRect(0,0,w,h)
+
+  const R = Math.min(w,h)*0.4
+
+  g.save()
+  g.beginPath()
+  g.arc(cx,cy,R,0,Math.PI*2)
+  g.clip()
+
+  angle += 0.01
+  drift += 0.002
+
+  const bands = 24
+
+  for(let i=0;i<bands;i++){
+    const hue = i * 360 / bands
+
+    const spread = 0.4 + Math.sin(angle + i*0.2)*0.2
+
+    const x = cx + Math.cos(angle + i*0.05) * R * spread
+    const y = cy + Math.sin(angle*1.3 + i*0.05) * R * spread
+
+    const wave = Math.sin((audio.currentTime || 0)*2 + i*0.3)
+
+    const intensity = 0.5 + wave*0.5
+
+    g.beginPath()
+    g.moveTo(cx,cy)
+    g.lineTo(x,y)
+
+    g.strokeStyle = `hsla(${hue},100%,60%,${intensity})`
+    g.lineWidth = 1.5
+    g.shadowColor = `hsl(${hue},100%,60%)`
+    g.shadowBlur = 8
+
+    g.stroke()
+  }
+
+  g.shadowBlur=0
+  g.restore()
+
+  /* lens ring */
+  g.beginPath()
+  g.arc(cx,cy,R,0,Math.PI*2)
+  g.strokeStyle="rgba(0,255,136,0.6)"
+  g.lineWidth=2
+  g.stroke()
+
+  requestAnimationFrame(draw)
+}
+
+draw()
+loadTrack(0)
+</script>
+
+</body>
+</html>
+

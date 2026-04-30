@@ -67,8 +67,20 @@ canvas {
   place-items: center;
   font-size: 14px;
   text-shadow: 0 0 10px #00ff66;
+  pointer-events: none;
+  transition: opacity 0.4s;
 }
-.hidden { opacity: 0; transition: opacity 0.4s; }
+
+#status {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  font-size: 11px;
+  opacity: 0.4;
+  letter-spacing: 0.08em;
+}
+
+.hidden { opacity: 0; }
 </style>
 </head>
 
@@ -77,8 +89,9 @@ canvas {
 <canvas id="c"></canvas>
 <div id="subtitle"></div>
 <div id="hint">CLICK / TAP TO START</div>
+<div id="status">STANDBY</div>
 
-<audio id="audio" preload="auto">
+<audio id="audio" preload="auto" crossorigin="anonymous">
   <source src="Life_as_a_Topological_Loop.mp3" type="audio/mpeg">
   <track id="track" kind="subtitles" src="Life_as_a_Topological_Loop.vtt" default>
 </audio>
@@ -90,10 +103,12 @@ const ctx = canvas.getContext("2d");
 const audio = document.getElementById("audio");
 const subtitleEl = document.getElementById("subtitle");
 const hint = document.getElementById("hint");
+const statusEl = document.getElementById("status");
 const track = document.getElementById("track");
 
 let audioCtx, analyser, source, data;
 let started = false;
+let audioAvailable = true;
 
 function resize() {
   const dpr = window.devicePixelRatio || 1;
@@ -107,41 +122,75 @@ addEventListener("resize", resize);
 function initAudio() {
   if (audioCtx) return;
 
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 2048;
-  analyser.smoothingTimeConstant = 0.85;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    analyser.smoothingTimeConstant = 0.85;
 
-  source = audioCtx.createMediaElementSource(audio);
-  source.connect(analyser);
-  analyser.connect(audioCtx.destination);
+    source = audioCtx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
 
-  data = new Uint8Array(analyser.frequencyBinCount);
+    data = new Uint8Array(analyser.frequencyBinCount);
+  } catch (e) {
+    console.warn("AudioContext init failed:", e);
+    audioAvailable = false;
+  }
 }
 
 async function start() {
+  // Always init audio context on first user gesture (required by browsers)
   initAudio();
 
-  if (audioCtx.state === "suspended") await audioCtx.resume();
-  await audio.play();
+  if (audioCtx && audioCtx.state === "suspended") {
+    await audioCtx.resume().catch(() => {});
+  }
+
+  if (audioAvailable) {
+    try {
+      await audio.play();
+      statusEl.textContent = "PLAYING";
+    } catch (e) {
+      console.warn("Audio play failed (file missing or format error):", e);
+      audioAvailable = false;
+      statusEl.textContent = "NO AUDIO — VISUAL ONLY";
+    }
+  }
 
   started = true;
   hint.classList.add("hidden");
 }
 
-canvas.addEventListener("pointerdown", async () => {
-  if (!started || audio.paused) await start();
-  else audio.pause();
-});
+async function toggle() {
+  if (!started) {
+    await start();
+  } else if (audioAvailable && !audio.paused) {
+    audio.pause();
+    statusEl.textContent = "PAUSED";
+  } else if (audioAvailable && audio.paused) {
+    try {
+      await audio.play();
+      statusEl.textContent = "PLAYING";
+    } catch (e) {
+      statusEl.textContent = "NO AUDIO — VISUAL ONLY";
+    }
+  }
+}
+
+canvas.addEventListener("pointerdown", toggle);
 
 /* --- SUBTITLES --- */
 track.mode = "hidden";
-track.addEventListener("load", () => {
-  const cues = track.track.cues;
+
+function trySubtitles() {
+  const cueTrack = track.track;
+  if (!cueTrack || !cueTrack.cues || cueTrack.cues.length === 0) return;
 
   function update() {
     const t = audio.currentTime;
     let text = "";
+    const cues = cueTrack.cues;
     for (let i = 0; i < cues.length; i++) {
       if (t >= cues[i].startTime && t <= cues[i].endTime) {
         text = cues[i].text;
@@ -152,7 +201,11 @@ track.addEventListener("load", () => {
     requestAnimationFrame(update);
   }
   update();
-});
+}
+
+track.addEventListener("load", trySubtitles);
+// Fallback: try after a short delay in case event already fired
+setTimeout(trySubtitles, 500);
 
 /* --- DRAW --- */
 
@@ -193,15 +246,29 @@ function drawPorthole(w, h, t) {
   ctx.restore();
 }
 
-function drawLissajous(w, h, t) {
-  if (!analyser) return;
+// Fallback "fake" frequency data for when there's no audio
+const fakeData = new Uint8Array(1024);
+function makeFakeData(t) {
+  for (let i = 0; i < fakeData.length; i++) {
+    fakeData[i] = Math.sin(t * 0.001 + i * 0.05) * 60 + 60;
+  }
+}
 
-  analyser.getByteFrequencyData(data);
+function drawLissajous(w, h, t) {
+  let freqData;
+
+  if (analyser && started) {
+    analyser.getByteFrequencyData(data);
+    freqData = data;
+  } else {
+    makeFakeData(t);
+    freqData = fakeData;
+  }
 
   let bass = 0, mid = 0, high = 0;
-  for (let i = 0; i < 50; i++) bass += data[i];
-  for (let i = 50; i < 200; i++) mid += data[i];
-  for (let i = 200; i < 600; i++) high += data[i];
+  for (let i = 0; i < 50; i++) bass += freqData[i];
+  for (let i = 50; i < 200; i++) mid += freqData[i];
+  for (let i = 200; i < 600; i++) high += freqData[i];
 
   bass /= 50 * 255;
   mid /= 150 * 255;
@@ -239,10 +306,10 @@ function drawLissajous(w, h, t) {
   ctx.restore();
 }
 
-function drawNoise(w,h) {
+function drawNoise(w, h) {
   ctx.fillStyle = "rgba(120,255,120,0.06)";
-  for (let i=0;i<60;i++){
-    ctx.fillRect(Math.random()*w, Math.random()*h,1,1);
+  for (let i = 0; i < 60; i++){
+    ctx.fillRect(Math.random()*w, Math.random()*h, 1, 1);
   }
 }
 
@@ -251,11 +318,11 @@ function animate(t){
   const h = innerHeight;
 
   ctx.fillStyle = "rgba(0,6,0,0.25)";
-  ctx.fillRect(0,0,w,h);
+  ctx.fillRect(0, 0, w, h);
 
-  drawPorthole(w,h,t);
-  drawLissajous(w,h,t);
-  drawNoise(w,h);
+  drawPorthole(w, h, t);
+  drawLissajous(w, h, t);
+  drawNoise(w, h);
 
   requestAnimationFrame(animate);
 }

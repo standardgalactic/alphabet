@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Topological Loop Monitor</title>
+
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #020802;
+  overflow: hidden;
+  font-family: "Courier New", monospace;
+  color: #9cff9c;
+}
+
+canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.crt::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.035) 0px,
+      rgba(255,255,255,0.035) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+  opacity: 0.22;
+}
+
+.crt::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.65));
+}
+
+#subtitle {
+  position: fixed;
+  bottom: 60px;
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+  letter-spacing: 0.06em;
+  color: #b7ffb7;
+  text-shadow:
+    0 0 6px #00ff66,
+    0 0 12px rgba(0,255,100,0.4);
+  padding: 0 20px;
+}
+
+#hint {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  text-shadow: 0 0 10px #00ff66;
+}
+.hidden { opacity: 0; transition: opacity 0.4s; }
+</style>
+</head>
+
+<body class="crt">
+
+<canvas id="c"></canvas>
+<div id="subtitle"></div>
+<div id="hint">CLICK / TAP TO START</div>
+
+<audio id="audio" preload="auto">
+  <source src="Life_as_a_Topological_Loop.mp3" type="audio/mpeg">
+  <track id="track" kind="subtitles" src="Life_as_a_Topological_Loop.vtt" default>
+</audio>
+
+<script>
+const canvas = document.getElementById("c");
+const ctx = canvas.getContext("2d");
+
+const audio = document.getElementById("audio");
+const subtitleEl = document.getElementById("subtitle");
+const hint = document.getElementById("hint");
+const track = document.getElementById("track");
+
+let audioCtx, analyser, source, data;
+let started = false;
+
+function resize() {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = innerWidth * dpr;
+  canvas.height = innerHeight * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+resize();
+addEventListener("resize", resize);
+
+function initAudio() {
+  if (audioCtx) return;
+
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  analyser.smoothingTimeConstant = 0.85;
+
+  source = audioCtx.createMediaElementSource(audio);
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
+
+  data = new Uint8Array(analyser.frequencyBinCount);
+}
+
+async function start() {
+  initAudio();
+
+  if (audioCtx.state === "suspended") await audioCtx.resume();
+  await audio.play();
+
+  started = true;
+  hint.classList.add("hidden");
+}
+
+canvas.addEventListener("pointerdown", async () => {
+  if (!started || audio.paused) await start();
+  else audio.pause();
+});
+
+/* --- SUBTITLES --- */
+track.mode = "hidden";
+track.addEventListener("load", () => {
+  const cues = track.track.cues;
+
+  function update() {
+    const t = audio.currentTime;
+    let text = "";
+    for (let i = 0; i < cues.length; i++) {
+      if (t >= cues[i].startTime && t <= cues[i].endTime) {
+        text = cues[i].text;
+        break;
+      }
+    }
+    subtitleEl.innerHTML = text;
+    requestAnimationFrame(update);
+  }
+  update();
+});
+
+/* --- DRAW --- */
+
+function drawPorthole(w, h, t) {
+  const cx = w / 2;
+  const cy = h / 2;
+  const r = Math.min(w, h) * 0.32;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  // Outer frame layers
+  for (let i = 0; i < 6; i++) {
+    ctx.beginPath();
+    ctx.arc(0, 0, r + i * 6, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(120,255,140,${0.08 - i*0.01})`;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Rotating tick ring
+  ctx.rotate(t * 0.0001);
+  for (let i = 0; i < 32; i++) {
+    const angle = (i / 32) * Math.PI * 2;
+    const x1 = Math.cos(angle) * (r + 10);
+    const y1 = Math.sin(angle) * (r + 10);
+    const x2 = Math.cos(angle) * (r + 20);
+    const y2 = Math.sin(angle) * (r + 20);
+
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.strokeStyle = "rgba(120,255,140,0.2)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawLissajous(w, h, t) {
+  if (!analyser) return;
+
+  analyser.getByteFrequencyData(data);
+
+  let bass = 0, mid = 0, high = 0;
+  for (let i = 0; i < 50; i++) bass += data[i];
+  for (let i = 50; i < 200; i++) mid += data[i];
+  for (let i = 200; i < 600; i++) high += data[i];
+
+  bass /= 50 * 255;
+  mid /= 150 * 255;
+  high /= 400 * 255;
+
+  const cx = w/2, cy = h/2;
+  const scale = Math.min(w, h) * (0.22 + bass*0.1);
+
+  const a = 3 + Math.floor(mid * 3);
+  const b = 2 + Math.floor(high * 4);
+  const phase = t * 0.00025;
+
+  ctx.save();
+  ctx.translate(cx, cy);
+
+  ctx.shadowBlur = 20;
+  ctx.shadowColor = "#00ff66";
+  ctx.strokeStyle = "rgba(120,255,140,0.9)";
+  ctx.lineWidth = 1.8;
+
+  ctx.beginPath();
+
+  for (let i = 0; i <= 900; i++) {
+    const p = i / 900;
+    const th = p * Math.PI * 2;
+
+    const x = Math.sin(a * th + phase) * scale;
+    const y = Math.sin(b * th) * scale;
+
+    if (i === 0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  }
+
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawNoise(w,h) {
+  ctx.fillStyle = "rgba(120,255,120,0.06)";
+  for (let i=0;i<60;i++){
+    ctx.fillRect(Math.random()*w, Math.random()*h,1,1);
+  }
+}
+
+function animate(t){
+  const w = innerWidth;
+  const h = innerHeight;
+
+  ctx.fillStyle = "rgba(0,6,0,0.25)";
+  ctx.fillRect(0,0,w,h);
+
+  drawPorthole(w,h,t);
+  drawLissajous(w,h,t);
+  drawNoise(w,h);
+
+  requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);
+</script>
+
+</body>
+</html>

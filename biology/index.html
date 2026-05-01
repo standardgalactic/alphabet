@@ -49,15 +49,19 @@ canvas {
 #subtitle {
   position: fixed;
   bottom: 60px;
-  width: 100%;
+  left: 0;
+  right: 0;
   text-align: center;
-  font-size: 16px;
+  font-size: clamp(12px, 3.5vw, 16px);
   letter-spacing: 0.06em;
   color: #b7ffb7;
   text-shadow:
     0 0 6px #00ff66,
     0 0 12px rgba(0,255,100,0.4);
-  padding: 0 20px;
+  padding: 0 24px;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 #hint {
@@ -255,9 +259,11 @@ function makeFakeData(t) {
 }
 
 function drawLissajous(w, h, t) {
+  if (!started) return;
+
   let freqData;
 
-  if (analyser && started) {
+  if (analyser) {
     analyser.getByteFrequencyData(data);
     freqData = data;
   } else {

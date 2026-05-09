@@ -1,0 +1,1307 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{tikz-cd}
+\geometry{
+  top=1.25in,
+  bottom=1.25in,
+  left=1.25in,
+  right=1.25in
+}
+\title{\textbf{Obstruction Cohomology and the Topology of Failure}\\
+\large Constraint Closure Across Differential, Recursive, and Semantic Regimes}
+\author{Flyxion}
+\date{\today}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We propose a unifying principle---\emph{Katz-Admissibility}---which identifies a single
+obstruction class underlying differential propagation, recursive closure, and semantic
+consistency. Building on the non-abelian Katz formula established by Barz, we show that
+local (Higgs-type) and recursive ($p$-curvature-type) defects are not independent failure
+modes but equivalent projections of a common cohomological obstruction, related by a
+canonical comparison map $\phi$. The non-abelian connection is reinterpreted as a
+\emph{lifting problem} rather than a differential operator: admissibility becomes the
+condition that a certain Cartesian square commutes, and failure is the obstruction to
+completing that square. This geometric reformulation is then interpreted across three
+structurally aligned domains: field-theoretic dynamics in the Relativistic Scalar--Vector
+Plenum (RSVP) framework, event-driven computation in Spherepop, and semantic merging in
+the TARTAN infrastructure. In each domain the same identity---recursive obstruction equals
+the pullback of differential obstruction---governs stability, yielding a general theory of
+admissibility as topological agreement. We further introduce the notion of the
+\emph{Admissibility Log} as a second active filtration of a system's state-space, prove
+that the event log is not merely a record but a constraint structure in its own right, and
+establish that singularities across physics, computation, and knowledge systems are
+uniformly characterizable as regions of comparison-map divergence.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+\subsection{From Logical Consistency to Topological Agreement}
+
+Classical systems of verification, whether in mathematics, physics, or computation,
+have largely been grounded in the paradigm of logical consistency. A system is deemed
+valid if no contradictions arise within a fixed formal language. This paradigm,
+however, presupposes that correctness is a property of static configurations rather
+than of transformations. In dynamical settings---where states evolve, histories
+accumulate, and structures are continuously reconstituted---this assumption becomes
+inadequate.
+
+A more appropriate notion of stability in such contexts is not the absence of
+contradiction, but the preservation of \emph{admissibility}: the capacity for local
+constraints to propagate globally without introducing irreparable discontinuities.
+These discontinuities, which we will refer to as \emph{tears}, are not merely logical
+failures but topological obstructions to the coherent extension of structure.
+
+The transition from logical consistency to topological agreement thus reframes
+correctness as a geometric property. A system is stable not because it satisfies a
+collection of axioms, but because its local deformations and global reconstructions
+remain compatible under all admissible transformations. This shift aligns naturally
+with modern developments in algebraic geometry and higher category theory, where
+objects are understood through their deformation spaces and gluing conditions. It also
+resonates with a principle that has been implicit in the study of constrained dynamical
+systems: that \emph{what fails} is as informative as what holds, and the structure of
+failure has its own topology.
+
+A decisive technical advance in this direction is provided by Barz's 2026 paper on
+non-abelian $p$-curvature \cite{barz}, which establishes a non-abelian analogue of
+Katz's classical formula \cite{katz} relating the Higgs field of the Hodge filtration
+to the $p$-curvature of the conjugate filtration. The present paper is organized around
+the observation that this identity is not merely a theorem of arithmetic geometry but a
+structural law of admissibility that applies uniformly to field theory, computation,
+and semantics.
+
+\subsection{The Non-Abelian Connection as a Lifting Problem}
+
+A crucial reorientation that drives the present work concerns what a connection
+\emph{is}. Classically, a connection $\nabla : E \to \Omega^1_{S/k} \otimes E$ is a
+differential operator---something you apply to sections of a bundle. This operator
+picture is useful for computation but obscures the underlying structure.
+
+The sheared de Rham stack $(S/k)_{dR_c}$ provides a geometrization that replaces the
+operator picture with a diagram picture. In this setting, a non-abelian connection on a
+moduli object $\mathcal{M}$ is not a map but a Cartesian square:
+\[
+\begin{tikzcd}
+\mathcal{M} \arrow[r] \arrow[d] & \mathcal{M}' \arrow[d] \\
+S \arrow[r] & (S/k)_{dR_c}
+\end{tikzcd}
+\]
+The connection \emph{is} the commutativity of this square. Admissibility is the
+condition that the square can be completed. A tear is the obstruction to its
+completion. This reframing is not a matter of language: it changes what questions are
+natural to ask. Instead of asking whether a connection satisfies equations, one asks
+whether a lifting problem has a solution, and if not, what the obstruction is.
+
+This is the sense in which the present framework constitutes a passage from an
+\emph{algebraic} to a \emph{geometric} theory of failure. The obstruction to lifting
+is a cohomological class, and the main result is that this class is the same regardless
+of whether the lifting is attempted in the differential or the recursive direction.
+
+\subsection{Overview of the Main Result}
+
+The central claim of this paper is that differential propagation and recursive closure
+are not independent mechanisms of failure, but rather distinct projections of a single
+underlying obstruction class. Formally, we identify two defect operators associated to
+a system state,
+\[
+\delta_{\mathrm{diff}} \quad \text{and} \quad \delta_{\mathrm{rec}},
+\]
+corresponding respectively to infinitesimal (forward) deformation and recursive
+(history-dependent) closure.
+
+The main structural identity, which we call \emph{Katz-Admissibility}, asserts that
+these defects are related by a canonical comparison map $\phi$:
+\[
+[\delta_{\mathrm{rec}}] = \phi^*[\delta_{\mathrm{diff}}].
+\]
+
+This identity implies that admissibility can be checked equivalently in either regime.
+More strongly, it establishes that all failures of admissibility arise from a single
+cohomological obstruction class, whose manifestations differ only by the choice of
+filtration. The comparison map $\phi$ is canonical: it is not a choice or a
+convention, but the unique map induced by the relationship between the Hodge and
+conjugate filtrations on the moduli stack of admissible structures.
+
+\subsection{Domains of Application}
+
+The significance of Katz-Admissibility extends across three distinct but structurally
+aligned domains.
+
+In the context of algebraic geometry, it arises from the non-abelian Katz formula,
+which relates the Higgs field associated to the Hodge filtration with the $p$-curvature
+associated to the conjugate filtration. This provides a rigorous mathematical
+foundation for the equivalence of differential and recursive defects.
+
+In the Relativistic Scalar--Vector Plenum (RSVP) framework, this identity admits a
+field-theoretic interpretation. Differential curvature and entropic irreversibility
+are recast as dual projections of a unified admissibility defect, suggesting a
+structural linkage between geometry and thermodynamics that goes beyond analogy.
+Gravity and entropy emerge as the differential and recursive appearances, respectively,
+of the same underlying obstruction class.
+
+In the Spherepop computational model and the broader Semantic Infrastructure program,
+Katz-Admissibility becomes an operational principle. State transitions, event logs,
+and semantic merges are validated not by syntactic rules alone, but by the requirement
+that their associated obstruction classes agree under the comparison map. This yields a
+notion of computation governed by topological consistency rather than purely symbolic
+correctness. Crucially, the event log is not a passive record of transitions but an
+\emph{active filtration} of the state-space: it constitutes a second coordinate system
+on the space of admissible configurations, and Katz-Admissibility is the condition
+that these two coordinate systems agree.
+
+Taken together, these perspectives support a unified view in which admissibility is
+the fundamental invariant of systems that evolve, remember, and interact.
+
+\section{Geometric Background}
+
+\subsection{Sheared de Rham Stacks}
+
+Let $k$ be a field of characteristic $p > 0$ and $S$ a smooth $k$-scheme.
+Classically, a connection on a vector bundle $E$ over $S$ is given by a map
+\[
+\nabla : E \to \Omega^1_{S/k} \otimes E
+\]
+satisfying the Leibniz rule. This formulation treats the connection as additional
+structure imposed on an otherwise independent geometric object: the bundle comes first,
+and the connection is attached to it afterward.
+
+The sheared de Rham stack $(S/k)_{dR_c}$, introduced in the work of Bhatt, Kanaev,
+Mathew, Vologodsky, and Zhang \cite{bhattkanaev}, provides a conceptual reorganization
+of this notion. Rather than equipping a bundle with a connection, one instead considers
+vector bundles \emph{on} $(S/k)_{dR_c}$ directly. A fundamental result is that
+\[
+\mathrm{Vect}((S/k)_{dR_c}) \simeq \{ \text{vector bundles on $S$ with flat connection} \}.
+\]
+Thus, the data of a flat connection is encoded geometrically. Infinitesimal motion and
+parallel transport are no longer external operations but are built into the structure of
+the ambient space. The connection ceases to be an operator and becomes a place.
+
+Intuitively, $(S/k)_{dR_c}$ enlarges $S$ by formally identifying points that are
+infinitesimally close in a manner compatible with divided powers. The resulting object
+is not a scheme but a stack, reflecting the fact that infinitesimal identifications
+carry nontrivial automorphism data. The groupoid structure of the stack records the
+higher coherences of infinitesimal motion that a quotient would destroy.
+
+The significance of this for the present framework is the following. The standard
+picture of a connection as an operator encourages the question: \emph{does this
+operator have the right properties?} The stack picture encourages the question:
+\emph{does this lifting problem have a solution?} These are logically equivalent
+questions, but they have different obstruction theories. It is the obstruction theory
+of the lifting problem that the Katz formula controls.
+
+\subsection{Non-Abelian Moduli of Connections}
+
+Given a smooth proper morphism $f : X \to S$, the classical object of interest is
+the relative de Rham cohomology $H^n_{\mathrm{dR}}(X/S)$, which forms a vector
+bundle on $S$ equipped with the Gauss--Manin connection. This bundle is abelian: it
+is a module over the structure sheaf, and its connection is an ordinary differential
+operator.
+
+The non-abelian generalization replaces this linear object with a moduli stack:
+\[
+\mathcal{M}_{dR}(X/S, n) := \mathrm{Map}_S\big((X/S)_{dR_c}, B\mathrm{SL}_n\big),
+\]
+whose $T$-points classify rank $n$ vector bundles with flat connection on
+$X \times_S T$ together with a trivialization of the determinant. This is no longer a
+module but a geometric object whose points are themselves admissible structures.
+
+The shift from vector bundles to stacks reflects a deeper principle. Instead of
+tracking a single cohomological invariant, one studies the entire space of admissible
+geometric realizations. The system is not described by what it is, but by the
+\emph{moduli of all the ways it could be}. The Gauss--Manin connection is
+correspondingly reinterpreted as a geometric structure on $\mathcal{M}_{dR}(X/S,n)$,
+arising from a universal lifting property: it is the connection that is present because
+the moduli problem is defined over a de Rham base.
+
+This is also where the non-abelian character of the theory becomes essential. In the
+abelian (linear) case, different choices of connection can be added and compared.
+In the non-abelian case, the moduli stack carries a richer structure: distinct
+admissible realizations are not comparable by subtraction but only by the existence of
+morphisms between them. The obstruction to finding such morphisms is precisely what
+the Katz formula measures.
+
+\subsection{$p$-Curvature as Coarse-Grained Obstruction}
+
+In characteristic $p$, flat connections carry an additional invariant known as the
+$p$-curvature. For a connection $\nabla$, the $p$-curvature is a morphism
+\[
+\psi_p : E \to F^*_{\mathrm{abs}}\Omega^1_{S/k} \otimes E,
+\]
+measuring the deviation of $\nabla^p$ from linearity under Frobenius.
+
+From the perspective of sheared de Rham stacks, the $p$-curvature arises by
+restricting the full infinitesimal structure to a coarser equivalence relation, in
+which nilpotent divided power data is collapsed to the condition $a^p = 0$. This
+procedure may be understood as a \emph{projection}: one passes from the full stack,
+which retains all higher groupoid structure, to a quotient that retains only the
+Frobenius residue.
+
+The conceptual point is important. The full sheared de Rham stack is a
+\emph{high-fidelity} object: it remembers how points are infinitesimally identified at
+all orders. The $p$-curvature is the \emph{residual signal} that remains after this
+data is compressed to a single recursive invariant. What is retained is precisely the
+obstruction to descent along Frobenius---the failure of the connection to close under
+$p$-fold iteration. Everything else is lost in the projection.
+
+This is an instance of a general pattern that will recur throughout the paper. A
+complex, structured object admits a canonical lossy projection to a simpler invariant.
+The projected invariant captures a specific type of failure and discards the rest. The
+remarkable content of the Katz formula is that the invariant obtained by projecting in
+the differential direction and the invariant obtained by projecting in the recursive
+direction are, in fact, the same object seen through different lenses.
+
+The non-abelian generalization replaces the linear morphism $\psi_p$ with a
+stack-theoretic construction, but the conceptual role remains the same: it detects the
+obstruction to global coherence under repeated application of local transport. What
+changes is that the obstruction now lives in a non-abelian cohomology, so it cannot
+be described by a single number or a linear map but only by the geometry of the
+moduli of liftings.
+
+\section{Dual Filtrations and Obstruction Theory}
+
+\subsection{The Hodge Filtration as Forward Differential Structure}
+
+Let $S$ be a smooth $k$-scheme. The Hodge filtration arises from a deformation of the
+notion of flat connection into a one-parameter family of $\lambda$-connections:
+\[
+\nabla_\lambda : E \to \Omega^1_{S/k} \otimes E,
+\qquad
+\nabla_\lambda(f s) = f \nabla_\lambda(s) + \lambda\, df \otimes s.
+\]
+At $\lambda = 1$ one recovers an ordinary connection; at $\lambda = 0$ one obtains a
+Higgs field, which is an $\mathcal{O}_S$-linear map. The parameter $\lambda$ therefore
+controls how much of the derivation structure of $\nabla$ is retained. Up to rescaling
+by units, these are parameterized by $\mathbb{A}^1/\mathbb{G}_m$, and the
+\emph{Hodge-filtered sheared de Rham stack} $(S/k)_{dR_c,+} \to \mathbb{A}^1/\mathbb{G}_m$
+encodes this family geometrically.
+
+A \emph{Griffiths-filtered} connection is a filtration $F^\bullet E$ satisfying
+\[
+\nabla(F^i E) \subseteq \Omega^1_{S/k} \otimes F^{i-1}E,
+\]
+so the connection lowers filtration degree by one. Passing to the associated graded
+\[
+\mathrm{gr}_F(E) := \bigoplus_i F^i E / F^{i+1}E,
+\]
+one obtains a first-order invariant measuring the failure of $\nabla$ to preserve the
+filtration. This associated graded structure is the Hodge filtration's way of
+\emph{exposing its defect}: where the connection fails to stay within a filtration
+level, the associated graded records the deviation.
+
+The Hodge filtration is appropriately called the \emph{forward differential structure}
+because it captures the infinitesimal, first-order, local behavior of the connection:
+how a system changes at the level of its tangent directions. It does not see recursive
+history; it sees only the next step.
+
+\subsection{The Conjugate Filtration as Recursive Compression}
+
+In characteristic $p$, there exists a second, intrinsically arithmetic filtration: the
+\emph{conjugate filtration}. Its existence and properties depend fundamentally on the
+prime $p$ and on Frobenius, which has no analogue in characteristic zero. This
+filtration is the machinery by which the system's recursive behavior---its behavior
+under $p$-fold iteration---is encoded geometrically.
+
+The conjugate filtration is constructed by viewing $(S/k)_{dR_c}$ as a torsor over the
+Frobenius twist $S'$ and then forming a deformation that interpolates between this
+torsor and its split form over $\mathbb{A}^1/\mathbb{G}_m$. Concretely, the
+\emph{conjugate-filtered de Rham stack} $(S/k)_{dR_c,c} \to \mathbb{A}^1/\mathbb{G}_m$
+encodes a family of structures whose associated graded, at $\lambda = 0$, is a split
+torsor over $S' \times B\mathbb{G}_m$ with tangent bundle twist $TS'/k(+1)$. The
+filtration is increasing, and it reflects the behavior of the system under Frobenius
+iteration.
+
+The key structural observation is that Frobenius is not merely a technical device of
+characteristic-$p$ geometry. It is an operation of \emph{recursive compression}: it
+takes the full infinitesimal neighborhood of a point and projects it through a
+$p$-fold iteration that collapses all intermediate structure. The conjugate filtration
+is the filtration that results from allowing this recursive compression to interact with
+the geometry of the de Rham stack. Where the Hodge filtration sees the first step, the
+conjugate filtration sees the $p$-th.
+
+\subsection{Higgs Field and $p$-Curvature as Obstruction Invariants}
+
+The passage to associated gradeds extracts obstruction data from each filtration.
+
+From the Hodge filtration, one obtains the \emph{Higgs field}
+\[
+\Theta : \mathrm{gr}_F(E) \to \Omega^1_{S/k} \otimes \mathrm{gr}_F(E)(-1),
+\]
+which is $\mathcal{O}_S$-linear and measures the deviation of the connection from
+preserving the filtration. In the non-abelian setting, this generalizes to a morphism
+of stacks
+\[
+\Theta_{X/S} : \pi^* T_{S/k}(-1) \to T_{\mathcal{M}_{Dol}/(S \times B\mathbb{G}_m)}.
+\]
+This is the \emph{differential defect}: the amount by which first-order transport fails
+to be filtration-preserving.
+
+From the conjugate filtration, one obtains the \emph{conjugate $p$-curvature}
+\[
+\psi : E \to F^*_{S/k}\Omega^1_{S'/k} \otimes E(+1),
+\]
+which measures the failure of recursive closure under Frobenius. In the non-abelian
+setting, this becomes a morphism of stacks:
+\[
+\psi_{X/S} : \pi^* F^*_{S/k}T_{S'/k}(+1) \to T_{\mathcal{M}_{Dol,c}/(S \times B\mathbb{G}_m)}.
+\]
+This is the \emph{recursive defect}: the amount by which $p$-fold iteration of
+transport fails to be trivial.
+
+A priori, these are entirely different invariants arising from entirely different
+constructions. The Higgs field lives on the Dolbeault moduli stack; the $p$-curvature
+lives on the conjugate-filtered Dolbeault moduli stack. They are extracted by different
+projection procedures from different filtrations. There is no obvious reason why they
+should be related. Yet the Katz formula asserts that they are not merely related but
+\emph{identical} after the appropriate transport.
+
+\section{The Non-Abelian Katz Formula}
+
+\subsection{Statement of the Theorem}
+
+Let $f : X \to S$ be a smooth proper morphism of smooth $k$-schemes, and let
+$\mathcal{M}_{dR}(X/S,n)$ denote the non-abelian de Rham moduli stack of rank $n$
+bundles with flat connection. From the Hodge filtration, one obtains a non-abelian
+Higgs field
+\[
+\Theta_{X/S} : \pi^* T_{S/k}(-1) \to T_{\mathcal{M}_{Dol}/(S \times B\mathbb{G}_m)}.
+\]
+From the conjugate filtration, one obtains a non-abelian $p$-curvature
+\[
+\psi_{X/S} : \pi^* F^*_{S/k}T_{S'/k}(+1) \to T_{\mathcal{M}_{Dol,c}/(S \times B\mathbb{G}_m)}.
+\]
+
+\begin{theorem}[Non-Abelian Katz Formula, Barz \cite{barz}]
+There exists a canonical morphism
+\[
+\phi : \mathcal{M}_{Dol,c} \to \mathcal{M}_{Dol}
+\]
+such that
+\[
+\psi_{X/S} = \phi^*\Theta_{X/S}.
+\]
+More precisely, there is a Cartesian diagram relating $\mathcal{M}_{Dol,c}$ and
+$\mathcal{M}_{Dol}$, and under this diagram the pullback of the non-abelian Higgs
+field $\Theta_{X/S}$ equals the conjugate-filtered $p$-curvature $\psi_{X/S}$.
+\end{theorem}
+
+This identity is to be understood as an equality of morphisms after pullback along
+$\phi$, and it is an equality of stack-valued morphisms, not merely of linear maps.
+The Cartesian diagram structure is essential: $\phi$ is not an arbitrary morphism but
+one whose definition is forced by the relationship between the two filtrations.
+
+\subsection{Conceptual Interpretation: Two Projections of One Defect}
+
+The non-abelian Katz formula establishes that the two filtrations introduced in the
+previous section are not independent structures. Their associated obstructions are
+equivalent under the canonical comparison $\phi$.
+
+To understand why this is nontrivial, observe the following. The Higgs field
+$\Theta_{X/S}$ arises from the failure of the connection to preserve the Hodge
+filtration. It is a \emph{forward} invariant: it measures what happens when you try to
+extend the connection one step in the differential direction and find that the
+filtration degree drops. The $p$-curvature $\psi_{X/S}$ arises from the failure of
+recursive closure under Frobenius. It is a \emph{recursive} invariant: it measures
+what happens when you apply the connection $p$ times and find that the result is not
+what flatness would predict.
+
+These are measurements taken at different scales and in different directions. The Higgs
+field measures a deviation at the tangent level; the $p$-curvature measures a deviation
+at the level of a global, $p$-fold operation. The identity $\psi_{X/S} = \phi^*\Theta_{X/S}$
+asserts that despite this apparent difference, the obstructions they detect are
+identical. The recursive failure is the pullback of the differential failure.
+
+Put differently: if you know where the system tears differentially, you know exactly
+where it will tear recursively, and vice versa. The two failure modes are not
+independent sources of information about the system. They are two coordinate
+representations of a single underlying fact.
+
+\subsection{The No Independent Tear Principle}
+
+The conceptual content of the Katz formula can be distilled into a principle that
+applies well beyond its algebraic-geometric origin.
+
+\begin{theorem}[No Independent Tear Principle]
+Let $\mathcal{F}$ be a geometric or computational system equipped with both a
+differential and a recursive structure. Then all admissibility failures in
+$\mathcal{F}$ arise from a single cohomological obstruction class. Equivalently, the
+defects detected by differential propagation and recursive closure are equivalent under
+a canonical comparison map.
+\end{theorem}
+
+\begin{proof}[Sketch]
+The non-abelian Katz formula provides an explicit identification of the Higgs field
+and $p$-curvature via pullback along $\phi$. Both $\Theta$ and $\psi$ arise as
+associated graded invariants of filtrations on the same underlying structure, namely
+the moduli stack $\mathcal{M}_{dR}(X/S,n)$ equipped with its two natural filtrations.
+Since these filtrations are defined on a common geometric object and their associated
+graded pieces are related by the Cartesian diagram of the Katz formula, the induced
+obstruction classes must coincide in cohomology. Thus any failure detected in one
+regime is necessarily present in the other, and no failure exists in one that is absent
+in the other.
+\end{proof}
+
+\begin{corollary}
+Admissibility is checkable from either regime without loss of information. A system
+that is admissible differentially is admissible recursively, and conversely.
+\end{corollary}
+
+The No Independent Tear Principle has a further consequence that is worth making
+explicit. Since all admissibility failures are projections of a single class, the
+structure of \emph{failure space} is simpler than the structure of \emph{state space}.
+States can be arbitrarily complex; failures all live in $H^1(\mathcal{F})$. This is a
+significant compression, and it is the compression that makes a unified theory of
+admissibility possible.
+
+\subsection{The Comparison Map $\phi$ as a Transport Equivalence}
+
+The comparison map $\phi : \mathcal{M}_{Dol,c} \to \mathcal{M}_{Dol}$ has an
+interpretation that deserves emphasis. It is not an arbitrary map between two
+unrelated moduli spaces. It is the map that aligns the two filtrations---it is, in a
+precise sense, the act of choosing a coordinate system on the space of admissible
+structures.
+
+In more abstract terms, $\phi$ plays the role of what might be called a
+\emph{transport equivalence}: a canonical identification between two representations
+of the same structure that are a priori distinct. The Hodge filtration gives one
+representation; the conjugate filtration gives another. The map $\phi$ is the proof
+that these representations are equivalent, and the Katz formula is the statement that
+under this equivalence, the two obstruction invariants coincide.
+
+This can be expressed in the RSVP framework as follows. Define two operators on the
+space of field configurations:
+\[
+\mathcal{J}_{\mathrm{diff}} : X \mapsto \delta_{\mathrm{diff}}(X),
+\qquad
+\mathcal{R}_{\mathrm{frob}} : X \mapsto \delta_{\mathrm{rec}}(X).
+\]
+The transport equivalence asserts that there exists a canonical isomorphism
+$\mathcal{T}$ of the state-space such that
+\[
+\mathcal{R}_{\mathrm{frob}}(X) = \mathcal{T}^{-1} \circ \mathcal{J}_{\mathrm{diff}} \circ \mathcal{T}(X).
+\]
+Recursive dynamics is therefore not new dynamics. It is differential dynamics seen
+through a different coordinate system on the admissibility manifold. The choice between
+analyzing a system differentially and analyzing it recursively is a choice of
+coordinates, not a choice of subject matter.
+
+\section{RSVP Field Interpretation}
+
+\subsection{Field-Space Completion}
+
+In the Relativistic Scalar--Vector Plenum (RSVP) framework, a physical or
+computational state is modeled as a triple
+\[
+X = (\Phi, \vec{v}, S),
+\]
+where $\Phi$ is a scalar potential, $\vec{v}$ is a vector flow field, and $S$ is an
+entropy-like functional encoding structural irreversibility.
+
+The passage from a base space $S$ to its sheared de Rham stack $(S/k)_{dR_c}$ admits a
+natural interpretation in this setting as a \emph{field-space completion}. Rather than
+treating evolution as an operator acting on $X$, one considers the prestack of all
+infinitesimal continuations of $X$ consistent with its internal constraints. This is
+the space of all admissible next states, together with the structured ways they relate
+to one another. A connection in this context is a rule for lifting trajectories into
+this completed space---a specification of which continuations are admissible and how
+they fit together.
+
+The field-space completion replaces the question ``what does this state evolve into?''
+with the question ``what is the space of admissible evolutions of this state?'' The
+difference is not merely philosophical. In the former picture, the dynamics is a
+function; in the latter, it is a section of a bundle over the admissibility manifold.
+Admissibility failures become visible as the inability to find such a section.
+
+\subsection{Differential vs Recursive Dynamics}
+
+Two distinct but structurally related modes of evolution arise within RSVP. The
+differential mode, governed by
+\[
+\mathcal{J}_{\mathrm{diff}} : X \mapsto \delta_{\mathrm{diff}}(X),
+\]
+captures infinitesimal change in the field configuration. It corresponds to the Hodge
+filtration in the geometric setting and operates at the level of first-order
+perturbations of the field. The recursive mode, governed by the Frobenius-type
+operator
+\[
+\mathcal{R}_{\mathrm{frob}} : X \mapsto \delta_{\mathrm{rec}}(X),
+\]
+captures the effect of repeated or accumulated transformations. It corresponds to the
+conjugate filtration and operates at the level of the field's long-run behavior under
+iterated application.
+
+These two operators are not independent. By the transport equivalence established in
+the previous section, they are related by
+\[
+\mathcal{R}_{\mathrm{frob}}(X) = \mathcal{T}^{-1} \circ \mathcal{J}_{\mathrm{diff}} \circ \mathcal{T}(X),
+\]
+where $\mathcal{T}$ is the canonical coordinate change between the Hodge and conjugate
+representations. The local differential behavior and the global recursive behavior are
+therefore not two aspects of the field that must be separately managed; they are one
+aspect expressed in two equivalent notations.
+
+\subsection{Gravity as Differential Obstruction}
+
+Within RSVP, curvature is understood as the failure of local field configurations to
+extend consistently across space. This is precisely the role of the Higgs field
+$\Theta_{X/S}$: it measures the deviation of a connection from preserving the Hodge
+filtration, which is to say, the degree to which local differential data fails to be
+globally coherent.
+
+We therefore interpret
+\[
+\mathcal{G}(X) \sim \Theta_{X/S}
+\]
+as the \emph{gravitational field}: a differential obstruction encoding the local
+curvature of the plenum. In this interpretation, the geometry of space is not a
+background against which dynamics occurs but a record of where differential
+admissibility fails. Curvature is the map of failure at the infinitesimal scale.
+
+Mass and energy, in this picture, are the sources of the Hodge defect: they are
+the field configurations that make it impossible for the differential filtration to be
+preserved. The gradient of the gravitational potential is therefore not a force but an
+admissibility gradient---a measure of how rapidly the obstruction class changes as one
+moves through field-space.
+
+\subsection{Entropy as Recursive Obstruction}
+
+Entropy is associated with the accumulation of irreversible transformations over time.
+The $p$-curvature $\psi_{X/S}$ captures precisely such recursive deviation, measuring
+the failure of a system to close under repeated application of its dynamics. We
+therefore interpret
+\[
+\mathcal{E}(X) \sim \psi_{X/S}
+\]
+as the \emph{entropic field}: a recursive obstruction encoding the historical structure
+of the system.
+
+Entropy in this framework is not a measure of microscopic disorder in the statistical
+sense. It is a geometric trace of the accumulated failure of recursive closure. Every
+irreversible transformation contributes to the $p$-curvature of the system's trajectory
+in field-space, and the total entropy is the integrated magnitude of this curvature
+over the system's history.
+
+The arrow of time, correspondingly, is not an external condition imposed on the
+dynamics but a consequence of the structure of the recursive obstruction. Time flows in
+the direction of increasing $\mathcal{E}(X)$, which is to say, in the direction in
+which recursive closure becomes progressively harder to achieve. The system cannot
+``go back'' not because of a microscopic irreversibility but because the obstruction
+class accumulated in $\psi_{X/S}$ cannot be unwound by local differential operations.
+
+\subsection{The Linkage Equation and Its Consequences}
+
+The non-abelian Katz formula implies the following identity in the RSVP setting:
+\[
+\mathcal{E}(X) = \phi^* \mathcal{G}(X),
+\]
+where $\phi$ is the canonical comparison map between recursive and differential regimes.
+This \emph{linkage equation} expresses a fundamental equivalence: the entropic
+accumulation of a system is the pullback of its local curvature under recursive
+closure.
+
+The consequences of the linkage equation are substantial. First, gravity and entropy
+are not independent phenomena; they are dual manifestations of a single admissibility
+defect. A system that is locally curved is necessarily historically irreversible, and
+one that has accumulated entropy is necessarily inhabiting a curved region of
+field-space. Second, singularities admit a unified characterization: a singularity is a
+region of field-space where the comparison map $\phi$ fails to admit a consistent
+pullback. In classical general relativity, a singularity is a point of divergent
+curvature; in the present framework, it is a region where the admissibility defect
+diverges so sharply that no admissible state can exist there. This reframing suggests
+that singularity resolution is not a matter of regularizing divergent quantities but of
+constructing an extension of $\phi$ across the region of failure.
+
+Third, the linkage equation implies that the field equations of RSVP can be stated in
+a single obstruction-theoretic form rather than as two separate field equations for
+$\mathcal{G}$ and $\mathcal{E}$. This is the sense in which the present framework
+``unifies'' gravity and entropy: not by deriving one from the other but by identifying
+them as projections of one thing.
+
+\section{Spherepop: Katz-Admissibility as a Type Rule}
+
+\subsection{States, Events, and Transitions as Lifting Problems}
+
+Let $\sigma$ denote a system state in a Spherepop program, and let
+\[
+\Delta : \sigma \to \sigma'
+\]
+be an event proposing a transition. In classical operational semantics, such a
+transition is validated by checking whether $\Delta$ has the right type and whether
+$\sigma$ satisfies the preconditions of $\Delta$. This is a purely local check: it
+examines the immediate configuration without reference to history.
+
+In the Katz-admissibility framework, we interpret $\Delta$ differently: as a
+\emph{lifting problem}. A transition proposes that the system, currently in state
+$\sigma$, can extend to a new state $\sigma'$ through an admissible deformation. This
+is a request to complete a diagram:
+\[
+\begin{tikzcd}
+\sigma \arrow[r, dashed, "\Delta"] \arrow[d] & \sigma' \arrow[d] \\
+\mathcal{A} \arrow[r, "\phi"] & \mathcal{A}'
+\end{tikzcd}
+\]
+where $\mathcal{A}$ and $\mathcal{A}'$ are the admissibility structures of the current
+and proposed states. The transition is admissible if and only if this diagram can be
+completed in a way that is compatible with both the differential structure of the state
+and the recursive structure of the event log.
+
+This reframing is not cosmetic. By treating transitions as lifting problems, we gain
+access to the full machinery of obstruction theory. The question is no longer
+``does $\Delta$ type-check?'' but ``does $\Delta$'s lifting problem have a solution,
+and if not, what is the obstruction?''
+
+\subsection{The Admissibility Log as Second Filtration}
+
+A central claim of this framework is that the event log of a Spherepop program is not
+a passive record but an \emph{active filtration} of the state-space. This deserves
+careful statement.
+
+\begin{definition}[Admissibility Log]
+Let $\sigma_0, \sigma_1, \ldots, \sigma_n$ be a sequence of states produced by events
+$\Delta_1, \ldots, \Delta_n$. The \emph{Admissibility Log} $\mathrm{AL}(\sigma_\bullet)$
+is the decreasing filtration
+\[
+\mathrm{AL}^k(\sigma_\bullet) := \{ \text{admissible states reachable from } \sigma_{n-k}
+\text{ without violating the history of } \Delta_1, \ldots, \Delta_{n-k} \}
+\]
+for $k = 0, 1, \ldots, n$.
+\end{definition}
+
+The Admissibility Log is a filtration of the reachable state-space by the depth of
+historical constraint. At level $k = 0$, only the current state and its immediate
+continuations are visible. At level $k = n$, the entire history imposes its
+constraints. The associated graded pieces of this filtration measure how much of the
+state-space is ruled out by each additional step of history.
+
+The crucial observation is that this log-filtration is exactly the conjugate filtration
+in the geometric sense. The event log is the Frobenius structure of the computation:
+it is the mechanism by which the system's past is recursively compressed into a
+constraint on its future. A computation that ignores its event log is like a connection
+with trivial $p$-curvature---it may be locally flat, but it is making a claim about
+global closure that it has not verified.
+
+\subsection{Differential and Recursive Defects}
+
+To each proposed transition $\Delta : \sigma \to \sigma'$, we associate two defect
+operators.
+
+The \emph{differential defect} $\delta_{\mathrm{diff}}(\sigma,\Delta)$ measures the
+failure of the local state update to preserve admissibility under infinitesimal
+deformation. It is computed from the immediate effect of $\Delta$ on the structure of
+$\sigma$: does the transition preserve the system's local invariants, its type
+constraints, its resource bounds? The differential defect is what classical type-checking
+computes.
+
+The \emph{recursive defect} $\delta_{\mathrm{rec}}(\sigma,\Delta)$ measures the
+failure of the system to remain admissible when the transition is incorporated into the
+Admissibility Log and evaluated under recursive closure. It captures inconsistencies
+that emerge only through accumulation: does adding $\Delta$ to the event log create a
+historical configuration that cannot be consistently extended? Does it produce a $k$-th
+level admissibility violation that the $(k-1)$-th level check missed?
+
+The recursive defect is what distinguishes Katz-admissibility from ordinary
+type-checking. It is the obstruction that classical semantics cannot see, because
+classical semantics does not treat the event log as a filtration.
+
+\subsection{The Katz-Admissibility Type Rule}
+
+With these definitions in place, the Katz-admissibility condition for transitions is
+precisely stated.
+
+\begin{definition}[Katz-Admissibility of Transitions]
+A transition $\Delta : \sigma \to \sigma'$ is \emph{Katz-admissible} if and only if
+\[
+[\delta_{\mathrm{rec}}(\sigma,\Delta)] = \phi^*[\delta_{\mathrm{diff}}(\sigma,\Delta)],
+\]
+where $\phi$ is the canonical comparison map from the recursive graded to the
+differential graded of the admissibility filtrations, and the brackets denote
+cohomology classes in $H^1(\mathcal{F}_\sigma)$.
+\end{definition}
+
+This yields the following pair of type-inference rules. The admissibility rule is:
+\[
+\frac{
+\mathrm{Check}_{Katz}(\sigma,\Delta) = \mathrm{true}
+}{
+\sigma \xrightarrow{\Delta} \sigma' : \mathrm{Admissible}
+}
+\]
+and the tear rule is:
+\[
+\frac{
+\mathrm{Check}_{Katz}(\sigma,\Delta) = \mathrm{false}
+}{
+\sigma \xrightarrow{\Delta} \bot_{\mathrm{NAT}}
+}.
+\]
+The comparison function is:
+\[
+\mathrm{Check}_{Katz}(\sigma,\Delta)
+=
+\Big([\delta_{\mathrm{rec}}(\sigma,\Delta)] = \phi^*[\delta_{\mathrm{diff}}(\sigma,\Delta)]\Big).
+\]
+
+\begin{definition}[Non-Abelian Tear]
+The failure state $\bot_{\mathrm{NAT}}$ is called a \emph{Non-Abelian Tear}. It
+represents the topological obstruction to completing the lifting diagram associated to
+$\Delta$. A Non-Abelian Tear is not a conventional runtime error; it is a failure of
+the system's local and global admissibility structures to agree.
+\end{definition}
+
+\subsection{The Non-Abelian Tear as Singularity}
+
+The Non-Abelian Tear deserves to be understood as the computational analogue of a
+physical singularity. In the RSVP setting, a singularity was characterized as a region
+where the comparison map $\phi$ fails to admit a consistent pullback. In the
+computational setting, a Non-Abelian Tear is a transition where the comparison map
+between the recursive and differential filtrations of the Admissibility Log cannot be
+completed.
+
+This analogy is more than metaphor. In both cases, the failure is the inability to
+extend a local admissibility structure to a global one. In both cases, the obstruction
+lives in $H^1(\mathcal{F})$ for an appropriate sheaf $\mathcal{F}$. And in both
+cases, the appropriate response is not to patch the immediate failure but to understand
+the global topology of the admissibility manifold that produced it.
+
+A Non-Abelian Tear signals that the computation has reached a state from which no
+admissible continuation exists given the system's history. The state itself may be
+locally valid---it may pass all local type-checks---but its position in the
+Admissibility Log is incoherent with its differential structure. The computation must
+either be rolled back to a state from which an admissible path exists, or the system
+must be redesigned so that the offending region of the admissibility manifold is
+avoided.
+
+\subsection{Implementation: Practical Computation of $\phi$}
+
+In a practical implementation, the comparison map $\phi$ must be computed from the
+data of the transition. A pragmatic definition proceeds as follows.
+
+Let $\mathrm{LocalGr}(\sigma, \Delta)$ denote the associated graded of the
+differential filtration induced by the proposed local mutation of $\sigma$ under
+$\Delta$. Let $\mathrm{HistoryGr}(\sigma, \Delta)$ denote the associated graded of the
+recursive filtration induced by appending $\Delta$ to the Admissibility Log.
+
+The comparison map is then:
+\[
+\phi : \mathrm{HistoryGr}(\sigma,\Delta) \to \mathrm{LocalGr}(\sigma,\Delta),
+\]
+and $\mathrm{Check}_{Katz}(\sigma,\Delta)$ tests whether the obstruction classes
+induced by these two associated gradeds coincide under $\phi$.
+
+In the simplest implementations, this check can be approximated by a hash of the
+differential type signature of $\Delta$ against a hash of the relevant suffix of the
+Admissibility Log. Exact computation requires maintaining a richer representation of
+the filtration structure, but even the approximation captures the essential
+distinction: a transition is checked not just for local type correctness but for
+global historical coherence.
+
+\section{Semantic Infrastructure and Sheaf Merge}
+
+\subsection{Knowledge as Sheaves over Contexts}
+
+We model semantic objects---documents, codebases, theories, knowledge graphs---as
+sections of a sheaf $\mathcal{K}$ over a base of contexts $U \subseteq \Omega$. A
+section $s \in \mathcal{K}(U)$ represents a locally consistent body of knowledge over
+the domain $U$, together with restriction maps satisfying the standard gluing axioms
+of sheaf theory.
+
+In this setting, consistency is not absolute but \emph{contextual}: two sections may
+agree on their overlapping domains while differing on regions outside the overlap.
+The problem of integrating multiple knowledge sources is therefore a problem of
+sheaf-theoretic descent. One asks: given sections $A \in \mathcal{K}(U)$ and
+$B \in \mathcal{K}(V)$ that agree on the overlap $U \cap V$, can one find a section
+$C \in \mathcal{K}(U \cup V)$ that restricts to both?
+
+The obstruction to such a global section is measured by the first \v{C}ech cohomology
+$H^1(U \cap V, \mathcal{K})$. When this group is trivial, descent succeeds and the
+merge exists. When it is nontrivial, the sections cannot be glued without
+introducing a tear.
+
+\subsection{The Two Filtrations of a Semantic Field}
+
+In practice, semantic systems carry structure beyond their content. Each section has a
+\emph{derivational history}: a record of the inferences, transformations, and
+compositions that produced it. This history is not merely metadata; it is part of the
+semantic content of the section, because it determines which further inferences are
+valid and which connections to other sections are coherent.
+
+This observation motivates two natural filtrations on the sheaf $\mathcal{K}$.
+
+The \emph{differential filtration} $F^\bullet_{\mathrm{diff}} \mathcal{K}$ organizes
+sections by the depth of local inference: sections at level $i$ are those whose
+content can be reached from the base context by $i$ local rewrite or inference steps.
+The associated graded $\mathrm{gr}^i_{\mathrm{diff}} \mathcal{K}$ captures the content
+that is introduced at exactly inference depth $i$, which is to say, the content that
+requires exactly $i$ steps of local reasoning to reach.
+
+The \emph{recursive filtration} $F^\bullet_{\mathrm{rec}} \mathcal{K}$ organizes
+sections by the depth of provenance: sections at level $j$ are those whose derivational
+history can be traced to exactly $j$ ancestral sections. The associated graded
+$\mathrm{gr}^j_{\mathrm{rec}} \mathcal{K}$ captures the content that is introduced by
+exactly the $j$-th level of compositional provenance.
+
+These two filtrations are in general distinct: a section can be locally simple (low
+differential level) while having a complex derivational history (high recursive level),
+or vice versa. Katz-Admissibility is the condition that governs when they are
+compatible.
+
+\subsection{Katz-Admissibility for Merge Operations}
+
+Given two semantic fields $A \in \mathcal{K}(U)$ and $B \in \mathcal{K}(V)$, define
+the \emph{differential incompatibility} $\delta_{\mathrm{diff}}(A,B)$ as the
+obstruction class arising from comparing their local inference structures on
+$U \cap V$---the degree to which their rewrite rules, constraint systems, and
+immediate content disagree on the overlap. Define the \emph{recursive incompatibility}
+$\delta_{\mathrm{rec}}(A,B)$ as the obstruction class arising from comparing their
+provenance graphs on $U \cap V$---the degree to which their derivational histories,
+compositional origins, and ancestral dependencies disagree.
+
+\begin{definition}[Katz-Admissibility of Merges]
+A merge $A \sqcup B$ exists as a globally coherent section in $\mathcal{K}(U \cup V)$
+if and only if
+\[
+[\delta_{\mathrm{rec}}(A,B)] = \phi^*[\delta_{\mathrm{diff}}(A,B)],
+\]
+where $\phi$ is the canonical comparison map from the recursive graded to the
+differential graded of $\mathcal{K}$ restricted to $U \cap V$.
+\end{definition}
+
+This condition is the semantic analogue of the non-abelian Katz formula. The merge
+succeeds not merely when the two sections agree on their immediate content (which
+would be the condition for local consistency) but when their local content-disagreement
+and their historical-provenance-disagreement are related by the canonical comparison.
+
+The significance of this condition is that it captures a type of incompatibility that
+purely local checks miss. Two knowledge graphs can have perfectly compatible local
+content---the same entities, the same relation types, the same immediate inferences---
+while being historically incompatible: they were derived by different paths from
+conflicting assumptions, and merging them would create a system that locally appears
+consistent but globally is not.
+
+\subsection{Consistency Without Convergence}
+
+A crucial consequence of Katz-admissibility for merges is that global convergence to a
+single canonical form is not required. Two semantic fields may remain distinct yet
+admissible, provided their obstruction classes coincide under the comparison map.
+
+This yields a precise formulation of what was previously called \emph{consistency
+without convergence}. Two sections $A$ and $B$ are \emph{Katz-consistent} if
+$[\delta_{\mathrm{rec}}(A,B)] = \phi^*[\delta_{\mathrm{diff}}(A,B)]$, regardless of
+whether there exists a third section $C$ to which both restrict. Katz-consistency is a
+relation between sections, not a property of individual sections, and it does not
+require either section to change.
+
+\begin{proposition}
+Katz-consistency is symmetric and, under mild regularity conditions on the sheaf
+$\mathcal{K}$, transitive. It defines an equivalence relation on the set of
+locally consistent sections, coarser than isomorphism but finer than mere local
+compatibility.
+\end{proposition}
+
+The proof is immediate from the fact that the comparison map $\phi$ is canonical: its
+construction is symmetric with respect to the roles of $A$ and $B$ up to the
+orientation of the overlap, and transitivity follows from the functoriality of the
+\v{C}ech complex.
+
+Under Katz-consistency, knowledge integration is governed by cohomological agreement.
+Contradictions correspond to nontrivial obstruction classes---to actual failures in
+$H^1$---rather than merely to local disagreements. And merging is a higher-categorical
+gluing operation that succeeds when the two filtrations of the sections are compatible,
+even if the sections themselves are not identical.
+
+\section{The Single Obstruction Engine}
+
+\subsection{The Unified Defect Class}
+
+The preceding sections establish a consistent pattern. In algebraic geometry, in RSVP
+field theory, in Spherepop computation, and in semantic infrastructure, the same
+structure appears: there are two natural filtrations on the space of admissible
+structures, each inducing an obstruction invariant, and the two invariants are always
+related by the canonical comparison map $\phi$. This is not a coincidence of notation
+but a consequence of a common underlying structure.
+
+Let $\mathcal{F}$ be a prestack or sheaf of admissible structures over a base space
+$S$. The failure of global admissibility for a section $s \in \mathcal{F}(S)$ is
+measured by an obstruction class
+\[
+\mathrm{Defect}(s) \in H^1(\mathcal{F}).
+\]
+This class captures the failure of local data to glue into a global section. It is
+independent of the specific method used to probe the system: whether one approaches the
+failure differentially or recursively, one finds the same element of $H^1(\mathcal{F})$.
+
+The two filtrations introduced in each domain induce two projections of this class:
+\[
+\delta_{\mathrm{diff}} \in H^1(\mathrm{gr}_{\mathrm{diff}}(\mathcal{F})),
+\qquad
+\delta_{\mathrm{rec}} \in H^1(\mathrm{gr}_{\mathrm{rec}}(\mathcal{F})).
+\]
+The non-abelian Katz formula implies that these projections are related by the
+canonical comparison map
+\[
+\phi : \mathrm{gr}_{\mathrm{rec}}(\mathcal{F}) \to \mathrm{gr}_{\mathrm{diff}}(\mathcal{F}),
+\]
+such that $\delta_{\mathrm{rec}} = \phi^*(\delta_{\mathrm{diff}})$. Both defects are
+images of the same element of $H^1(\mathcal{F})$ under different functorial
+realizations, and the comparison map $\phi$ is the natural transformation relating
+these two realizations.
+
+\subsection{Symmetry of Failure and Its Implications}
+
+The identification of all admissibility failures with a single class in
+$H^1(\mathcal{F})$ yields a symmetry principle: any defect detected through local
+infinitesimal analysis must also appear under recursive closure, and vice versa. The
+apparent distinction between differential and recursive failure is therefore a
+consequence of the chosen representation, not an intrinsic feature of the system.
+
+This has several important implications. First, validation procedures can be unified:
+one computes the obstruction class in one regime and transports it via $\phi$, rather
+than running independent differential and recursive checks. This reduces the
+computational cost of admissibility verification and eliminates the possibility of
+inconsistent results from the two checks.
+
+Second, the structure of failure space is stable. Because $H^1(\mathcal{F})$ is a
+cohomological group, it is stable under the standard operations of sheaf theory:
+restriction, extension, localization, and pushforward. This means that the set of
+admissibility failures of a complex system can be computed from the failures of its
+components, using the long exact sequence in cohomology. Admissibility is compositional.
+
+Third, the Single Obstruction Engine provides a diagnostic tool. When a system fails,
+one can examine the obstruction class $\mathrm{Defect}(s) \in H^1(\mathcal{F})$ to
+understand the global topology of the failure. This class is more informative than
+either $\delta_{\mathrm{diff}}$ or $\delta_{\mathrm{rec}}$ alone, because it lives
+at a higher level of structure and is not tied to any particular representation.
+
+\subsection{Lossy Projection as Structure, Not Deficiency}
+
+The coarse-graining operation by which $p$-curvature is extracted from the full stack
+structure might initially appear to be a loss of information: one projects from a
+high-fidelity geometric object to a simpler invariant. But the Single Obstruction
+Engine reveals that this projection is not a deficiency but a feature.
+
+The full sheared de Rham stack carries all higher coherences. The $p$-curvature is the
+obstruction that remains after these coherences are projected away. The remarkable fact
+is that this projected invariant is \emph{sufficient}: it captures everything one needs
+to know about admissibility failure, because all failures live in the projected
+invariant's target space.
+
+This suggests a general principle: in systems governed by Katz-admissibility, a
+well-chosen lossy projection does not discard admissibility information. It compresses
+the representation without compressing the obstruction. The obstruction is invariant
+under the projection; only the higher structure of its witnesses is lost.
+
+In the RSVP context, this means that entropy (the recursive obstruction) is a
+complete record of the system's admissibility failures, even though it discards most
+of the fine-grained dynamics. In the Spherepop context, the Admissibility Log is a
+complete record of the computation's admissibility failures, even though it discards
+the intermediate computational states. In the semantic context, the provenance graph
+of a knowledge base is a complete record of its mergeability failures, even though it
+discards the specific content of each section.
+
+\section{Implications and Future Directions}
+
+\subsection{Physics: Singularities as Comparison-Map Failures}
+
+The identification of differential and recursive obstructions as projections of a
+single cohomological class suggests a reformulation of physical law in terms of
+admissibility rather than force. In the RSVP framework, the gravitational field and
+the entropic structure of a system arise as dual manifestations of the same underlying
+defect, related by the linkage equation $\mathcal{E}(X) = \phi^* \mathcal{G}(X)$.
+
+The classical distinction between geometry and thermodynamics is therefore replaced by
+a unified theory in which both are expressions of admissibility. This unification is
+not achieved by deriving one from the other---entropy is not derived from geometry, nor
+geometry from entropy---but by identifying them as projections of one thing onto two
+different representational systems.
+
+Singularities receive a new interpretation in this framework. Rather than being points
+of divergent curvature or infinite density, they are regions where the comparison map
+$\phi$ fails to admit a consistent pullback. At a singularity, the differential
+admissibility structure and the recursive admissibility structure diverge so sharply
+that no admissible state can be defined there. The singularity is not a point of
+physical breakdown; it is a point of representational breakdown, where the two
+coordinate systems on admissibility space cease to be compatible.
+
+This interpretation suggests an approach to singularity resolution. Rather than
+introducing a cutoff or a regularization, one seeks to extend the comparison map $\phi$
+across the singular region by passing to a derived or higher-categorical version of the
+admissibility stack. The singularity is resolved when a consistent pullback can be
+defined in the extended setting, which may require working with stacks of liftings
+rather than individual liftings.
+
+\subsection{Programming Languages: Topological Type Safety}
+
+In computational systems, the replacement of syntactic correctness with topological
+agreement leads to a new paradigm for type systems. Programs are trajectories in the
+admissibility manifold, and type safety is the condition that these trajectories remain
+within the admissible region. Katz-admissibility provides the precise characterization
+of what it means to stay within this region: at each step, the differential and
+recursive filtrations of the state must be compatible under the comparison map.
+
+This yields a form of type safety that is invariant under reordering, refactoring, or
+recomposition, provided the underlying obstruction class remains unchanged. This
+invariance is not available in syntactic type systems, where the validity of a program
+depends on its syntactic form and can be broken by refactoring even when the semantic
+content is preserved.
+
+The Admissibility Log provides a practical mechanism for implementing this invariance.
+By maintaining the log as an active filtration of the state-space, the runtime can
+compute the recursive defect of any proposed transition without re-examining the entire
+history from scratch. The log is a compressed representation of the system's
+admissibility history, and Katz-admissibility ensures that this compressed
+representation is sufficient for detecting all failures.
+
+Systems of this kind naturally support persistent state, distributed computation, and
+incremental verification. The obstruction-theoretic approach to type safety is
+particularly well-suited to settings where computation is distributed across multiple
+agents, each maintaining its own local state and Admissibility Log, because
+Katz-consistency provides a well-defined notion of compatibility between independently
+evolving local histories.
+
+\subsection{AI and Knowledge Systems: Learning as Obstruction Minimization}
+
+For artificial intelligence and knowledge representation, the Single Obstruction Engine
+provides a mechanism for integrating information without requiring global consensus.
+Knowledge bases evolve as collections of partially overlapping sections, each locally
+coherent, with admissibility determined by the alignment of obstruction classes under
+the Katz-admissibility condition.
+
+This framework supports a reinterpretation of learning. In the standard picture, a
+learning system updates its internal representation to minimize a loss function. In
+the Katz-admissibility picture, a learning system updates its sections to minimize the
+obstruction class $\mathrm{Defect}(s) \in H^1(\mathcal{F})$. The loss function is
+replaced by the obstruction class; gradient descent is replaced by a procedure for
+moving through the admissibility manifold in the direction of decreasing obstruction.
+
+This reinterpretation has several consequences. First, it provides a topological
+characterization of learning: a system has learned successfully when its obstruction
+class is trivial, meaning that all local knowledge is globally coherent. Second, it
+provides a natural notion of \emph{transfer}: knowledge transfers from one domain to
+another when the comparison map $\phi$ can be extended across domain boundaries,
+transporting the obstruction class from one context to another. Third, it provides a
+characterization of catastrophic forgetting: forgetting occurs when the Admissibility
+Log is truncated in a way that introduces a Non-Abelian Tear, breaking the compatibility
+between the remaining recursive history and the current differential structure.
+
+Reasoning, in this picture, corresponds to transporting obstruction classes across
+different sections of the knowledge sheaf, using the comparison map to verify that the
+transport is admissible. An inference is valid when it corresponds to a Katz-admissible
+transition in the knowledge state; a logical contradiction corresponds to a
+Non-Abelian Tear in the inference graph.
+
+\subsection{Open Problems}
+
+Several directions for further investigation arise naturally from this framework.
+
+The most pressing concerns the explicit computation of the comparison map $\phi$ in
+concrete computational and semantic settings. In the algebraic-geometric context, $\phi$
+is defined by the relationship between the Hodge and conjugate filtrations on the moduli
+stack, and its existence is guaranteed by the non-abelian Katz formula. In
+computational and semantic contexts, the filtrations are defined operationally, and the
+existence of a canonical comparison map must be verified case by case. A general
+existence theorem for Katz-admissibility in categories of computational systems would
+be a significant result.
+
+A second open problem concerns the extension of Katz-admissibility to higher-order
+obstructions, corresponding to cohomology in degrees greater than one. The present
+framework is organized around $H^1(\mathcal{F})$, the first cohomological obstruction.
+Higher-degree obstructions, living in $H^n(\mathcal{F})$ for $n \geq 2$, correspond to
+subtler forms of incompatibility that cannot be detected by the differential and
+recursive projections alone. Extending the Katz formula to these higher degrees would
+require working in a derived or $\infty$-categorical setting, where the relevant
+comparison maps live in the $\infty$-groupoid of filtrations rather than in an ordinary
+category.
+
+A third direction concerns the dynamics of admissibility: how systems evolve within
+the admissible region and how they approach its boundary. The present work identifies
+the invariant governing admissibility but does not provide a complete description of
+the dynamics. A theory of \emph{admissibility flow}---a vector field on the
+admissibility manifold that describes how systems move toward or away from
+admissibility failure---would complete the framework and provide a basis for predicting
+the onset of Non-Abelian Tears before they occur.
+
+Finally, the relationship between Katz-admissibility and the theory of motives deserves
+investigation. The $p$-curvature and the Hodge filtration are both aspects of the
+crystalline cohomology of a variety, which is related to motivic cohomology. If the
+Katz formula can be expressed in motivic terms, it would suggest that admissibility is
+a motivic invariant, stable under the operations that define motivic equivalence.
+
+\section{Conclusion}
+
+\subsection{Admissibility as Fundamental Invariant}
+
+The central result of this work is the identification of admissibility as a
+cohomological invariant governing systems across geometry, physics, computation, and
+semantics. The non-abelian Katz formula, established by Barz \cite{barz}, provides a
+rigorous mathematical instance of this principle, demonstrating that differential and
+recursive obstructions coincide under a canonical comparison.
+
+This leads to a reformulation of system stability. Rather than requiring consistency in
+the sense of logical non-contradiction or convergence to a fixed point, one demands the
+alignment of obstruction classes under all admissible transformations. Stability is a
+property of the topology of failure rather than the absence of error. A system is
+stable not because it never fails but because its failures are coherent: they live in
+a single cohomological class whose projections are mutually consistent.
+
+\subsection{The Event Log as Active Constraint}
+
+A significant conceptual contribution of this paper is the reinterpretation of the
+event log as an active filtration of the state-space rather than a passive record of
+transitions. This reinterpretation has practical consequences. A runtime system that
+treats its event log as a second filtration can detect Non-Abelian Tears that classical
+type-checking misses. A knowledge system that treats its provenance graph as a
+recursive filtration can detect Katz-inadmissible merges that local consistency checks
+miss. A physical system in the RSVP framework that treats its entropy as the recursive
+projection of the gravitational obstruction can be analyzed with a single unified
+formalism rather than separate formalisms for geometry and thermodynamics.
+
+The event log is not what happened. It is a second coordinate system on what is
+admissible.
+
+\subsection{Unification Across Domains}
+
+The framework developed here unifies several previously distinct perspectives. In
+algebraic geometry, it interprets the relationship between Hodge and conjugate
+filtrations as an equivalence of obstruction classes, anchored in Barz's theorem. In
+the RSVP framework, it identifies curvature and entropy as dual manifestations of a
+single defect related by the linkage equation. In Spherepop, it provides an
+operational type rule---the Katz-Admissibility Rule---governing state transitions via
+the Admissibility Log. In semantic infrastructure, it yields a criterion for merging
+knowledge based on cohomological agreement between differential and recursive
+filtrations.
+
+These are not analogies. They are instances of a single mathematical identity
+governing systems of different kinds, expressed in different representational
+vocabularies. The differences across domains arise only from the choice of
+representation, not from the underlying structure. This is the sense in which
+Katz-admissibility is a law rather than a framework: it holds independently of
+how the systems are described.
+
+\subsection{Final Statement}
+
+We may therefore state the guiding principle in its most concise form:
+\[
+\text{Admissibility} = \text{Topological Agreement}.
+\]
+Equivalently: a system is admissible if and only if its differential and recursive
+projections of failure coincide under the canonical comparison map $\phi$. A system
+fails when and only when these projections diverge, producing a Non-Abelian Tear at
+the precise point of divergence. There is no other kind of failure, and no failure that
+is visible in one regime but invisible in the other.
+
+\subsection{Outlook}
+
+The identification of a Single Obstruction Engine suggests that many phenomena
+traditionally treated as distinct---curvature and entropy, type errors and historical
+inconsistency, local incompatibility and provenance conflict---may be unified through
+their underlying cohomological structure. Future work may extend this perspective to
+higher categories, derived geometries, motivic cohomology, and physical theories beyond
+the classical setting.
+
+More broadly, this framework invites a rethinking of how systems are designed, analyzed,
+and validated. By shifting the focus from correctness to admissibility, from boolean
+checks to cohomological invariants, and from passive records to active filtrations, it
+provides a foundation for systems that evolve, interact, and persist while maintaining
+coherence across multiple scales of structure. The topology of failure is not an
+obstacle to understanding such systems. It is their deepest invariant.
+
+\newpage
+
+\begin{thebibliography}{99}
+
+\bibitem{barz}
+M. Barz,
+\textit{Non-abelian $p$-curvature and a non-abelian Katz's formula},
+arXiv:2604.20054 (2026).
+
+\bibitem{katz}
+N. Katz,
+\textit{Algebraic solutions of differential equations ($p$-curvature and the Hodge filtration)},
+Inventiones Mathematicae, 18 (1972), 1--118.
+
+\bibitem{bhatt}
+B. Bhatt,
+\textit{$p$-adic Hodge theory notes},
+available at \url{https://math.stanford.edu/~bhatt/}.
+
+\bibitem{bhattkanaev}
+B. Bhatt, A. Kanaev, A. Mathew, L. Vologodsky, and Z. Zhang,
+\textit{Sheared de Rham stacks},
+preprint.
+
+\bibitem{drinfeld}
+V. Drinfeld,
+\textit{On algebraic spaces with an action of $\mathbb{G}_a$},
+preprint.
+
+\bibitem{simpson}
+C. Simpson,
+\textit{Higgs bundles and local systems},
+Publications Math\'ematiques de l'IH\'ES, 75 (1992), 5--95.
+
+\bibitem{simpson2}
+C. Simpson,
+\textit{Moduli of representations of the fundamental group of a smooth projective
+variety~I},
+Publications Math\'ematiques de l'IH\'ES, 79 (1994), 47--129.
+
+\bibitem{ogus}
+A. Ogus,
+\textit{$F$-crystals, Griffiths transversality, and the Hodge decomposition},
+Ast\'erisque, 221 (1994).
+
+\bibitem{cartier}
+P. Cartier,
+\textit{Une nouvelle op\'eration sur les formes diff\'erentielles},
+C.~R. Acad. Sci. Paris, 244 (1957), 426--428.
+
+\bibitem{illusie}
+L. Illusie,
+\textit{Complexe cotangent et d\'eformations I},
+Lecture Notes in Mathematics, Vol.~239, Springer (1971).
+
+\bibitem{lurie}
+J. Lurie,
+\textit{Higher Topos Theory},
+Annals of Mathematics Studies, Princeton University Press (2009).
+
+\bibitem{maclane}
+S. Mac Lane,
+\textit{Categories for the Working Mathematician},
+Springer (1998).
+
+\bibitem{baez}
+J. Baez and J. Dolan,
+\textit{Higher-dimensional algebra and topological quantum field theory},
+Journal of Mathematical Physics, 36 (1995), 6073--6105.
+
+\bibitem{grothendieck}
+A. Grothendieck,
+\textit{Crystals and the de Rham cohomology of schemes},
+in \textit{Dix Expos\'es sur la Cohomologie des Sch\'emas},
+North-Holland (1968), 306--358.
+
+\bibitem{ogusVologodsky}
+A. Ogus and V. Vologodsky,
+\textit{Nonabelian Hodge theory in characteristic $p$},
+Publications Math\'ematiques de l'IH\'ES, 106 (2007), 1--138.
+
+\end{thebibliography}
+
+\end{document}

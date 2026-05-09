@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Retro Oscilloscope — Playfloor</title>
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0a;
+      color: #39ff14;
+      font-family: 'Courier New', Courier, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      overflow-x: hidden;
+    }
+
+    /* ── Chassis ──────────────────────────────────────────────── */
+    .chassis {
+      width: 100%;
+      max-width: 860px;
+      background: linear-gradient(160deg, #1c1c1c 0%, #111 60%, #0d0d0d 100%);
+      border-radius: 18px;
+      border: 2px solid #2a2a2a;
+      box-shadow:
+        0 0 0 1px #0e0e0e,
+        0 6px 40px rgba(0,0,0,.9),
+        inset 0 1px 0 rgba(255,255,255,.04);
+      padding: 28px 32px 24px;
+    }
+
+    /* ── Title bar ────────────────────────────────────────────── */
+    .title-bar {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .brand {
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #1d7a09;
+      text-shadow: 0 0 6px #39ff1455;
+    }
+    .model {
+      font-size: 1.05rem;
+      font-weight: bold;
+      letter-spacing: 0.15em;
+      color: #39ff14;
+      text-shadow: 0 0 10px #39ff1480, 0 0 22px #39ff1430;
+    }
+    .status-led {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,.6);
+      transition: background .3s, box-shadow .3s;
+      flex-shrink: 0;
+    }
+    .status-led.on {
+      background: #39ff14;
+      box-shadow: 0 0 6px #39ff14, 0 0 14px #39ff1480;
+    }
+
+    /* ── Screen bezel ─────────────────────────────────────────── */
+    .screen-bezel {
+      background: #080808;
+      border-radius: 10px;
+      border: 3px solid #1a1a1a;
+      box-shadow:
+        inset 0 0 30px rgba(0,0,0,.8),
+        0 0 2px #39ff1420;
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      max-height: 500px;
+    }
+
+    /* The actual canvas fills the bezel */
+    #scope-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* CRT scanlines overlay */
+    .scanlines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,.18) 3px,
+        rgba(0,0,0,.18) 4px
+      );
+      pointer-events: none;
+      border-radius: 8px;
+    }
+
+    /* CRT barrel / vignette overlay */
+    .vignette {
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      background: radial-gradient(
+        ellipse 80% 80% at 50% 50%,
+        transparent 55%,
+        rgba(0,0,0,.55) 100%
+      );
+      pointer-events: none;
+    }
+
+    /* Phosphor glare spot */
+    .glare {
+      position: absolute;
+      top: 6%;
+      left: 8%;
+      width: 30%;
+      height: 18%;
+      background: radial-gradient(
+        ellipse at 40% 40%,
+        rgba(255,255,255,.035) 0%,
+        transparent 70%
+      );
+      pointer-events: none;
+      border-radius: 50%;
+    }
+
+    /* ── Grid labels ──────────────────────────────────────────── */
+    .grid-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 0.6rem;
+      color: #1d6b06;
+      letter-spacing: 0.08em;
+    }
+
+    /* ── Control panel ────────────────────────────────────────── */
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .ctrl-group {
+      background: #111;
+      border: 1px solid #1e1e1e;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .ctrl-group label {
+      display: block;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #1d7a09;
+      margin-bottom: 8px;
+      text-shadow: 0 0 6px #39ff1440;
+    }
+
+    /* Range slider — retro green thumb */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #1a1a1a;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #39ff14;
+      box-shadow: 0 0 6px #39ff14, 0 0 12px #39ff1460;
+      cursor: pointer;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border: none;
+      border-radius: 50%;
+      background: #39ff14;
+      box-shadow: 0 0 6px #39ff14, 0 0 12px #39ff1460;
+      cursor: pointer;
+    }
+
+    .ctrl-value {
+      text-align: right;
+      font-size: 0.75rem;
+      color: #39ff14;
+      text-shadow: 0 0 8px #39ff1460;
+      margin-top: 4px;
+      min-height: 1.2em;
+    }
+
+    /* ── Mode button ──────────────────────────────────────────── */
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .retro-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 9px 14px;
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 6px;
+      color: #39ff14;
+      font-family: inherit;
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-shadow: 0 0 6px #39ff1460;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    .retro-btn:hover {
+      background: #161616;
+      border-color: #39ff14;
+      box-shadow: 0 0 8px #39ff1440;
+    }
+    .retro-btn.active {
+      border-color: #39ff14;
+      box-shadow: 0 0 10px #39ff1460, inset 0 0 6px #39ff1415;
+    }
+
+    /* ── Footer readout ───────────────────────────────────────── */
+    .readout-row {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+      font-size: 0.65rem;
+      color: #1d7a09;
+      letter-spacing: 0.1em;
+    }
+    .readout-row span { color: #39ff14; text-shadow: 0 0 6px #39ff1450; }
+  </style>
+</head>
+<body>
+
+<div class="chassis">
+
+  <!-- Title bar -->
+  <div class="title-bar">
+    <div>
+      <div class="brand">Playfloor Instruments</div>
+      <div class="model">OSC-9000 ▸ DIGITAL OSCILLOSCOPE</div>
+    </div>
+    <div class="status-led" id="led" title="Status"></div>
+  </div>
+
+  <!-- Screen -->
+  <div class="screen-bezel">
+    <canvas id="scope-canvas"></canvas>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="glare"></div>
+  </div>
+
+  <div class="grid-labels">
+    <span>CH1</span>
+    <span id="freq-label">--- Hz</span>
+    <span id="time-label">10 ms/div</span>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="ctrl-group">
+      <label for="gain">Gain (V/div)</label>
+      <input type="range" id="gain" min="1" max="200" value="60" aria-label="Gain" />
+      <div class="ctrl-value" id="gain-val">60</div>
+    </div>
+    <div class="ctrl-group">
+      <label for="timebase">Time Base</label>
+      <input type="range" id="timebase" min="1" max="20" value="8" aria-label="Time Base" />
+      <div class="ctrl-value" id="timebase-val">8 ms/div</div>
+    </div>
+    <div class="ctrl-group">
+      <label for="trigger">Trigger Level</label>
+      <input type="range" id="trigger" min="-100" max="100" value="0" aria-label="Trigger Level" />
+      <div class="ctrl-value" id="trigger-val">0</div>
+    </div>
+    <div class="ctrl-group">
+      <label for="decay">Phosphor Decay</label>
+      <input type="range" id="decay" min="1" max="30" value="12" aria-label="Phosphor Decay" />
+      <div class="ctrl-value" id="decay-val">12</div>
+    </div>
+  </div>
+
+  <!-- Mode buttons -->
+  <div class="btn-row">
+    <button class="retro-btn active" id="btn-mic">🎙 Microphone</button>
+    <button class="retro-btn" id="btn-sine">〜 Sine</button>
+    <button class="retro-btn" id="btn-sawtooth">⊿ Sawtooth</button>
+    <button class="retro-btn" id="btn-noise">⋯ Noise</button>
+    <button class="retro-btn" id="btn-lissajous">◎ Lissajous</button>
+  </div>
+
+  <!-- Footer readout -->
+  <div class="readout-row">
+    <div>FREQ &nbsp;<span id="r-freq">---</span> Hz</div>
+    <div>AMP &nbsp;<span id="r-amp">---</span></div>
+    <div>MODE &nbsp;<span id="r-mode">MICROPHONE</span></div>
+    <div>SAMPLE RATE &nbsp;<span id="r-sr">---</span> Hz</div>
+  </div>
+
+</div><!-- /chassis -->
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   Retro Oscilloscope — Playfloor  (single-file, no dependencies)
+   ═══════════════════════════════════════════════════════════════ */
+
+(function () {
+  'use strict';
+
+  // ── DOM refs ──────────────────────────────────────────────────
+  const canvas      = document.getElementById('scope-canvas');
+  const ctx         = canvas.getContext('2d');
+  const led         = document.getElementById('led');
+  const freqLabel   = document.getElementById('freq-label');
+  const timeLabel   = document.getElementById('time-label');
+
+  const gainSlider      = document.getElementById('gain');
+  const timebaseSlider  = document.getElementById('timebase');
+  const triggerSlider   = document.getElementById('trigger');
+  const decaySlider     = document.getElementById('decay');
+
+  const gainVal     = document.getElementById('gain-val');
+  const timebaseVal = document.getElementById('timebase-val');
+  const triggerVal  = document.getElementById('trigger-val');
+  const decayVal    = document.getElementById('decay-val');
+
+  const rFreq = document.getElementById('r-freq');
+  const rAmp  = document.getElementById('r-amp');
+  const rMode = document.getElementById('r-mode');
+  const rSr   = document.getElementById('r-sr');
+
+  const btnMic       = document.getElementById('btn-mic');
+  const btnSine      = document.getElementById('btn-sine');
+  const btnSawtooth  = document.getElementById('btn-sawtooth');
+  const btnNoise     = document.getElementById('btn-noise');
+  const btnLissajous = document.getElementById('btn-lissajous');
+
+  // ── State ─────────────────────────────────────────────────────
+  let audioCtx   = null;
+  let analyser   = null;
+  let source     = null;          // current audio source node
+  let timeBuffer = null;          // Uint8Array for waveform
+  let freqBuffer = null;          // Uint8Array for FFT
+  let micStream  = null;
+  let animId     = null;
+  let mode       = 'mic';         // 'mic' | 'sine' | 'sawtooth' | 'noise' | 'lissajous'
+  let demoPhase  = 0;
+  let demoPhase2 = 0;
+  let demoFreq   = 220;
+  let demoFreq2  = 330;
+
+  // ── Resize canvas to match CSS pixels ────────────────────────
+  function resizeCanvas() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr  = window.devicePixelRatio || 1;
+    canvas.width  = Math.round(rect.width  * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    // Reset any accumulated transform before applying the new DPR scale
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);           // scale once; draw in CSS px
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function cssW() { return canvas.width  / (window.devicePixelRatio || 1); }
+  function cssH() { return canvas.height / (window.devicePixelRatio || 1); }
+
+  // ── Grid drawing ──────────────────────────────────────────────
+  const DIVS_X = 10;
+  const DIVS_Y = 8;
+
+  function drawGrid() {
+    const W = cssW(), H = cssH();
+    const dx = W / DIVS_X;
+    const dy = H / DIVS_Y;
+
+    ctx.save();
+    // major grid
+    ctx.strokeStyle = 'rgba(57,255,20,0.10)';
+    ctx.lineWidth   = 0.8;
+    ctx.setLineDash([]);
+    for (let i = 0; i <= DIVS_X; i++) {
+      ctx.beginPath(); ctx.moveTo(i * dx, 0); ctx.lineTo(i * dx, H); ctx.stroke();
+    }
+    for (let j = 0; j <= DIVS_Y; j++) {
+      ctx.beginPath(); ctx.moveTo(0, j * dy); ctx.lineTo(W, j * dy); ctx.stroke();
+    }
+    // minor ticks on centre axes
+    ctx.strokeStyle = 'rgba(57,255,20,0.18)';
+    ctx.lineWidth   = 0.5;
+    const cx = W / 2, cy = H / 2;
+    const tickLen = 4;
+    for (let i = 0; i <= DIVS_X * 5; i++) {
+      const x = (W / (DIVS_X * 5)) * i;
+      ctx.beginPath(); ctx.moveTo(x, cy - tickLen); ctx.lineTo(x, cy + tickLen); ctx.stroke();
+    }
+    for (let j = 0; j <= DIVS_Y * 5; j++) {
+      const y = (H / (DIVS_Y * 5)) * j;
+      ctx.beginPath(); ctx.moveTo(cx - tickLen, y); ctx.lineTo(cx + tickLen, y); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // ── Trigger search ────────────────────────────────────────────
+  function findTrigger(data, triggerLevel, startSample, endSample) {
+    // Find rising edge crossing trigger level
+    for (let i = startSample; i < endSample - 1; i++) {
+      if (data[i] < triggerLevel && data[i + 1] >= triggerLevel) return i;
+    }
+    return startSample; // fallback
+  }
+
+  // ── Draw waveform trace ───────────────────────────────────────
+  function drawTrace(data, color1, color2, trigLevel) {
+    const W = cssW(), H = cssH();
+    const gain      = parseFloat(gainSlider.value);
+    const decay     = parseFloat(decaySlider.value) / 100; // 0.01 – 0.30
+    const midY      = H / 2;
+    const scaleY    = (H / 2) * (gain / 100);
+
+    // Find trigger offset
+    const trig = 128 + Math.round(trigLevel);
+    const startOffset = findTrigger(data, trig, 10, Math.floor(data.length / 2));
+
+    // How many samples to display (time base)
+    const tb         = parseFloat(timebaseSlider.value);  // 1–20 ms/div
+    const sampleRate = audioCtx ? audioCtx.sampleRate : 44100;
+    const totalMs    = tb * DIVS_X;
+    const samples    = Math.min(
+      Math.floor((totalMs / 1000) * sampleRate),
+      data.length - startOffset
+    );
+
+    // ── Phosphor afterglow (ghost layer) ──────────────────────
+    // We achieve persistence by drawing a semi-transparent fill before the trace.
+    // The 'decay' slider controls how quickly old traces fade.
+    ctx.fillStyle = `rgba(0,0,0,${decay})`;
+    ctx.fillRect(0, 0, W, H);
+
+    // Redraw grid on top of the fade
+    drawGrid();
+
+    // Trigger level line
+    const trigY = midY - ((trigLevel / 128) * scaleY);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,200,0,0.25)';
+    ctx.lineWidth   = 0.7;
+    ctx.setLineDash([4, 6]);
+    ctx.beginPath(); ctx.moveTo(0, trigY); ctx.lineTo(W, trigY); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+
+    // ── Main trace ───────────────────────────────────────────
+    ctx.save();
+    const grad = ctx.createLinearGradient(0, midY - scaleY, 0, midY + scaleY);
+    grad.addColorStop(0,   color1);
+    grad.addColorStop(0.5, color2);
+    grad.addColorStop(1,   color1);
+
+    // Glow pass (blurred, wide)
+    ctx.shadowColor = '#39ff14';
+    ctx.shadowBlur  = 12;
+    ctx.strokeStyle = 'rgba(57,255,20,0.18)';
+    ctx.lineWidth   = 3.5;
+    _tracePath(data, startOffset, samples, W, midY, scaleY);
+    ctx.stroke();
+
+    // Core trace
+    ctx.shadowBlur  = 4;
+    ctx.strokeStyle = grad;
+    ctx.lineWidth   = 1.5;
+    _tracePath(data, startOffset, samples, W, midY, scaleY);
+    ctx.stroke();
+
+    ctx.restore();
+
+    // ── Frequency readout ──────────────────────────────────
+    const freq = estimateFrequency(data, sampleRate);
+    if (freq) {
+      rFreq.textContent      = freq.toFixed(1);
+      freqLabel.textContent  = freq.toFixed(1) + ' Hz';
+    } else {
+      rFreq.textContent      = '---';
+      freqLabel.textContent  = '--- Hz';
+    }
+    rAmp.textContent  = ((findPeak(data) - 128) / 128).toFixed(3);
+    rSr.textContent   = sampleRate.toLocaleString();
+    timeLabel.textContent = tb + ' ms/div';
+  }
+
+  function _tracePath(data, startOffset, samples, W, midY, scaleY) {
+    if (samples <= 0) return;
+    ctx.beginPath();
+    const divisor = Math.max(samples - 1, 1); // guard against division by zero
+    for (let i = 0; i < samples; i++) {
+      const x = (i / divisor) * W;
+      const v = (data[startOffset + i] - 128) / 128;
+      const y = midY - v * scaleY;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+  }
+
+  // ── Lissajous figure (XY mode) ────────────────────────────────
+  function drawLissajous() {
+    const W = cssW(), H = cssH();
+    const gain   = parseFloat(gainSlider.value) / 80;
+    const decay  = parseFloat(decaySlider.value) / 100;
+    const cx = W / 2, cy = H / 2;
+    const r  = Math.min(W, H) * 0.4 * gain;
+    const pts = 1024;
+
+    ctx.fillStyle = `rgba(0,0,0,${decay})`;
+    ctx.fillRect(0, 0, W, H);
+    drawGrid();
+
+    ctx.save();
+    ctx.shadowColor = '#39ff14';
+    ctx.shadowBlur  = 8;
+    ctx.strokeStyle = '#39ff14';
+    ctx.lineWidth   = 1.2;
+    ctx.beginPath();
+    for (let i = 0; i <= pts; i++) {
+      const t = (i / pts) * Math.PI * 2;
+      const freq2 = demoFreq2 || 1; // guard against division by zero
+      const x = cx + r * Math.sin((demoFreq / freq2) * t + demoPhase);
+      const y = cy + r * Math.sin(t + demoPhase2);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.restore();
+    demoPhase  += 0.005;
+    demoPhase2 += 0.003;
+  }
+
+  // ── Simple frequency estimation (zero-crossing) ───────────────
+  function estimateFrequency(data, sampleRate) {
+    let crossings = 0;
+    let lastSign  = data[0] >= 128 ? 1 : -1;
+    for (let i = 1; i < data.length; i++) {
+      const sign = data[i] >= 128 ? 1 : -1;
+      if (sign !== lastSign) { crossings++; lastSign = sign; }
+    }
+    const halfCycles = crossings;
+    if (halfCycles < 2) return null;
+    if (!sampleRate) return null;
+    const durationSec = data.length / sampleRate;
+    return (halfCycles / 2) / durationSec;
+  }
+
+  function findPeak(data) {
+    let peak = 128;
+    for (let i = 0; i < data.length; i++) {
+      if (data[i] > peak) peak = data[i];
+    }
+    return peak;
+  }
+
+  // ── Demo buffer generator (no mic) ────────────────────────────
+  function generateDemoBuffer(type) {
+    const len  = 2048;
+    const buf  = new Uint8Array(len);
+    const rate = 44100;
+    const f    = demoFreq;
+
+    for (let i = 0; i < len; i++) {
+      const t = i / rate;
+      let v;
+      switch (type) {
+        case 'sine':
+          v = Math.sin(2 * Math.PI * f * t + demoPhase);
+          break;
+        case 'sawtooth':
+          v = ((f * t + demoPhase / (2 * Math.PI)) % 1) * 2 - 1;
+          break;
+        case 'noise':
+          v = Math.random() * 2 - 1;
+          break;
+        default:
+          v = Math.sin(2 * Math.PI * f * t + demoPhase);
+      }
+      buf[i] = Math.round(v * 127 + 128);
+    }
+    demoPhase += 0.08;
+    return buf;
+  }
+
+  // ── Audio context setup ───────────────────────────────────────
+  async function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      rSr.textContent = audioCtx.sampleRate.toLocaleString();
+    }
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
+  }
+
+  function createAnalyser() {
+    if (!audioCtx) return;
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    analyser.smoothingTimeConstant = 0.1;
+    timeBuffer = new Uint8Array(analyser.fftSize);
+    freqBuffer = new Uint8Array(analyser.frequencyBinCount);
+    // Do NOT connect analyser to destination — visualisation only, avoids mic feedback loop
+  }
+
+  function disconnectSource() {
+    if (source) {
+      try {
+        source.disconnect();
+      } catch (err) {
+        // InvalidStateError is expected when the node was already disconnected;
+        // log anything else to aid debugging.
+        if (err.name !== 'InvalidStateError') console.warn('disconnectSource:', err);
+      }
+      source = null;
+    }
+    if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+  }
+
+  async function startMic() {
+    try {
+      await initAudio();
+      disconnectSource();
+      createAnalyser();
+      micStream  = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      source     = audioCtx.createMediaStreamSource(micStream);
+      source.connect(analyser);
+      led.classList.add('on');
+      rMode.textContent = 'MICROPHONE';
+    } catch (err) {
+      console.warn('Mic unavailable, falling back to demo mode:', err);
+      startDemo('sine');
+    }
+  }
+
+  function startDemo(type) {
+    disconnectSource();
+    rMode.textContent = type.toUpperCase();
+    led.classList.add('on');
+  }
+
+  // ── Animation loop ────────────────────────────────────────────
+  function tick() {
+    animId = requestAnimationFrame(tick);
+    const W = cssW(), H = cssH();
+    const trigLevel = parseFloat(triggerSlider.value);
+
+    if (mode === 'lissajous') {
+      drawLissajous();
+      rMode.textContent = 'LISSAJOUS';
+      rFreq.textContent = `${demoFreq}/${demoFreq2}`;
+      return;
+    }
+
+    let data;
+    if (mode === 'mic' && analyser) {
+      analyser.getByteTimeDomainData(timeBuffer);
+      data = timeBuffer;
+    } else if (mode === 'mic') {
+      data = generateDemoBuffer('sine'); // mic failed
+    } else {
+      data = generateDemoBuffer(mode);
+    }
+
+    drawTrace(data, '#39ff14', '#a8ff78', trigLevel);
+    triggerVal.textContent = trigLevel.toFixed(0);
+  }
+
+  // ── Initial canvas fill ───────────────────────────────────────
+  function initialDraw() {
+    const W = cssW(), H = cssH();
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H);
+    drawGrid();
+  }
+
+  // ── Slider listeners ──────────────────────────────────────────
+  gainSlider.addEventListener('input', () => {
+    gainVal.textContent = gainSlider.value;
+  });
+  timebaseSlider.addEventListener('input', () => {
+    timebaseVal.textContent = timebaseSlider.value + ' ms/div';
+  });
+  triggerSlider.addEventListener('input', () => {
+    triggerVal.textContent = triggerSlider.value;
+  });
+  decaySlider.addEventListener('input', () => {
+    decayVal.textContent = decaySlider.value;
+  });
+
+  // ── Button listeners ──────────────────────────────────────────
+  function setActiveBtn(btn) {
+    [btnMic, btnSine, btnSawtooth, btnNoise, btnLissajous].forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  btnMic.addEventListener('click', async () => {
+    mode = 'mic';
+    setActiveBtn(btnMic);
+    await startMic();
+  });
+
+  btnSine.addEventListener('click', async () => {
+    mode = 'sine';
+    setActiveBtn(btnSine);
+    disconnectSource();
+    await initAudio();
+    startDemo('sine');
+    demoFreq = 220;
+  });
+
+  btnSawtooth.addEventListener('click', async () => {
+    mode = 'sawtooth';
+    setActiveBtn(btnSawtooth);
+    disconnectSource();
+    await initAudio();
+    startDemo('sawtooth');
+    demoFreq = 110;
+  });
+
+  btnNoise.addEventListener('click', async () => {
+    mode = 'noise';
+    setActiveBtn(btnNoise);
+    disconnectSource();
+    await initAudio();
+    startDemo('noise');
+  });
+
+  btnLissajous.addEventListener('click', async () => {
+    mode = 'lissajous';
+    setActiveBtn(btnLissajous);
+    disconnectSource();
+    await initAudio();
+    led.classList.add('on');
+    demoFreq  = 3;
+    demoFreq2 = 2;
+  });
+
+  // ── Resize handler ────────────────────────────────────────────
+  const ro = new ResizeObserver(() => {
+    resizeCanvas();
+    initialDraw();
+  });
+  ro.observe(canvas);
+
+  // ── Boot sequence ─────────────────────────────────────────────
+  resizeCanvas();
+  initialDraw();
+  tick();             // start loop before mic — uses demo until mic ready
+  startMic();         // attempt mic immediately (will fall back gracefully)
+
+})();
+</script>
+
+</body>
+</html>

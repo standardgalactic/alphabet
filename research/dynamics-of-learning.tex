@@ -30,7 +30,6 @@
 \usepackage{setspace}
 \onehalfspacing
 
-\usepackage{parskip}
 \setlength{\parindent}{1.5em}
 \setlength{\parskip}{0.45em}
 
@@ -61,11 +60,11 @@
 % Theorem Environments
 % ─────────────────────────────────────────────────────────────
 
-\newtheorem{theorem}{Theorem}
-\newtheorem{definition}{Definition}
-\newtheorem{proposition}{Proposition}
-\newtheorem{lemma}{Lemma}
-\newtheorem{corollary}{Corollary}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}{Corollary}[section]
 
 % ─────────────────────────────────────────────────────────────
 % Title
@@ -123,7 +122,7 @@ Yet contemporary developments in machine learning have destabilized this foundat
 
 These observations create a profound theoretical tension. If high-capacity systems can memorize and generalize simultaneously, then the traditional compression-centered account of cognition may only describe a restricted subset of possible learning regimes. The historical assumption that intelligence requires simplification may reflect the study of systems operating under conditions of representational scarcity rather than a universal law of learning itself.
 
-This essay develops an alternative framework centered on the concept of representational abundance. The framework proposes that cognitive behavior depends not on absolute complexity alone, but on the relationship between representational flexibility and experiential complexity. Under this view, learning systems occupy different operational regimes depending on the ratio between available representational resources and the diversity of situations they must encode. Compression becomes only one possible adaptive strategy among several.
+This essay develops an alternative framework centered on the concept of representational abundance \cite{DubovaSloman2026}. The framework proposes that cognitive behavior depends not on absolute complexity alone, but on the relationship between representational flexibility and experiential complexity. Under this view, learning systems occupy different operational regimes depending on the ratio between available representational resources and the diversity of situations they must encode. Compression becomes only one possible adaptive strategy among several.
 
 The framework distinguishes between three primary regimes. In constrained regimes, experiential complexity exceeds representational flexibility, forcing the learner to discard detail and rely on restriction biases to achieve generalization. In sufficient regimes, representational flexibility approximately matches experiential complexity, producing brittle interpolation and maximal sensitivity to noise. In excess regimes, representational flexibility substantially exceeds experiential complexity, allowing the system to preserve detailed experiential structure while maintaining globally smooth representational organization.
 
@@ -219,7 +218,152 @@ This distinction is crucial because classical theories often conflate simplicity
 
 The scope of the framework must also be carefully bounded. The present work does not claim that all cognition operates exclusively in excess-capacity regimes. Nor does it claim that biological systems literally implement the same optimization procedures used in modern deep learning systems. Instead, the framework proposes that several apparently distinct phenomena across cognition and machine learning may reflect common geometric principles governing learning under different ratios of representational flexibility to experiential complexity.
 
-Similarly, the framework does not deny the existence of modular specialization, functional dissociation, or heterogeneous neural dynamics. Rather, it proposes that many dual-process phenomena may emerge from different operational regimes within a unified representational substrate rather than requiring entirely separate learning principles.
+\subsection{Experiential Complexity Is Not Sample Count}
+
+One of the most important clarifications the framework requires concerns the meaning of experiential complexity $E$. A natural but mistaken reading would equate $E$ with dataset size, number of training examples, or cumulative experience duration. The framework explicitly rejects this reduction.
+
+Experiential complexity is determined not by quantity alone but by structure. Two environments may generate equal numbers of observations while imposing radically different representational demands. The relevant dimensions of $E$ include:
+\[
+\text{heterogeneity},
+\quad
+\text{latent dimensionality},
+\quad
+\text{distributional irregularity},
+\quad
+\text{noise structure},
+\quad
+\text{trajectory diversity}.
+\]
+
+Formally, $E$ is better understood as the effective dimension of the support of the experiential distribution $\mu$ over $\mathcal{X}$:
+\[
+E \approx \dim_{\text{eff}}(\operatorname{supp}(\mu)).
+\]
+
+Equivalently, it may be characterized through the effective rank of the empirical kernel operator, the Shannon entropy of the distribution, or the minimum description length of the experiential trajectory. All of these collapse to sample count only in the special case where each experience is independently and uniformly distributed across a high-variance domain --- a condition that almost never holds in biological cognition or structured machine learning tasks.
+
+The practical implication is that a learner may operate in an excess-capacity regime with very few experiences if those experiences are drawn from a low-dimensional, highly structured distribution. Conversely, a system with enormous parameter counts may still operate under representational scarcity when exposed to human-scale linguistic, social, and embodied diversity. The ratio $\rho = C/E$ is what determines the regime, not either quantity in isolation.
+
+\subsection{The Geometry of Smoothness}
+
+The concept of smoothness is central to the framework and appears throughout in several related but distinct senses that require explicit disambiguation.
+
+The weakest relevant notion is $C^0$ \textbf{continuity}: the requirement that the representational mapping $f_\theta$ assign nearby outputs to nearby inputs, with no discontinuities. This is a topological property that does not require differentiability.
+
+Stronger is $C^1$ \textbf{differentiability}: the requirement that $f_\theta$ has a well-defined derivative everywhere, meaning that the local rate of change of the output varies continuously as the input varies. A $C^1$ function has no corners or kinks.
+
+\textbf{Lipschitz stability} is a quantitative strengthening: there exists a constant $L$ such that $\|f_\theta(x) - f_\theta(y)\| \leq L\|x - y\|$ for all inputs. This bounds how rapidly the output can change and is closely related to adversarial robustness.
+
+\textbf{Low-curvature manifolds} provide a geometric formulation: the Hessian $\nabla^2 f_\theta$ has small operator norm almost everywhere. This is the condition most directly connected to the Riemann tensor framework: regions where $\mathcal{K}(z) \approx 0$ are precisely those where the representational manifold has low curvature in the Riemannian sense.
+
+\textbf{Minimum-norm interpolation} refers to a specific selection mechanism among many smooth interpolants: the optimizer converges to the interpolant $\theta^*$ minimizing $\|\theta\|_2$ subject to exact interpolation. This is an emergent property of gradient descent dynamics rather than an externally imposed constraint.
+
+Throughout this essay, ``smoothness'' typically refers to the low-curvature condition, which implies $C^1$ differentiability and is compatible with Lipschitz stability. The minimum-norm property provides a mechanistic explanation for why optimization converges to smooth rather than pathological interpolants. These are related but not identical, and the text signals which sense is operative in context.
+
+\subsection{Interpolation Versus Lookup}
+
+A second source of potential misreading concerns the phrase ``generalization through interpolation.'' This is not a claim that excess-capacity systems engage in nearest-neighbor lookup or naive function tabulation. The distinction is crucial.
+
+\textbf{Naive interpolation} (lookup) stores observed $(x_i, y_i)$ pairs and returns $y_j$ for whichever stored $x_j$ is closest to a new query $x^*$. This approach does not generalize: it merely retrieves previously seen outputs for approximately seen inputs. It fails entirely on genuinely novel inputs outside the observed neighborhood.
+
+\textbf{Smooth manifold continuation}, by contrast, constructs a continuous representational geometry $g(x)$ across the full input space. The geometry is shaped by the observed experiences, but it extends far beyond them. Generalization to a new $x^*$ does not require $x^*$ to be close to any observed $x_i$; it requires only that $\phi(x^*)$ lie within a region of $\mathcal{Z}$ where the manifold geometry is continuous. The prediction is the value of $g$ at $\phi(x^*)$, not a retrieved stored output.
+
+The framework therefore makes the sharper claim:
+\[
+\text{raw interpolation} \neq \text{smooth manifold continuation}.
+\]
+
+The learner is not storing points. It is constructing a continuous representational geometry whose local accommodations $s_i(x)$ decay rapidly away from their respective interpolation points, leaving the global structure $g(x)$ intact and available for principled extrapolation.
+
+\subsection{Abstraction Without Elimination}
+
+The framework does not claim that abstraction disappears or becomes unnecessary under excess-capacity learning. It claims that abstraction may emerge from a different mechanism than classical theories assumed.
+
+Under the classical compression paradigm:
+\[
+\text{classical abstraction} = \text{variance elimination}.
+\]
+The learner discards local detail to recover invariant structure. Abstraction is achieved by forgetting. The abstract concept is what remains after local irregularities have been removed.
+
+Under the excess-capacity framework:
+\[
+\text{excess-capacity abstraction} = \text{global manifold organization}.
+\]
+The learner preserves local detail while organizing it within a globally smooth representational geometry. Abstraction is not the elimination of the detail but the smooth manifold structure that emerges from organizing it. The abstract concept is the global continuity of $g(x)$, not the absence of $s_i(x)$.
+
+This distinction is non-trivial. In the classical view, one cannot have both detailed episodic preservation and abstract generalization simultaneously; one trades off against the other. In the excess-capacity view, they coexist because they correspond to different structural layers of the same manifold. The global layer $g(x)$ is the abstraction. The local layer $s_i(x)$ is the episodic detail. Both occupy the same representational substrate without conflicting, provided representational dimensionality is sufficient to isolate the local from the global.
+
+\subsection{Excess Capacity Does Not Require Perfect Retention}
+
+A related clarification concerns what excess capacity actually requires. The framework does not claim that excess-capacity systems literally preserve every experiential trace in full detail.
+
+Representational abundance is relative: the condition $\rho > 1$ requires only that effective representational flexibility exceed effective experiential complexity. This can be satisfied even when many individual experiences are partially compressed or only approximately represented, provided the overall geometric structure of the experiential manifold is captured with sufficient fidelity to support the decomposition $f_\theta = g + s$.
+
+Biological systems regularly exhibit forgetting, lossy consolidation, interference between memories, and selective attention that filters experiential input. None of these phenomena are incompatible with the excess-capacity framework, provided the forgotten or degraded traces are those whose accommodation would have required global curvature increases. Graceful forgetting is in fact predicted by the framework: as experiential load $E$ increases while representational flexibility $C$ remains bounded, the ratio $\rho$ decreases, and the system naturally transitions toward more aggressive compression of the least-distinctive traces --- those for which spike-based accommodation would be most costly globally.
+
+The framework therefore predicts not that high-capacity learners retain everything, but that they retain systematically more than low-capacity learners do, with the retained content being precisely the locally distinctive structure that would otherwise require global manifold distortion to accommodate.
+
+\subsection{Distributed Accommodation and Residual Structure}
+
+The geometric metaphor of ``spikes'' as localized residual accommodation structures should not be interpreted too literally. The framework does not require that biological or artificial systems implement sharp, pointlike deviations from a smooth background.
+
+In practice, localized accommodation structures may correspond to any of the following:
+\[
+\text{sparse residual fields},
+\quad
+\text{distributed attractor pockets},
+\quad
+\text{localized curvature concentrations},
+\quad
+\text{attention partitions},
+\quad
+\text{kernel activations}.
+\]
+
+In biological neural systems, such structures are likely distributed across populations of neurons, recurrent circuits, and synaptic weight configurations rather than being localized at individual units. In transformer architectures, they may correspond to attention head specializations that activate selectively for particular input patterns. In kernel methods, they correspond to the localized basis functions $K(x, x_i)$ that decay away from each training point.
+
+What all of these have in common is the functional property expressed in the definition: the accommodation structure's influence decays rapidly outside a restricted region of experiential space, so that it provides local interpolation fidelity without destabilizing global predictive geometry. The spike metaphor captures this functional property. It does not prescribe a neurological or architectural implementation.
+
+\subsection{Regime Transitions as Bifurcations}
+
+The shift between constrained, sufficient, and excess regimes need not be continuous. As the capacity ratio
+\[
+\rho = \frac{C}{E}
+\]
+crosses critical thresholds $\rho_c$, the qualitative geometry of the representational manifold may reorganize abruptly --- a phenomenon analogous to phase transitions or bifurcations in dynamical systems.
+
+Near the interpolation threshold $\rho_c \approx 1$, small changes in either $C$ or $E$ can produce disproportionate changes in manifold curvature and generalization behavior. This is the mathematical signature of a saddle-node or pitchfork bifurcation: the system's stable equilibrium geometry changes qualitatively rather than quantitatively as a parameter crosses a critical value.
+
+Concretely, as $\rho$ increases through $\rho_c$:
+\[
+\text{global smoothness destabilizes} \rightarrow \text{localized accommodations proliferate} \rightarrow \text{global smoothness re-emerges}
+\]
+corresponds to the double-descent curve observed empirically. The middle phase --- the interpolation threshold --- is precisely the bifurcation point where neither the constrained-regime nor excess-regime equilibrium is stable. The system is maximally sensitive to perturbation.
+
+This bifurcation interpretation has concrete empirical predictions. Developmental transitions, learning plateaus, the sudden appearance of new linguistic or mathematical competencies, and the abrupt emergence of generalizing behavior in machine learning systems (the grokking phenomenon) may all correspond to bifurcation events in $\rho(t)$ as experiential complexity accumulates or representational flexibility expands during growth and training.
+
+\subsection{When Noise Becomes Structure}
+
+The framework's treatment of noise is more radical than it may initially appear. Conventional treatments take noise as given: irreducible variance that any learning system must filter out. The excess-capacity framework suggests a different interpretation.
+
+What appears as noise relative to a constrained representational system may contain latent structure that becomes representable when sufficient excess capacity is available. The distinction is not between signal and noise as absolute categories, but between structure resolved and structure unresolved at a given representational scale.
+
+Formally, an observation
+\[
+y_i = f^*(x_i) + \epsilon_i
+\]
+is standardly decomposed into a signal $f^*(x_i)$ and noise $\epsilon_i$. But this decomposition is regime-relative. In a constrained system with $\rho \ll 1$, the $\epsilon_i$ are genuinely unrepresentable --- the system lacks the dimensional freedom to encode them, and they act as irreducible variance. In an excess-capacity system with $\rho \gg 1$, the same $\epsilon_i$ may be accommodated through localized spike structures $s_i(x)$. Whether doing so improves or degrades generalization depends on whether the $\epsilon_i$ are truly structureless or contain predictive regularities at finer scales than the global manifold $g(x)$ captures.
+
+This suggests a reinterpretation:
+\[
+\text{noise} = \text{unresolved structure relative to current representational capacity}.
+\]
+
+Under this reading, the boundary between signal and noise is not fixed by the environment but by the learner's regime. Increasing representational capacity does not merely improve signal recovery; it shifts the resolution scale at which structure and noise are distinguished. Some portion of what appeared as noise in constrained systems becomes recoverable regularity in excess-capacity systems.
+
+This is a genuinely radical implication. It means the effective information content of an experience is not a fixed quantity determined by the environment, but a learner-relative quantity that depends on the representational geometry brought to bear on it.
+
+Similarly, the framework does not deny the existence of modular specialization, functional dissociation, or heterogeneous neural dynamics \cite{SherrySchacter1987}. Rather, it proposes that many dual-process phenomena may emerge from different operational regimes within a unified representational substrate rather than requiring entirely separate learning principles.
 
 Finally, the framework distinguishes carefully between empirical observations, computational reinterpretations, mechanistic hypotheses, speculative extensions, and philosophical implications. The empirical phenomena discussed throughout the essay are well-established findings from cognitive science and machine learning. The regime-theoretic interpretation proposed here constitutes a computational synthesis intended to organize these findings within a unified representational geometry.
 
@@ -233,29 +377,29 @@ Having established the foundational ontology and scope conditions of the framewo
 
 The modern scientific understanding of cognition emerged within a conceptual landscape dominated by scarcity. Biological organisms appeared metabolically constrained, environmentally overwhelmed, and computationally limited. Under these conditions, the prevailing assumption became almost unavoidable: intelligence must function primarily through simplification. The richness of the external world could not possibly be preserved in full detail, and therefore cognition was understood as a process of selective reduction. Learning meant compressing complexity into manageable abstractions.
 
-Although this assumption appeared across multiple intellectual traditions, its underlying logic remained remarkably consistent. Systems capable of discarding irrelevant detail were presumed more adaptive than systems attempting to preserve experiential specificity. Simplicity was therefore elevated from an engineering convenience into a normative principle of intelligence itself.
+Although this assumption appeared across multiple intellectual traditions, its underlying logic remained remarkably consistent. Systems capable of discarding irrelevant detail were presumed more adaptive than systems attempting to preserve experiential specificity. Simplicity was therefore elevated from an engineering convenience into a normative principle of intelligence itself \cite{Chater1999}.
 
-One of the earliest and most influential formulations emerged through the work of 0. Mach proposed that scientific and cognitive thought operate according to an ``economy of thought,'' in which the mind reduces diverse phenomena into compressed conceptual regularities. Under this view, cognition achieves efficiency by minimizing unnecessary representational complexity. The mind experiences conceptual relief when multiple phenomena become reducible to a smaller number of organizing principles.
+One of the earliest and most influential formulations emerged through the work of Ernst Mach \cite{Mach1905}. Mach proposed that scientific and cognitive thought operate according to an ``economy of thought,'' in which the mind reduces diverse phenomena into compressed conceptual regularities. Under this view, cognition achieves efficiency by minimizing unnecessary representational complexity. The mind experiences conceptual relief when multiple phenomena become reducible to a smaller number of organizing principles.
 
 This principle of economy became deeply influential because it aligned naturally with broader assumptions about biological limitation. If cognition is metabolically expensive, then reducing representational burden appears inherently adaptive. Simplicity therefore became associated not merely with elegance, but with survival itself.
 
-Gestalt psychology extended this orientation into perceptual organization. The Gestalt principle of Pragnanz argued that perceptual systems naturally organize stimuli into the ``best,'' simplest, and most stable forms possible. Complex or ambiguous sensory information was presumed to collapse toward regularized structures emphasizing symmetry, continuity, and simplicity.
+Gestalt psychology extended this orientation into perceptual organization. The Gestalt principle of Pr\"{a}gnanz argued that perceptual systems naturally organize stimuli into the ``best,'' simplest, and most stable forms possible \cite{Koffka1935}. Complex or ambiguous sensory information was presumed to collapse toward regularized structures emphasizing symmetry, continuity, and simplicity.
 
 Importantly, the Gestalt notion of ``good form'' implicitly tied successful cognition to representational reduction. Simpler organizations were considered psychologically privileged because they minimized computational complexity while preserving functional coherence.
 
-This same intuition later reappeared within formal statistical learning theory. Classical statistics treated generalization as a balancing act between underfitting and overfitting. Systems with insufficient complexity failed to capture relevant structure, producing high bias. Systems with excessive complexity became hypersensitive to noise, producing high variance. The resulting bias--variance tradeoff implied that successful learning requires locating an intermediate region of controlled simplicity.
+This same intuition later reappeared within formal statistical learning theory \cite{Vapnik1998,Valiant1984}. Classical statistics treated generalization as a balancing act between underfitting and overfitting. Systems with insufficient complexity failed to capture relevant structure, producing high bias. Systems with excessive complexity became hypersensitive to noise, producing high variance. The resulting bias--variance tradeoff implied that successful learning requires locating an intermediate region of controlled simplicity.
 
 Under this framework, memorization became synonymous with failure. A learner capable of perfectly fitting noisy training data was presumed incapable of generalizing beyond it. Interpolation and robustness appeared fundamentally incompatible.
 
 The same compression-centered logic permeated cognitive science throughout the twentieth century. Prototype theories of categorization proposed that cognition abstracts generalized central tendencies from collections of specific experiences. Symbolic models treated intelligence as the extraction of compressed rules governing broad classes of situations. Even memory systems were frequently divided according to the distinction between abstraction and specificity. Episodic memory preserved local detail, while semantic systems extracted generalized structure.
 
-Several influential theories formalized this division directly. Complementary Learning Systems theory argued that rapid memorization of individual episodes and slow extraction of statistical regularities required distinct computational architectures because the two objectives interfere with one another. Preserving arbitrary traces was presumed computationally incompatible with extracting stable invariances.
+Several influential theories formalized this division directly. Complementary Learning Systems theory argued that rapid memorization of individual episodes and slow extraction of statistical regularities required distinct computational architectures because the two objectives interfere with one another \cite{McClelland1995,McClellandGoddard1996}. Preserving arbitrary traces was presumed computationally incompatible with extracting stable invariances.
 
 The compression paradigm therefore became deeply institutionalized across multiple levels of explanation. Biological limitation justified abstraction. Statistical learning theory formalized simplicity. Cognitive science partitioned memory systems according to the presumed incompatibility between memorization and generalization.
 
 Yet despite its historical dominance, the compression paradigm always contained unresolved tensions.
 
-Human cognition repeatedly exhibited surprisingly high-fidelity memory. Experimental work demonstrated that individuals could retain detailed recognition of thousands of visual objects with remarkable accuracy. Exemplar effects revealed that people often rely upon highly specific experiential traces even when abstract rules are available. Developmental learning frequently exhibited non-monotonic trajectories inconsistent with simple abstraction models. Expertise sometimes increased sensitivity to subtle local distinctions rather than reducing representation toward compressed summaries.
+Human cognition repeatedly exhibited surprisingly high-fidelity memory. Experimental work demonstrated that individuals could retain detailed recognition of thousands of visual objects with remarkable accuracy \cite{Brady2008}. Exemplar effects revealed that people often rely upon highly specific experiential traces even when abstract rules are available. Developmental learning frequently exhibited non-monotonic trajectories inconsistent with simple abstraction models. Expertise sometimes increased sensitivity to subtle local distinctions rather than reducing representation toward compressed summaries.
 
 These anomalies were frequently treated as secondary phenomena operating around a fundamentally compression-centered architecture. However, the emergence of modern overparameterized machine learning systems dramatically altered the situation. Neural networks capable of perfectly interpolating massive datasets nevertheless generalized successfully. Systems containing vastly more parameters than training examples violated the classical expectation that interpolation necessarily destroys robustness.
 
@@ -430,6 +574,7 @@ Under the excess-capacity framework, abstraction may emerge through dense interp
 The operational consequences of this distinction become most visible when examining the transition between constrained, sufficient, and excess representational regimes. We therefore turn next to a formal analysis of the three-regime structure governing learning behavior.
 
 \section{The Three Regimes of Representational Capacity}
+\label{sec:three-regimes}
 
 The central claim of the representational capacity framework is that cognition cannot be adequately understood through static architectural descriptions alone. Cognitive behavior emerges from the dynamic relationship between representational flexibility and experiential complexity. The relevant object of analysis is therefore not the isolated learner, but the evolving geometry between the learner and its experiential environment.
 
@@ -474,7 +619,7 @@ The system generalizes successfully precisely because it cannot memorize every l
 
 This produces the classical compression-centered conception of intelligence.
 
-Within this paradigm, abstraction is achieved by discarding experiential detail. Generalization requires forgetting.
+Within this paradigm, abstraction is achieved by discarding experiential detail. Generalization requires forgetting. This intuition was formalized in neural networks through the information bottleneck principle, which frames learning explicitly as compression of input representations to retain only task-relevant structure \cite{Tishby2015}.
 
 Historically, most of cognitive science implicitly operated within this regime assumption. Theories of bounded rationality, prototype abstraction, heuristic simplification, lossy memory consolidation, and statistical regularization all presuppose that cognitive systems lack sufficient representational resources to preserve the detailed structure of experience.
 
@@ -691,16 +836,7 @@ A learner initially operating under excess capacity may gradually transition tow
 
 This dynamic explains several otherwise puzzling developmental and cognitive phenomena.
 
-Children may initially memorize irregular linguistic forms because early experiential complexity remains low relative to representational flexibility. As vocabulary grows rapidly, however, experiential accumulation may temporarily exceed available representational abundance, forcing the learner into constrained rule-based compression.
-
-The child therefore transitions from:
-\[
-\text{went}
-\rightarrow
-\text{goed}
-\rightarrow
-\text{went}.
-\]
+Children may initially memorize irregular linguistic forms because early experiential complexity remains low relative to representational flexibility. As vocabulary grows rapidly, however, experiential accumulation may temporarily exceed available representational abundance, forcing the learner into constrained rule-based compression. The child therefore temporarily overgeneralizes (e.g., producing \textit{goed} before returning to \textit{went}), a phenomenon analyzed in detail in Section~\ref{sec:developmental-dynamics}.
 
 The apparent regression reflects not irrationality but regime transition.
 
@@ -724,7 +860,7 @@ The classical bias--variance tradeoff became deeply integrated into psychology, 
 
 Yet modern overparameterized systems repeatedly violate this prediction.
 
-Deep neural networks containing vastly more parameters than training examples frequently interpolate noisy datasets perfectly while continuing to generalize effectively. Rather than diverging catastrophically after interpolation, test error often decreases again once representational flexibility substantially exceeds experiential complexity.
+Deep neural networks containing vastly more parameters than training examples frequently interpolate noisy datasets perfectly while continuing to generalize effectively \cite{Belkin2019,Nakkiran2020}. Rather than diverging catastrophically after interpolation, test error often decreases again once representational flexibility substantially exceeds experiential complexity.
 
 This produces the characteristic double descent curve.
 
@@ -904,7 +1040,7 @@ Overfitting becomes catastrophic specifically when the learner lacks sufficient 
 
 This reinterpretation gives rise to the concept of benign overfitting.
 
-Benign overfitting refers to situations in which a learner perfectly interpolates noisy observations while maintaining low generalization error.
+Benign overfitting refers to situations in which a learner perfectly interpolates noisy observations while maintaining low generalization error \cite{Bartlett2020}.
 
 At first glance, this appears paradoxical. Classical statistical learning theory treated interpolation and robustness as fundamentally incompatible.
 
@@ -1001,34 +1137,14 @@ Excess systems generalize because high-dimensional optimization landscapes proba
 
 \subsection{Volume Effects and High-Dimensional Geometry}
 
-The emergence of smooth solutions in overparameterized systems may be understood through volume effects in high-dimensional spaces.
+The emergence of smooth solutions in overparameterized systems may be understood through volume effects in high-dimensional spaces, as established in Section~\ref{sec:three-regimes} above.
 
-Let
-\[
-\Theta
-\]
-denote parameter space.
-
-Suppose
-\[
-\mathcal{M}_{\text{flat}}
-\subset \Theta
-\]
-corresponds to low-curvature solutions and
-\[
-\mathcal{M}_{\text{sharp}}
-\subset \Theta
-\]
-corresponds to highly localized sharp minima.
-
-In high-dimensional systems,
+Flat minima occupy exponentially larger regions of parameter space than sharp minima:
 \[
 \text{Vol}(\mathcal{M}_{\text{flat}})
 \gg
 \text{Vol}(\mathcal{M}_{\text{sharp}}).
 \]
-
-Flat minima occupy exponentially larger regions of parameter space.
 
 Consequently, stochastic optimization procedures are overwhelmingly more likely to converge toward smooth solutions.
 
@@ -1202,7 +1318,7 @@ The learner therefore behaves as though it ``prefers'' smoothness, even though s
 
 This phenomenon is known as implicit regularization.
 
-Implicit regularization represents one of the most significant conceptual developments in modern machine learning because it demonstrates that optimization procedures themselves may induce strong structural preferences.
+Implicit regularization represents one of the most significant conceptual developments in modern machine learning because it demonstrates that optimization procedures themselves may induce strong structural preferences. Notably, the specific optimizer used — whether vanilla stochastic gradient descent or adaptive methods — affects the implicit bias and therefore which smooth solution is selected, though the qualitative tendency toward low-complexity interpolants appears robust across many optimization families \cite{Wilson2017}.
 
 The learner does not generalize because complexity is impossible.
 
@@ -1210,27 +1326,7 @@ The learner generalizes because optimization trajectories disproportionately con
 
 \subsection{Flat Minima and Volume Effects}
 
-The emergence of smooth interpolants may be understood geometrically through volume effects in high-dimensional parameter spaces.
-
-Suppose parameter space
-\[
-\Theta
-\]
-contains two broad classes of solutions.
-
-The first class consists of sharp minima:
-\[
-\mathcal{M}_{\text{sharp}},
-\]
-corresponding to highly localized and unstable solutions.
-
-The second class consists of flat minima:
-\[
-\mathcal{M}_{\text{flat}},
-\]
-corresponding to low-curvature stable interpolants.
-
-Empirically and theoretically,
+The emergence of smooth interpolants follows geometrically from the volume asymmetry between flat and sharp minima established earlier (see Section~\ref{sec:three-regimes}):
 \[
 \text{Vol}(\mathcal{M}_{\text{flat}})
 \gg
@@ -1390,6 +1486,253 @@ If sufficiently expressive representational manifolds can simultaneously preserv
 
 The implications of this claim become particularly important when examining human empirical signatures of excess-capacity learning. We therefore turn next to the behavioral, developmental, and cognitive phenomena suggesting that biological learners frequently operate under conditions of representational abundance.
 
+% ─────────────────────────────────────────────────────────────
+% Coordinate Independence and Representational Geometry
+% ─────────────────────────────────────────────────────────────
+
+\section{Coordinate Independence and Representational Geometry}
+\label{sec:coordinate-independence}
+
+The preceding sections have developed a framework in which cognition is understood geometrically: experiences map onto manifolds, generalization corresponds to smooth interpolation, and representational capacity is measured relationally rather than absolutely. This geometric language is powerful, but it carries an implicit demand that has not yet been made explicit.
+
+If cognitive organization is genuinely manifold-structured, then its fundamental properties should not depend on the particular coordinate system chosen to describe it. A learner's representational geometry is an intrinsic feature of how it organizes experience. It is not an artifact of the basis used to measure or describe that organization. This requirement --- that cognitive laws remain invariant under transformations of representational basis --- is precisely what distinguishes tensorial descriptions from matrix descriptions, and it is why the geometric framework developed throughout this essay naturally calls for tensorial language.
+
+The present section makes this transition explicit. It is not a mathematical digression. It is a necessity proof emerging from the framework itself.
+
+Throughout this section and all subsequent formal appendices, repeated upper and lower indices imply summation according to the Einstein convention: $T^{ij} v_j \equiv \sum_j T^{ij} v_j$. This convention makes tensor equations compact and their coordinate-independence transparent: any fully contracted expression is a scalar and is automatically coordinate-free.
+
+\subsection{The Basis-Dependence Problem}
+
+Consider a learner whose internal representational state is described by a vector
+\[
+\mathbf{v} \in \mathcal{Z},
+\]
+where $\mathcal{Z}$ denotes the representational manifold. To assign numerical values to this state, we must choose a basis
+\[
+\{\mathbf{e}_1, \ldots, \mathbf{e}_d\}
+\]
+for $\mathcal{Z}$.
+
+The components of $\mathbf{v}$ relative to this basis are the numbers $v^i$ such that
+\[
+\mathbf{v} = v^i \mathbf{e}_i.
+\]
+
+A different learner --- or the same learner examined by a different observer, or described in a rotated coordinate frame --- will assign different numerical components $v'^i$ to the same representational state. If the coordinate frames are related by a rotation matrix $R$, then
+\[
+v'^i = R^i{}_j \, v^j.
+\]
+
+This is unavoidable. What is not unavoidable is treating the numbers as the object itself.
+
+The components $v^i$ are not the representational state. They are a description of it relative to a chosen basis. The representational state $\mathbf{v}$ is the intrinsic geometric object. The numbers $v^i$ are coordinate-dependent shadows of that object.
+
+Classical symbolic theories of cognition effectively treat the components as primary. Representations are stored as fixed numerical encodings, and learning is understood as modification of those encodings. Under this view, two learners using different representational bases would appear to have fundamentally different cognitive states even when their underlying organization is identical.
+
+The excess-capacity framework, by treating cognition geometrically, implicitly rejects this position. But it requires a formal language for expressing invariant relational structure independent of coordinate choice. That language is provided by tensors.
+
+\subsection{What Makes an Object a Tensor}
+
+A \textbf{tensor} is a mathematical object whose existence and identity are coordinate-independent, even though its numerical components change when the coordinate basis changes.
+
+The essential property of a tensor is not dimensionality but covariance. A multidimensional array becomes tensorial only when its components transform consistently under changes of representational basis. The defining property is not merely that the object has multiple indices. It is that the components transform according to a specific law under changes of basis.
+
+For a rank-2 tensor $T$, if the coordinate basis transforms via a matrix $R$, then the components transform as
+\[
+T'^{ij} = R^i{}_k \, R^j{}_l \, T^{kl},
+\]
+or equivalently in matrix notation,
+\[
+T' = R \, T \, R^\top.
+\]
+
+This double transformation --- one factor of $R$ for each index --- is the defining property of a rank-2 tensor. A matrix that transforms this way under every change of basis is a genuine tensor. A matrix that does not is merely a table of numbers that happens to be arranged in a square.
+
+The cognitive significance of this distinction is immediate. A \textbf{relationship} between representational states is a tensor if and only if it has the same geometric meaning in every representational basis. The numbers that describe the relationship change as the basis changes, but the relationship itself --- the intrinsic structure it encodes --- does not.
+
+\subsection{Invariance as a Cognitive Principle}
+
+The requirement that cognitive laws be coordinate-independent can now be stated precisely.
+
+\begin{definition}[Representational Invariance]
+A cognitive relationship or dynamical law is representationally invariant if it can be expressed as a tensorial equation --- one in which both sides transform identically under arbitrary changes of representational basis.
+\end{definition}
+
+This is not a technical nicety. It is a substantive claim about what kind of thing generalization is.
+
+Consider two learners who have acquired equivalent cognitive organization --- the same manifold structure, the same interpolation geometry, the same regime dynamics --- but who happen to encode their internal states relative to different representational bases. Their component matrices will differ. Their tensorial descriptions will be identical.
+
+Generalization should be a property of the second kind, not the first. A learner does not succeed at generalization because its numerical components happen to arrange favorably in one coordinate system. It succeeds because its underlying representational manifold has acquired stable geometric structure.
+
+This is the cognitive interpretation of the tensor transformation law:
+\[
+T' = R \, T \, R^\top.
+\]
+
+The intrinsic relational structure encoded by $T$ is preserved. Only the coordinate description changes.
+
+Different representational encodings may therefore constitute gauge-equivalent descriptions of identical underlying cognitive organization. Two minds implementing the same interpolation geometry in different internal coordinate systems are, in the tensorial sense, cognitively equivalent. Their apparent difference is a measurement artifact, not a structural one. This observation opens the possibility of a representational gauge theory of cognition --- a framework in which the space of admissible coordinate transformations becomes itself an object of study, and in which cognitive invariants are defined as quantities preserved across the full gauge group.
+
+\subsection{Representational Abundance as Dimensional Freedom}
+
+The tensorial framework now allows a more precise geometric interpretation of the central regime variable
+\[
+\rho = \frac{C}{E}.
+\]
+
+Representational abundance may be interpreted geometrically as an increase in the effective dimensional freedom of the representational manifold itself. As the dimension $d$ of $\mathcal{Z}$ increases relative to the effective dimension of the experiential distribution, the learner acquires greater capacity to localize interpolation residuals without globally destabilizing representational curvature.
+
+Formally, when $d \gg \dim_{\text{eff}}(\text{supp}(\mu))$, the interpolation constraints imposed by the experiential distribution underdetermine the learned manifold, leaving a high-dimensional null space of unconstrained representational directions. It is precisely this surplus dimensionality that permits the decomposition
+\[
+f_\theta(x) = g(x) + s(x)
+\]
+to succeed: the globally smooth component $g$ can be preserved because the localized accommodation structures $s_i$ are routed into the null space, where they do not interfere with the global geometry.
+
+The regime variable $\rho$ therefore has a direct geometric meaning: it measures the ratio between the representational manifold's dimensional freedom and the dimensional complexity of the experiential constraint surface. When $\rho \gg 1$, the constraint surface is a thin slice of a much larger manifold, and localization becomes geometrically possible. When $\rho \approx 1$, the constraint surface fills the available manifold almost completely, and any local accommodation necessarily propagates globally.
+
+\subsection{Intrinsic and Extrinsic Curvature}
+
+A critical distinction for the representational regime framework is that between \textbf{intrinsic} and \textbf{extrinsic} curvature. This distinction mirrors a deeper one between genuine cognitive instability and apparent complexity that is merely an artifact of representation choice.
+
+\textbf{Extrinsic curvature} measures how a manifold bends relative to the ambient space in which it is embedded. If a two-dimensional surface is curved within three-dimensional space, extrinsic curvature captures that bending from an outside perspective.
+
+\textbf{Intrinsic curvature} measures curvature detectable from within the manifold itself, using only distances measured along the manifold's surface. The Riemann curvature tensor $R^\rho{}_{\sigma\mu\nu}$ captures intrinsic curvature and is invariant under coordinate transformations of the manifold.
+
+The distinction matters cognitively because a representational system may appear highly irregular in a particular coordinate embedding while remaining intrinsically smooth. A learner whose internal states are described in a poorly chosen basis may exhibit wildly varying component values even when the underlying representational manifold is gently curved and geometrically stable. The high apparent complexity is an extrinsic artifact of the coordinate choice, not a genuine instability in the cognitive organization.
+
+This explains why tensorial descriptions are necessary for diagnosing cognitive instability. Evaluating curvature through matrix entries alone yields extrinsic measures that depend on the embedding. Only the intrinsic Riemann tensor identifies genuine instability that persists across all coordinate descriptions.
+
+Within the regime framework, the interpolation threshold $\rho \approx 1$ corresponds to high \textit{intrinsic} curvature: the manifold itself becomes genuinely brittle, not merely apparently so under an unfortunate coordinate choice. The excess-capacity regime $\rho \gg 1$ produces low intrinsic curvature across most of $\mathcal{Z}$, which is why it supports stable generalization. The Ricci scalar $\mathcal{K}$ --- an intrinsic, coordinate-independent measure --- is the natural diagnostic.
+
+\subsection{Spikes as Localized Curvature Concentrations}
+
+The localized residual accommodation structures $s_i(x)$ introduced in the Three Regimes section can now be given a precise geometric interpretation in tensorial language.
+
+A spike is not merely a numerical deviation from the globally smooth function $g(x)$. It is a \textbf{localized concentration of intrinsic curvature}: a confined region of the representational manifold where the Riemann curvature tensor has elevated magnitude, embedded within an otherwise low-curvature geometry.
+
+Formally, the benign overfitting condition may be stated as:
+\[
+R^\rho{}_{\sigma\mu\nu}(z) \approx 0 \quad \text{for } z \notin \bigcup_i \mathcal{N}(x_i),
+\]
+where $\mathcal{N}(x_i)$ denotes a small neighborhood around interpolation point $x_i$, while the curvature tensor may be elevated within those neighborhoods to accommodate the local interpolation constraints.
+
+Generalization succeeds because the globally smooth component $g(x)$ corresponds to the low-curvature regions that dominate the manifold by volume. The high-curvature spike regions are geometrically small and isolated. An unseen experience $x^*$ that does not fall into any spike neighborhood is predicted by the smooth global structure $g(x^*)$ alone, and that prediction is stable.
+
+Catastrophic overfitting occurs when spike curvature is not isolated: when the accommodation structures $s_i$ couple to one another through the global geometry, causing their local curvature to propagate across the manifold. The condition
+\[
+\mathcal{K}(z) \gg 0 \quad \text{for most } z \in \mathcal{Z}
+\]
+identifies this failure mode intrinsically, independently of any coordinate choice.
+
+\subsection{The Metric Tensor and Representational Distance}
+
+Once the representational manifold $\mathcal{Z}$ is endowed with tensorial structure, it becomes possible to define distances and angles intrinsically --- independently of the coordinate system used to measure them.
+
+The tool that accomplishes this is the \textbf{metric tensor} $g$, a rank-2 covariant tensor whose components $g_{ij}$ define the inner product structure of the tangent space at each point of $\mathcal{Z}$.
+
+The infinitesimal squared distance between two nearby representational states is
+\[
+ds^2 = g_{ij} \, dz^i \, dz^j,
+\]
+where $dz^i$ are the coordinate displacements between the states. This expression is a scalar --- a coordinate-independent number --- because $g_{ij}$ is a genuine tensor and the contraction over $i$ and $j$ eliminates coordinate dependence.
+
+Within the representational capacity framework, this becomes extraordinarily useful. The concepts of:
+\[
+\text{experiential similarity},
+\quad
+\text{manifold continuity},
+\quad
+\text{interpolation smoothness},
+\quad
+\text{and generalization geometry}
+\]
+can all be defined through the metric tensor rather than through coordinate-specific numerical comparisons.
+
+Two experiences $x_i$ and $x_j$ are similar not because their component vectors happen to be numerically close in one particular basis, but because the geodesic distance between their representational embeddings $\phi(x_i)$ and $\phi(x_j)$ --- measured using the intrinsic metric $g$ --- is small:
+\[
+d_g(\phi(x_i), \phi(x_j)) = \inf_\gamma \int_\gamma \sqrt{g_{ij} \, dz^i \, dz^j},
+\]
+minimized over all paths $\gamma$ connecting the two states.
+
+The metric tensor determines not merely representational similarity, but the geometric accessibility of trajectories through representational space. Generalization may therefore be interpreted as \textbf{constrained geodesic continuation}: given a set of observed experiences, the learner constructs a smooth manifold geometry, and unseen experiences are predicted by extending that geometry along geodesics from observed regions. The prediction for $x^*$ is whatever value the geodesic continuation of $g$ assigns at $\phi(x^*)$.
+
+This geodesic interpretation connects naturally to a variational formulation of learning. The metric defines a length functional on trajectories through $\mathcal{Z}$:
+\[
+\mathcal{S}[\gamma] = \int_0^T \mathcal{L}(z, \dot{z}) \, dt,
+\]
+where $\mathcal{L}(z, \dot{z}) = g_{ij}(z)\dot{z}^i\dot{z}^j$ is the representational Lagrangian. Learning trajectories that minimize this action produce geodesic flow through representational space. Interpolation constraints enter as boundary conditions:
+\[
+z(t_i) = y_i.
+\]
+The excess-capacity regime is then precisely the regime in which the action-minimizing trajectory satisfying all boundary conditions can remain geodesically smooth almost everywhere, localizing curvature into the spike regions $\mathcal{N}(x_i)$ without distorting the global geodesic structure.
+
+\subsection{Representational Curvature}
+
+The metric tensor also enables a precise account of representational curvature.
+
+Within the framework, regions of high representational curvature correspond to unstable or noise-sensitive zones --- areas where small perturbations to experiential input produce large perturbations to representational output. This is exactly the geometric signature of the interpolation threshold where $\rho \approx 1$.
+
+Curvature is encoded by the \textbf{Riemann curvature tensor}
+\[
+R^{\rho}{}_{\sigma\mu\nu},
+\]
+a rank-4 tensorial object derived from the metric $g$ and its derivatives. It is coordinate-independent: two observers using different bases will assign different numerical components to $R^{\rho}{}_{\sigma\mu\nu}$, but they will agree on whether a given region of $\mathcal{Z}$ is flat, mildly curved, or highly curved.
+
+The curvature scalar
+\[
+\mathcal{K} = g^{\sigma\nu} R^{\rho}{}_{\sigma\rho\nu}
+\]
+provides a single coordinate-independent number characterizing local curvature intensity.
+
+Within the excess-capacity framework:
+\begin{itemize}
+\item Low curvature regions ($\mathcal{K} \approx 0$) correspond to stable, smooth interpolation geometry --- benign overfitting territory.
+\item High curvature regions ($\mathcal{K} \gg 0$) correspond to brittle, noise-amplifying representational zones --- the interpolation threshold and catastrophic accommodation territory.
+\end{itemize}
+
+The smoothness condition discussed in Section~\ref{sec:three-regimes} --- that excess-capacity learners converge toward globally smooth manifolds --- can now be stated invariantly:
+\[
+\mathcal{K}(z) \text{ remains bounded almost everywhere across } \mathcal{Z}.
+\]
+
+This is a tensorial statement. It holds in every coordinate system simultaneously.
+
+\subsection{Cognition as Multilinear Relational Structure}
+
+The most fundamental consequence of adopting tensorial language is a reinterpretation of what representations are.
+
+Under classical symbolic theories, representations are containers: fixed encodings of discrete information. Under excess-capacity learning, representations are interpolating manifold structures. The tensorial perspective adds a third layer: representations may be understood as \textbf{multilinear relational operators} acting across contextual manifolds of experience, memory, and prediction.
+
+A rank-2 tensor $T$ is a bilinear map
+\[
+T : V \times V \to \mathbb{R},
+\]
+linear in each argument. It does not encode a fixed value. It encodes a relational structure between contexts, computing a scalar output that depends on how two input directions are combined.
+
+Applied to cognition, this suggests that the intrinsic content of a representation is not a stored numerical value, but a relational disposition --- a way of responding to pairs, triples, or $n$-tuples of contextual inputs. The representational manifold is then not a storage register but a field of such relational dispositions, organized into a coherent geometric structure.
+
+This reframing aligns naturally with the broader framework. Generalization is not the retrieval of a stored encoding. It is the extension of relational structure across a manifold whose geometry was shaped by prior experience.
+
+\subsection{Why Matrices Alone Are Insufficient}
+
+The argument of this section can now be summarized precisely.
+
+Matrices are sufficient for describing representations in a single, fixed coordinate system. But the excess-capacity framework requires something more. It requires a language for:
+\begin{enumerate}
+\item expressing relationships that remain invariant across all representational bases,
+\item defining intrinsic distances and curvature on representational manifolds without reference to any particular coordinate system,
+\item describing how different learners with different internal encodings may share identical cognitive organization,
+\item and characterizing generalization as a geometric property rather than a coordinate-specific numerical coincidence.
+\end{enumerate}
+
+None of these four requirements can be met by matrices alone. All four are naturally met by tensors.
+
+The transition from matrix descriptions to tensorial descriptions in the formal appendices that follow is therefore not a matter of mathematical decoration. It is the natural consequence of taking representational geometry seriously as a scientific framework for cognition.
+
+The historical economy-of-thought tradition treated intelligence as the reduction of representational complexity. The tensorial perspective instead suggests that intelligence may fundamentally concern the maintenance of invariant relational structure across changing representational coordinates. Stability emerges not from compression alone, but from the geometry of organized abundance --- a geometry that exists and persists independently of how it happens to be measured or encoded.
+
+Full derivations, transformation laws, index conventions, and physical applications of the tensorial formalism are developed in Appendix~\ref{app:tensors}.
+
 \section{Human Empirical Signatures of Excess Capacity}
 
 The theoretical framework developed thus far proposes that biological cognition often operates within regimes of representational abundance rather than strict compression. If this claim is correct, then the empirical signatures of human learning should differ substantially from those predicted by classical parsimony-centered theories. Human cognition should exhibit not merely abstraction and compression, but persistent retention of detail, sensitivity to local structure, dependence on experiential geometry, and forms of generalization emerging through dense interpolation rather than reductive filtering.
@@ -1445,7 +1788,7 @@ The empirical literature repeatedly violates these predictions.
 
 One of the strongest empirical signatures of excess-capacity learning is the enormous recognition fidelity exhibited by biological cognition.
 
-Brady et al.\ demonstrated that participants exposed to approximately
+Brady et al.\ \cite{Brady2008} demonstrated that participants exposed to approximately
 \[
 2500
 \]
@@ -1491,7 +1834,7 @@ The learner can preserve local detail while still extracting globally smooth pre
 
 Further evidence against strict compression appears in human reliance upon apparently unnecessary detail.
 
-Lupyan demonstrated that human category judgments frequently incorporate superficial or statistically irrelevant features even when simpler categorical rules are explicitly available.
+Lupyan \cite{Lupyan2009} demonstrated that human category judgments frequently incorporate superficial or statistically irrelevant features even when simpler categorical rules are explicitly available.
 
 Participants identifying triangles, for example, often relied upon side length proportions, orientation cues, or prototypical appearance despite possessing the abstract rule:
 \[
@@ -1522,7 +1865,7 @@ The regime framework instead predicts that both behaviors may emerge naturally w
 
 Although excess-capacity systems preserve local detail, they nevertheless exhibit powerful prototype effects.
 
-Posner and Keele famously demonstrated that participants classified unseen prototype stimuli more efficiently than previously encountered exemplars.
+Posner and Keele \cite{PosnerKeele1968} famously demonstrated that participants classified unseen prototype stimuli more efficiently than previously encountered exemplars.
 
 At first glance, this appears to support classical compression theories.
 
@@ -1574,7 +1917,7 @@ One of the most counterintuitive predictions of the regime framework is that add
 
 This prediction sharply contrasts with classical learning theories, which assume monotonic improvement with increased exposure.
 
-Censor and Sagi observed precisely such perceptual deterioration effects within visual discrimination tasks.
+Censor and Sagi \cite{Censor2006} observed precisely such perceptual deterioration effects within visual discrimination tasks.
 
 Participants receiving excessive training eventually exhibited reduced transfer performance despite continued exposure.
 
@@ -1629,7 +1972,7 @@ Representational abundance confers advantages only under specific relational con
 
 \subsection{False Recognition and Representational Blurring}
 
-Koutstaal and Schacter demonstrated that humans frequently exhibit false recognition for semantically related but previously unseen category members.
+Koutstaal and Schacter \cite{Koutstaal1997} demonstrated that humans frequently exhibit false recognition for semantically related but previously unseen category members.
 
 Classical theories often interpret this as evidence for prototype-based abstraction replacing episodic detail.
 
@@ -1763,7 +2106,7 @@ The U-shaped trajectory therefore reflects dynamic movement between representati
 
 The implications of excess-capacity learning extend beyond memory and categorization into attentional dynamics themselves.
 
-Constraint-driven attentional ecologies appear especially consistent with representational abundance frameworks. Systems maintaining sustained engagement frequently preserve dense unresolved structure rather than aggressively compressing experience into completed summaries.
+Constraint-driven attentional ecologies appear especially consistent with representational abundance frameworks. Systems maintaining sustained engagement frequently preserve dense unresolved structure rather than aggressively compressing experience into completed summaries. Consistent with this, statistical prediction of future states has been shown to interfere with episodic encoding of present experience, suggesting that premature representational closure actively disrupts local accommodation \cite{Sherman2020}.
 
 Constraint-first learning practices maintain informational gradients by preserving partially unresolved manifolds rather than terminating representation through closure.
 
@@ -1806,6 +2149,7 @@ They challenge the necessity of strong modular architectures separating memory f
 The next section therefore examines how excess-capacity learning reconfigures broader theories of cognition, development, and unified representational architecture.
 
 \section{Developmental Dynamics and Regime Transitions}
+\label{sec:developmental-dynamics}
 
 One of the most important consequences of the representational capacity framework is that cognitive behavior is not fixed. Learning systems do not permanently inhabit a single operational regime. Instead, they move dynamically through different regions of representational organization as experiential complexity, environmental structure, developmental maturation, and representational flexibility evolve over time.
 
@@ -2060,7 +2404,7 @@ k \ll d.
 
 Heuristics correspond to these compressed coordinate charts.
 
-Importantly, heuristics are not necessarily failures of rationality.
+Importantly, heuristics are not necessarily failures of rationality \cite{Gigerenzer2009}.
 
 They are adaptive responses to changing regime geometry.
 
@@ -2571,7 +2915,7 @@ Rather, the claim is that many apparently distinct cognitive functions:
 \[
 \text{generalization},
 \]
-may emerge from different operating regimes within unified representational manifolds.
+may emerge from different operating regimes within unified representational manifolds. Empirical support for this view comes from findings that the hippocampus supports not only episodic retention but also abstract concept generalization, suggesting that the same neural substrate contributes to both functions rather than being restricted to one \cite{BowmanZeithamova2018}.
 
 The distinction is subtle but critical.
 
@@ -2602,7 +2946,7 @@ The next section therefore examines scaling laws, artificial intelligence, and t
 
 \section{Scaling Laws, Artificial Intelligence, and Relative Capacity}
 
-The emergence of large-scale artificial learning systems has transformed the study of cognition from a primarily biological discipline into a broader science of representational geometry. Modern neural architectures now operate within parameter regimes previously unimaginable, exhibiting behaviors that frequently violate the assumptions of classical statistical learning theory. These systems memorize vast quantities of data, interpolate noisy distributions, generate coherent abstractions, and exhibit emergent capabilities that were not explicitly programmed into their architectures.
+The emergence of large-scale artificial learning systems has transformed the study of cognition from a primarily biological discipline into a broader science of representational geometry. Modern neural architectures now operate within parameter regimes previously unimaginable, exhibiting behaviors that frequently violate the assumptions of classical statistical learning theory. These systems memorize vast quantities of data, interpolate noisy distributions, generate coherent abstractions, and exhibit emergent capabilities that were not explicitly programmed into their architectures. The foundations of this development trace back to early biologically-motivated models of neural computation \cite{Rosenblatt1958}, through the demonstration that gradient-based learning of distributed representations is computationally tractable \cite{Rumelhart1986}, to the point where the full theoretical consequences of scale only became apparent in large-scale systems \cite{Goodfellow2016}.
 
 Within the representational regime framework, these developments acquire a unified interpretation.
 
@@ -2717,7 +3061,7 @@ f_\theta(x_i)
 \tilde{y}_i.
 \]
 
-Classical theories interpreted this ability as evidence of pathological overcapacity.
+Classical theories interpreted this ability as evidence of pathological overcapacity \cite{Zhang2017}.
 
 Within the representational regime framework, however, the phenomenon becomes expected.
 
@@ -3396,7 +3740,7 @@ and:
 
 Educational systems emphasizing rapid optimization, standardized symbolic encoding, and immediate rule extraction may therefore inadvertently destabilize deep generalization.
 
-The learner memorizes compressed symbolic surfaces without developing stable underlying interpolation geometry.
+The learner memorizes compressed symbolic surfaces without developing stable underlying interpolation geometry. Evidence that compression has non-trivial representational consequences in artificial systems supports this concern: network compression has been shown to alter the geometry of learned representations in ways that are not reducible to simple information loss \cite{Frankland2021}.
 
 This predicts that exploratory abundance during early learning phases may be essential for later robust abstraction.
 
@@ -4660,7 +5004,9 @@ Under sufficient representational abundance, generalization may emerge from geom
 
 \section{Statistical Learning Theory, Double Descent, and Benign Overfitting}
 
-This appendix develops the statistical learning theoretic foundations underlying the representational regime framework. The objective is to formally connect excess-capacity learning to modern results in overparameterized optimization, double descent theory, interpolation geometry, and benign overfitting.
+The geometric formalization of Appendix~A establishes the general manifold structure within which representational regimes operate, but does not directly connect that structure to the empirical phenomena motivating the framework. The preceding geometric analysis cannot by itself explain why interpolation sometimes fails catastrophically and sometimes succeeds benignly. Resolving that question requires the quantitative machinery of statistical learning theory, where bias, variance, and generalization error are precisely defined and their dependencies on model complexity are formally characterized.
+
+This appendix therefore develops the statistical learning theoretic foundations underlying the representational regime framework. The objective is to formally connect excess-capacity learning to modern results in overparameterized optimization, double descent theory, interpolation geometry, and benign overfitting.
 
 The central claim developed throughout this appendix is that the historical bias--variance tradeoff represents only a partial description of learning dynamics. Once systems enter sufficiently overparameterized regimes, interpolation and generalization cease to be fundamentally antagonistic.
 
@@ -4867,7 +5213,7 @@ The system no longer requires global manifold distortion to satisfy interpolatio
 
 \subsection{Linear Regression in the Overparameterized Regime}
 
-Consider linear regression:
+The overparameterized linear regression setting provides one of the most analytically tractable demonstrations of benign interpolation \cite{Hastie2022}. Consider:
 \[
 y
 =
@@ -5057,7 +5403,7 @@ decomposition.
 
 \subsection{Neural Tangent Kernels and Deep Networks}
 
-Overparameterized neural networks frequently behave approximately like kernel systems during optimization.
+Overparameterized neural networks frequently behave approximately like kernel systems during optimization \cite{Jacot2018}.
 
 Suppose:
 \[
@@ -5267,7 +5613,9 @@ Modern interpolation theory instead permits:
 
 \section{Dynamical Systems, Information Geometry, and Manifold Flows}
 
-The preceding appendices developed the representational regime framework primarily through the language of statistical learning theory and interpolation geometry. This appendix extends the formalism into dynamical systems theory, information geometry, and continuous manifold evolution.
+The preceding appendices developed the representational regime framework primarily through the language of statistical learning theory and interpolation geometry. Those formalisms characterize the structure of representational manifolds at a given moment but do not describe how learning systems evolve through those manifolds over time. A static geometric account cannot capture regime transitions, developmental trajectories, or the continuous reorganization of representational curvature during learning. These temporal phenomena require a dynamical formulation in which cognition is treated as flow across a structured state-space rather than as a fixed mapping.
+
+This appendix therefore extends the formalism into dynamical systems theory, information geometry, and continuous manifold evolution.
 
 The central objective is to reinterpret cognition not as static representation, but as evolving flow across structured representational state-spaces.
 
@@ -5817,7 +6165,9 @@ It becomes a dynamical manifold navigation system operating under conditions of 
 
 \section{Functional Analysis, Kernel Operators, and Spectral Geometry}
 
-This appendix develops a deeper functional-analytic formulation of the representational regime framework. The previous appendices treated cognition geometrically and statistically. Here, the framework is reformulated in terms of operators, reproducing kernels, spectral decompositions, and function spaces.
+The dynamical formalism of Appendix~C treats cognition as trajectory evolution across representational manifolds, but leaves open the question of how individual experiences are encoded and combined within those manifolds. A purely geometric or dynamical account does not specify the internal structure of the representational operators through which the learner processes information. Understanding why overparameterized systems exhibit spectral bias, why kernel geometry governs interpolation smoothness, and how high-frequency accommodation structures coexist with low-frequency global continuity requires the language of functional analysis and operator theory.
+
+This appendix therefore develops a deeper functional-analytic formulation of the representational regime framework. The previous appendices treated cognition geometrically and statistically. Here, the framework is reformulated in terms of operators, reproducing kernels, spectral decompositions, and function spaces.
 
 The central objective is to show that excess-capacity learning may be understood as a problem of spectral organization across high-dimensional representational operators.
 
@@ -6299,7 +6649,9 @@ Intelligence becomes the structured organization of representational spectra acr
 
 \section{Category Theory, Sheaf Structures, and Cognitive Gluing}
 
-The previous appendices developed the representational regime framework through geometry, statistics, dynamics, and spectral analysis. This appendix extends the framework into category theory and sheaf-theoretic organization.
+The spectral and functional-analytic formalism of Appendix~D characterizes how individual representational operators organize information within a single manifold, but does not address how locally constructed representations become globally coherent across experiential space. Spectral decomposition describes the frequency structure of a given representation; it does not specify the conditions under which locally learned sections can be consistently assembled into a globally stable manifold. That question --- how local accommodations are composed into global structure --- is precisely what category theory and sheaf theory are designed to answer.
+
+The previous appendices developed the representational regime framework through geometry, statistics, dynamics, and spectral analysis. This appendix therefore extends the framework into category theory and sheaf-theoretic organization.
 
 The objective is to formalize cognition as the structured gluing of local representational neighborhoods into globally coherent manifold structure.
 
@@ -6718,7 +7070,9 @@ It becomes a distributed gluing system operating across dynamically evolving rep
 
 \section{Thermodynamics, Entropy, and Representational Phase Space}
 
-The preceding appendices developed the representational regime framework through statistical learning theory, geometry, dynamics, spectral analysis, and categorical organization. This appendix introduces a thermodynamic interpretation of cognition.
+The categorical and sheaf-theoretic formalism of Appendix~E describes cognition as the structured gluing of local representations into globally coherent manifolds, but does not account for the energetic and entropic costs associated with maintaining representational abundance. A theory of representational capacity cannot be complete without addressing why biological systems face pressure to compress, why excess capacity is metabolically expensive, and how the balance between local accommodation and global stability can be understood in terms of energy and entropy. These questions require thermodynamic concepts that the geometric, spectral, and categorical formalisms cannot directly provide.
+
+The preceding appendices developed the representational regime framework through statistical learning theory, geometry, dynamics, spectral analysis, and categorical organization. This appendix therefore introduces a thermodynamic interpretation of cognition.
 
 The objective is to formalize learning systems as entropy-regulating dynamical structures evolving through representational phase spaces under energetic, informational, and geometric constraints.
 
@@ -7185,7 +7539,9 @@ It becomes a thermodynamic manifold-regulation system operating within evolving 
 
 \section{Variational Principles and the Euler--Lagrange Formulation of Representational Dynamics}
 
-The previous appendices developed the representational regime framework through geometry, statistical learning theory, spectral analysis, category theory, and thermodynamics. This appendix introduces a variational formulation unifying these perspectives.
+The preceding appendices have developed the representational regime framework through six distinct formalisms: geometry, statistical learning theory, dynamical systems, functional analysis, category theory, and thermodynamics. Each captures a different structural aspect of excess-capacity cognition. However, these formalisms have so far been developed in parallel rather than derived from a single unifying principle. A complete theoretical framework should ideally show that these diverse perspectives are not independent but emerge from a common organizing structure. That unification is what a variational formulation provides: a single action principle from which interpolation fidelity, manifold smoothness, energetic efficiency, and entropy regulation all follow as consequences of a single extremization condition.
+
+The previous appendices developed the representational regime framework through geometry, statistical learning theory, spectral analysis, category theory, and thermodynamics. This appendix therefore introduces a variational formulation unifying these perspectives.
 
 The central objective is to derive cognition from an action principle.
 
@@ -7703,7 +8059,9 @@ Compression, interpolation, memory, abstraction, attention, and generalization a
 
 \section{Topological Structure, Persistent Homology, and Cognitive Phase Geometry}
 
-The previous appendices formulated the representational regime framework using statistical learning theory, geometry, thermodynamics, variational dynamics, spectral operators, and category theory. This appendix extends the framework into topology and persistent homology.
+The variational formalism of Appendix~G characterizes learning as the extremization of representational action functionals and shows that smooth interpolation emerges from curvature minimization subject to interpolation constraints. However, the variational framework operates locally: it describes how representational trajectories evolve and how curvature is distributed, but it does not characterize the large-scale global structure of the representational manifold across scales. Two manifolds may share identical local geometry while differing fundamentally in their global topological organization --- the number of connected components, loops, holes, and higher-dimensional voids. These global invariants matter for cognition because generalization, concept formation, and semantic coherence all depend on how representational neighborhoods are connected across the full manifold, not merely on local curvature properties.
+
+The previous appendices formulated the representational regime framework using statistical learning theory, geometry, thermodynamics, variational dynamics, spectral operators, and category theory. This appendix therefore extends the framework into topology and persistent homology.
 
 The objective is to characterize cognition not merely through local geometry, but through global topological structure preserved across representational scales.
 
@@ -8099,6 +8457,305 @@ The mind therefore appears not merely statistical, geometric, symbolic, or therm
 
 It becomes a dynamically evolving topological organization system preserving coherence across richly differentiated representational manifolds.
 
+% ─────────────────────────────────────────────────────────────
+% Appendix I
+% Tensors, Coordinate Systems, and Representational Invariance
+% ─────────────────────────────────────────────────────────────
+
+\section{Tensors, Coordinate Systems, and Representational Invariance}
+\label{app:tensors}
+
+Section~\ref{sec:coordinate-independence} of the main text argued that the geometric framework for cognition developed throughout this essay naturally requires tensorial descriptions rather than matrix descriptions. This appendix develops the full mathematical foundations supporting that argument. The goal is not a general tensor tutorial but a derivation of the specific tensorial structures that appear across the formal appendices, grounded throughout in their cognitive interpretations.
+
+\subsection{Coordinate Systems and Bases}
+
+A \textbf{coordinate system} is a choice of reference frame for assigning numerical labels to positions and directions within a space. In the representational manifold $\mathcal{Z}$, a coordinate system consists of a choice of basis vectors
+\[
+\{\mathbf{e}_1, \ldots, \mathbf{e}_d\}
+\]
+spanning the tangent space at each point.
+
+Any representational state $\mathbf{v} \in \mathcal{Z}$ can be written as a linear combination
+\[
+\mathbf{v} = v^i \mathbf{e}_i,
+\]
+where the numbers $v^i$ are the \textbf{components} of $\mathbf{v}$ in this basis.
+
+The components are not the vector. They are a coordinate-dependent description of the vector. If a second observer uses a different basis $\{\mathbf{e}'_1, \ldots, \mathbf{e}'_d\}$ related to the first by a transformation matrix $R$,
+\[
+\mathbf{e}'_j = R^i{}_j \, \mathbf{e}_i,
+\]
+then the same physical vector $\mathbf{v}$ has components
+\[
+v'^j = (R^{-1})^j{}_i \, v^i
+\]
+in the new basis. The numbers changed. The vector did not.
+
+This is the fundamental distinction: the geometric object is intrinsic; the numerical components are coordinate-dependent. Cognitive organization, if it is genuinely geometric, must be characterized through the intrinsic object, not through any particular coordinate representation.
+
+\subsection{The Hierarchy of Tensors}
+
+Tensors are classified by their \textbf{rank}, which counts the number of index slots:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Rank & Object & Index notation \\
+\midrule
+0 & Scalar & $\phi$ \\
+1 & Vector & $v^i$ \\
+1 & Covector & $f_i$ \\
+2 & Rank-2 tensor & $T^{ij}$, $T_{ij}$, $T^i{}_j$ \\
+$n$ & Rank-$n$ tensor & $T^{i_1 \cdots i_p}{}_{j_1 \cdots j_q}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The placement of an index --- whether it appears as a superscript (upper) or subscript (lower) --- is not cosmetic. Upper indices are \textbf{contravariant}: they transform with the forward change-of-basis matrix. Lower indices are \textbf{covariant}: they transform with the inverse (or transposed) matrix.
+
+\subsection{The Einstein Summation Convention}
+
+Whenever the same index appears twice in a single term --- once as an upper index and once as a lower index --- summation over all values of that index is implied. This is the \textbf{Einstein summation convention}.
+
+Instead of writing:
+\[
+w^i = \sum_{j=1}^d T^{ij} v_j,
+\]
+we write simply:
+\[
+w^i = T^{ij} v_j.
+\]
+
+The repeated index $j$ (once up, once down) signals contraction. This convention compresses tensor equations dramatically and makes their coordinate-independence transparent: a fully contracted expression (all indices summed) is always a scalar and always coordinate-independent.
+
+Examples relevant to the main text:
+
+\begin{itemize}
+\item The inner product of two vectors: $g_{ij} v^i w^j$ (scalar).
+\item The trace of a mixed tensor: $T^i{}_i$ (scalar).
+\item The metric applied to a vector: $v_j = g_{ij} v^i$ (lowers the index, producing a covector).
+\item The smoothness functional: $\mathcal{S}(f) = \int \|\nabla^2 f\|^2 \, d\mu = \int g^{ik} g^{jl} (\nabla_i \nabla_j f)(\nabla_k \nabla_l f) \, d\mu$ (scalar).
+\end{itemize}
+
+\subsection{The Transformation Laws}
+
+The defining property of a tensor is the specific form of its transformation law under changes of basis.
+
+\paragraph{Rank-1 contravariant (vectors):}
+\[
+v'^i = R^i{}_j \, v^j.
+\]
+
+\paragraph{Rank-1 covariant (covectors):}
+\[
+f'_i = (R^{-1})^j{}_i \, f_j.
+\]
+
+\paragraph{Rank-2 contravariant:}
+\[
+T'^{ij} = R^i{}_k \, R^j{}_l \, T^{kl}.
+\]
+In matrix notation: $T' = R \, T \, R^\top$ (for orthogonal $R$).
+
+\paragraph{Rank-2 covariant:}
+\[
+T'_{ij} = (R^{-1})^k{}_i \, (R^{-1})^l{}_j \, T_{kl}.
+\]
+
+\paragraph{Rank-2 mixed:}
+\[
+T'^i{}_j = R^i{}_k \, (R^{-1})^l{}_j \, T^k{}_l.
+\]
+
+A collection of numbers that does not transform according to these laws under every change of basis is not a tensor, regardless of how many indices it carries. The Christoffel symbols $\Gamma^\rho_{\mu\nu}$, for example, have three indices but transform inhomogeneously --- they are not tensors, and their non-tensorial behavior is precisely what encodes the curvature of the coordinate system.
+
+\subsection{Tensors as Multilinear Maps}
+
+In the modern mathematical formulation, a tensor is not fundamentally an array. It is a \textbf{multilinear map}.
+
+A rank-$(p, q)$ tensor is a map
+\[
+T : \underbrace{V^* \times \cdots \times V^*}_{p} \times \underbrace{V \times \cdots \times V}_{q} \to \mathbb{R}
+\]
+that is linear in each of its $p + q$ arguments separately.
+
+Important cases:
+
+\begin{itemize}
+\item A vector $v \in V$ is a linear map $v : V^* \to \mathbb{R}$, hence type $(1, 0)$.
+\item A covector $f \in V^*$ is a linear map $f : V \to \mathbb{R}$, hence type $(0, 1)$.
+\item A linear operator $A : V \to V$ is type $(1, 1)$.
+\item The metric tensor $g : V \times V \to \mathbb{R}$ is type $(0, 2)$.
+\item The Riemann curvature tensor $R : V^* \times V \times V \times V \to \mathbb{R}$ is type $(1, 3)$.
+\end{itemize}
+
+The multilinear-map definition makes clear that the essential content of a tensor is relational structure. It does not store a fixed value; it computes a value from contextual inputs in a way that is linear in each input separately.
+
+Applied to representational geometry, this supports the interpretation developed in Section~\ref{sec:coordinate-independence}: cognitive representations may be understood not as static containers but as multilinear relational dispositions --- operators that respond to contextual inputs according to stable geometric structure independent of the basis used to express that structure.
+
+\subsection{The Metric Tensor}
+
+The metric tensor $g$ is the central object of Riemannian geometry and the most important tensor for the representational capacity framework.
+
+$g$ is a symmetric positive-definite rank-$(0, 2)$ tensor: a bilinear map
+\[
+g : V \times V \to \mathbb{R}, \qquad g(u, v) = g(v, u), \qquad g(v, v) > 0 \text{ for } v \neq 0.
+\]
+
+In coordinates, its components are $g_{ij} = g(\mathbf{e}_i, \mathbf{e}_j)$.
+
+The metric defines:
+
+\paragraph{Lengths of vectors:}
+\[
+\|\mathbf{v}\|^2 = g_{ij} v^i v^j.
+\]
+
+\paragraph{Angles between vectors:}
+\[
+\cos\theta = \frac{g_{ij} u^i v^j}{\|\mathbf{u}\| \, \|\mathbf{v}\|}.
+\]
+
+\paragraph{Infinitesimal distances on the manifold:}
+\[
+ds^2 = g_{ij} \, dz^i \, dz^j.
+\]
+
+\paragraph{Geodesic (shortest path) length between two states:}
+\[
+d(p, q) = \inf_\gamma \int_0^1 \sqrt{g_{ij} \, \dot\gamma^i \, \dot\gamma^j} \, dt,
+\]
+minimized over all paths $\gamma$ connecting $p$ to $q$.
+
+All of these are scalars --- coordinate-independent numbers. The metric converts coordinate-dependent component differences into invariant geometric measurements.
+
+\paragraph{Raising and lowering indices:} The metric and its inverse $g^{ij}$ (satisfying $g^{ik} g_{kj} = \delta^i{}_j$) convert between upper and lower indices:
+\[
+v_i = g_{ij} v^j \quad \text{(lowering)}, \qquad v^i = g^{ij} v_j \quad \text{(raising)}.
+\]
+
+In flat Euclidean space with Cartesian coordinates, $g_{ij} = \delta_{ij}$ (the identity), and upper and lower components coincide numerically. The distinction only becomes essential in curved space or non-Cartesian coordinates.
+
+\paragraph{Cognitive interpretation:} Within the representational framework, the metric tensor defines intrinsic similarity between representational states. Two experiences are genuinely similar not because their component vectors are numerically close in one particular encoding, but because their geodesic distance under $g$ is small. Generalization succeeds when unseen experiences embed into geodesic neighborhoods of prior experiences under the intrinsic metric of $\mathcal{Z}$.
+
+\subsection{Representational Curvature}
+
+Curvature quantifies how much a manifold deviates from being flat. It is encoded by the \textbf{Riemann curvature tensor}
+\[
+R^\rho{}_{\sigma\mu\nu},
+\]
+a rank-$(1, 3)$ tensor derived from the metric and its second derivatives. Concretely,
+\[
+R^\rho{}_{\sigma\mu\nu} = \partial_\mu \Gamma^\rho_{\nu\sigma} - \partial_\nu \Gamma^\rho_{\mu\sigma} + \Gamma^\rho_{\mu\lambda} \Gamma^\lambda_{\nu\sigma} - \Gamma^\rho_{\nu\lambda} \Gamma^\lambda_{\mu\sigma},
+\]
+where $\Gamma^\rho_{\mu\nu}$ are the Christoffel symbols derived from $g$.
+
+The Riemann tensor encodes the following geometric fact: if you parallel-transport a vector around a small closed loop on a curved manifold, the vector returns rotated. In a flat manifold, it returns unchanged. The Riemann tensor measures the rotation per unit area of the loop.
+
+Contracting the Riemann tensor produces simpler curvature quantities:
+
+\paragraph{Ricci tensor (rank-2):}
+\[
+R_{\mu\nu} = R^\rho{}_{\mu\rho\nu}.
+\]
+
+\paragraph{Ricci scalar (rank-0):}
+\[
+\mathcal{K} = g^{\mu\nu} R_{\mu\nu}.
+\]
+
+The Ricci scalar is a single coordinate-independent number measuring average curvature intensity at each point.
+
+\paragraph{Cognitive interpretation:} Within the representational capacity framework:
+\begin{itemize}
+\item Regions where $\mathcal{K} \approx 0$ are locally flat --- smooth, stable interpolation geometry. These are the characteristic regions of benign overfitting: local accommodation structures $s_i(x)$ exist but do not propagate globally.
+\item Regions where $\mathcal{K} \gg 0$ are highly curved --- brittle, noise-amplifying, sensitive to perturbation. These are the geometric signatures of the interpolation threshold $\rho \approx 1$, where local corrections propagate globally and generalization collapses.
+\end{itemize}
+
+The excess-capacity smoothness condition --- that the global manifold $g(x)$ remains geometrically stable while local accommodation structures $s_i(x)$ remain confined --- can be stated precisely:
+\[
+\mathcal{K}(z) \leq \mathcal{K}_{\max} \quad \text{almost everywhere on } \mathcal{Z} \setminus \bigcup_i \mathcal{N}(x_i),
+\]
+where $\mathcal{N}(x_i)$ denotes small neighborhoods around interpolation points.
+
+\subsection{Tensor Contraction and Cognitive Scalars}
+
+Several important quantities in the framework are naturally expressed as tensor contractions --- fully summed expressions that produce coordinate-independent scalars.
+
+\paragraph{Representational energy:}
+The energy functional $\mathcal{L}(z)$ appearing in the gradient-flow dynamics of Appendix~C is a scalar field on $\mathcal{Z}$. Its gradient is a covector:
+\[
+(\nabla \mathcal{L})_i = \frac{\partial \mathcal{L}}{\partial z^i}.
+\]
+The gradient-flow equation
+\[
+\frac{dz^i}{dt} = -g^{ij} \frac{\partial \mathcal{L}}{\partial z^j}
+\]
+is tensorial: it holds in every coordinate system because both sides transform as contravariant vectors.
+
+\paragraph{Smoothness functional:}
+The curvature-minimization objective of Appendix~G,
+\[
+\mathcal{S}(f) = \int_{\mathcal{Z}} \|\nabla^2 f\|^2 \, d\mu,
+\]
+contracts the Hessian tensor $\nabla_i \nabla_j f$ against the metric twice to produce a scalar integrand. The result is a coordinate-independent measure of global smoothness.
+
+\paragraph{Geodesic length:}
+The geodesic distance between representational states, which defines intrinsic similarity in the framework, is the contraction
+\[
+\ell(\gamma) = \int_0^1 \sqrt{g_{ij} \dot\gamma^i \dot\gamma^j} \, dt.
+\]
+
+All three quantities appear extensively in the formal appendices. Their scalar nature --- the fact that all indices are contracted --- is what guarantees they measure genuine geometric properties rather than coordinate-specific numerical values.
+
+\subsection{The Spectral Geometry Connection}
+
+The spectral analysis developed in Appendix~D may also be expressed tensorially, clarifying the relationship between eigenmodes and coordinate-independent geometry.
+
+The Laplace--Beltrami operator on a Riemannian manifold $(\mathcal{Z}, g)$ is the tensorial generalization of the ordinary Laplacian:
+\[
+\Delta_g f = \frac{1}{\sqrt{|g|}} \partial_i \left( \sqrt{|g|} \, g^{ij} \partial_j f \right),
+\]
+where $|g|$ denotes the determinant of the metric matrix.
+
+The eigenvalue equation
+\[
+\Delta_g \phi_k = -\lambda_k \phi_k
+\]
+is coordinate-independent: the eigenvalues $\lambda_k$ and the geometric content of the eigenfunctions $\phi_k$ are intrinsic properties of the manifold, not artifacts of the coordinate system. This is why spectral bias in neural networks --- the empirical observation that lower-frequency modes are learned first --- reflects genuine geometric structure rather than a parameterization artifact.
+
+The Mercer decomposition of Appendix~D,
+\[
+K(x, y) = \sum_{k=1}^\infty \lambda_k \phi_k(x) \phi_k(y),
+\]
+is the spectral decomposition of the kernel operator, which is itself a symmetric rank-$(0, 2)$ tensor on $\mathcal{X} \times \mathcal{X}$. The decomposition into eigenmodes is basis-independent in the sense that the eigenvalues and the geometric structure of the eigenfunctions are invariant, even as their coordinate expressions change.
+
+\subsection{Summary: Tensors in the Representational Framework}
+
+The following table summarizes the principal tensorial objects appearing throughout the formal appendices and their cognitive interpretations within the excess-capacity framework.
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+Object & Type & Cognitive role & Key property \\
+\midrule
+Metric $g_{ij}$ & $(0,2)$ & Intrinsic similarity & Defines geodesic distance \\
+Inverse metric $g^{ij}$ & $(2,0)$ & Index raising & Defines gradient flow \\
+Riemann tensor $R^\rho{}_{\sigma\mu\nu}$ & $(1,3)$ & Curvature / brittleness & Encodes propagation of perturbation \\
+Ricci scalar $\mathcal{K}$ & $(0,0)$ & Local stability measure & Distinguishes benign/catastrophic zones \\
+Hessian $\nabla_i\nabla_j f$ & $(0,2)$ & Smoothness cost & Minimized by excess-capacity learners \\
+Laplace--Beltrami $\Delta_g$ & operator & Spectral decomposition & Basis-independent frequency content \\
+Fisher information $F_{ij}$ & $(0,2)$ & Representational flexibility & Metric on probability distributions \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The deepest summary of this appendix is:
+
+\begin{quote}
+A representational theory of cognition that treats the mind as a geometric object rather than a symbolic encoder requires that its governing relationships be expressed in language that is invariant under changes of representational basis. Tensors provide exactly this language. The transition from matrix descriptions to tensorial descriptions in the formal appendices of this essay is therefore not a mathematical embellishment. It is the formal consequence of taking geometric cognition seriously.
+\end{quote}
+
 \begin{thebibliography}{99}
 
 \bibitem{Brady2008}
@@ -8106,7 +8763,7 @@ Brady, T. F., Konkle, T., Alvarez, G. A., \& Oliva, A. (2008).
 Visual long-term memory has a massive storage capacity for object details.
 \textit{Proceedings of the National Academy of Sciences}, 105(38), 14325--14329.
 
-\bibitem{BowmanZeithamova}
+\bibitem{BowmanZeithamova2018}
 Bowman, C. R., \& Zeithamova, D. (2018).
 Abstract memory representations in the ventromedial prefrontal cortex and hippocampus support concept generalization.
 \textit{Journal of Neuroscience}, 38(10), 2605--2614.
@@ -8132,7 +8789,7 @@ Frankland, S. M., Webb, T. W., \& Cohen, J. D. (2021).
 What are the representational consequences of neural network compression?
 \textit{arXiv preprint arXiv:2102.04026}.
 
-\bibitem{Gigerenzer2008}
+\bibitem{Gigerenzer2009}
 Gigerenzer, G., \& Brighton, H. (2009).
 Homo heuristicus: Why biased minds make better inferences.
 \textit{Topics in Cognitive Science}, 1(1), 107--143.
@@ -8142,10 +8799,10 @@ Goodfellow, I., Bengio, Y., \& Courville, A. (2016).
 \textit{Deep Learning}.
 MIT Press.
 
-\bibitem{Hastie2019}
-Hastie, T., Montanari, A., Rosset, S., \& Tibshirani, R. J. (2019).
+\bibitem{Hastie2022}
+Hastie, T., Montanari, A., Rosset, S., \& Tibshirani, R. J. (2022).
 Surprises in high-dimensional ridgeless least squares interpolation.
-\textit{arXiv preprint arXiv:1903.08560}.
+\textit{Annals of Statistics}, 50(2), 949--986.
 
 \bibitem{Jacot2018}
 Jacot, A., Gabriel, F., \& Hongler, C. (2018).
@@ -8162,12 +8819,17 @@ Koutstaal, W., \& Schacter, D. L. (1997).
 Gist-based false recognition of pictures in older and younger adults.
 \textit{Journal of Memory and Language}, 37(4), 555--583.
 
+\bibitem{Lupyan2009}
+Lupyan, G. (2009).
+Extracommunicative functions of language: Verbal interference causes selective categorization failures.
+\textit{Psychonomic Bulletin \& Review}, 16(4), 711--718.
+
 \bibitem{Mach1905}
 Mach, E. (1905).
 \textit{Knowledge and Error}.
 Open Court Publishing.
 
-\bibitem{McClelland1996}
+\bibitem{McClelland1995}
 McClelland, J. L., McNaughton, B. L., \& O'Reilly, R. C. (1995).
 Why there are complementary learning systems in the hippocampus and neocortex.
 \textit{Psychological Review}, 102(3), 419--457.
@@ -8187,10 +8849,15 @@ Posner, M. I., \& Keele, S. W. (1968).
 On the genesis of abstract ideas.
 \textit{Journal of Experimental Psychology}, 77(3), 353--363.
 
-\bibitem{Ramsden2022}
-Ramsden, S., \& Prince, S. (2022).
-Benign overfitting and interpolation in modern machine learning.
-\textit{Annual Review of Statistics and Its Application}, 9, 367--394.
+\bibitem{Belkin2019}
+Belkin, M., Hsu, D., Ma, S., \& Mandal, S. (2019).
+Reconciling modern machine-learning practice and the classical bias--variance trade-off.
+\textit{Proceedings of the National Academy of Sciences}, 116(32), 15849--15854.
+
+\bibitem{Bartlett2020}
+Bartlett, P. L., Long, P. M., Lugosi, G., \& Tsigler, A. (2020).
+Benign overfitting in linear regression.
+\textit{Proceedings of the National Academy of Sciences}, 117(48), 30063--30070.
 
 \bibitem{Rosenblatt1958}
 Rosenblatt, F. (1958).
@@ -8227,8 +8894,8 @@ Vapnik, V. N. (1998).
 \textit{Statistical Learning Theory}.
 Wiley.
 
-\bibitem{Wilson2020}
-Wilson, A. C., Roelofs, R., Stern, M., et al. (2020).
+\bibitem{Wilson2017}
+Wilson, A. C., Roelofs, R., Stern, M., et al. (2017).
 The marginal value of adaptive gradient methods in machine learning.
 \textit{Advances in Neural Information Processing Systems}, 30.
 

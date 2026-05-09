@@ -81,6 +81,16 @@
 % -------------------------------------------------
 % Hyperlinks
 % -------------------------------------------------
+
+% -------------------------------------------------
+% TikZ
+% -------------------------------------------------
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta, decorations.pathreplacing,
+  positioning, shapes.geometric, calc, fit, backgrounds,
+  patterns, hobby}
 \usepackage{hyperref}
 \hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black}
 
@@ -261,17 +271,290 @@ precision where the hard mathematical work begins.
 
 The structure of the paper is as follows. Section~2 introduces the variational
 foundations of the \RSVP\ field manifold and derives the coupled field equations.
-Section~3 develops the sheaf-theoretic architecture underlying admissibility and
-recursive gluing. Section~4 introduces \CLIO\ as an obstruction-minimization
-flow and formalizes recursive closure dynamics. Section~5 develops the effective
-geometric sector. Section~6 investigates gauge structure emergence. A dedicated
-subsection clarifies precisely why the Standard Model gauge group is not yet
-derived. Section~7 develops the recursive renormalization and \TARTAN\ fixed-point
-architecture. Section~8 explores matter sectors as topological defects and
-spectral modes. Section~9 addresses phenomenological implications and empirical
-constraints. Mathematical appendices follow, providing full variational
-derivations, spectral constructions, and cohomological formulations with
-complete claim-status labeling.
+Section~2 states the ontological inversion and introduces the manifold
+hierarchy. Section~3 defines constraint primacy and formalizes the sense in
+which admissibility is prior to geometry. Section~4 introduces the field
+manifold and variational structure. Section~5 develops the sheaf-theoretic
+local-to-global architecture. Section~6 introduces \CLIO\ as an
+obstruction-minimization flow. Section~7 develops the effective geometric sector.
+Section~8 investigates gauge structure emergence, including why the Standard Model
+group is not yet derived. Section~9 develops the recursive renormalization and
+\TARTAN\ fixed-point architecture. Section~10 explores matter sectors. Section~11
+addresses phenomenological implications. Section~12 develops constraint routing
+and projection geometry. Section~13 establishes failure modes and falsification
+conditions, and provides the RSVP correspondence dictionary. Mathematical
+appendices provide full variational derivations, spectral constructions, and
+cohomological formulations with complete claim-status labeling.
+
+% =================================================
+\section{Ontological Inversion and the Manifold Hierarchy}
+
+The central philosophical move of the present framework is an inversion of the
+conventional ontological order of field theory.
+
+\subsection{The Conventional and Inverted Orders}
+
+Conventional physical theories are organized around the following priority
+structure. Objects --- particles, fields, strings, loops --- are taken as
+ontologically primary. Geometry is then specified as the arena in which those
+objects move and interact. Constraints are finally imposed on top of both as
+admissibility conditions restricting the space of solutions.
+
+The \RSVP\ reconstruction program proposes a strict reversal of this order.
+Admissibility constraints are taken as ontologically primary: they define, before
+any metric or particle interpretation exists, the space of physically realizable
+configurations. Transport geometry --- the structure of directed flow across the
+constraint manifold --- is secondary, arising from the internal organization of
+admissibility space. Stable objects and effective geometric arenas emerge
+thereafter as quotient structures that survive recursive projection.
+
+This inversion may be summarized in a single sentence:
+
+\begin{quote}
+\textit{In conventional physics, objects evolve on geometry subject to
+constraints. In the present framework, admissibility constraints define
+a transport geometry from which stable objects and geometric arenas emerge
+as recursive closure attractors.}
+\end{quote}
+
+The inversion has four specific forms, corresponding to four senses in which
+admissibility is prior.
+
+\textit{Ontological primacy.} The space of admissible configurations
+$\Sheaf_\RSVP$ is defined before any metric, particle, or symmetry group is
+postulated. Geometry and particles emerge as derived structure from recursive
+closure within this space.
+
+\textit{Variational primacy.} Dynamics arise from obstruction minimization
+$dX/dt_\mathrm{adm}=-\nabla\Omega(X)$ rather than from force laws imposed
+externally on pre-existing fields.
+
+\textit{Geometric primacy.} Curvature appears as a secondary manifestation of
+recursive closure failure. When transport loops fail to close --- when
+$\Theta_{ij}\neq 0$ across overlapping patches --- effective curvature emerges
+as the compensatory correction structure. Geometry is the shadow of obstruction.
+
+\textit{Observational primacy.} Measurable physical structure corresponds only
+to recursively stable projected sectors $\Pi(X^\ast)$ of the admissibility
+manifold. What observers call ``reality'' is the image of recursive closure
+attractors under projection.
+
+\subsection{The Manifold Hierarchy}
+
+The framework involves four distinct manifold-like structures whose conflation
+in earlier presentations has been a source of justified criticism. These are
+now defined explicitly and distinguished throughout the remainder of the paper.
+
+$M_\mathrm{geom}$ is the \emph{geometric manifold}: the low-obstruction
+Lorentzian four-manifold recovered in classical regimes. It is not assumed as a
+primitive. It emerges as the attractor of the \CLIO\ flow on geometric sector
+variables when $Q_{kij}\to 0$ and $\tau^k{}_{ij}\to 0$ (Appendix~H.4).
+Sections involving explicit curvature tensors, the gravitational field equation,
+and geodesic deviation operate on $M_\mathrm{geom}$.
+
+$M_\mathrm{adm} = \Field^{(s)}$ is the \emph{admissibility manifold}: the
+Sobolev completion of the \RSVP\ configuration space
+$C^\infty(M)\times\Gamma(TM)\times C^\infty(M,\mathbb{R}_{\geq 0})$, introduced
+in Appendix~I. The \CLIO\ flow, obstruction functionals, admissibility sheaves,
+and all gradient-flow convergence statements operate on $M_\mathrm{adm}$.
+
+$M_\mathrm{proj}$ is the \emph{projection substrate}: the domain of the
+projection map $\Pi:M_\mathrm{adm}\to\mathcal{Y}$, governing coarse-graining
+and observational accessibility. Sections on measurement, decoherence,
+unistochastic quantum probability, and recursive visibility operate on
+$M_\mathrm{proj}$.
+
+$M_\mathrm{obs}$ is the \emph{observable quotient}: the effective space
+accessible to embedded observers with finite projection capacity. Observable
+gauge redundancy, apparent particle structure, and measured probabilities are
+properties of $M_\mathrm{obs}$.
+
+The relationships among these four structures are:
+\[
+M_\mathrm{adm}
+\xrightarrow{\;\Pi\;}
+M_\mathrm{proj}
+\xrightarrow{\;\mathrm{quotient}\;}
+M_\mathrm{obs}
+\qquad\text{and}\qquad
+M_\mathrm{geom}
+= \lim_{t_\mathrm{adm}\to\infty}
+  \mathrm{lowObstr}(M_\mathrm{adm}).
+\]
+$M_\mathrm{geom}$ is not in the projection chain; it is the classical limit of
+the admissibility flow. Physical observers inhabit $M_\mathrm{obs}$ and
+reconstruct $M_\mathrm{geom}$ as the stable background against which they
+perceive local physics.
+
+\subsection{Entropy Decomposition}
+
+Because the entropy field $S$ plays multiple roles across the four manifolds,
+it is formally decomposed here and this decomposition is maintained throughout
+the remainder of the paper. Let
+\[
+S = S_\mathrm{therm} + S_\mathrm{adm},
+\]
+where $S_\mathrm{therm}: M_\mathrm{geom}\to\mathbb{R}_{\geq 0}$ is local
+thermodynamic entropy density governing heat flow and thermal equilibration on
+$M_\mathrm{geom}$, and $S_\mathrm{adm}: M_\mathrm{adm}\to\mathbb{R}_{\geq 0}$
+is admissibility entropy measuring local recursive gluing inconsistency:
+\[
+S_\mathrm{adm}(x) = \sum_{i:x\in U_i}\sum_{j:x\in U_j}|\Theta_{ij}(x)|^2.
+\]
+$S_\mathrm{adm}=0$ if and only if $x$ lies in an admissible overlap region.
+The admissibility curvature $\kappa_\mathrm{adm}=d^2S_\mathrm{adm}/dt_\mathrm{adm}^2$
+measures convergence or divergence of the \CLIO\ flow (Appendix~H.1). The
+Born amplitude construction in Appendix~J uses $S_\mathrm{therm}$ to weight
+scalar capacity; the \CLIO\ obstruction flow acts on $S_\mathrm{adm}$. The two
+components need not evolve together.
+
+
+\subsection{Rosetta Stone: Field Variables and Physical Concepts}
+
+Because the \RSVP\ framework deliberately uses shared terminology across
+physical, informational, and geometric domains, a translation table is
+provided here and maintained throughout the paper. The hypothesis underlying
+the shared terminology is that thermodynamic entropy, informational uncertainty,
+geometric obstruction, and recursive admissibility failure are manifestations
+of the same underlying constraint structure under different observational
+projections. This is a declared unification strategy, not category slippage.
+
+\paragraph{Field variables.}
+
+\medskip
+{\small
+\begin{center}
+\begin{tabular}{p{2.8cm}p{3.8cm}p{4.8cm}}
+\toprule
+\textbf{Symbol} & \textbf{Operational reading} & \textbf{Physical analogue}\\
+\midrule
+$\Phi:M\to\mathbb{R}$ & Scalar capacity; organizational potential & Energy density, Higgs vev,\\
+ & & \quad gravitational potential\\[3pt]
+$\mathbf{v}\in\Gamma(TM)$ & Transport flow; directed coherence & Gauge connection, velocity field,\\
+ & & \quad matter current\\[3pt]
+$S_\mathrm{therm}$ & Thermodynamic entropy density & Heat / thermal disorder\\[3pt]
+$S_\mathrm{adm}$ & Gluing obstruction density; & Anomaly strength,\\
+ & \quad recursive inconsistency & \quad curvature source\\[3pt]
+$X=(\Phi,\mathbf{v},S)$ & Full admissibility configuration & Field configuration in phase space\\
+\bottomrule
+\end{tabular}
+\end{center}
+}
+
+\paragraph{Structural correspondences.}
+
+\medskip
+{\small
+\begin{center}
+\begin{tabular}{p{5.2cm}p{6.3cm}}
+\toprule
+\textbf{Conventional physics concept} & \textbf{RSVP constraint-first reading}\\
+\midrule
+Metric curvature & Distortion of admissible transport continuation\\
+Gauge redundancy & Equivalence class of hidden admissibility trajectories\\
+Particle & Stable recursive transport attractor\\
+Inertia / rest mass & Resistance to admissibility continuation deformation\\
+Gauge boson & Transport stabilizer preserving routing coherence\\
+Locality & Low-obstruction transport accessibility between regions\\
+Spontaneous symmetry breaking & Concentration of routing into stable low-obstruction sectors\\
+Anomaly cancellation & Vanishing of second-order gluing obstruction class\\
+Quantum probability & Phase-liftable sector of projected admissibility transition\\
+Decoherence / measurement & Loss of unistochastic phase-lift under entropy increase\\
+Renormalization & Recursive admissibility filtration across scales\\
+\bottomrule
+\end{tabular}
+\end{center}
+}
+
+\medskip\noindent
+These correspondences range in epistemic status from theorems (the gravitational
+field equation, the Euler--Lagrange system, the CLIO convergence result) to
+conjectures (the Standard Model gauge group, the Born rule, three matter
+generations) to phenomenological interpretations (dark-sector analogues,
+decoherence mechanism). The claim-status grammar \textbf{[T]}/\textbf{[A]}/\textbf{[C]}/\textbf{[P]}
+introduced in the appendices is used consistently throughout to distinguish
+these levels. When a correspondence is listed here without a claim-status tag,
+it is a notational guide rather than a physical identification.
+
+% =================================================
+\section{Constraint Primacy and Effective Gauge Theory}
+
+\subsection{Four Senses of Constraint Primacy}
+
+The claim that the \RSVP\ framework is ``constraint-first'' requires
+disambiguation. Four distinct senses of primacy are intended, and they carry
+different mathematical content.
+
+\textit{Logical primacy.} Admissibility conditions $C_\alpha(X)=0$ are
+definitionally prior to field equations: a configuration must satisfy the
+admissibility constraints before its dynamical evolution is specified. This is
+analogous to the role of the constraint surface in Hamiltonian mechanics, but
+generalized to the full sheaf architecture.
+
+\textit{Variational primacy.} The obstruction functional $\Omega(X)=\sum_\alpha
+|C_\alpha(X)|^2$ is the primary object from which dynamics descend. The
+Euler--Lagrange equations of Section~4 govern the time evolution of $X$ on
+$M_\mathrm{adm}$, but the deeper driver of configuration selection is
+$\Omega$-descent on $M_\mathrm{adm}$, not force laws imposed on $M_\mathrm{geom}$.
+
+\textit{Category-theoretic universality.} The admissibility sheaf $\Sheaf_\RSVP$
+is a presheaf of constraint-satisfying configurations. The category
+$\mathbf{Clio}(M)$ has admissible patches as objects and admissibility-preserving
+maps as morphisms. A terminal object in $\mathbf{Clio}(M)$ --- a global coherent
+section --- is the categorical formulation of physical realization. Gauge fields
+and geometric structure are data associated to morphisms in this category, not
+to objects introduced beforehand.
+
+\textit{Dynamical stability selection.} Among all configurations on
+$M_\mathrm{adm}$, only those lying in the stable attractor basin of the \CLIO\
+flow are dynamically selected. This is the sense in which constraints are
+primary over particles and geometry: physical structure corresponds to the
+basin of attraction, not to a pre-given background.
+
+\subsection{Conventional Gauge Theory as Effective Compression}
+
+If the deeper substrate is admissibility transport on $M_\mathrm{adm}$, why
+does conventional Yang--Mills gauge theory work so extraordinarily well? The
+answer the framework offers is that Yang--Mills structure is an effective
+compression language for recursively stable admissibility-preserving transport
+symmetries in the low-obstruction regime.
+
+Specifically: when $\Omega_\mathrm{adm}\approx 0$ and transport is nearly
+coherent, the transition functions $g_{ij}:U_i\cap U_j\to G_\mathcal{F}$ of
+the admissibility sheaf reduce to smooth gauge transformations on a principal
+bundle over $M_\mathrm{geom}$. The connection form $A\in\Omega^1(M_\mathrm{geom},
+\mathfrak{g})$ is then an effective bookkeeping device for recursive transport
+consistency under projection. Its curvature $F=dA+A\wedge A$ records residual
+transport mismatch in the low-obstruction sector.
+
+Under this interpretation, gauge redundancy is not merely mathematical
+convenience. It is the observational shadow of many-to-one projection from
+$M_\mathrm{adm}$ to $M_\mathrm{obs}$: gauge-equivalent field configurations
+are distinct elements of $M_\mathrm{adm}$ that project to the same element of
+$M_\mathrm{obs}$. The formal statement is:
+
+\begin{quote}
+$X_1, X_2 \in M_\mathrm{adm}$ are gauge-equivalent if and only if
+$\Pi(X_1)=\Pi(X_2)$ in $M_\mathrm{obs}$.
+\end{quote}
+
+Gauge transformations are therefore equivalence classes of hidden admissibility
+trajectories under observer-limited reconstruction.
+
+\subsection{Symmetry as Survival Condition}
+
+A central implication of constraint primacy is that symmetry groups are not
+axioms of nature but survival conditions for recursively continuable structure.
+A transformation $T:M_\mathrm{adm}\to M_\mathrm{adm}$ is physically admissible
+only if recursive transport invariants remain bounded under iteration:
+\[
+\sup_n\,\mathcal{E}(T^n X) < \infty
+\]
+for admissible $X$. Unstable transformations fail recursive continuation and
+are eliminated from the effective physics. Gauge groups arise as the maximal
+subgroup of $\mathrm{Aut}(\Sheaf_\RSVP)$ satisfying this stability condition.
+Symmetry breaking corresponds to concentration of recursive transport flow into
+stable low-obstruction sectors, reducing the effective gauge group dynamically.
 
 % =================================================
 \section{The RSVP Field Manifold and Variational Foundations}
@@ -329,11 +612,12 @@ stage; its eventual form will depend on the physical regime under study.
 
 Stationarity of $\mathcal{A}$ under independent variations of $\Phi$,
 $\mathbf{v}$, and $S$ yields the coupled Euler--Lagrange system
-\begin{align*}
-\Delta\Phi - \tfrac{\partial V}{\partial\Phi} + \lambda\,\nabla\cdot\mathbf{v} &= 0,\\
-\Delta\mathbf{v} + \lambda\,\nabla\Phi &= 0,\\
-\eta\,\Delta S + \tfrac{\partial V}{\partial S} &= 0.
-\end{align*}
+\begin{align}
+\Delta\Phi - \tfrac{\partial V}{\partial\Phi} + \lambda\,\nabla\cdot\mathbf{v}
+  &= 0,\label{EL-phi}\\
+\Delta\mathbf{v} + \lambda\,\nabla\Phi &= 0,\label{EL-v}\\
+\eta\,\Delta S + \tfrac{\partial V}{\partial S} &= 0.\label{EL-S}
+\end{align}
 These equations describe a coupled scalar--transport--entropy system whose local
 dynamics are mutually constrained. Scalar organization influences transport
 structure, transport structure influences scalar evolution, and entropy regulates
@@ -365,6 +649,50 @@ determines local stability. A positive-definite spectrum corresponds to locally
 admissible coherent states; negative modes indicate fragmentation directions in
 field space.
 
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[>=Stealth, thick, font=\small]
+  % Manifold background
+  \fill[gray!8, rounded corners=10pt] (-4.0,-1.7) rectangle (4.0,2.1);
+  \node[black!40, font=\footnotesize\itshape] at (0,-1.4) {base manifold $M$};
+
+  % Scalar field Phi: concentric ellipses
+  \foreach \r/\lw in {0.45/0.5, 0.85/0.5, 1.3/0.6, 1.75/0.7}{
+    \draw[black!\lw!white, line width=0.7pt]
+      (0,0.1) ellipse (\r*1.5 and \r*0.85);
+  }
+  \node[font=\footnotesize] at (0,1.25) {$\Phi$ (scalar capacity)};
+
+  % Transport vector field v: arrows on grid
+  \foreach \x in {-3.2,-2.1,-1.0,0.1,1.2,2.3,3.3}{
+    \foreach \y in {-1.0,0.1,1.1}{
+      \pgfmathsetmacro{\dx}{0.22*sin((\x+\y)*28+15)}
+      \pgfmathsetmacro{\dy}{0.14*cos((\x-\y)*22+10)}
+      \draw[->, black!55, line width=0.55pt]
+        (\x-\dx/2,\y-\dy/2) -- (\x+\dx/2,\y+\dy/2);
+    }
+  }
+  \node[font=\footnotesize] at (3.3,1.55) {$\mathbf{v}$};
+
+  % Entropy S: shaded regions
+  \foreach \x/\y/\r in {-2.4/0.7/0.32, 2.1/-0.5/0.26, -0.9/-0.95/0.20}{
+    \fill[black!18, opacity=0.65] (\x,\y) circle (\r);
+  }
+  \node[font=\footnotesize] at (-2.4,1.15) {$S$ (entropy)};
+
+  % Triple label box
+  \node[draw=black!60, fill=white, rounded corners=4pt,
+        font=\normalsize, inner sep=4pt] at (0,-0.1)
+        {$X = (\Phi,\,\mathbf{v},\,S)$};
+\end{tikzpicture}
+\caption{The \RSVP\ field triple $X=(\Phi,\mathbf{v},S)$ on the base manifold
+$M$. Concentric ellipses represent the scalar capacity field $\Phi$; arrows
+represent the transport vector field $\mathbf{v}$; shaded discs mark regions
+of elevated entropy density $S$.}
+\label{fig:rsvp-triple}
+\end{figure}
+
 At this stage the theory remains entirely local. Nothing yet guarantees that
 local admissibility can be extended globally without contradiction. The
 transition from local coherence to global consistency requires a recursive
@@ -373,6 +701,12 @@ regions, which is developed in the following section.
 
 % =================================================
 \section{Recursive Gluing, Admissibility Sheaves, and Local-to-Global Structure}
+
+\emph{Epistemic status of this section: the admissibility sheaf and gluing
+obstruction classes are definitions and theorems~\textbf{[D,T]}; the identification
+of gauge groups with admissibility automorphisms is an ansatz~\textbf{[A]};
+the Minimal Obstruction-Cancellation Conjecture is clearly labeled as
+a conjecture~\textbf{[C]}.}
 
 The variational structure introduced in the previous section governs local field
 dynamics on a smooth manifold. Local solvability alone is insufficient for a
@@ -443,8 +777,63 @@ $\mathcal{H}_\gamma(X)\in 2\pi\mathbb{Z}$. The emergence of quantized transport
 sectors is therefore not introduced artificially but follows from recursive
 closure consistency.
 
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[>=Stealth, thick, font=\small]
+  % Three patches as ellipses
+  \fill[gray!10] (-3.3,0) ellipse (1.6 and 1.0);
+  \fill[gray!8]  (0,0)    ellipse (1.6 and 1.0);
+  \fill[gray!12] (3.3,0)  ellipse (1.6 and 1.0);
+  \draw[black!50] (-3.3,0) ellipse (1.6 and 1.0);
+  \draw[black!45] (0,0)    ellipse (1.6 and 1.0);
+  \draw[black!55] (3.3,0)  ellipse (1.6 and 1.0);
+
+  % Overlap shadings
+  \begin{scope}
+    \clip (-3.3,0) ellipse (1.6 and 1.0);
+    \fill[black!14] (0,0) ellipse (1.6 and 1.0);
+  \end{scope}
+  \begin{scope}
+    \clip (0,0) ellipse (1.6 and 1.0);
+    \fill[black!14] (3.3,0) ellipse (1.6 and 1.0);
+  \end{scope}
+
+  % Patch labels
+  \node[font=\footnotesize] at (-3.3, 1.25) {$U_i,\; X_i$};
+  \node[font=\footnotesize] at (0,    1.25) {$U_j,\; X_j$};
+  \node[font=\footnotesize] at ( 3.3, 1.25) {$U_k,\; X_k$};
+
+  % Transition map labels
+  \node[font=\footnotesize] at (-1.65, 0.55) {$g_{ij}$};
+  \node[font=\footnotesize] at ( 1.65, 0.55) {$g_{jk}$};
+
+  % Cocycle closure question
+  \draw[->, black!55, dashed, bend left=38]
+    (-1.65,-0.55) to
+    node[below, font=\footnotesize]
+      {cocycle: $g_{ij}g_{jk}g_{ki}=e\;$?}
+    (1.65,-0.55);
+
+  % Obstruction class box
+  \node[draw=black!55, fill=gray!6, rounded corners=3pt,
+        font=\footnotesize, inner sep=3pt] at (0,-1.75)
+        {$[\omega]\in H^2(M,\Sheaf_\RSVP)$: gluing obstruction};
+\end{tikzpicture}
+\caption{Local admissibility patches $U_i,U_j,U_k$ with transition maps on
+overlaps. Failure of the cocycle condition $g_{ij}g_{jk}g_{ki}=e$ on triple
+overlaps defines a cohomological obstruction class
+$[\omega]\in H^2(M,\Sheaf_\RSVP)$.}
+\label{fig:sheaf-gluing}
+\end{figure}
+
 % =================================================
 \section{CLIO Dynamics and Recursive Obstruction Minimization}
+
+\emph{Epistemic status of this section: the \CLIO\ gradient flow definition and
+monotonic obstruction decay are theorems~\textbf{[T]}; the Łojasiewicz--Simon
+convergence result is a conditional theorem whose hypothesis (ellipticity of
+$\delta^2\Omega/\delta X^2$) remains an open problem~\textbf{[C]}.}
 
 A mechanism is required which dynamically drives incompatible local sectors
 toward recursive closure. Within the present framework, this role is played by
@@ -495,8 +884,53 @@ admissible $X$. Gauge symmetries therefore appear as recursive
 closure-preserving transformations of admissibility space, a characterization
 that will be developed further in Section~6.
 
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[>=Stealth, font=\small]
+  \draw[->] (-0.3,0) -- (7.3,0) node[right] {$t_{\mathrm{adm}}$};
+  \draw[->] (0,-0.3) -- (0,4.1) node[above] {$\Omega(X(t))$};
+
+  % Convergent trajectory
+  \draw[black!80, line width=1.4pt, smooth]
+    plot[hobby] coordinates {
+      (0,3.8)(0.7,3.4)(1.4,2.9)(2.2,2.3)(3.1,1.5)
+      (4.1,0.9)(5.1,0.4)(6.2,0.12)(7.0,0.04)
+    };
+  \node[black!70, font=\footnotesize] at (5.5,0.75)
+    {coherent: $d\Omega/dt<0$};
+
+  % Fragmented trajectory
+  \draw[black!45, line width=1.2pt, smooth, dashed]
+    plot[hobby] coordinates {
+      (0,2.1)(0.8,2.6)(1.4,1.9)(2.1,3.1)(2.8,2.3)
+      (3.6,3.6)(4.3,2.9)(5.1,3.8)(5.9,3.1)(6.7,3.7)
+    };
+  \node[black!50, font=\footnotesize] at (4.9,4.0)
+    {fragmented: $d^2S_{\mathrm{adm}}/dt^2>0$};
+
+  % Admissible fixed-point line
+  \draw[black!25, dashed] (0,0.04) -- (7.0,0.04);
+  \node[black!40, font=\footnotesize] at (2.2,-0.22)
+    {$\Omega(X^\ast)=0$, admissible attractor};
+  \node[left, font=\footnotesize] at (0,3.8) {$\Omega_0$};
+\end{tikzpicture}
+\caption{\CLIO\ gradient-flow trajectories on admissibility space. The coherent
+trajectory (solid) satisfies $d\Omega/dt<0$ and converges to the admissible
+fixed point $X^\ast$. The fragmented trajectory (dashed) exhibits oscillatory
+admissibility curvature and fails to converge, corresponding to positive entropy
+gradient in the \CLIO\ uncertainty analysis.}
+\label{fig:clio-flow}
+\end{figure}
+
 % =================================================
 \section{Entropy-Weighted Transport Geometry and the Effective Geometric Sector}
+
+\emph{Epistemic status of this section: the gravitational field equation is a
+theorem~\textbf{[T]} derived from variational stationarity; the modified connection
+is an ansatz~\textbf{[A]}; the entropic gravity interpretation is
+phenomenological~\textbf{[P]}; the Entropic Regularization Conjecture is
+labeled as such~\textbf{[C]}.}
 
 The guiding hypothesis of the present section is that an effective spacetime
 geometric sector emerges from entropy-weighted failures of transport
@@ -542,6 +976,25 @@ T^\RSVP_{ij}
 - g_{ij}V(\Phi,S)
 + \tfrac{\lambda}{2}g_{ij}\,\mathbf{v}\cdot\nabla\Phi.
 \end{align*}
+
+\paragraph{Newtonian limit at leading order.}
+As a minimal consistency check, consider a static, spherically symmetric,
+low-entropy configuration ($S\approx 0$, $\mathbf{v}\approx 0$) with a weak
+scalar potential $\Phi=\Phi_0+\epsilon\varphi$ for $\epsilon\ll 1$. The
+Euler--Lagrange equation~\eqref{EL-phi} reduces at first order in $\epsilon$
+to $\Delta\varphi = \partial V/\partial\Phi|_{\Phi_0}$. Choosing the simplest
+admissible potential $V(\Phi,0)=\frac{1}{2}m^2\Phi^2$ and identifying $\varphi$
+with the Newtonian gravitational potential $\Phi_N$ (dimensionally, after
+restoring factors of $G$ and $c^2$), this gives
+$\nabla^2\Phi_N = 4\pi G\rho_\mathrm{eff}$,
+the Poisson equation for Newtonian gravity, with $\rho_\mathrm{eff}$
+determined by the source structure of $V$ at the background. This recovery
+is entirely expected given that $\mathcal{L}_\RSVP$ contains a standard
+scalar kinetic term; it confirms internal consistency but does not distinguish
+the framework from scalar-tensor gravity at this order. Distinguishing
+signatures require the entropy-coupled torsion sector, which is suppressed as
+$O(S_\mathrm{adm})$ in ordinary low-entropy regimes.
+
 Stationarity of the total action $\mathcal{A}_\mathrm{grav}+\mathcal{A}_\RSVP$
 under metric variations, where $\mathcal{A}_\mathrm{grav}=\int_M(R-2\Lambda)\sqrt{|g|}\,d^4x$,
 then yields the gravitational field equation
@@ -569,6 +1022,12 @@ occurs before geometric divergence becomes physically realizable.
 
 % =================================================
 \section{Gauge Structure from Admissibility-Preserving Automorphisms}
+
+\emph{Epistemic status of this section: the existence of gauge connection structure
+is a theorem~\textbf{[T]}; the identification of the Standard Model group as the
+minimal obstruction-cancelling automorphism structure is a conjecture~\textbf{[C]};
+the subsection ``Why the Standard Model Is Not Yet Derived'' clarifies this
+distinction explicitly.}
 
 The central question is not whether symmetry groups can be mathematically
 attached to the framework; arbitrary gauge groups can always be imposed
@@ -658,7 +1117,7 @@ transform vague unification ambitions into mathematically identifiable
 reconstruction problems with explicit proof obligations.
 
 % =================================================
-\section{Recursive Renormalization and TARTAN Fixed Points}
+\section{Recursive Renormalization and \TARTAN\ Fixed\ Points}
 
 Physical theories must explain not only local consistency but also why coherent
 structures remain stable under repeated coarse-graining and recursive
@@ -716,6 +1175,12 @@ recursive descent.
 
 % =================================================
 \section{Matter Sectors as Topological Defects and Recursive Spectral Modes}
+
+\emph{Epistemic status of this section: the homotopy classification of defect
+sectors is a definition~\textbf{[D]}; the identification of particle sectors with
+stable homotopy classes is an ansatz~\textbf{[A]}; the Three-Generation Conjecture
+and the Recursive Spectral Hierarchy Conjecture are labeled as conjectures~\textbf{[C]}.
+No particle masses or coupling constants are derived numerically.}
 
 The central hypothesis of this section is that matter corresponds to stable
 localized obstruction structures within recursive transport geometry. Particle
@@ -784,8 +1249,59 @@ modes. At present no index-theoretic or homotopy-theoretic argument guarantees
 exactly three such families. The conjecture should therefore be understood as a
 target mathematical constraint rather than a completed derivation.
 
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[>=Stealth, font=\small, node distance=0.7cm]
+  \tikzset{
+    regime/.style={draw=black!60, fill=gray!7, rounded corners=4pt,
+      minimum width=7.2cm, minimum height=0.9cm,
+      inner sep=4pt, align=center, font=\small},
+  }
+  \node[regime] (GR)
+    {$Q_{kij}=0,\;\tau^k{}_{ij}=0$\enspace\textbf{General Relativity}\\
+     {\footnotesize Levi--Civita connection; low obstruction}};
+
+  \node[regime, below=of GR] (EC)
+    {$Q_{kij}=0,\;\tau^k{}_{ij}\neq 0$\enspace\textbf{Einstein--Cartan}\\
+     {\footnotesize dynamical torsion from entropy-weighted transport}};
+
+  \node[regime, draw=black!70, below=of EC] (MA)
+    {$Q_{kij}\neq 0,\;\tau^k{}_{ij}\neq 0$\enspace\textbf{Metric-Affine}\\
+     {\footnotesize high $S_\mathrm{adm}$; full independent connection}};
+
+  % CLIO upward arrows
+  \draw[->, thick]
+    (MA.west) -- ++(-0.85,0) |- (EC.west)
+    node[midway, left, font=\footnotesize] {\CLIO: $Q\!\to\!0$};
+  \draw[->, thick]
+    (EC.west) -- ++(-1.4,0) |- (GR.west)
+    node[midway, left, font=\footnotesize, xshift=-2pt]
+    {\CLIO: $\tau\!\to\!0$};
+
+  % Entropy annotation
+  \draw[<->, black!45, dashed]
+    (GR.east) ++(0.15,0) -- ++(0,-2.4)
+    node[midway, right, font=\footnotesize, xshift=2pt]
+    {$\uparrow S_\mathrm{adm}$};
+\end{tikzpicture}
+\caption{Geometric regime hierarchy of the \RSVP\ Palatini sector. The \CLIO\
+flow suppresses non-metricity $Q_{kij}$ then torsion $\tau^k{}_{ij}$ in
+low-entropy regimes, recovering General Relativity as the low-obstruction
+attractor. The metric-affine sector persists in high-entropy configurations.}
+\label{fig:geom-hierarchy}
+\end{figure}
+
 % =================================================
 \section{Phenomenological Implications and Empirical Constraints}
+
+\emph{Epistemic status of this section: all predictions are phenomenological
+interpretations~\textbf{[P]} or conjectures~\textbf{[C]}. No section of this
+paper produces a numerical prediction that differs quantitatively from General
+Relativity or the Standard Model. The framework's phenomenological value lies
+in identifying qualitative signatures --- in high-entropy regimes, in
+gravitational wave propagation, in decoherence structure --- that motivate
+future precision analysis.}
 
 A central methodological principle of the present work is that speculative
 reconstruction programs must remain distinguishable from unconstrained
@@ -848,7 +1364,7 @@ provide a deeper organizing language connecting geometry, gauge structure,
 topology, and matter.
 
 % =================================================
-\section{Constraint Routing, Projection Geometry, and Gauge Transport}
+\section{Constraint Routing, Projection Geometry, and Gauge\\ Transport}
 
 The emergence of gauge structure and observable physical structure both depend
 on the geometry of information transport and projection within the admissibility
@@ -971,7 +1487,171 @@ therefore encodes not only underlying field ontology but the geometry of
 recursive observational access.
 
 % =================================================
+\section{Failure Modes, Falsification Conditions, and Correspondence Dictionary}
+
+\subsection{Conditions Under Which the Framework Fails}
+
+A reconstruction program of this ambition must specify the conditions under
+which it would be falsified. The following are explicit collapse conditions,
+labeled by the structural component they would invalidate.
+
+\textit{Automorphism group non-uniqueness.} If a systematic classification of
+compact admissibility-preserving automorphism groups compatible with charge
+quantization, chirality, anomaly cancellation, and three matter generations
+returns more than one minimal solution --- or returns no solution --- the
+Minimal Obstruction-Cancellation Conjecture fails and the gauge reconstruction
+program must be fundamentally revised.
+
+\textit{Anomaly non-closure.} If the five Standard Model anomaly conditions
+$\mathrm{tr}[G^3]=\mathrm{tr}[G^2Y]=\mathrm{tr}[Y^3]=\mathrm{tr}[Y]=
+\mathrm{tr}[\mathrm{Riem}^2Y]=0$ cannot be identified with vanishing obstruction
+classes of $H^2(M,\Sheaf_\RSVP)$ for any explicit construction of the constraint
+functionals $C_i$, the cohomological anomaly interpretation fails.
+
+\textit{Recursive renormalization instability.} If low-obstruction admissibility
+sectors fail to persist under \TARTAN\ projection --- if the renormalization flow
+has no fixed points other than the trivial vacuum --- then the framework cannot
+explain why stable physical structure exists across scales.
+
+\textit{Gravitational limit failure.} If entropy-weighted transport corrections
+to the gravitational field equation violate established weak-field and
+post-Newtonian limits in regimes where $S_\mathrm{adm}\approx 0$, the geometric
+interpretation of Section~7 fails and must be replaced.
+
+\textit{Non-metricity persistence.} If the \CLIO\ flow on $\Omega_\mathrm{geom}$
+does not drive $Q_{kij}\to 0$ in low-entropy regimes, then metric compatibility
+is not an emergent closure condition and the framework cannot recover standard
+Riemannian geometry as a limiting case.
+
+\textit{Unistochastic projection failure.} If no explicit \RSVP\ projection
+$\Pi:M_\mathrm{adm}\to\mathcal{Y}$ can be constructed whose transition matrix
+lies in the unistochastic subset $\mathcal{U}_n$ for physically relevant
+partitions $\mathcal{Y}$, then the quantum reconstruction of Appendix~J fails
+and quantum probability must be introduced by a different route.
+
+\textit{Soliton instability.} If the generalized virial condition for \RSVP\
+solitons admits no nontrivial stable solutions in any admissible parameter
+regime, the topological matter identification fails and particle sectors require
+a different origin.
+
+\subsection{Correspondence Dictionary}
+
+The framework introduces a systematic correspondence between \RSVP\ geometric
+structures and conventional physical concepts. The following table collects the
+central mappings.
+
+\bigskip
+{\small
+\begin{center}
+\begin{tabular}{p{5.5cm}p{6.0cm}}
+\toprule
+\textbf{\RSVP\ structure} & \textbf{Conventional counterpart}\\
+\midrule
+Obstruction $[\omega_k]\in H^k(M,\Sheaf_\RSVP)$
+  & Gauge curvature / cohomological anomaly\\[2pt]
+Cocycle failure $g_{ij}g_{jk}g_{ki}\neq e$
+  & Non-trivial gauge bundle\\[2pt]
+\CLIO\ flow $dX/dt_\mathrm{adm}=-\nabla\Omega$
+  & Constraint-driven dynamics\\[2pt]
+\TARTAN\ fixed point $\mathcal{R}(X^\ast)=X^\ast$
+  & Scale-invariant physical sector\\[2pt]
+Projection degeneracy $\Pi(X_1)=\Pi(X_2)$
+  & Gauge redundancy\\[2pt]
+Admissibility distance $d_\mathrm{adm}(U_i,U_j)$
+  & Effective locality\\[2pt]
+Entropy barrier $S_\mathrm{adm}\gg 0$
+  & Dynamical separation / confinement\\[2pt]
+Homotopy class $[X]\in\pi_k(\Field^{(s)})$
+  & Particle sector / topological charge\\[2pt]
+Eigenvalue $\lambda_n$ of $\Delta_\RSVP$
+  & Particle mass scale $m_n^2\propto\lambda_n$\\[2pt]
+Holonomy $\theta_i=\int_{\gamma_i}\mathbf{v}\cdot d\mathbf{x}$
+  & Quantum phase\\[2pt]
+Amplitude $\rho_i^{1/2}e^{i\theta_i}$
+  & Quantum amplitude (Born rule)\\[2pt]
+Phase-lift loss $P\notin\mathcal{U}_n$
+  & Wavefunction collapse / decoherence\\[2pt]
+Non-metricity $Q_{kij}\to 0$
+  & Metric compatibility / GR limit\\[2pt]
+Anomaly cancellation $[\omega_2]=0$
+  & Terminal object in $\mathbf{Clio}(M)$\\[2pt]
+Attachment law $P(k)\sim k^{-\gamma}$
+  & Symmetry breaking / routing concentration\\[2pt]
+Admissibility time $t_\mathrm{adm}$
+  & Recursive closure ordering\\[2pt]
+Observable quotient $M_\mathrm{obs}$
+  & Experienced classical spacetime\\
+\bottomrule
+\end{tabular}
+\end{center}
+}
+
+\bigskip
+
+The table is organized so that left-column structures are defined rigorously
+within the \RSVP\ framework while right-column entries are conventional physical
+concepts whose identification with the left-column structures constitutes either
+a theorem (where derivable) or a conjecture (where the identification is
+proposed but not yet proved). The epistemic status of each mapping is detailed
+in the relevant section or appendix.
+
+% =================================================
 \section{Conclusion}
+
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[>=Stealth, font=\small, scale=0.88, transform shape,
+    node distance=0.42cm and 0.9cm]
+  \tikzset{
+    box/.style={draw, rounded corners=3pt,
+      minimum width=3.6cm, minimum height=0.62cm,
+      inner sep=3pt, align=center, font=\small},
+    T/.style={box, fill=gray!12, draw=black, thick},
+    A/.style={box, fill=gray!5,  draw=black!55, densely dashed},
+    C/.style={box, fill=white,   draw=black!65,
+              densely dotted, thick},
+    P/.style={box, fill=gray!7,  draw=black!30},
+    arr/.style ={->, thick, black!70},
+    arrc/.style={->, thick, black!45, dashed},
+  }
+  % Col 1
+  \node[T] (fields) {$X\!=\!(\Phi,\mathbf{v},S)$ \textbf{[T]}};
+  \node[T, below=of fields] (EL) {E--L equations \textbf{[T]}};
+  \node[A, below=of EL]     (Lag){RSVP Lagrangian \textbf{[A]}};
+  % Col 2
+  \node[T, right=of fields] (sh) {Admissibility sheaf \textbf{[D]}};
+  \node[T, below=of sh]     (au) {Gauge connection \textbf{[T]}};
+  \node[C, below=of au]     (MC) {Min.\ Obstruction \textbf{[C]}};
+  % Col 3
+  \node[T, right=of sh]  (cl) {\CLIO\ flow \textbf{[T]}};
+  \node[A, below=of cl]  (pa) {Palatini conn.\ \textbf{[A]}};
+  \node[C, below=of pa]  (mc) {Metric compat.\ \textbf{[C]}};
+  % Col 4
+  \node[T, right=of cl]  (GR) {Gravitational eq.\ \textbf{[T]}};
+  \node[C, below=of GR]  (QM) {Unistochastic QM \textbf{[C]}};
+  \node[P, below=of QM]  (ph) {Phenomenology \textbf{[P]}};
+  % Arrows
+  \draw[arr]  (fields)--(EL); \draw[arr](fields)--(sh);
+  \draw[arr]  (sh)--(au);     \draw[arrc](au)--(MC);
+  \draw[arr]  (fields)--(cl); \draw[arr](EL)--(Lag);
+  \draw[arr]  (cl)--(pa);     \draw[arrc](pa)--(mc);
+  \draw[arr]  (cl)--(GR);     \draw[arrc](GR)--(QM);
+  \draw[arr]  (QM)--(ph);
+  \draw[arr]  (GR) to[bend right=16] (ph);
+  % Legend
+  \node[T, minimum width=1.9cm, font=\scriptsize,
+        below=1.05cm of Lag] (lT) {\textbf{[T]} Theorem};
+  \node[A, minimum width=1.9cm, font=\scriptsize,
+        right=0.35cm of lT]  (lA) {\textbf{[A]} Ansatz};
+  \node[C, minimum width=1.9cm, font=\scriptsize,
+        right=0.35cm of lA]  (lC) {\textbf{[C]} Conjecture};
+  \node[P, minimum width=1.9cm, font=\scriptsize,
+        right=0.35cm of lC]  (lP) {\textbf{[P]} Phenom.};
+\end{tikzpicture}
+\caption{Overview of the \RSVP\ reconstruction program. Thick solid border~=~Theorem \textbf{[T]}; dashed~=~Ansatz \textbf{[A]}; dotted~=~Conjecture \textbf{[C]}; light~=~Phenom.\ \textbf{[P]}. Solid arrows: logical derivation; dashed arrows: conjectural dependence.}
+\label{fig:overview}
+\end{figure}
 
 The present paper has developed a constraint-first reconstruction program for
 gauge theory and gravitation grounded in the \RSVP\ field framework. The central
@@ -1180,7 +1860,10 @@ group as the unique minimal solution. No proof is offered here.
 \section{Entropic Gravity from RSVP Curvature Flow}
 
 \begin{defn}[\claimD Entropy-Weighted Transport Tensor]
-$T_{ij}^{\mathrm{trans}} = \nabla_i v_j - \alpha\,(\nabla_i S)(\nabla_j\Phi)$,
+The entropy-weighted transport tensor is
+\[
+T_{ij}^{\mathrm{trans}} = \nabla_i v_j - \alpha\,(\nabla_i S)(\nabla_j\Phi),
+\]
 where $\alpha > 0$ is a coupling constant.
 \end{defn}
 
@@ -1539,12 +2222,14 @@ Representations generating unstable recursive sectors are dynamically
 eliminated. This constrains the growth of admissible representation towers and
 favors groups with bounded representation branching under recursive descent.
 
-The conjectural program is therefore: classify all compact admissibility-preserving
-automorphism groups satisfying quantized recursive holonomy, chiral recursive
+The conjectural program is therefore: classify all compact admissibility-pre\-serv\-ing automorphism groups satisfying quantized recursive holonomy, chiral recursive
 closure, anomaly cancellation, and multiscale spectral stability. The remarkable
 possibility, which the conjecture asserts, is that these four conditions
 together overconstrain the classification problem sufficiently to isolate
-$SU(3)\times SU(2)\times U(1)/\Gamma$ as the unique minimal solution.
+\[
+SU(3)\times SU(2)\times U(1)/\Gamma
+\]
+as the unique minimal solution.
 
 The strongest currently available evidence for this is indirect: the Standard
 Model is the unique compact gauge theory of rank four known to satisfy all five
@@ -1939,10 +2624,10 @@ space as
 \]
 with the Fr\'{e}chet topology, but subsequently invokes Sobolev completions,
 Fredholm operators, Hilbert-space gradient flows, Hodge decompositions, and
-Łojasiewicz--Simon theory, which are not automatically compatible with
+Łojasiewicz\discretionary{-}{-}{--}Simon theory, which are not automatically compatible with
 Fr\'{e}chet geometry. The purpose of this appendix is to specify the function
-space architecture in which each class of statements lives, and to flag the
-remaining compatibility obligations.
+space architecture in which each class of statements lives, and to flag
+the remaining compatibility obligations.
 
 \begin{defn}[\claimD Sobolev Completion of the RSVP Configuration Space]
 For $s>\frac{n}{2}+1$ (with $n=\dim M=4$, so $s\geq 4$ suffices for a Sobolev
@@ -1973,21 +2658,23 @@ main text requires.
 
 \bigskip
 \begin{center}
+{\small
 \begin{tabular}{lll}
 \toprule
-\textbf{Statement} & \textbf{Required topology} & \textbf{Reference}\\
+\textbf{Statement} & \textbf{Required topology} & \textbf{Ref.}\\
 \midrule
 Euler--Lagrange field equations & $\Field^{(s)}$, $s\geq 4$ & App.\ A\\
 Admissibility sheaf definition & $\Field^{(s)}$, $s\geq 4$ & App.\ B\\
 \CLIO\ gradient flow & $\Field^{(s)}$, Hilbert manifold & App.\ F, H.1\\
 Łojasiewicz--Simon convergence & $\Field^{(s)}$, Banach manifold & App.\ F\\
 Hodge decomposition of obstructions & $\Field^{(s)}$, $L^2$ inner product & App.\ H.1\\
-Fredholm property of $\delta^2\Omega$ & $\Field^{(s)}\to\Field^{(s-2)}$ & App.\ H.6\\
-TARTAN spectral truncation & $\Field^{(s)}$, spectral gap & App.\ E\\
+Fredholm property of $\delta^2\Omega/\delta X^2$ & $\Field^{(s)}\!\to\!\Field^{(s-2)}$ & App.\ H.6\\
+TARTAN spectral truncation & $\Field^{(s)}$, spectral gap & App.~E\\
 Derrick scaling argument & $\Field^{(1)}$ on $\mathbb{R}^3$ & App.\ H.4\\
 Unistochastic transition kernels & Finite-dim.\ projection of $\Field^{(s)}$ & App.\ J\\
 \bottomrule
 \end{tabular}
+}% end small
 \end{center}
 
 \bigskip
@@ -2060,6 +2747,57 @@ The \emph{unistochastic subset} is
 A projected \RSVP\ transition system is \emph{quantum-admissible} if its
 observable transition matrix $P_{ij}$ is unistochastic. That is, there exists
 a unitary operator $U_\Pi$ on $\mathbb{C}^n$ such that $P_{ij}=|(U_\Pi)_{ij}|^2$.
+
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[>=Stealth, font=\small]
+  % Birkhoff polytope outline (hexagonal schematic)
+  \draw[black!35, line width=0.8pt, fill=gray!5]
+    (0:3.0) -- (60:3.0) -- (120:3.0) -- (180:3.0)
+    -- (240:3.0) -- (300:3.0) -- cycle;
+  \node[black!40, font=\footnotesize] at (0,-3.5)
+    {$\mathcal{S}_n$: doubly stochastic matrices (Birkhoff polytope)};
+
+  % Unistochastic subset (irregular inner region)
+  \draw[black!65, line width=1.1pt, fill=gray!15]
+    (0:1.85) -- (55:1.95) -- (115:1.80) -- (175:1.90)
+    -- (235:1.75) -- (295:1.85) -- cycle;
+  \node[font=\footnotesize] at (0,0.55) {$\mathcal{U}_n$};
+  \node[font=\footnotesize\itshape] at (0,0.15) {unistochastic};
+
+  % Classical boundary point
+  \fill[black!70] (2.7,0.5) circle (2.8pt);
+  \node[right, font=\footnotesize] at (2.72,0.5)
+    {classical ($H^1\!=\!0$)};
+
+  % Quantum interior point
+  \fill[black] (0.7,-0.6) circle (2.8pt);
+  \node[below right, font=\footnotesize] at (0.7,-0.6)
+    {quantum ($H^1\!\neq\!0$)};
+
+  % CLIO arrow toward U_n
+  \draw[->, black!60, line width=0.9pt, dashed]
+    (2.1,-2.2) to[bend left=22]
+    node[below right, font=\footnotesize]
+    {\CLIO: $\Omega_Q\to 0$}
+    (0.5,-1.1);
+
+  % Decoherence arrow exiting U_n
+  \draw[->, black!55, line width=0.9pt]
+    (0.85,-0.5) to[bend right=18]
+    node[right, font=\footnotesize]
+    {decoherence: $S_\mathrm{therm}\!\uparrow$}
+    (2.4,0.2);
+\end{tikzpicture}
+\caption{Schematic slice of the Birkhoff polytope $\mathcal{S}_n$. The
+unistochastic subset $\mathcal{U}_n$ (inner shaded region) is a strict
+subset for $n\geq 3$. Quantum-admissible \RSVP\ projections lie in
+$\mathcal{U}_n$; \CLIO\ obstruction minimization drives projected kernels
+toward this region; decoherence (increasing $S_\mathrm{therm}$) drives them
+out toward the classical boundary.}
+\label{fig:unistochastic}
+\end{figure}
 
 \emph{Status: Ansatz.} Hilbert space is not introduced as an independent
 ontology. It appears as the minimal phase-lift of an admissible stochastic

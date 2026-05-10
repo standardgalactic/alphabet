@@ -1,0 +1,2020 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{abstract}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz-cd}
+
+% ── Page geometry ─────────────────────────────────────────────────────────────
+\geometry{
+  top    = 2.8cm,
+  bottom = 2.8cm,
+  left   = 3.0cm,
+  right  = 3.0cm,
+  headheight = 14pt
+}
+
+% ── Spacing ───────────────────────────────────────────────────────────────────
+\onehalfspacing
+
+% ── Header / footer ───────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small RSVP and the MOND Transition}
+\lhead{\small Flyxion}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Listings style for code/grammar ──────────────────────────────────────────
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  frame=single,
+  xleftmargin=1em,
+  xrightmargin=1em,
+  numbers=none,
+  escapeinside={(*}{*)}
+}
+
+% ── Theorem environments ──────────────────────────────────────────────────────
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{tschema}[theorem]{Theorem-Schema}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{heuristic}[theorem]{Heuristic}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{obligation}[theorem]{Open Proof Obligation}
+\newtheorem{observation}[theorem]{Observation}
+
+% ── Hyperref ──────────────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = blue!60!black,
+  citecolor  = blue!60!black,
+  urlcolor   = blue!60!black,
+  pdftitle   = {Admissibility Geometry and the MOND Transition},
+  pdfauthor  = {Flyxion}
+}
+
+% ── Custom commands ───────────────────────────────────────────────────────────
+\newcommand{\Xfield}{X = (\Phi,\,\mathbf{v},\,S)}
+\newcommand{\ctrl}{\tfrac{S}{\Phi}}
+\newcommand{\ctrlell}{\chi_\ell}
+\newcommand{\RA}{R_{\!A}}
+\newcommand{\aA}{a_{\!A}}
+\newcommand{\sheaf}{\mathcal{F}}
+\newcommand{\cover}{\{U_\alpha\}}
+\newcommand{\recon}{\mathcal{R}}
+\newcommand{\Ucover}{\mathcal{U}}
+\newcommand{\Rcoarse}{\mathcal{R}_\lambda}
+\newcommand{\Pitherm}{\Pi_{\mathrm{therm}}}
+\newcommand{\Piinfo}{\Pi_{\mathrm{info}}}
+\newcommand{\Pigrav}{\Pi_{\mathrm{grav}}}
+\newcommand{\Piconf}{\Pi_{\mathrm{conf}}}
+\newcommand{\Hcech}{\check{H}}
+\newcommand{\Ccech}{\check{C}}
+
+% ── Title ─────────────────────────────────────────────────────────────────────
+\title{%
+  \textbf{Admissibility Geometry and the MOND Transition}\\[0.4em]
+  \large Reconstruction Obstruction as an Alternative to Dark Matter
+}
+\author{Flyxion}
+\date{\today}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\maketitle
+\thispagestyle{empty}
+
+% ── Abstract ──────────────────────────────────────────────────────────────────
+\begin{abstract}
+\noindent
+We develop a reinterpretation of gravitational anomalies --- including flat rotation
+curves, weak lensing excesses, and the MOND acceleration scale --- within the
+Relativistic Scalar-Vector Plenum (RSVP) framework. Existing emergent gravity
+programs derive spacetime geometry from physical exchange processes, thermodynamic
+bookkeeping, or information flow. RSVP inverts this order: admissibility geometry
+is treated as primary, and persistent physical exchange is interpreted as a
+stabilized reconstruction mode within that geometry.
+
+The framework introduces the coupled field $\Xfield$, where $\Phi$ encodes the
+accessibility geometry of continuation space, $\mathbf{v}$ encodes directed
+coherence flow, and $S$ measures admissibility dispersion. The dimensionless ratio
+$S/\Phi$ serves as a central control parameter governing local reconstruction
+factorization. We define an \emph{admissibility radius} $\RA$ as the largest scale
+over which local reconstruction remains approximately factorizable without
+cosmological boundary data, and conjecture that the RSVP field equations determine
+$\RA \propto c/H_0$ in weak-gradient, low-density regimes, yielding the MOND
+acceleration scale $a_0 \sim cH_0$ as a geometric consequence of reconstruction
+structure rather than a modification of force law.
+
+The paper operates across four explicitly distinguished epistemic registers:
+definitions, structural conjectures, derived implications, and open proof
+obligations. We do not derive MOND from completed RSVP field equations; we identify
+the geometric objects from which such a derivation would have to proceed. Appendices
+develop the formal sheaf structure, coarse-graining flow, candidate dynamical
+equations, obstruction cohomology, relation to renormalization theory, observational
+targets, locality clarification, and formal implementation directions including BNF
+grammar and Lean-style proof schemas.
+\end{abstract}
+
+\vspace{1em}
+\noindent\textit{Keywords:} emergent gravity, MOND, admissibility geometry,
+reconstruction sheaf, entropic gravity, dark matter, RSVP framework, obstruction
+cohomology, renormalization flow.
+
+\newpage
+
+% ── Notation table ────────────────────────────────────────────────────────────
+\subsection*{Core Objects and Notation}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}lp{9cm}@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$X = (\Phi, \mathbf{v}, S)$ & Coupled RSVP field \\
+$\Phi$ & Continuation accessibility scalar field \\
+$\mathbf{v}$ & Coherence-flow vector field \\
+$S$ & Admissibility dispersion (entropy) field \\
+$\chi = S/\Phi$ & Reconstruction control parameter \\
+$\chi_\ell = S_\ell/\Phi_\ell$ & Scale-dependent control parameter \\
+$\Ucover = \cover$ & Reconstruction (admissibility) cover \\
+$\sheaf$ & Reconstruction sheaf \\
+$\sheaf(U_\alpha)$ & Admissible sections over neighborhood $U_\alpha$ \\
+$\rho_{\alpha\beta}$ & Restriction map $\sheaf(U_\alpha) \to \sheaf(U_\alpha \cap U_\beta)$ \\
+$\RA$ & Admissibility radius \\
+$\aA$ & Admissibility acceleration scale $\sim c^2/\RA$ \\
+$\mathcal{P}[s]$ & Persistence functional of section $s$ \\
+$\Rcoarse$ & Coarse-graining operator on covers \\
+$\Omega_\ell[s]$ & Scale-dependent obstruction functional \\
+$\beta(\chi)$ & Admissibility beta-function \\
+$\Pitherm,\Piinfo,\Pigrav,\Piconf$ & Entropy projection functors \\
+$\Hcech^k(\Ucover, \sheaf)$ & \v{C}ech cohomology of cover with sheaf coefficients \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Introduction}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The relationship between gravity and thermodynamics has attracted sustained
+theoretical attention since Bekenstein and Hawking established that black holes carry
+entropy proportional to horizon area. Subsequent programs --- Jacobson's derivation
+of the Einstein equations from thermodynamic identities \cite{jacobson1995,jacobson2016},
+Verlinde's entropic gravity \cite{verlinde2011,verlinde2017}, and more recently
+transactional entropic gravity \cite{kastner2024} --- have attempted to establish
+that gravitational dynamics emerge from statistical or information-theoretic structure
+rather than constituting a fundamental interaction. Padmanabhan has developed related
+thermodynamic perspectives on gravity \cite{padmanabhan2010}, and the connection
+between entanglement structure and spacetime geometry has been explored through
+holographic frameworks \cite{vanraamsdonk2010,swingle2012}.
+
+These programs share a common derivation order: physical exchange processes,
+thermodynamic bookkeeping, or entropic flow are treated as primitive, and spacetime
+geometry is reconstructed from them. The present work inverts this order. We treat
+\emph{admissibility geometry} as primary and interpret persistent physical exchange
+as a stabilized reconstruction mode within that geometry. Emitters, absorbers,
+particles, and force laws are not inputs to the framework but outputs --- roles
+stabilized by recursive cross-scale coherence of the coupled field $\Xfield$ within
+its reconstruction sheaf \cite{bredon1997,maclane1992}.
+
+This inversion has a specific consequence for the MOND anomaly
+\cite{milgrom1983,famaey2012}. Existing programs explain the transition scale
+$a_0 \sim cH_0$ by finding thermodynamic narratives that reproduce it. The present
+framework instead asks: what geometric property of the reconstruction sheaf would
+make such a scale \emph{structurally necessary}? The answer we propose --- an
+admissibility radius $\RA$ beyond which local reconstruction requires cosmological
+gluing data --- converts a phenomenological constant into a constraint on the field
+theory itself.
+
+\subsection*{Epistemic Registers}
+
+The paper operates simultaneously across four epistemic registers which must be
+carefully distinguished. Certain structures are \textbf{definitional}, specifying
+the reconstruction geometry and admissibility framework. Others are
+\textbf{conjectural}, proposing relationships between admissibility structure and
+cosmological scaling. Still others are \textbf{derived implications} under specified
+assumptions. Finally, several results remain \textbf{open proof obligations}
+generated by the framework itself. We make these distinctions syntactically explicit
+throughout --- using the theorem environments \emph{Definition}, \emph{Conjecture},
+\emph{Theorem-Schema}, \emph{Heuristic}, and \emph{Open Proof Obligation} --- in
+order to avoid conflating motivation, formal consequence, and unresolved structure, a
+conflation that has weakened much of the emergent gravity literature.
+
+\subsection*{Structure of the Paper}
+
+Section~\ref{sec:geometry} develops the admissibility geometry and sheaf structure.
+Section~\ref{sec:transition} introduces the admissibility phase transition and states
+the central conjecture regarding $\RA$. Section~\ref{sec:entropy} treats entropy
+species as regime projections rather than identified primitives.
+Section~\ref{sec:darkmatter} reinterprets dark matter phenomenology as reconstruction
+obstruction. Section~\ref{sec:comparison} compares the framework with neighboring
+programs. Section~\ref{sec:conclusion} consolidates contributions and open
+obligations. Appendices~\ref{app:sheaf}--\ref{app:implementation} develop the formal
+machinery, including sheaf structure, coarse-graining flow, candidate field equations,
+obstruction cohomology, renormalization analogy, observational targets, locality
+clarification, and formal implementation via BNF grammar and Lean-style schemas.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Admissibility Geometry and the Reconstruction Sheaf}
+\label{sec:geometry}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{The Coupled Field}
+
+The fundamental object of the RSVP framework is the coupled field
+\begin{equation}
+  \Xfield,
+\end{equation}
+where $\Phi$ is a scalar field encoding the \emph{accessibility geometry of
+continuation space} --- the structure governing which local field trajectories admit
+coherent extension into persistent reconstruction modes; $\mathbf{v}$ is a vector
+field encoding directed transport and coherence flow; and $S$ is a scalar
+entropy-dispersion field measuring the spread of admissible reconstruction
+trajectories.
+
+These three components are dynamically coupled. The scalar field $\Phi$ governs
+which continuations remain accessible; $\mathbf{v}$ tracks preferred directions of
+coherent continuation; and $S$ measures how tightly reconstruction trajectories
+concentrate near stable modes. A configuration with high $S$ relative to $\Phi$ has
+many admissible continuations and correspondingly weak reconstruction stability. Low
+$S/\Phi$ concentrates trajectories near persistent modes --- the regime in which
+particles, clocks, and force-mediating exchanges stabilize as recognizable roles.
+
+\medskip
+\noindent\textbf{The control parameter.}\quad The dimensionless ratio
+\begin{equation}
+  \label{eq:control}
+  \chi \;=\; \ctrl
+\end{equation}
+is the central control parameter of the framework. When $\chi \ll 1$,
+entropy-dispersion is small relative to continuation accessibility, local
+reconstruction is strongly factorizable, and effective dynamics reduce approximately
+to Newtonian behavior. When $\chi \sim 1$, dispersion becomes comparable to
+accessibility, local factorization breaks down, and reconstruction requires boundary
+data from larger scales to maintain global stability. This ratio governs
+simultaneously: local factorization stability, the admissibility phase transition,
+entropy-channel convergence, and obstruction growth dynamics. Its ubiquity across all
+four phenomena is evidence of the framework's internal coherence rather than
+coincidence.
+
+\subsection{Admissible Local Sections}
+
+\begin{definition}[Admissible local section]
+\label{def:admissible}
+A local section of $X$ over a region $U$ is \emph{admissible} if reconstruction
+trajectories originating within $U$ remain dynamically stable under bounded
+perturbation and admit coherent continuation under the restriction structure of the
+field cover.
+\end{definition}
+
+Admissibility is a \emph{persistence condition}: it asks not merely whether a
+configuration is locally self-consistent, but whether it can continue coherently into
+neighboring regions and across scales. Three notions must be carefully distinguished.
+
+\begin{enumerate}[label=(\roman*)]
+  \item \textbf{Local dynamical stability.} Trajectories within $U$ remain bounded
+    under perturbation. This is a condition on the field equations restricted to $U$
+    alone, making no reference to neighboring regions.
+
+  \item \textbf{Global admissibility.} Locally stable sections admit coherent
+    extension across the full reconstruction cover without generating contradictions
+    at overlapping boundaries. A section may be locally stable while failing global
+    admissibility if its continuation structure conflicts with that of neighboring
+    sections.
+
+  \item \textbf{Reconstruction persistence.} Globally admissible extensions remain
+    stable under renormalization of the reconstruction cover across scales --- a
+    multiscale stability condition rather than merely a temporal one. A section may
+    be globally admissible at one scale while failing persistence at another if
+    $S$-dispersion grows faster than the coherence structure of $\mathbf{v}$ can
+    absorb under coarse-graining.
+\end{enumerate}
+
+The distinction between local stability and global admissibility is precisely what
+separates RSVP from transactional approaches \cite{kastner2024}. Transactional
+completion guarantees local interaction closure --- offer and confirmation waves match
+at a spacetime event. RSVP admissibility requires persistent global extension
+compatibility across the entire reconstruction cover. A transaction can complete
+locally while generating globally obstructed reconstruction dynamics; RSVP classifies
+such processes as inadmissible or metastable regardless of their local consistency.
+
+\subsection{The Reconstruction Cover}
+
+\begin{definition}[Admissibility neighborhood]
+An \emph{admissibility neighborhood} $U_\alpha$ is a region over which
+reconstruction remains approximately factorizable, meaning the admissible section
+over $U_\alpha$ can be specified without reference to data outside $U_\alpha$ up to
+corrections of order $\ctrl$.
+\end{definition}
+
+We introduce a cover $\Ucover = \cover$ of the field domain where each $U_\alpha$
+is an admissibility neighborhood. Regions where $S/\Phi$ is small generate large,
+strongly factorizable neighborhoods. Regions where $S/\Phi$ approaches unity
+generate small, weakly factorizable neighborhoods whose sections increasingly require
+external boundary data for stable continuation.
+
+\begin{remark}
+\label{rem:cover-derived}
+The reconstruction cover is a \emph{derived} object of the field geometry, not a
+background against which the field is defined. Classical spacetime structure, to the
+extent it appears, is a stable regime of the reconstruction cover rather than its
+presupposition. This is the formal content of RSVP's departure from ordinary field
+theory: integrating out short-scale reconstruction structure changes not merely
+effective couplings but the factorization structure of admissible reconstruction
+itself \cite{wilson1974,goldenfeld1992}.
+\end{remark}
+
+\subsection{Two Types of Obstruction}
+
+Obstruction occurs when locally admissible sections fail to admit globally stable
+extension across overlapping neighborhoods. Obstruction is not metaphorical: it is a
+literal failure of global compatibility in the reconstruction geometry
+\cite{bott1982,hatcher2002}. We distinguish two structurally distinct types whose
+physical consequences differ and whose conflation would obscure both the entropy
+analysis of Section~\ref{sec:entropy} and the dark matter reinterpretation of
+Section~\ref{sec:darkmatter}.
+
+\begin{definition}[Compatibility obstruction]
+\label{def:compat-obs}
+Let $s_\alpha \in \sheaf(U_\alpha)$ and $s_\beta \in \sheaf(U_\beta)$ be locally
+admissible sections over overlapping neighborhoods. A \emph{compatibility
+obstruction} exists if
+\[
+  \rho_{\alpha\beta}(s_\alpha) \;\neq\; \rho_{\beta\alpha}(s_\beta)
+\]
+on $U_\alpha \cap U_\beta$. The sections specify incompatible continuation structures
+on their shared domain and cannot be globally glued.
+\end{definition}
+
+\begin{definition}[Dispersion obstruction]
+\label{def:disp-obs}
+A pair of sections suffers \emph{dispersion obstruction} if they agree formally on
+overlapping domains --- $\rho_{\alpha\beta}(s_\alpha) = \rho_{\beta\alpha}(s_\beta)$
+--- but cannot maintain stable global extension because $S$ grows faster than the
+coherence propagation capacity of $\mathbf{v}$ across the cover. Formally compatible
+sections therefore fail reconstruction persistence: $\mathcal{P}[s] \to 0$ under
+scale extension.
+\end{definition}
+
+\begin{remark}
+Not all globally inconsistent dynamics arise from local disagreement. Some arise from
+uncontrolled admissibility growth under extension. Compatibility obstruction manifests
+as irregular, patchy anomalies without clear scaling structure. Dispersion obstruction
+manifests as smooth large-scale departure from locally stable behavior --- the
+observational signature more characteristic of galactic rotation anomalies. The two
+obstruction types produce distinct signatures in the entropy structure of the field
+(Section~\ref{sec:entropy}) and distinct phenomenological predictions
+(Appendix~\ref{app:obs}).
+\end{remark}
+
+\subsection{The Reconstruction Sheaf}
+
+The objects defined above constitute the data of a \emph{reconstruction sheaf}
+$\sheaf$ over the field domain \cite{bredon1997,kashiwara2005}: $\sheaf$ assigns to
+each $U_\alpha$ the space $\sheaf(U_\alpha)$ of admissible sections of $X$ over
+$U_\alpha$, together with restriction maps
+\[
+  \rho_{\alpha\beta} \colon \sheaf(U_\alpha) \longrightarrow \sheaf(U_\alpha \cap U_\beta)
+\]
+satisfying identity preservation, compatibility under composition, and the locality
+and gluing axioms. Global sections of $\sheaf$ correspond to globally admissible
+reconstruction modes.
+
+\begin{remark}[Admissibility nonlocality]
+\label{rem:nonlocal}
+Admissibility nonlocality --- when it occurs --- is nonlocality in the indexing and
+coherence structure of $\sheaf$, not in the stalk-local field dynamics. The stalks
+remain local field values propagating according to local field equations. What becomes
+nonlocal is the coherence condition on their assembly into globally stable sections.
+This is not a superluminal signaling proposal: nonlocality appears in the geometry of
+assembly rather than in microscopic propagation. See Appendix~\ref{app:locality} for
+a precise separation of these notions.
+\end{remark}
+
+\subsection{Bridge to Section~\ref{sec:transition}}
+
+Once admissibility is understood as a global extension condition rather than a local
+interaction condition, it becomes natural for reconstruction dynamics to transition
+between qualitatively distinct regimes as $\chi$ varies. In strongly factorizable
+regimes ($\chi \ll 1$), local sections extend to global sections without reference to
+cosmological boundary data. As $\chi$ approaches unity, sections begin requiring
+cosmological gluing data for stable extension. The existence of a characteristic
+scale --- the admissibility radius $\RA$ --- at which this transition occurs is
+proposed as a consequence of the field dynamics of $X$.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{The Admissibility Phase Transition}
+\label{sec:transition}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The appearance of the MOND acceleration scale \cite{milgrom1983,mcgaugh2011}
+\begin{equation}
+  a_0 \sim cH_0
+\end{equation}
+suggests that galactic dynamics are sensitive not merely to local mass distributions
+but to the relation between local reconstruction stability and cosmological
+admissibility structure. The coupling of galactic rotation to cosmological structure
+is difficult to interpret inside purely local Newtonian dynamics --- it strongly
+suggests the relevant object is not local force accumulation alone but global
+admissibility structure across scales. Within RSVP, we interpret this transition not
+as a modification of force law but as a \emph{breakdown of local factorization in the
+reconstruction cover}, a geometric event controlled by $\chi = S/\Phi$.
+
+\subsection{The Factorization Transition}
+
+In regimes where $\chi \ll 1$, local admissibility neighborhoods remain strongly
+factorizable. Reconstruction trajectories admit stable extension independently of
+cosmological boundary data, effective dynamics reduce approximately to Newtonian
+behavior, and the three entropy channels converge under coarse-graining
+(Section~\ref{sec:entropy}).
+
+As
+\begin{equation}
+  \chi \;=\; \frac{S}{\Phi} \;\longrightarrow\; 1,
+\end{equation}
+dispersion becomes comparable to continuation accessibility. Local sections cease to
+remain scale-independent under extension. Admissibility neighborhoods lose strong
+factorization. Reconstruction increasingly requires cosmological gluing data to
+maintain persistence across the cover. Dispersion obstruction begins to dominate
+compatibility structure: even formally compatible sections fail reconstruction
+persistence.
+
+\begin{definition}[Admissibility phase transition]
+\label{def:phase-trans}
+The \emph{admissibility phase transition} is the qualitative change in reconstruction
+regime occurring when $\chi \to 1$: the transition from locally dominated
+factorizable reconstruction to cosmologically coupled reconstruction requiring global
+boundary data for stable extension.
+\end{definition}
+
+This is not a transition in the force law acting on matter, nor a transition in
+spacetime geometry in the classical sense. It is a transition in the factorization
+structure of admissible reconstruction --- a change in what kind of boundary data
+local sections require for globally stable continuation. In transactional entropic
+gravity \cite{kastner2024}, the force law is modified by thermodynamic corrections
+applied to an otherwise standard local framework. In RSVP, the effective dynamics
+change because the geometric object governing which continuations are admissible
+changes.
+
+\subsection{The Admissibility Radius}
+
+\begin{definition}[Admissibility radius]
+\label{def:RA}
+The \emph{admissibility radius} $\RA$ is the largest characteristic scale over which
+admissible local sections remain approximately factorizable under renormalization of
+the reconstruction cover. Equivalently, $\RA$ marks the onset of
+dispersion-dominated reconstruction dynamics for which stable continuation requires
+cosmological extension data: a local section at scale $r$ requires cosmological
+gluing data if and only if its restriction to neighborhoods approaching $\RA$ fails
+to admit stable extension through the sheaf's restriction maps alone --- that is, if
+$\chi$ evaluated at that scale approaches unity under the coarse-graining flow.
+\end{definition}
+
+$\RA$ is a derived quantity of the coupled dynamics of $\Phi$ and $S$, not an
+external parameter. Different field configurations will generically produce different
+admissibility radii.
+
+\subsection{Newtonian and Cosmologically Coupled Regimes}
+
+\medskip
+\noindent\textbf{Newtonian regime} ($r \ll \RA$, $\chi \ll 1$).\quad
+Local reconstruction is strongly factorizable. Admissible sections extend stably
+without cosmological boundary data. Dispersion obstruction remains bounded under
+scale extension. Effective gravitational dynamics reduce to Newtonian behavior as a
+consequence of local reconstruction stability rather than as a fundamental force law
+\cite{verlinde2011}. Newtonian gravity therefore appears as an effective
+low-dispersion reconstruction theory, analogous to the emergence of hydrodynamics
+from microscopic statistical systems \cite{goldenfeld1992}.
+
+\medskip
+\noindent\textbf{Cosmologically coupled regime} ($r \sim \RA$, $\chi \sim 1$).\quad
+Local factorization breaks down. Admissible sections require cosmological gluing
+data. Dispersion obstruction dominates. Reconstruction persistence fails for
+configurations that remain locally consistent. Effective dynamics depart from
+Newtonian behavior not because the force law changes, but because the admissible
+continuation set changes.
+
+\subsection{The Central Conjecture}
+
+\begin{conjecture}[MOND scaling from admissibility radius]
+\label{conj:RA}
+The weak-gradient RSVP field equations determine an asymptotic admissibility radius
+satisfying
+\begin{equation}
+  \RA \;\propto\; \frac{c}{H_0}
+\end{equation}
+in low-density regimes where $\chi$ approaches unity smoothly. The corresponding
+admissibility acceleration scale is then
+\begin{equation}
+  \aA \;\sim\; \frac{c^2}{\RA} \;\sim\; cH_0,
+\end{equation}
+yielding MOND-like phenomenology as a structural consequence of reconstruction
+geometry.
+\end{conjecture}
+
+\begin{heuristic}
+The structural plausibility of Conjecture~\ref{conj:RA} rests on the following
+observation. The Hubble radius $c/H_0$ is the characteristic scale of cosmological
+causal accessibility. If $\RA$ is the admissibility analog of causal accessibility,
+its asymptotic scaling with $c/H_0$ would follow from the requirement that
+admissibility structure and causal structure coincide asymptotically in low-density
+regimes. This is a structural argument for the conjecture's reasonableness, not a
+derivation.
+\end{heuristic}
+
+The MOND scale $a_0 \sim cH_0$ has been observed by several authors to couple
+galactic dynamics to cosmological structure in a way that resists purely local
+explanation \cite{milgrom1983,famaey2012}. Within RSVP, this coupling emerges
+naturally from the admissibility framework: the transition scale is determined by the
+scale at which local reconstruction loses self-sufficiency. MOND is therefore demoted
+from foundational principle to phenomenological signature of a more general
+reconstruction transition.
+
+\subsection{Open Proof Obligation}
+
+\begin{obligation}
+\label{obl:RA}
+Show that the coupled dynamics of $\Phi$ and $S$ in the weak-gradient limit uniquely
+determine $\RA$ with asymptotic scaling $\RA \propto c/H_0$. This requires:
+\emph{(i)} deriving the coarse-graining flow of $\chi$ under renormalization of the
+reconstruction cover in the weak-gradient limit; \emph{(ii)} identifying the
+fixed-point or threshold structure of this flow; and \emph{(iii)} showing that the
+characteristic scale of the threshold is asymptotically proportional to $c/H_0$.
+\end{obligation}
+
+Conjecture~\ref{conj:RA} is falsifiable in three distinct senses: (1) if the RSVP
+field equations admit a unique $\RA$ whose asymptotic scaling substantially departs
+from $c/H_0$, then MOND-like phenomenology must arise from a different mechanism;
+(2) if MOND-like behavior were observed in regimes where $\chi$ remains well below
+unity, this would constitute evidence against the sheaf structure assumed here; and
+(3) if $\RA$ can be derived but depends sensitively on unconstrained parameters in
+the RSVP field equations, the conjecture is technically falsifiable but practically
+underdetermined --- a third failure mode named explicitly.
+
+\subsection{Bridge to Section~\ref{sec:entropy}}
+
+The admissibility phase transition has consequences not only for effective dynamics
+but for the entropy structure of the field. In strongly factorizable regimes, the
+distinct entropy channels converge under coarse-graining because local reconstruction
+is approximately scale-independent. As $\chi \to 1$, this convergence fails.
+Section~\ref{sec:entropy} formalizes this consequence, deriving entropy-channel
+behavior as a corollary of reconstruction geometry rather than as an independent
+thermodynamic hypothesis.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Entropy Species as Regime Projections}
+\label{sec:entropy}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Most emergent gravity programs implicitly identify informational, thermodynamic,
+configurational, and gravitational entropy as interchangeable quantities, treating
+their equivalence as a foundational step enabling the derivation of gravitational
+dynamics \cite{verlinde2011,kastner2024}. The information-thermodynamic
+identification remains debated \cite{jaynes1957}, and its use as an axiom in
+precisely the regimes where it is least reliable constitutes a significant structural
+weakness. Within RSVP, these entropy channels are instead treated as distinct
+projections of admissibility dispersion under different reconstruction covers and
+coarse-grainings \cite{amari2016}. Their convergence is not assumed axiomatically
+but emerges only within specific reconstruction regimes. This converts what is
+typically an axiom into a prediction.
+
+\subsection{Entropy Channels as Projections}
+
+Given a reconstruction cover $\Ucover = \cover$, different entropy species correspond
+to distinct coarse-grained projections of admissibility dispersion across
+$X = (\Phi, \mathbf{v}, S)$.  We formalize these as projection functors
+\[
+  \Pi_{\mathrm{therm}},\quad
+  \Pi_{\mathrm{info}},\quad
+  \Pi_{\mathrm{grav}},\quad
+  \Pi_{\mathrm{conf}}
+\]
+mapping admissibility structures into entropy observables associated with distinct
+reconstruction regimes and coarse-graining procedures.
+
+Informational entropy, represented by $\Pi_{\mathrm{info}}$, measures uncertainty in
+continuation accessibility under local reconstruction.  It quantifies the spread of
+admissible continuations available to a local section of $\Phi$ and therefore tracks
+the local geometry of admissible continuation space.
+
+Configurational entropy, represented by $\Pi_{\mathrm{conf}}$, measures admissible
+arrangement multiplicity across neighboring sections of the reconstruction cover.
+It characterizes the number of globally compatible assemblies obtainable from locally
+admissible reconstruction data.
+
+Thermodynamic entropy, represented by $\Pi_{\mathrm{therm}}$, measures the
+coarse-grained dispersion of reconstruction trajectories under persistent exchange
+processes generated by the coherence-flow field $\mathbf{v}$.  It corresponds to the
+effective trajectory-volume growth observed under macroscopic reconstruction flow.
+
+Gravitational entropy, represented by $\Pi_{\mathrm{grav}}$, measures dispersion
+associated with large-scale reconstruction curvature and admissibility obstruction.
+Its value depends not only on local continuation accessibility but on the obstruction
+structure governing global extension of admissible sections across the reconstruction
+sheaf.
+
+None of these entropy channels is treated as fundamentally privileged within the
+RSVP framework.  They correspond instead to distinct projection structures defined
+over the same underlying admissibility geometry.  Their relationships are therefore
+regime-dependent rather than identity-relations.  In strongly factorizable regimes,
+the projection functors become approximately equivalent under admissible
+coarse-graining.  Near the admissibility transition, however, the projections
+separate as dispersion obstruction grows and local reconstruction loses
+scale-independence.
+
+\subsection{Entropy Convergence Under Strong Factorization}
+
+\begin{tschema}[Entropy convergence]
+\label{ts:convergence}
+In reconstruction regimes satisfying $\chi \ll 1$ and admitting bounded dispersion
+obstruction under renormalization of the reconstruction cover, entropy channels
+converge to order~$\varepsilon$ under admissible coarse-graining transformations:
+\[
+  \Pitherm \;\simeq\; \Piinfo \;\simeq\; \Pigrav \;\simeq\; \Piconf
+  \qquad (\chi \ll 1).
+\]
+Equivalently, informational, configurational, thermodynamic, and gravitational
+entropy measures become approximately equivalent up to corrections of order $\chi$
+and the dispersion obstruction growth rate.
+\end{tschema}
+
+When $\chi \ll 1$, local reconstruction is strongly factorizable and approximately
+scale-independent. Different coarse-graining choices produce approximately the same
+result because admissibility dispersion is tightly concentrated near stable
+reconstruction modes --- the cover choice becomes approximately irrelevant, and the
+distinct entropy projections converge. The entropy-identification moves made by
+emergent gravity programs are approximately valid in this regime, but only in this
+regime. The present framework derives the conditions under which they hold and
+identifies them as regime-specific approximations.
+
+\subsection{Entropy Divergence Under Dispersion Obstruction}
+
+As $\chi \to 1$, dispersion obstruction begins to dominate. Different coarse-graining
+choices produce systematically different results. Informational entropy, tracking
+local continuation accessibility, may remain bounded while thermodynamic entropy
+grows. Gravitational entropy, tracking obstruction contributions, may diverge from
+configurational entropy as global extension failures accumulate. Functorially:
+\[
+  \Pitherm \;\not\simeq\; \Pigrav
+  \qquad (\chi \to 1).
+\]
+
+\begin{remark}
+Persistent divergence between entropy species is not an annoying inconsistency to be
+resolved by a better identification. It is a physical signal: evidence of obstruction
+growth within the reconstruction geometry itself. When entropy channels diverge
+persistently in a physical system, the RSVP framework predicts this as a signature
+of the system operating near or beyond the admissibility phase transition.
+\end{remark}
+
+\subsection{The Kastner--Schlatter Contrast}
+
+Kastner and Schlatter \cite{kastner2024} identify Shannon information entropy with
+thermodynamic entropy as a foundational step, using this identification to drive the
+derivation of gravitational dynamics. Within RSVP, this identification is
+approximately valid when $\chi \ll 1$ (Theorem-Schema~\ref{ts:convergence}) and
+fails as a foundational assumption precisely in the regimes of greatest physical
+interest: the weak-gradient, low-density regimes where MOND-like behavior appears
+and $\chi$ approaches unity. Founding the derivation on entropy identification in
+those regimes imports an approximation as an axiom exactly where the approximation
+breaks down.
+
+\subsection{Bridge to Section~\ref{sec:darkmatter}}
+
+The existence of persistent entropy-channel divergence without local dynamical
+inconsistency suggests that globally anomalous galactic behavior need not arise from
+missing mass distributions. Recall Remark~\ref{rem:cover-derived}: the reconstruction
+cover is a derived object of the field geometry, not a background against which the
+field is defined. Anomalies in the global extension structure of the cover are
+anomalies in the geometry itself, not in the matter content of a pre-given space.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Dark Matter as Reconstruction Obstruction}
+\label{sec:darkmatter}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{The Observational Problem}
+
+The observational signatures attributed to dark matter are well established
+empirically: flat galactic rotation curves \cite{mcgaugh2011,famaey2012}, weak
+gravitational lensing excesses, cluster dynamics requiring additional gravitational
+sources, and large-scale structure formation rates exceeding baryonic predictions.
+
+Standard cosmology interprets these anomalies as evidence for additional unseen mass
+distributions embedded within a fixed spacetime background. Within RSVP, the
+anomalies are instead interpreted as \emph{signatures of obstruction in the global
+extension structure of the reconstruction cover}. As established in
+Remark~\ref{rem:cover-derived}: the reconstruction cover is a derived object of the
+field geometry, not a background against which the field is defined. Anomalies in
+the global extension structure of the cover are anomalies in the geometry itself.
+
+\subsection{Compatibility and Dispersion Obstruction in Galactic Dynamics}
+
+Compatibility obstruction (Definition~\ref{def:compat-obs}) would manifest as local
+dynamical inconsistency --- irregular, patchy anomalies without clear scaling
+structure. The observational signatures of galactic anomalies do not have this
+character. Galaxies are locally stable and internally coherent; their stellar and gas
+dynamics are well described by standard hydrodynamics and Newtonian gravity at small
+radii.
+
+The anomaly appears in the \emph{persistence} of those dynamics under large-scale
+reconstruction. This is structurally closer to dispersion obstruction
+(Definition~\ref{def:disp-obs}). Local sections remain formally compatible across
+neighboring regions; the failure is not disagreement but persistence failure under
+scale extension: as $\chi$ approaches unity near $\RA$, local reconstruction dynamics
+lose scale-independence and can no longer be extended stably without cosmological
+boundary data. The point is not that galaxies behave inconsistently. The point is
+that their local reconstruction dynamics fail to remain self-sufficient under
+cosmological extension.
+
+\subsection{Rotation Curves as Persistence Failure}
+
+In strongly factorizable regimes ($\chi \ll 1$), orbital dynamics are governed
+predominantly by local continuation accessibility, and the admissible trajectory set
+is closed under local extension --- the regime in which Newtonian dynamics holds as
+an emergent approximation. As dispersion obstruction grows and $\chi$ approaches
+unity near $\RA$, local continuation sets cease to remain closed under scale
+extension. The admissible trajectory structure at galactic radii approaching $\RA$
+is no longer determined by local field data alone --- it requires cosmological gluing
+data for stable continuation. The effective admissible trajectory set therefore
+departs from Newtonian closure even in the absence of additional local mass.
+
+The transition criterion $\chi \to 1$ marks the onset of this regime --- the same
+criterion governing the admissibility phase transition
+(Section~\ref{sec:transition}) and the entropy-channel divergence
+(Section~\ref{sec:entropy}). The unification of all three phenomena under the same
+control parameter is the framework's strongest structural feature.
+
+\begin{observation}
+\label{obs:phase-transition-central}
+\emph{The anomaly is a geometric phase transition.} Flat rotation curves, MOND-like
+scaling, and entropy-channel divergence are manifestations of the same underlying
+transition in the factorization structure of admissible reconstruction, controlled by
+$\chi \to 1$ near $\RA$.
+\end{observation}
+
+\subsection{Weak Lensing and Extension Geometry}
+
+Within RSVP, photon propagation probes the continuation accessibility geometry of
+$\Phi$ rather than merely local mass density. In strongly factorizable regimes,
+continuation accessibility tracks local mass distributions closely and lensing
+reduces approximately to standard gravitational lensing. In regimes approaching the
+admissibility phase transition, the continuation accessibility geometry becomes
+influenced by obstruction structure in the reconstruction cover.
+
+\begin{obligation}
+\label{obl:lensing}
+Compute the effective lensing potential from the obstruction curvature of $\sheaf$
+in the weak-gradient limit and compare with observed convergence maps, including
+Bullet Cluster phenomenology.
+\end{obligation}
+
+The framework identifies this as a possible reinterpretation of lensing anomalies in
+terms of obstruction curvature. Whether the resulting phenomenology quantitatively
+reproduces observed lensing profiles remains an open problem. The Bullet Cluster
+remains a decisive empirical challenge: the framework must reproduce the observed
+lensing structure through obstruction curvature of the reconstruction geometry. The
+restraint here is deliberate; this target is stated honestly rather than
+rhetorically dismissed.
+
+\subsection{Entropy Divergence as Observational Signal}
+
+Regions dominated by dispersion obstruction should exhibit increasing divergence
+between informational, thermodynamic, configurational, and gravitational entropy
+measures. Gravitational entropy, tracking obstruction contributions, should depart
+from thermodynamic entropy of local baryonic processes in exactly the regimes where
+rotation curve anomalies appear. Standard $\Lambda$CDM does not predict
+entropy-channel divergence as a geometric signal; RSVP predicts that such divergence
+is a structural signature of the admissibility phase transition.
+
+\begin{obligation}
+\label{obl:entropy-signal}
+Derive explicit expressions for the gravitational entropy contribution of
+reconstruction obstruction in the weak-gradient RSVP limit and determine whether
+predicted divergence onset correlates with observed rotation curve transition radii.
+\end{obligation}
+
+\subsection{Situating the Reinterpretation}
+
+The RSVP reinterpretation differs structurally from all three major competing
+programs. Particle dark matter models preserve local factorization while adding
+unseen sources. Entropic gravity programs \cite{verlinde2017,padmanabhan2010}
+preserve entropy identification while modifying effective dynamics. MOND and TeVeS
+\cite{milgrom1983,bekenstein2004} modify the force law through fitted interpolation
+functions. RSVP instead interprets galactic anomalies as signatures of breakdown in
+scale-independent reconstruction itself --- the onset of dispersion-dominated
+extension dynamics controlled by $\chi$ approaching unity near $\RA$
+(Observation~\ref{obs:phase-transition-central}).
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Comparison with Neighboring Programs}
+\label{sec:comparison}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Organizing Principle}
+
+The most useful axis for comparing competing approaches is derivation architecture:
+what object is treated as primitive, what undergoes transition, what role entropy
+plays, and what counts as an anomaly.
+
+\begin{table}[ht]
+\centering
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}p{3.2cm}p{2.8cm}p{2.8cm}p{2.5cm}p{2.5cm}@{}}
+\toprule
+\textbf{Framework} & \textbf{Primitive} & \textbf{Anomaly} & \textbf{Entropy} & \textbf{Locality} \\
+\midrule
+$\Lambda$CDM & Matter source & Missing source & Identified & Local field \\
+MOND/TeVeS & Modified force & Wrong dynamics & Secondary & Modified local \\
+Verlinde & Entropy equiv.\ & Incomplete thermo.\ & Axiom & Holographic \\
+Trans.\ entropic & Exchange completion & Incomplete thermo.\ & Interchangeable & Local exchange \\
+RSVP & Admissibility geometry & Phase transition & Regime projection & Sheaf-indexed \\
+\bottomrule
+\end{tabular}
+\caption{Comparative taxonomy organized by derivation architecture.}
+\label{tab:comparison}
+\end{table}
+
+\subsection{Standard Cosmology ($\Lambda$CDM)}
+
+$\Lambda$CDM treats matter source distributions within a fixed pseudo-Riemannian
+background as primitive. What RSVP interprets as obstruction structure in a derived
+cover, $\Lambda$CDM interprets as source deficits within a fixed background. These
+are not empirically equivalent restatements: they predict different entropy-channel
+signatures, different lensing phenomenology in obstruction-dominated regimes, and
+different structure formation dynamics. RSVP constrains the anomaly structure through
+$\chi$ and $\RA$; the phenomenology is not freely adjustable but is derived from
+field dynamics.
+
+\subsection{MOND and TeVeS}
+
+MOND \cite{milgrom1983} reproduces flat rotation curves and the baryonic
+Tully-Fisher relation \cite{mcgaugh2011} with remarkable precision using a single
+additional parameter. Within the present framework, MOND is demoted from foundational
+principle to phenomenological signature. The MOND acceleration scale $a_0 \sim cH_0$
+is not a new fundamental constant but a derived geometric scale --- the acceleration
+associated with the onset of cosmologically coupled reconstruction at $\RA$.
+MOND-like dynamics appear when $\chi \to 1$ near $\RA$, not because the force law
+has been modified but because the admissible continuation set has changed.
+
+The observed robustness of the baryonic Tully-Fisher relation \cite{mcgaugh2011}
+across galaxy types, which is difficult to understand in $\Lambda$CDM and built into
+MOND by construction, would in RSVP reflect universality of the admissibility phase
+transition under coarse-graining --- an emergent property of the reconstruction
+geometry rather than a tuned interpolation (see Appendix~\ref{app:rg}).
+
+\subsection{Verlinde's Emergent Gravity}
+
+Verlinde \cite{verlinde2011,verlinde2017} begins with entropy identification and
+derives effective geometry. RSVP begins with admissibility geometry and derives the
+conditions under which entropy species approximately converge
+(Theorem-Schema~\ref{ts:convergence}). Verlinde's framework inherits the
+entropy-identification problem \cite{jaynes1957} as a foundational commitment. RSVP
+converts this axiom into a theorem-schema valid in strongly factorizable regimes and
+failing in precisely the regimes --- $\chi \to 1$ --- where anomalous dynamics appear.
+
+\subsection{Transactional Entropic Gravity}
+
+Kastner and Schlatter \cite{kastner2024} provide the most immediately adjacent
+comparison. Both programs reject fundamental spacetime; both treat geometric structure
+as emergent. The divergence is in derivation order and primitive object.
+
+Transactional entropic gravity treats exchange process completion as primitive ---
+spacetime links are generated by completed transactions between irreducible emitters
+and absorbers. RSVP treats admissibility geometry as primitive --- emitters,
+absorbers, and exchange processes are stabilized roles within the reconstruction
+sheaf.
+
+Three structural consequences follow: (1) the transactional MOND derivation depends
+on entropy-species identification at specific steps; the RSVP conjecture depends on a
+single geometric condition ($\chi \to 1$ at $\RA$) controlling all phenomena
+simultaneously; (2) transactional completion is strictly weaker than sheaf-compatible
+global extension --- a transaction can complete locally while generating globally
+inadmissible dynamics; (3) entropy-species interchangeability appears in RSVP as an
+approximate consequence of strongly factorizable reconstruction, valid in the
+Newtonian regime and failing in the MOND regime.
+
+RSVP does not currently outperform transactional entropic gravity quantitatively. The
+advantage claimed is architectural: fewer primitive objects controlling more phenomena
+through a single transition structure, with entropy convergence as a derived
+consequence.
+
+\subsection{The Inversion as Theoretical Commitment}
+
+The organizing inversion --- admissibility geometry generates exchange structure, not
+vice versa --- reflects a specific theoretical bet about where the explanatory
+primitives of gravitational physics are located. If the bet is correct, existing
+phenomenology should emerge as special cases of reconstruction geometry. If wrong,
+the transactional program has the correct derivation order and RSVP's sheaf structure
+is descriptive rather than explanatory. The paper makes the question precise and
+identifies the geometric objects on which it turns.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Conclusion}
+\label{sec:conclusion}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{The Central Reinterpretation}
+
+The present work develops a reinterpretation of gravitational anomalies organized
+around a single foundational inversion. Existing emergent gravity programs treat
+physical exchange, thermodynamic bookkeeping, or information flow as primitive and
+derive spacetime geometry from them. RSVP treats admissibility geometry as primary
+and interprets persistent physical exchange as a stabilized reconstruction mode.
+Emitters, absorbers, particles, force laws, and thermodynamic entropy are not inputs
+to the framework but outputs --- roles stabilized by recursive cross-scale coherence
+of the coupled field $\Xfield$ within its reconstruction sheaf.
+
+The framework's explanatory structure is organized by a small set of recurring
+mathematical objects: the coupled field $X$; the control parameter $\chi = S/\Phi$;
+the reconstruction cover $\Ucover$; the admissibility radius $\RA$; the
+compatibility and dispersion obstruction classes; and the entropy projection functors
+$\Pitherm, \Piinfo, \Pigrav, \Piconf$. The control parameter $\chi$ governs
+simultaneously: Newtonian gravitational stability, the MOND-like transition,
+entropy-channel convergence, and galactic obstruction phenomenology. This unification
+under a single order parameter is the strongest evidence of internal coherence.
+
+\subsection{What the Paper Claims and Does Not Claim}
+
+The paper does not present: a completed derivation of MOND from RSVP field equations;
+a quantitative alternative to $\Lambda$CDM; or a solved lensing model capable of
+reproducing Bullet Cluster phenomenology.
+
+The paper does present: a reconstruction-geometric reinterpretation of gravitational
+anomalies organized by a stable conceptual hierarchy; formal definitions of
+admissibility geometry, reconstruction cover, and obstruction types; a constrained
+and explicitly falsifiable conjecture (Conjecture~\ref{conj:RA}) with three named
+failure modes; Theorem-Schema~\ref{ts:convergence} converting an axiom of neighboring
+programs into a derived consequence; and a comparative taxonomy organized by
+derivation architecture (Table~\ref{tab:comparison}).
+
+\begin{quote}
+The present work does not derive MOND or dark matter phenomenology from completed
+RSVP field equations; it identifies the geometric objects from which such derivations
+would have to proceed.
+\end{quote}
+
+\subsection{Open Problems as Evidence of Structural Coherence}
+
+Most speculative frameworks accumulate explanatory flexibility. The present framework
+instead generates constrained open problems whose resolution would confirm or falsify
+its central commitments:
+
+\begin{enumerate}[label=(\arabic*)]
+  \item \textbf{Admissibility radius derivation} (Obligation~\ref{obl:RA}). Show
+    that the weak-gradient RSVP equations uniquely determine $\RA \propto c/H_0$.
+  \item \textbf{Universality class structure.} Determine whether distinct admissibility
+    geometries flow toward the same weak-gradient reconstruction behavior under
+    coarse-graining, making MOND phenomenology geometrically necessary.
+  \item \textbf{Lensing derivation target} (Obligation~\ref{obl:lensing}). Compute
+    the effective lensing potential from obstruction curvature of $\sheaf$ and
+    compare with observed convergence maps.
+  \item \textbf{Entropy divergence signature} (Obligation~\ref{obl:entropy-signal}).
+    Identify observational contexts where gravitational entropy departs measurably
+    from thermodynamic entropy of local baryonic processes.
+  \item \textbf{Obstruction flow analysis.} Determine whether compatibility and
+    dispersion obstruction produce distinguishable galactic signatures varying
+    systematically with galaxy morphology, surface brightness, or environment.
+\end{enumerate}
+
+These problems are obligations generated by the framework's own internal structure.
+Their existence as constrained derivation targets --- rather than free parameters or
+post-hoc interpretive choices --- is evidence that the framework has crossed the
+threshold where speculative architecture begins behaving as a research program. A
+framework that knows the shape of its own incompleteness is structurally more mature
+than one that knows only the shape of its successes.
+
+\subsection{Final Philosophical Position}
+
+If the RSVP program is correct, then gravity, inertia, dark matter phenomenology,
+and entropy equivalence are not independent physical ingredients assembled into a
+cosmological model. They are stable regimes and failure modes of reconstruction
+geometry --- consequences of the factorization structure of admissible continuation
+under a derived cover whose topology is controlled by a single dimensionless
+parameter.
+
+Whether this inversion reflects physical reality remains unresolved. The present work
+aims only to make the inversion mathematically explicit, empirically constrained, and
+structurally falsifiable.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\appendix
+% ══════════════════════════════════════════════════════════════════════════════
+
+\section{Formal Structure of the Reconstruction Sheaf}
+\label{app:sheaf}
+
+This appendix develops the formal sheaf-theoretic structure underlying the
+reconstruction framework. The purpose is not to introduce new physical claims but to
+make explicit the mathematical objects already used operationally throughout
+Sections~\ref{sec:geometry}--\ref{sec:darkmatter}.
+
+\subsection{Presheaf and Sheaf Structure}
+
+Let $\recon$ denote the reconstruction domain and $\Ucover = \cover$ a cover by
+admissibility neighborhoods. The \emph{reconstruction presheaf} $\sheaf$ assigns to
+each $U_\alpha$ a set $\sheaf(U_\alpha)$ of admissible sections of $X$ over
+$U_\alpha$, together with restriction maps
+\[
+  \rho_{V}^{U} \colon \sheaf(U) \longrightarrow \sheaf(V), \qquad V \subseteq U,
+\]
+satisfying $\rho_{U}^{U} = \mathrm{id}$ and $\rho_{W}^{V} \circ \rho_{V}^{U} =
+\rho_{W}^{U}$ for $W \subseteq V \subseteq U$.
+
+$\sheaf$ is a \emph{sheaf} if it satisfies the following for every open cover
+$\{U_i\}$ of any $U$:
+\begin{enumerate}[label=(\roman*)]
+  \item \textit{Locality:} if $\rho_{U_i}^{U}(s) = \rho_{U_i}^{U}(t)$ for all $i$,
+    then $s = t$.
+  \item \textit{Gluing:} if $\rho_{U_i \cap U_j}^{U_i}(s_i) =
+    \rho_{U_i \cap U_j}^{U_j}(s_j)$ for all $i, j$, then there exists $s \in
+    \sheaf(U)$ with $\rho_{U_i}^{U}(s) = s_i$.
+\end{enumerate}
+
+Compatibility obstruction (Definition~\ref{def:compat-obs}) corresponds to failure
+of condition (ii): sections cannot be glued because they disagree on overlaps.
+Dispersion obstruction (Definition~\ref{def:disp-obs}) is subtler: sections satisfy
+(ii) formally but the glued section fails reconstruction persistence under
+coarse-graining because admissibility dispersion increases faster than coherence
+propagation.
+
+\subsection{Admissible Sections and Persistence}
+
+An admissible local section is not merely a field restriction but a structured pair
+consisting of: a local restriction of the coupled field
+\[
+  X = (\Phi,\mathbf{v},S)
+\]
+to an admissibility neighborhood $U_\alpha$, together with a continuation structure
+specifying the admissible extension behavior of reconstruction trajectories
+originating within $U_\alpha$.
+
+Formally, a section
+\[
+  s_\alpha \in \sheaf(U_\alpha)
+\]
+is admissible only if two conditions are simultaneously satisfied.  First, local
+perturbations of the section must preserve bounded continuation behavior, so that
+small deformations of initial reconstruction data do not generate uncontrolled
+trajectory divergence.  Second, admissible extensions of the section must remain
+stable under renormalization of the reconstruction cover.  The section must therefore
+persist not only locally but under scale-dependent restructuring of admissibility
+neighborhoods induced by coarse-graining flow.
+
+This second condition distinguishes reconstruction persistence from ordinary local
+field consistency.  A section may satisfy all local field equations and remain
+formally compatible on overlaps while nevertheless failing persistence under
+extension because admissibility dispersion grows faster than coherence propagation
+under cover renormalization.
+
+A global reconstruction mode corresponds to a global section
+\[
+  s \in \sheaf(\recon)
+\]
+whose restrictions agree coherently across the full reconstruction cover and whose
+continuation structure remains stable under admissible coarse-graining flow.
+Persistence is therefore a multiscale extension property of the reconstruction
+sheaf rather than merely a statement of local dynamical consistency.
+
+\subsection{Persistence Functional}
+
+We define a \emph{persistence functional}
+\[
+  \mathcal{P}[s] \;\in\; [0,1]
+\]
+measuring stability of admissible extensions under renormalization of the
+reconstruction cover. A section satisfies reconstruction persistence if
+$\mathcal{P}[s]$ remains bounded away from zero under scale extension. Dispersion
+obstruction occurs when $\mathcal{P}[s] \to 0$ under coarse-graining, even for
+sections satisfying the standard gluing conditions.
+
+\subsection{Dynamical Cover and Gluing}
+
+Unlike ordinary differential-geometric frameworks in which the manifold is fixed and
+fields evolve upon it, the RSVP framework treats the effective reconstruction
+topology as dependent upon admissibility flow. In RSVP, gluing conditions are
+dynamically weighted by admissibility dispersion and continuation accessibility
+rather than determined solely by overlap consistency. The resulting structure combines:
+local field dynamics, scale-dependent admissibility flow, and global extension
+stability into a single reconstruction structure.
+
+The following commutative diagram summarizes the restriction structure for a triple
+cover:
+
+\[
+\begin{tikzcd}
+\sheaf(U_\alpha) \arrow[r, "\rho_{\alpha\beta}"] \arrow[dr, "\rho_{\alpha\gamma}"']
+  & \sheaf(U_\alpha \cap U_\beta) \arrow[d, "\rho_{\alpha\beta,\gamma}"] \\
+  & \sheaf(U_\alpha \cap U_\beta \cap U_\gamma)
+\end{tikzcd}
+\]
+
+Consistency of this diagram for all triples is the cocycle condition whose failure
+generates compatibility obstructions classified by $\Hcech^1(\Ucover, \sheaf)$.
+
+% ── App B ─────────────────────────────────────────────────────────────────────
+\section{Coarse-Graining Flow and the Admissibility Order Parameter}
+\label{app:flow}
+
+The main text introduced $\chi = S/\Phi$ as the central control parameter. This
+appendix develops a schematic coarse-graining framework and clarifies the sense in
+which the admissibility phase transition may possess universality structure analogous
+to ordinary critical phenomena \cite{wilson1974,goldenfeld1992}.
+
+\subsection{Scale-Dependent Fields and Order Parameter}
+
+Let $\Ucover_\ell$ denote the reconstruction cover at coarse-graining scale $\ell$.
+Integrating out short-scale reconstruction modes modifies both continuation
+accessibility and admissibility dispersion:
+\[
+  \Phi \;\longrightarrow\; \Phi_\ell, \qquad S \;\longrightarrow\; S_\ell.
+\]
+The scale-dependent order parameter is
+\[
+  \chi_\ell \;=\; \frac{S_\ell}{\Phi_\ell}.
+\]
+The Newtonian regime ($\chi_\ell \ll 1$) corresponds to strongly factorizable
+reconstruction; the admissibility transition occurs when $\chi_\ell \to 1$.
+
+\subsection{Admissibility Beta-Function}
+
+The coarse-graining flow of the reconstruction geometry may be represented
+schematically by the scale evolution equation
+\begin{equation}
+  \label{eq:beta}
+  \frac{d\chi_\ell}{d\ln \ell}
+  \;=\;
+  \beta(\chi_\ell),
+\end{equation}
+where
+\[
+  \chi_\ell
+  =
+  \left.\frac{S}{\Phi}\right|_{\ell}
+\]
+denotes the scale-dependent control parameter evaluated at coarse-graining scale
+$\ell$, and $\beta$ is an \emph{admissibility beta-function} governing the
+renormalization flow of reconstruction stability.
+
+The function $\beta$ is not specified phenomenologically but constrained by the
+structural requirements of admissible reconstruction developed throughout the main
+text.  In strongly factorizable regimes,
+\[
+  \chi \ll 1,
+\]
+the framework requires
+\[
+  \beta(\chi) < 0,
+\]
+so that admissibility dispersion decreases under coarse-graining flow and local
+reconstruction remains stable under scale extension.  This corresponds to the
+Newtonian regime in which reconstruction neighborhoods retain approximate
+factorization and admissible sections persist without cosmological gluing data.
+
+As $\chi$ approaches unity, the flow enters a crossover region in which dispersion
+obstruction begins competing with coherence propagation.  The qualitative structure
+of admissible extension changes: local sections cease to remain scale-independent,
+and persistence under renormalization becomes increasingly sensitive to global
+reconstruction geometry.  The admissibility phase transition introduced in the main
+text corresponds to this change in flow structure near
+\[
+  \chi \sim 1.
+\]
+
+Beyond the transition, the framework admits two structurally distinct possibilities.
+Either the flow approaches a new large-scale stable reconstruction regime governed
+by cosmologically coupled admissibility structure, or local factorization ceases to
+remain dynamically stable altogether and reconstruction persistence fails beyond
+finite scale.  Which possibility is realized depends on the weak-gradient dynamics
+of the RSVP field equations and constitutes part of the open derivation program
+identified in Obligation~\ref{obl:RA}.
+
+The admissibility beta-function therefore plays a role analogous to renormalization
+group flow equations in statistical field theory.  It governs not merely numerical
+coupling evolution but qualitative transitions in the factorization structure of
+admissible reconstruction itself.
+
+\subsection{Universality Classes}
+
+Suppose multiple microscopic RSVP field dynamics produce distinct local
+reconstruction behavior while nevertheless generating the same asymptotic
+coarse-graining flow for $\chi_\ell$. Then the weak-gradient galactic regime would
+exhibit universal phenomenology independent of microscopic reconstruction details ---
+analogous to universality of critical exponents in condensed matter systems
+\cite{goldenfeld1992}. This possibility is particularly important for understanding
+the empirical robustness of MOND-like scaling relations \cite{mcgaugh2011,famaey2012}
+across diverse galactic systems. Within RSVP, such robustness would emerge as a
+universality property of admissibility flow near the reconstruction transition rather
+than a tuned interpolation.
+
+\subsection{Admissibility Radius from Flow}
+
+The admissibility radius $\RA$ is the characteristic scale at which $\chi_\ell \to
+1$ under the coarse-graining flow. Obligation~\ref{obl:RA} is therefore equivalent
+to showing that flow equation~\eqref{eq:beta}, derived from the weak-gradient RSVP
+field equations, admits a threshold at scale $\ell^*$ satisfying $e^{\ell^*} \propto
+c/H_0$.
+
+% ── App C ─────────────────────────────────────────────────────────────────────
+\section{Candidate Dynamical Equations for the RSVP Fields}
+\label{app:dynamics}
+
+This appendix sketches candidate dynamical equations for the coupled fields
+$\Xfield$. These equations are heuristic and incomplete --- candidate structures
+consistent with the admissibility framework, not finalized physical laws. The purpose
+is architectural: to show that the reconstruction-geometric interpretation can
+plausibly be associated with a coherent field-dynamical system.
+
+\subsection{Continuation Accessibility Field $\Phi$}
+
+A minimal admissibility-flow equation for $\Phi$:
+\begin{equation}
+  \label{eq:Phi}
+  \partial_t\Phi \;=\; D_\Phi\nabla^2\Phi - \lambda_\Phi \Phi S
+    + \gamma_\Phi \nabla\cdot\mathbf{v} + N_\Phi[\Phi,\mathbf{v},S]
+\end{equation}
+where $D_\Phi$ is an accessibility diffusion coefficient, $\lambda_\Phi$ governs
+suppression of continuation accessibility by dispersion growth ($-\lambda_\Phi \Phi
+S$ captures the central geometric tension: increasing $S$ suppresses stable $\Phi$),
+$\gamma_\Phi$ couples accessibility to coherence flow divergence, and $N_\Phi$
+denotes higher-order nonlinear terms.
+
+\subsection{Coherence Flow Field $\mathbf{v}$}
+
+\begin{equation}
+  \label{eq:v}
+  \partial_t\mathbf{v} \;=\; D_v\nabla^2\mathbf{v} - (\mathbf{v}\cdot\nabla)\mathbf{v}
+    + \alpha_v\nabla\Phi - \lambda_v S\mathbf{v} + N_v[\Phi,\mathbf{v},S]
+\end{equation}
+The gradient term $\alpha_v\nabla\Phi$ drives coherence flow toward high continuation
+accessibility. The suppression term $-\lambda_v S\mathbf{v}$ models degradation of
+coherent transport under increasing dispersion. The nonlinear transport term resembles
+fluid advection but its interpretation is geometric: reconstruction coherence
+propagates directionally through admissibility structure.
+
+\subsection{Entropy-Dispersion Field $S$}
+
+\begin{equation}
+  \label{eq:S}
+  \partial_t S \;=\; D_S\nabla^2 S + \sigma_S |\nabla\Phi|^2
+    - \mu_S S\Phi - \nabla\cdot(S\mathbf{v}) + N_S[\Phi,\mathbf{v},S]
+\end{equation}
+The source term $\sigma_S |\nabla\Phi|^2$ generates dispersion through accessibility
+curvature gradients. The suppression term $-\mu_S S\Phi$ stabilizes dispersion in
+regions of high continuation accessibility. The advection term $-\nabla\cdot(S\mathbf{v})$
+transports dispersion through coherence flow.
+
+\subsection{Control Parameter Dynamics}
+
+Together, equations \eqref{eq:Phi}--\eqref{eq:S} determine the evolution of the
+control parameter:
+\[
+  \partial_t\chi \;=\; \frac{\Phi\,\partial_t S - S\,\partial_t\Phi}{\Phi^2}.
+\]
+Equation~\eqref{eq:S} is of particular interest: the source term $\sigma_S(1 -
+S/\Phi)S = \sigma_S(1 - \chi)\chi\Phi$ drives $\chi$ toward unity when $\chi < 1$
+and away when $\chi > 1$, producing the admissibility transition at $\chi = 1$ as a
+dynamical fixed point.
+
+\subsection{Epistemic Status}
+
+These equations are schematic. Many alternative systems may generate the same
+admissibility phenomenology; if the universality hypothesis of Appendix~\ref{app:flow}
+is correct, weak-gradient reconstruction behavior may be largely insensitive to
+microscopic dynamical details. A completed RSVP field theory would require: a
+variational principle, covariant generalization, explicit reconstruction observables,
+well-posed initial value structure, and quantitative comparison with data.
+
+% ── App D ─────────────────────────────────────────────────────────────────────
+\section{Obstruction Cohomology and Global Reconstruction Failure}
+\label{app:cohomology}
+
+This appendix sketches a cohomological interpretation of reconstruction obstruction
+\cite{bott1982,hatcher2002,kashiwara2005}. The purpose is to demonstrate
+mathematical directionality, not claim a finished cohomological theory.
+
+\subsection{\v{C}ech Cohomology of the Reconstruction Cover}
+
+Let $\Ccech^\bullet(\Ucover, \sheaf)$ denote the \v{C}ech cochain complex associated
+with $\Ucover$ and $\sheaf$. A family of local sections $\{s_\alpha\}$ defines a
+$0$-cochain. A compatibility obstruction corresponds to a non-trivial $1$-cocycle
+$g_{\alpha\beta} \in \Ccech^1(\Ucover, \sheaf)$ measuring the failure of sections to
+agree on overlaps. Globally admissible reconstruction requires trivialization of
+this cocycle:
+
+\begin{definition}[Compatibility obstruction class]
+\label{def:obs-class}
+A \emph{compatibility obstruction class} is a nontrivial element of
+\[
+  \Hcech^1(\Ucover,\sheaf),
+\]
+corresponding to the impossibility of globally gluing locally admissible sections.
+Vanishing $\Hcech^1$ indicates that all compatible local sections admit global
+extension without compatibility obstruction.
+\end{definition}
+
+\subsection{Two Obstruction Notions}
+
+Within RSVP, obstruction possesses an additional dynamical feature absent from
+ordinary static sheaf theory: the reconstruction cover evolves under admissibility
+coarse-graining. This motivates two notions:
+
+\begin{definition}[Static obstruction]
+A \emph{static obstruction} is an ordinary compatibility obstruction at a fixed
+reconstruction scale --- a nontrivial class in $\Hcech^1(\Ucover_\ell, \sheaf)$ for
+some fixed $\ell$.
+\end{definition}
+
+\begin{definition}[Persistence obstruction]
+A \emph{persistence obstruction} occurs when an obstruction class fails to be
+trivialized under coarse-graining of the reconstruction cover, even if it is
+trivializable at some initial scale. Formally, there exists a coarse-graining flow
+$\Rcoarse$ such that the induced map
+\[
+  \Rcoarse^* \colon \Hcech^1(\Ucover_{\lambda_1}, \sheaf) \longrightarrow
+  \Hcech^1(\Ucover_{\lambda_2}, \sheaf), \quad \lambda_2 > \lambda_1,
+\]
+does not preserve triviality.
+\end{definition}
+
+\subsection{Scale-Dependent Obstruction Functional}
+
+Introduce a scale-dependent obstruction functional:
+\[
+  \Omega_\ell[s] \;\in\; \mathbb{R}_{\geq 0}
+\]
+whose flow under coarse-graining satisfies:
+\begin{equation}
+  \frac{d\Omega_\ell}{d\ln\ell} \;=\; \Gamma\!\left(\chi_\ell, \Omega_\ell\right)
+\end{equation}
+where $\chi_\ell = S_\ell/\Phi_\ell$. In strongly factorizable regimes ($\chi_\ell
+\ll 1$), obstruction flow remains bounded and global reconstruction modes persist
+stably. Near the admissibility transition ($\chi_\ell \to 1$), dispersion obstruction
+may drive $\Omega_\ell \to \infty$ even in formally compatible local systems.
+
+\subsection{Galactic Anomalies as Cohomological Failure}
+
+The galactic anomaly reinterpretation of Section~\ref{sec:darkmatter} may be
+reformulated cohomologically: flat rotation curves and lensing anomalies correspond
+to growth of persistence obstruction in the global reconstruction geometry rather
+than to missing matter sources. This clarifies why anomalies appear primarily in
+large-scale extension behavior rather than in local dynamical inconsistency.
+
+A completed reconstruction-cohomology program would require: explicit
+admissibility-chain complexes, construction of scale-dependent obstruction operators,
+definition of persistence cohomology under admissibility renormalization, and
+derivation of observational signatures associated with obstruction growth.
+
+% ── App E ─────────────────────────────────────────────────────────────────────
+\section{Relation to Renormalization and Effective Field Theory}
+\label{app:rg}
+
+This appendix clarifies the relation between RSVP's reconstruction geometry and
+ordinary Wilsonian effective field theory \cite{wilson1974,goldenfeld1992}. The
+purpose is not to identify RSVP with standard EFT but to explain where the analogy
+is structurally useful and where the two frameworks diverge.
+
+\subsection{Where the Analogy Holds}
+
+In ordinary EFT, short-scale degrees of freedom are integrated out, producing
+scale-dependent effective couplings governing long-scale behavior. Both frameworks
+study persistence of effective structure under scale transformation. The analogy
+motivates the beta-function framework of Appendix~\ref{app:flow} and the universality
+class hypothesis.
+
+\subsection{Where the Analogy Breaks}
+
+In ordinary EFT, the background geometry remains fixed throughout renormalization;
+only couplings evolve. In RSVP, coarse-graining modifies not merely effective
+couplings but the factorization structure of admissible reconstruction itself. This
+is the formal content of Remark~\ref{rem:cover-derived}: the reconstruction cover is
+a derived object of the field geometry, not a background.
+
+Ordinary EFT assumes that locality survives coarse-graining even as effective
+couplings change. RSVP instead allows the factorization structure supporting effective
+locality to become unstable. The notion of universality acquires a modified meaning:
+not that many microscopic systems flow toward the same macroscopic effective
+behavior, but that distinct admissibility geometries may flow toward the same
+reconstruction-transition structure under coarse-graining.
+
+\subsection{Newtonian Gravity as Effective Reconstruction Theory}
+
+Newtonian dynamics emerges not as a fundamental interaction but as an effective
+low-dispersion reconstruction theory --- analogous to hydrodynamics emerging from
+microscopic statistical systems \cite{goldenfeld1992}. Hydrodynamic laws are not
+fundamental microscopic truths; they are stable large-scale descriptions arising from
+strong universality under coarse-graining. Within RSVP, Newtonian dynamics plays the
+same role.
+
+\subsection{Entropy Equivalence as Emergent Universality}
+
+Entropy convergence (Theorem-Schema~\ref{ts:convergence}) is interpreted as an
+effective coarse-grained phenomenon analogous to emergent thermodynamic equations of
+state. Entropy equivalence is not foundational; it is a low-dispersion universality
+property of strongly factorizable reconstruction. Divergence of entropy channels near
+the admissibility transition is then unsurprising: universality breaks down because
+reconstruction factorization itself weakens under renormalization flow.
+
+% ── App F ─────────────────────────────────────────────────────────────────────
+\section{Observational and Experimental Targets}
+\label{app:obs}
+
+This appendix organizes the empirical targets generated by the framework. It does not
+claim observational confirmation; its purpose is operational --- to identify concrete
+empirical obligations and failure conditions.
+
+\subsection{Rotation Curve Transition Structure}
+
+The framework predicts that transition from Newtonian to MOND-like behavior should
+correlate with reconstruction-factorization breakdown ($\chi \to 1$) rather than
+solely with local acceleration magnitude. This differs subtly from ordinary MOND:
+RSVP predicts that transition behavior should correlate not only with acceleration
+but with indicators of reconstruction persistence, including local coherence
+structure, environmental reconstruction density, and scale-dependent entropy
+divergence. Low-surface-brightness galaxies are especially important because they
+probe weak-gradient regimes where $\chi \to 1$ over large spatial domains
+\cite{famaey2012}.
+
+\subsection{Entropy-Channel Divergence}
+
+The most distinctive RSVP prediction: in strongly factorizable regimes ($\chi \ll
+1$), entropy channels converge approximately. Near the admissibility transition
+($\chi \sim 1$), the framework predicts increasing divergence between channels due to
+dispersion obstruction growth. Standard $\Lambda$CDM and ordinary entropic gravity do
+not predict entropy-channel divergence as a geometric signal. Operationally, galactic
+regions exhibiting strong rotational anomalies should exhibit measurable mismatch
+between local thermodynamic entropy indicators and large-scale gravitational
+reconstruction structure.
+
+\subsection{Weak Lensing Signatures}
+
+Within RSVP, lensing anomalies should correlate with obstruction curvature of the
+reconstruction cover rather than uniquely with inferred dark matter distributions.
+Systems with similar baryonic matter distributions but different reconstruction
+persistence structure may exhibit different lensing behavior. The Bullet Cluster
+remains a decisive challenge: the framework must reproduce its lensing structure
+through obstruction curvature geometry (Obligation~\ref{obl:lensing}).
+
+\subsection{Cosmological Structure Formation}
+
+Large-scale structure formation depends not merely on matter density perturbations
+but on admissibility persistence under cosmological extension. The admissibility
+radius may evolve dynamically during cosmological history as reconstruction dispersion
+changes under expansion-like coarse-graining flow. These possibilities remain
+speculative; the framework currently lacks quantitative cosmological simulations
+capable of testing them.
+
+\subsection{Observational Failure Modes}
+
+The framework generates clear failure conditions: (1) if weak-gradient galactic
+behavior cannot be associated with coherent admissibility-transition structure, the
+geometric reinterpretation fails; (2) if cluster-scale lensing cannot be reproduced
+through obstruction curvature without reintroducing hidden matter, the framework
+loses explanatory advantage over $\Lambda$CDM; (3) if entropy-channel divergence
+fails to correlate with anomalous galactic regimes, one of RSVP's most distinctive
+predictions is falsified; (4) if $\RA$ cannot be derived without arbitrary parameter
+tuning, the central conjecture becomes structurally underdetermined.
+
+% ── App G ─────────────────────────────────────────────────────────────────────
+\section{Locality, Causality, and Admissibility Nonlocality}
+\label{app:locality}
+
+The framework employs concepts such as cosmological gluing data, admissibility
+nonlocality, and global extension dependence. These risk misunderstanding if
+interpreted as superluminal influence or hidden signaling. This appendix specifies
+precisely what type of nonlocality RSVP permits and what type it explicitly rejects.
+
+\subsection{The Central Distinction}
+
+The framework does \emph{not} propose superluminal communication, violation of
+relativistic causal structure, or hidden instantaneous signaling between local field
+degrees of freedom.  The central distinction introduced by RSVP is instead the
+distinction between locality of propagation and locality of admissibility.
+
+The stalk-local dynamics of the reconstruction sheaf remain local.  Local field
+values propagate according to local dynamical equations governing the coupled field
+\[
+  X = (\Phi,\mathbf{v},S),
+\]
+and admissible perturbations evolve continuously through neighboring reconstruction
+regions.  In this sense, RSVP preserves ordinary local propagation structure at the
+level of stalk dynamics.
+
+What becomes nonlocal is not propagation itself but the coherence conditions
+governing extension and assembly of local sections into globally persistent
+reconstruction modes.  A local section may satisfy all local dynamical equations
+while nevertheless failing global admissibility because its continuation structure
+cannot be extended coherently across the reconstruction cover under renormalization
+flow.
+
+Most ordinary field theories implicitly identify locality of propagation with
+locality of admissibility.  RSVP separates these notions.  Locality of propagation
+is a property of stalk dynamics.  Locality of admissibility is a property of global
+extension structure in the reconstruction sheaf.
+
+Admissibility nonlocality therefore appears not in microscopic signaling but in the
+indexing, restriction, and gluing structure of admissible reconstruction itself.
+The dependence on cosmological gluing data discussed throughout the main text is not
+a proposal for instantaneous causal influence across spacetime.  It is a statement
+that persistence of admissible continuation may depend on global reconstruction
+coherence conditions extending beyond the local neighborhood of a given section.
+
+This distinction becomes especially important near the admissibility transition
+\[
+  \chi = \frac{S}{\Phi} \sim 1,
+\]
+where local reconstruction ceases to remain strongly factorizable under
+coarse-graining.  In strongly factorizable regimes,
+\[
+  \chi \ll 1,
+\]
+local admissibility appears effectively self-contained because global extension
+conditions reduce approximately to local continuation structure.  Near the
+transition, however, persistence becomes increasingly sensitive to large-scale
+reconstruction geometry even while local propagation remains relativistically local.
+
+RSVP therefore weakens locality of admissibility without abandoning locality of
+propagation.  The framework modifies the geometry of globally admissible extension,
+not the local causal structure of field evolution.
+
+\subsection{Admissibility Nonlocality Defined}
+
+Admissibility nonlocality exists in: the indexing structure of the cover, the gluing
+conditions, and the persistence structure of extension under renormalization. It does
+\emph{not} exist in the stalk-local dynamical equations themselves. Nonlocality
+appears in the geometry of assembly rather than in microscopic propagation.
+
+A local section may satisfy all local dynamical equations while nevertheless failing
+to admit globally stable extension because admissibility persistence depends upon
+large-scale coherence of the reconstruction cover. The dependence is
+\emph{extension dependence}, not \emph{dynamical signaling dependence}.
+
+\subsection{Analogy with Gauge Theory and General Relativity}
+
+This distinction is analogous in spirit to global constraint structure in gauge
+theory and general relativity. In electromagnetism, local electric-field measurements
+are constrained globally by Gauss-law structure. In general relativity, local
+geometry is constrained by global consistency conditions on spacetime slicing. RSVP
+generalizes this: local reconstruction trajectories remain locally dynamical, but
+admissibility of their persistent extension depends upon global reconstruction
+geometry.
+
+\subsection{Interpretation of ``Cosmological Gluing Data''}
+
+The term does not refer to signals propagating instantaneously from cosmological
+distances. It refers to the fact that globally persistent continuation may require
+compatibility with large-scale reconstruction structure. The admissible continuation
+set of a local trajectory depends upon the global extension geometry of the
+reconstruction cover --- an extension condition, not a propagation condition.
+
+Near the admissibility transition ($\chi \to 1$), local factorization weakens. Local
+continuation trajectories cease to remain closed under extension independently of
+cosmological admissibility structure. The resulting dependence may appear nonlocal
+from the perspective of ordinary local field theory even though no superluminal
+propagation occurs.
+
+\subsection{Formal Statement}
+
+Admissibility nonlocality occurs in the indexing and coherence structure of $\sheaf$
+rather than in the stalk-local field dynamics. A completed RSVP field theory would
+require rigorous proof that admissibility nonlocality remains compatible with
+relativistic causal structure under all admissible reconstruction flows. The present
+appendix establishes only the conceptual separation necessary for the framework to
+avoid immediate conflict with ordinary causal locality. This separation follows
+directly from the central inversion: persistent physical exchange is generated by
+admissibility geometry rather than vice versa. If admissibility geometry is primary,
+then locality of admissibility and locality of propagation need not coincide.
+
+% ── App H ─────────────────────────────────────────────────────────────────────
+\section{Formal Implementation: Grammar, Typed Structures, and Proof Schemas}
+\label{app:implementation}
+
+This appendix outlines possible formal implementation directions for the RSVP
+admissibility framework. The guiding principle is that the framework should
+eventually be expressible as a typed formal system in which admissibility,
+obstruction, entropy-channel convergence, and reconstruction persistence can be
+checked, simulated, or proven under specified assumptions.
+
+\subsection{BNF Grammar for Reconstruction Objects}
+
+A minimal formal language must represent fields, regions, covers, sections,
+restriction maps, obstruction classes, entropy channels, and scale transformations.
+
+\begin{lstlisting}[caption={BNF grammar for RSVP reconstruction theory}]
+<Theory>     ::= <FieldDecl> <CoverDecl> <SheafDecl>
+                 <DynamicsDecl> <ObstructionDecl> <EntropyDecl>
+
+<FieldDecl>  ::= "field" <Name> "=" "(" <Phi> "," <v> "," <S> ")"
+<Phi>        ::= "Phi" ":" <Domain> "->" Real
+<v>          ::= "v"   ":" <Domain> "->" Vector
+<S>          ::= "S"   ":" <Domain> "->" Real
+
+<Domain>     ::= "ReconDomain" | <Region>
+<Region>     ::= "U" <Index> | <Region> "cap" <Region>
+                            | <Region> "cup" <Region>
+
+<CoverDecl>  ::= "cover" <Name> "=" "{" <RegionList> "}"
+
+<SheafDecl>  ::= "sheaf" <Name> ":" <CoverName> "->" <SectionSpace>
+<SectionSpace> ::= "Sections" "(" <FieldName> "," <Region> ")"
+
+<RestrMap>   ::= "restrict" <Section> "from" <Region> "to" <Region>
+
+<Admiss>     ::= "admissible" "(" <Section> ")"
+               | "stable"     "(" <Section> ")"
+               | "persistent" "(" <Section> ")"
+
+<Chi>        ::= "chi" "=" <S> "/" <Phi>
+
+<ObsDecl>    ::= "obstruction" <ObsType> "(" <Section> "," <Section> ")"
+<ObsType>    ::= "compatibility" | "dispersion"
+
+<EntropyDecl>::= "entropy" <EntType> "(" <Section> ")"
+<EntType>    ::= "informational" | "configurational"
+               | "thermodynamic" | "gravitational"
+
+<DynDecl>    ::= "flow" <Name> ":" <Scale> "->" <TheoryState>
+
+<Formula>    ::= <Admiss> | <ChiRel> | <EntRel> | <ObsRel>
+               | <Formula> "and" <Formula>
+               | <Formula> "implies" <Formula>
+
+<ChiRel>     ::= "chi << 1" | "chi ~ 1" | "chi -> 1"
+<EntRel>     ::= "converges" "(" <EntTypeList> ")"
+               | "diverges"  "(" <EntTypeList> ")"
+<ObsRel>     ::= "bounded" "(" <ObsType> ")"
+               | "grows"   "(" <ObsType> ")"
+\end{lstlisting}
+
+\subsection{BNF for Epistemic Status of Claims}
+
+\begin{lstlisting}[caption={BNF grammar for claim classification}]
+<Claim> ::= <Definition>
+          | <Conjecture>
+          | <TheoremSchema>
+          | <ProofObligation>
+          | <PhenomInterp>
+
+<Definition>     ::= "define"    <Object> "as" <FormalExpr>
+<Conjecture>     ::= "conjecture" <Statement> "under" <Assumptions>
+<TheoremSchema>  ::= "theorem-schema" <Statement> "provided" <Conditions>
+<ProofObligation>::= "prove"     <Statement> "from" <Defs> "and" <Dynamics>
+<PhenomInterp>   ::= "interpret" <Observation> "as" <FrameworkObject>
+
+<Object>    ::= "AdmissibilityRadius"    | "CompatObstruction"
+              | "DispersionObstruction"  | "EntropyChannel"
+              | "ReconstructionCover"    | "AdmissPhaseTransition"
+
+<Relation>  ::= "determines" | "converges_to" | "diverges_from"
+              | "scales_as"  | "obstructs"    | "extends_to"
+\end{lstlisting}
+
+This grammar prevents category errors: ``MOND is derived'' is not yet a theorem; it
+is a conjectural derivation target. ``The admissibility radius is the relevant
+geometric object'' is a definitional and structural claim. ``Entropy channels
+converge under strong factorization'' is a theorem-schema requiring proof under
+specified dynamics.
+
+\subsection{Typed Structures in Lean Style}
+
+\begin{lstlisting}[caption={Lean-style typed structures for RSVP objects}]
+structure ReconDomain where
+  points : Type
+
+structure Region (R : ReconDomain) where
+  carrier : Set R.points
+
+structure RSVPField (R : ReconDomain) where
+  Phi : R.points -> Real
+  v   : R.points -> Vector
+  S   : R.points -> Real
+
+-- Control parameter (well-defined when Phi > 0)
+def PositiveAccess {R : ReconDomain}
+    (X : RSVPField R) : Prop :=
+  (*$\forall$*) x : R.points, X.Phi x > 0
+
+def chi {R : ReconDomain}
+    (X : RSVPField R) (h : PositiveAccess X)
+    (x : R.points) : Real :=
+  X.S x / X.Phi x
+
+-- Admissibility predicates
+structure LocalSection {R : ReconDomain}
+    (X : RSVPField R) (U : Region R) where
+  field_restr : U.carrier -> RSVPField R
+  continuation_data : Type
+  bounded_stability : Prop
+
+def StronglyFactorizable {R : ReconDomain}
+    (X : RSVPField R) (h : PositiveAccess X)
+    (U : Region R) ((*$\delta$*) : Real) : Prop :=
+  (*$\forall$*) x (*$\in$*) U.carrier, chi X h x < (*$\delta$*)
+
+def NearTransition {R : ReconDomain}
+    (X : RSVPField R) (h : PositiveAccess X)
+    (U : Region R) ((*$\varepsilon$*) : Real) : Prop :=
+  (*$\forall$*) x (*$\in$*) U.carrier, |chi X h x - 1| < (*$\varepsilon$*)
+\end{lstlisting}
+
+\subsection{Reconstruction Sheaf Structure}
+
+\begin{lstlisting}[caption={Lean-style reconstruction sheaf}]
+structure ReconSheaf (R : ReconDomain) (X : RSVPField R) where
+  sections : Region R -> Type
+  restrict :
+    (*$\forall$*) {U V : Region R},
+      V.carrier (*$\subseteq$*) U.carrier ->
+      sections U -> sections V
+  identity_law     : Prop  -- restrict id = id
+  composition_law  : Prop  -- restrict (V (*$\subseteq$*) U) after (W (*$\subseteq$*) V) =
+                            --   restrict (W (*$\subseteq$*) U)
+  gluing_law       : Prop  -- compatible sections glue
+\end{lstlisting}
+
+\subsection{Obstruction Formalization}
+
+\begin{lstlisting}[caption={Compatibility and dispersion obstruction in Lean}]
+def CompatObstruction {R : ReconDomain} {X : RSVPField R}
+    (F : ReconSheaf R X)
+    (U V : Region R)
+    (sU : F.sections U) (sV : F.sections V) : Prop :=
+  -- restrictions to overlap disagree
+  (*$\neg$*)(F.restrict (overlap_le U V) sU =
+     F.restrict (overlap_le' U V) sV)
+
+structure Scale where
+  ell : Real
+  pos : ell > 0
+
+-- Persistence functional placeholder
+def Persistence {R : ReconDomain} {X : RSVPField R}
+    (F : ReconSheaf R X) ((*$\ell$*) : Scale) (s : Type) : Real :=
+  0 -- to be derived from field equations
+
+def DispersionObstruction {R : ReconDomain} {X : RSVPField R}
+    (F : ReconSheaf R X) ((*$\varepsilon$*) : Real) (s : Type) : Prop :=
+  (*$\exists$*) (*$\ell$*) : Scale, Persistence F (*$\ell$*) s < (*$\varepsilon$*)
+\end{lstlisting}
+
+\subsection{Theorem Schemas in Lean Style}
+
+\begin{lstlisting}[caption={Central theorem schemas as Lean proof obligations}]
+-- Entropy convergence schema
+theorem entropy_convergence
+    {R : ReconDomain} (X : RSVPField R)
+    (h : PositiveAccess X)
+    (F : ReconSheaf R X)
+    (U : Region R) ((*$\delta$*) (*$\varepsilon$*) : Real)
+    (hFact : StronglyFactorizable X h U (*$\delta$*))
+    (hBound : (* dispersion obstruction bounded *) True) :
+    (* entropy channels converge to order (*$\varepsilon$*) *)
+    True := by
+  sorry  -- proof obligation: requires field equation dynamics
+
+-- Entropy divergence schema
+theorem entropy_divergence
+    {R : ReconDomain} (X : RSVPField R)
+    (h : PositiveAccess X)
+    (F : ReconSheaf R X)
+    (U : Region R) ((*$\varepsilon$*) : Real)
+    (hTrans : NearTransition X h U (*$\varepsilon$*)) :
+    (* entropy channels diverge under coarse-graining *)
+    True := by
+  sorry  -- proof obligation: requires beta-function derivation
+
+-- Central conjecture as proof obligation
+-- (RA proportional to c/H_0 in weak-gradient limit)
+theorem RA_scaling_conjecture
+    (field_eqs : True) :
+    True := by
+  sorry  -- principal open problem of the paper
+\end{lstlisting}
+
+The \texttt{sorry} markers are not weaknesses: they identify proof obligations. A
+Lean formalization would force every informal claim in the paper to become either a
+definition, theorem, conjecture, or unresolved proof target --- precisely the
+discipline the present paper maintains in prose.
+
+\subsection{Algorithmic Reconstruction Procedure}
+
+A computational implementation of RSVP reconstruction obstruction analysis:
+
+\begin{lstlisting}[caption={RSVP obstruction analysis algorithm}]
+Algorithm: RSVP_Obstruction_Analysis
+
+Input:
+  X = (Phi, v, S)          -- coupled RSVP field
+  R                         -- reconstruction domain
+  U = {U_alpha}             -- initial admissibility cover at l_min
+  l_min, l_max              -- scale range
+  epsilon                   -- stability threshold
+  delta                     -- factorization threshold
+
+Output:
+  R_A                       -- admissibility radius
+  compat_obs_map            -- compatibility obstruction map
+  disp_obs_map              -- dispersion obstruction map
+  entropy_divergence_profile -- entropy channel divergence
+
+Procedure:
+  1. Initialize cover U at scale l = l_min.
+  2. For each U_alpha:
+       compute chi = S / Phi
+       if chi < delta: classify as strongly factorizable
+  3. For each overlap U_alpha cap U_beta:
+       restrict local sections to overlap
+       test compatibility agreement
+       if disagreement: record compatibility obstruction
+  4. Coarse-grain cover to next scale l.
+  5. Update Phi_l, v_l, S_l.
+  6. Recompute chi_l = S_l / Phi_l.
+  7. Track persistence of previously admissible sections.
+  8. If compatible sections fail persistence: record disp. obstruction.
+  9. If chi_l -> 1 or persistence < epsilon:
+       record R_A = current scale
+  10. Compute entropy projections Pi_therm, Pi_info, Pi_grav, Pi_conf.
+  11. Measure entropy-channel convergence or divergence.
+  12. Repeat steps 4-11 until l = l_max.
+  13. Return obstruction and transition profiles.
+\end{lstlisting}
+
+\subsection{Formalization Roadmap}
+
+A rigorous implementation program would proceed in stages:
+\begin{enumerate}[label=(\arabic*)]
+  \item Define the typed syntax and semantics of RSVP reconstruction objects.
+  \item Implement the reconstruction sheaf in Lean 4 or Agda.
+  \item Formalize compatibility obstruction through \v{C}ech cocycle data.
+  \item Define dispersion obstruction as scale-instability of persistence.
+  \item Implement coarse-graining flow for $\chi_\ell$.
+  \item Prove conditional theorems linking strong factorization to entropy convergence.
+  \item Prove or refute the central conjecture: weak-gradient RSVP determines
+    $\RA \propto c/H_0$.
+  \item Build numerical simulations computing obstruction maps and entropy-channel
+    divergence profiles from candidate field equations.
+\end{enumerate}
+
+The purpose of formalization is not merely aesthetic rigor. It is a guardrail against
+the main failure mode of speculative gravity frameworks: sliding between definitions,
+metaphors, conjectures, and derivations without marking the transition. A Lean
+implementation would force every RSVP claim to declare its type.
+
+\newpage
+% ══════════════════════════════════════════════════════════════════════════════
+% Bibliography
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{thebibliography}{99}
+
+% ── Entropic / thermodynamic gravity ─────────────────────────────────────────
+\bibitem{kastner2024}
+R.~E. Kastner and A.~Schlatter,
+``Gravity from Transactions: Fulfilling the Entropic Gravity Program,''
+\textit{preprint} (2024).
+
+\bibitem{verlinde2011}
+E.~Verlinde,
+``On the Origin of Gravity and the Laws of Newton,''
+\textit{J.\ High Energy Phys.}\ \textbf{2011}, 29 (2011).
+
+\bibitem{verlinde2017}
+E.~Verlinde,
+``Emergent Gravity and the Dark Universe,''
+\textit{SciPost Phys.}\ \textbf{2}, 016 (2017).
+
+\bibitem{jacobson1995}
+T.~Jacobson,
+``Thermodynamics of Spacetime: The Einstein Equation of State,''
+\textit{Phys.\ Rev.\ Lett.}\ \textbf{75}, 1260 (1995).
+
+\bibitem{jacobson2016}
+T.~Jacobson,
+``Entanglement Equilibrium and the Einstein Equation,''
+\textit{Phys.\ Rev.\ Lett.}\ \textbf{116}, 201101 (2016).
+
+\bibitem{padmanabhan2010}
+T.~Padmanabhan,
+``Thermodynamical Aspects of Gravity: New Insights,''
+\textit{Rep.\ Prog.\ Phys.}\ \textbf{73}, 046901 (2010).
+
+% ── MOND and modified gravity ─────────────────────────────────────────────────
+\bibitem{milgrom1983}
+M.~Milgrom,
+``A Modification of the Newtonian Dynamics as a Possible Alternative to the Hidden
+Mass Hypothesis,''
+\textit{Astrophys.\ J.}\ \textbf{270}, 365 (1983).
+
+\bibitem{bekenstein2004}
+J.~D. Bekenstein,
+``Relativistic Gravitation Theory for the Modified Newtonian Dynamics Paradigm,''
+\textit{Phys.\ Rev.\ D}\ \textbf{70}, 083509 (2004).
+
+\bibitem{famaey2012}
+B.~Famaey and S.~McGaugh,
+``Modified Newtonian Dynamics (MOND): Observational Phenomenology and Relativistic
+Extensions,''
+\textit{Living Rev.\ Relativ.}\ \textbf{15}, 10 (2012).
+
+\bibitem{mcgaugh2011}
+S.~S. McGaugh,
+``A Novel Test of the Modified Newtonian Dynamics with Gas Rich Galaxies,''
+\textit{Phys.\ Rev.\ Lett.}\ \textbf{106}, 121303 (2011).
+
+% ── Holographic / entanglement spacetime ─────────────────────────────────────
+\bibitem{vanraamsdonk2010}
+M.~Van Raamsdonk,
+``Building Up Spacetime with Quantum Entanglement,''
+\textit{Gen.\ Relativ.\ Gravit.}\ \textbf{42}, 2323 (2010).
+
+\bibitem{swingle2012}
+B.~Swingle,
+``Entanglement Renormalization and Holography,''
+\textit{Phys.\ Rev.\ D}\ \textbf{86}, 065007 (2012).
+
+% ── Sheaf theory and algebraic topology ──────────────────────────────────────
+\bibitem{bredon1997}
+G.~E. Bredon,
+\textit{Sheaf Theory}, 2nd ed.
+Springer, New York, 1997.
+
+\bibitem{kashiwara2005}
+M.~Kashiwara and P.~Schapira,
+\textit{Categories and Sheaves}.
+Springer, Berlin, 2005.
+
+\bibitem{maclane1992}
+S.~Mac Lane and I.~Moerdijk,
+\textit{Sheaves in Geometry and Logic}.
+Springer, New York, 1992.
+
+\bibitem{bott1982}
+R.~Bott and L.~W. Tu,
+\textit{Differential Forms in Algebraic Topology}.
+Springer, New York, 1982.
+
+\bibitem{hatcher2002}
+A.~Hatcher,
+\textit{Algebraic Topology}.
+Cambridge University Press, Cambridge, 2002.
+
+% ── Renormalization and phase transitions ────────────────────────────────────
+\bibitem{wilson1974}
+K.~G. Wilson and J.~Kogut,
+``The Renormalization Group and the $\epsilon$ Expansion,''
+\textit{Phys.\ Rep.}\ \textbf{12}, 75 (1974).
+
+\bibitem{goldenfeld1992}
+N.~Goldenfeld,
+\textit{Lectures on Phase Transitions and the Renormalization Group}.
+Addison-Wesley, Reading, MA, 1992.
+
+% ── Entropy and information geometry ─────────────────────────────────────────
+\bibitem{jaynes1957}
+E.~T. Jaynes,
+``Information Theory and Statistical Mechanics,''
+\textit{Phys.\ Rev.}\ \textbf{106}, 620 (1957).
+
+\bibitem{amari2016}
+S.~Amari,
+\textit{Information Geometry and Its Applications}.
+Springer, Tokyo, 2016.
+
+\end{thebibliography}
+
+\end{document}

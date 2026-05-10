@@ -1,5 +1,7 @@
 # RSVP Reconstruction Program
 
+[Admissibility Geometry Collection](https://github.com/standardgalactic/alphabet/tree/core/physics/cosmology#readme)
+
 A collection of essays and technical documents exploring the Relativistic Scalar–Vector Plenum (RSVP) framework as a constraint-first reconstruction program for physics, geometry, information, and admissibility.
 
 The documents progress from accessible conceptual introductions toward increasingly formal mathematical and geometric analysis.

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admissible Geometry</title>
+
+<style>
+body{
+  margin:0;
+  background:#000;
+  color:#7cff7c;
+  font-family:monospace;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  cursor:pointer;
+}
+
+/* title */
+.title{
+  font-size:14px;
+  letter-spacing:0.18em;
+  color:#00ff88;
+  text-shadow:0 0 10px #00ff66;
+  margin-bottom:6px;
+}
+
+/* selector */
+.selector{
+  margin-bottom:10px;
+  display:flex;
+  gap:10px;
+}
+.selector button{
+  background:#001400;
+  border:1px solid #00ff66;
+  color:#7cff7c;
+  padding:6px 12px;
+  font-family:monospace;
+  cursor:pointer;
+}
+.selector button.active{
+  background:#003d1a;
+  box-shadow:0 0 8px #00ff66 inset;
+}
+
+/* portal */
+canvas{
+  width:min(420px,85vw);
+  height:min(420px,85vw);
+  border-radius:50%;
+  border:2px solid rgba(0,255,0,0.5);
+  background:#000;
+  box-shadow:
+    0 0 40px rgba(0,255,120,0.2) inset,
+    0 0 18px rgba(0,255,0,0.7);
+}
+
+/* subtitles */
+.subs{
+  position:fixed;
+  bottom:34px;
+  width:min(520px,92vw);
+  text-align:center;
+  padding:6px 10px;
+  font-size:14px;
+  color:#aaffaa;
+  text-shadow:0 0 6px #00ff66;
+  background:rgba(0,20,0,0.35);
+  border:1px solid rgba(0,255,0,0.2);
+  border-radius:6px;
+  pointer-events:none;
+  min-height:2em;
+}
+
+/* link */
+.link{
+  position:fixed;
+  bottom:6px;
+  width:min(520px,92vw);
+  text-align:center;
+  font-size:12px;
+  color:#7cffc4;
+  text-decoration:none;
+  opacity:0.7;
+}
+.link:hover{ opacity:1; }
+
+</style>
+</head>
+
+<body>
+
+<div class="title">Admissible Geometry</div>
+
+<div class="selector">
+  <button id="t0" class="active">Phase Transition</button>
+  <button id="t1">Admissibility</button>
+</div>
+
+<canvas id="viz"></canvas>
+<div id="subs" class="subs"></div>
+
+<a class="link"
+   href="https://standardgalactic.github.io/alphabet/physics/cosmology/admissible-geometry.pdf"
+   target="_blank">
+  Admissible Geometry
+</a>
+
+<audio id="audio" preload="auto"></audio>
+
+<script>
+
+/* TRACKS */
+const tracks = [
+  "Dark_Matter_as_a_Geometric_Phase_Transition.mp3",
+  "Admissibility_Geometry.mp3"
+];
+
+let trackIndex = 0;
+
+/* ELEMENTS */
+const audio = document.getElementById("audio");
+const subs  = document.getElementById("subs");
+const buttons = [
+  document.getElementById("t0"),
+  document.getElementById("t1")
+];
+
+/* AUDIO */
+let ctx, analyser, data;
+
+function initAudio(){
+  if(ctx) return;
+
+  ctx = new AudioContext();
+  analyser = ctx.createAnalyser();
+  analyser.fftSize = 2048;
+  data = new Uint8Array(analyser.fftSize);
+
+  const node = ctx.createMediaElementSource(audio);
+  node.connect(analyser);
+  analyser.connect(ctx.destination);
+}
+
+/* ───── PHASE TRANSITION STATE ───── */
+let transitionTime = 0;
+let transitioning = false;
+
+function triggerTransition(){
+  transitioning = true;
+  transitionTime = performance.now();
+}
+
+/* LOAD TRACK */
+async function loadTrack(i, autoplay=true){
+  trackIndex = i;
+
+  triggerTransition();
+
+  audio.src = tracks[i];
+  audio.load();
+
+  buttons.forEach((b,idx)=>b.classList.toggle("active", idx===i));
+
+  await loadVTT(tracks[i].replace(".mp3",".vtt"));
+
+  if(autoplay){
+    try{ await audio.play(); }catch(e){}
+  }
+}
+
+/* AUTO CHAIN */
+audio.addEventListener("ended", ()=>{
+  loadTrack((trackIndex+1)%tracks.length, true);
+});
+
+/* CLICK */
+document.body.onclick = async ()=>{
+  initAudio();
+  if(ctx.state==="suspended") await ctx.resume();
+  if(audio.paused) await audio.play();
+  else audio.pause();
+};
+
+/* SELECTOR */
+buttons.forEach((btn,i)=>{
+  btn.onclick = async (e)=>{
+    e.stopPropagation();
+    initAudio();
+    if(ctx.state==="suspended") await ctx.resume();
+    await loadTrack(i,true);
+  };
+});
+
+document.querySelector(".link").onclick = e=>e.stopPropagation();
+
+/* ───── SUBTITLES ───── */
+let cues = [];
+
+async function loadVTT(url){
+  cues = [];
+  try{
+    const res = await fetch(url);
+    if(!res.ok) return;
+
+    const text = await res.text();
+    const blocks = text.split(/\n{2,}/);
+
+    for(const block of blocks){
+      const lines = block.trim().split("\n");
+      const ts = lines.find(l=>l.includes("-->"));
+      if(!ts) continue;
+
+      const [s,e] = ts.split("-->").map(x=>x.trim());
+      const txt = lines.slice(lines.indexOf(ts)+1).join(" ");
+
+      cues.push({
+        start: parseTime(s),
+        end: parseTime(e),
+        text: txt
+      });
+    }
+  }catch(e){}
+}
+
+function parseTime(t){
+  const p = t.split(":");
+  return p.length===3
+    ? +p[0]*3600 + +p[1]*60 + +p[2]
+    : +p[0]*60 + +p[1];
+}
+
+audio.ontimeupdate = ()=>{
+  const t = audio.currentTime;
+  const c = cues.find(c=>t>=c.start && t<c.end);
+  subs.textContent = c ? c.text : "";
+};
+
+/* ───── CANVAS ───── */
+const canvas = document.getElementById("viz");
+const c = canvas.getContext("2d");
+
+const W=320,H=320;
+canvas.width=W;
+canvas.height=H;
+
+let t=0;
+
+function smoothNoise(x){
+  return Math.sin(x)*0.5 + Math.sin(x*0.7)*0.3;
+}
+
+function draw(){
+  t++;
+
+  c.fillStyle="rgba(0,5,0,0.07)";
+  c.fillRect(0,0,W,H);
+
+  const cx=W/2, cy=H/2;
+  let R=W*0.42;
+
+  /* ─── TRANSITION EFFECT ─── */
+  if(transitioning){
+    const dt = performance.now() - transitionTime;
+
+    if(dt < 220){
+      const p = dt / 220;
+
+      /* collapse → expand */
+      const collapse = Math.sin(p * Math.PI);
+
+      R *= (1 - collapse * 0.7);
+
+      /* flash */
+      c.fillStyle = `rgba(0,255,120,${0.25 * (1-p)})`;
+      c.fillRect(0,0,W,H);
+    }else{
+      transitioning = false;
+    }
+  }
+
+  c.save();
+  c.beginPath();
+  c.arc(cx,cy,R,0,Math.PI*2);
+  c.clip();
+
+  /* grid */
+  c.strokeStyle = trackIndex===0
+    ? "rgba(0,255,120,0.08)"
+    : "rgba(0,255,120,0.04)";
+
+  const shiftX=Math.sin(t*0.001)*18;
+  const shiftY=Math.cos(t*0.0012)*18;
+
+  for(let x=-W;x<W*2;x+=24){
+    c.beginPath();
+    c.moveTo(x+shiftX,-H);
+    c.lineTo(x+shiftX,H*2);
+    c.stroke();
+  }
+
+  for(let y=-H;y<H*2;y+=24){
+    c.beginPath();
+    c.moveTo(-W,y+shiftY);
+    c.lineTo(W*2,y+shiftY);
+    c.stroke();
+  }
+
+  if(analyser){
+    analyser.getByteTimeDomainData(data);
+
+    const tightness = trackIndex===0 ? 0.08 : 0.18;
+    const driftAmp  = trackIndex===0 ? 6 : 16;
+
+    const driftX=Math.sin(t*0.002)*driftAmp;
+    const driftY=Math.cos(t*0.0017)*driftAmp*0.7;
+
+    const lag=Math.floor(data.length*(tightness+smoothNoise(t*0.01)*0.12));
+
+    c.beginPath();
+
+    for(let i=0;i<data.length;i++){
+      const a=(data[i]-128)/128;
+      const b=(data[(i+lag)%data.length]-128)/128;
+
+      const x=cx+driftX+a*R;
+      const y=cy+driftY+b*R*0.9;
+
+      i?c.lineTo(x,y):c.moveTo(x,y);
+    }
+
+    c.strokeStyle="#7cffc4";
+    c.lineWidth = trackIndex===0 ? 2.6 : 1.6;
+    c.shadowBlur = trackIndex===0 ? 8 : 18;
+    c.shadowColor="#00ff66";
+
+    c.stroke();
+    c.shadowBlur=0;
+  }
+
+  c.restore();
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+/* initial */
+loadTrack(0,false);
+
+</script>
+
+</body>
+</html>

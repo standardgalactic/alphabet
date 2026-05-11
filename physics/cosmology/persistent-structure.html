@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Persistence of Structure</title>
+
+<style>
+
+:root{
+  --green:#7cffc4;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:#050505;
+  color:#e6e6e6;
+  font-family:monospace;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+  text-align:center;
+  cursor:pointer;
+}
+
+/* scanlines */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.03) 0px,
+      rgba(255,255,255,0.03) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+
+  opacity:0.12;
+}
+
+.title{
+  margin-bottom:12px;
+
+  font-size:14px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+
+  color:#00ff88;
+
+  text-shadow:0 0 8px #00ff66;
+}
+
+canvas{
+  width:min(420px,86vw);
+  height:min(420px,86vw);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle at center,
+      #111 0%,
+      #000 100%);
+
+  border:2px solid rgba(0,255,120,0.35);
+
+  box-shadow:
+    0 0 25px rgba(0,255,120,0.15),
+    inset 0 0 60px rgba(0,255,120,0.08);
+}
+
+.subs{
+  position:fixed;
+
+  bottom:36px;
+
+  width:min(560px,92vw);
+
+  min-height:2em;
+
+  padding:6px 10px;
+
+  text-align:center;
+
+  line-height:1.45;
+  font-size:14px;
+
+  color:#c8ffe0;
+
+  text-shadow:0 0 6px #00ff66;
+
+  background:rgba(0,20,0,0.28);
+
+  border:1px solid rgba(0,255,0,0.16);
+  border-radius:6px;
+
+  pointer-events:none;
+}
+
+.link{
+  position:fixed;
+
+  bottom:8px;
+
+  width:min(560px,92vw);
+
+  text-align:center;
+
+  font-size:12px;
+
+  color:var(--green);
+
+  opacity:0.72;
+
+  text-decoration:none;
+}
+
+.link:hover{
+  opacity:1;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="title">
+  Persistence of Structure
+</div>
+
+<canvas id="turntable"></canvas>
+
+<div class="subs" id="subs"></div>
+
+<a class="link"
+   href="https://standardgalactic.github.io/alphabet/physics/cosmology/persistence_of_structure.pdf"
+   target="_blank">
+  The Persistence of Structure
+</a>
+
+<audio id="audio" preload="auto">
+  <source src="Space-is-the-residue-of-persistent-structure.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+/* ─────────────────────────────────────
+   ELEMENTS
+───────────────────────────────────── */
+
+const audio  = document.getElementById("audio");
+const canvas = document.getElementById("turntable");
+const ctx2d  = canvas.getContext("2d");
+const subs   = document.getElementById("subs");
+
+/* prevent essay click pausing audio */
+document.querySelector(".link").onclick = e=>{
+  e.stopPropagation();
+};
+
+/* ─────────────────────────────────────
+   CANVAS SETUP
+───────────────────────────────────── */
+
+const DPR = window.devicePixelRatio || 1;
+
+canvas.width  = 340 * DPR;
+canvas.height = 340 * DPR;
+
+ctx2d.scale(DPR,DPR);
+
+/* ─────────────────────────────────────
+   AUDIO
+───────────────────────────────────── */
+
+let ctxAudio;
+let analyser;
+let freqData;
+let ready = false;
+
+function initAudio(){
+
+  if(ready) return;
+
+  ready = true;
+
+  ctxAudio =
+    new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )();
+
+  analyser =
+    ctxAudio.createAnalyser();
+
+  analyser.fftSize = 512;
+
+  freqData =
+    new Uint8Array(
+      analyser.frequencyBinCount
+    );
+
+  const src =
+    ctxAudio.createMediaElementSource(audio);
+
+  src.connect(analyser);
+  analyser.connect(ctxAudio.destination);
+}
+
+/* click anywhere */
+
+document.body.onclick = async ()=>{
+
+  initAudio();
+
+  if(ctxAudio.state === "suspended"){
+    await ctxAudio.resume();
+  }
+
+  if(audio.paused){
+    await audio.play();
+  }else{
+    audio.pause();
+  }
+};
+
+/* ─────────────────────────────────────
+   SUBTITLES
+───────────────────────────────────── */
+
+let cues = [];
+
+async function loadVTT(file){
+
+  cues = [];
+
+  try{
+
+    const r = await fetch(file);
+
+    if(!r.ok) throw new Error(r.status);
+
+    const txt = await r.text();
+
+    const blocks =
+      txt.split(/\n{2,}/);
+
+    for(const block of blocks){
+
+      const lines =
+        block.trim().split("\n");
+
+      const ts =
+        lines.find(
+          l => l.includes("-->")
+        );
+
+      if(!ts) continue;
+
+      const [s,e] =
+        ts.split("-->")
+          .map(x=>x.trim());
+
+      const cueText =
+        lines
+          .slice(lines.indexOf(ts)+1)
+          .join(" ");
+
+      cues.push({
+        start: parseTime(s),
+        end: parseTime(e),
+        text: cueText
+      });
+    }
+
+  }catch(err){
+
+    console.warn(
+      "VTT failed:",
+      err
+    );
+  }
+}
+
+function parseTime(t){
+
+  const p = t.split(":");
+
+  return p.length===3
+    ? +p[0]*3600 + +p[1]*60 + +p[2]
+    : +p[0]*60 + +p[1];
+}
+
+audio.ontimeupdate = ()=>{
+
+  const t =
+    audio.currentTime;
+
+  const cue =
+    cues.find(c =>
+      t >= c.start &&
+      t <  c.end
+    );
+
+  subs.textContent =
+    cue ? cue.text : "";
+};
+
+loadVTT(
+  "Space_is_the_residue_of_persistent_structure.vtt"
+);
+
+/* ─────────────────────────────────────
+   VISUALIZER
+───────────────────────────────────── */
+
+let rotation = 0;
+let pulse    = 110;
+
+function draw(){
+
+  ctx2d.clearRect(
+    0,0,340,340
+  );
+
+  let energy = 0;
+
+  if(analyser){
+
+    analyser.getByteFrequencyData(freqData);
+
+    for(let i=0;i<32;i++){
+      energy += freqData[i];
+    }
+
+    energy /= 32;
+
+    pulse =
+      108 +
+      (energy/255)*32;
+  }
+
+  rotation +=
+    audio.paused
+      ? 0.0018
+      : 0.008;
+
+  ctx2d.save();
+
+  ctx2d.translate(170,170);
+  ctx2d.rotate(rotation);
+
+  /* persistence shells */
+
+  for(let i=4;i>=1;i--){
+
+    ctx2d.beginPath();
+
+    ctx2d.arc(
+      0,
+      0,
+      pulse - i*16,
+      0,
+      Math.PI*2
+    );
+
+    ctx2d.strokeStyle =
+      `rgba(120,255,180,${
+        0.04 + i*0.03
+      })`;
+
+    ctx2d.lineWidth = 1;
+
+    ctx2d.stroke();
+  }
+
+  /* main structure ring */
+
+  ctx2d.beginPath();
+
+  ctx2d.arc(
+    0,
+    0,
+    pulse,
+    0,
+    Math.PI*2
+  );
+
+  ctx2d.strokeStyle =
+    "rgba(180,255,220,0.9)";
+
+  ctx2d.lineWidth = 3;
+
+  ctx2d.shadowBlur = 14;
+  ctx2d.shadowColor = "#00ff88";
+
+  ctx2d.stroke();
+
+  /* core */
+
+  ctx2d.beginPath();
+
+  ctx2d.arc(
+    0,
+    0,
+    16,
+    0,
+    Math.PI*2
+  );
+
+  ctx2d.fillStyle =
+    "#dffff0";
+
+  ctx2d.fill();
+
+  ctx2d.restore();
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+</script>
+
+</body>
+</html>

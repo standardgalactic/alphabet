@@ -1,0 +1,1602 @@
+% The Persistence of Structure
+% From Shape Space to Recursive Persistence:
+% Julian Barbour, Entaxy, and the RSVP Framework
+% LuaLaTeX — TeX Gyre Pagella + unicode-math
+
+\documentclass[12pt, a4paper]{article}
+
+%% ── Font & encoding ────────────────────────────────────────────────────────
+\usepackage{fontspec}
+\usepackage[math-style=ISO]{unicode-math}
+
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}[Scale=MatchLowercase]
+\setmathfont{Latin Modern Math}[Scale=MatchLowercase]
+
+%% ── Micro-typography & spacing ─────────────────────────────────────────────
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.18}
+
+\usepackage[skip=8pt plus 2pt, indent=0pt]{parskip}
+
+%% ── Page geometry ──────────────────────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=38mm,
+  bottom=38mm,
+  left=36mm,
+  right=36mm,
+  headheight=14pt
+]{geometry}
+
+%% ── Headers / footers ──────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancyhead[L]{\small\textit{The Persistence of Structure}}
+\fancyhead[R]{\small\textit{Flyxion}}
+\fancyfoot[C]{\small\thepage}
+
+%% ── Section styling ────────────────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\normalfont\large\bfseries}
+  {\Roman{section}.}{0.8em}{}[\vspace{-2pt}\rule{\linewidth}{0.3pt}\vspace{2pt}]
+\titleformat{\subsection}
+  {\normalfont\normalsize\itshape}
+  {}{0em}{}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+%% ── Hyperlinks ─────────────────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=black
+]{hyperref}
+
+%% ── Miscellaneous ──────────────────────────────────────────────────────────
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.4em, itemsep=2pt, topsep=4pt}
+
+%% ── TikZ ───────────────────────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, decorations.pathmorphing,
+  shapes.geometric, fit}
+\usepackage{float}
+
+%% ── Custom operators / symbols ─────────────────────────────────────────────
+% Admissibility field, projection, recursive consistency, manifold
+\newcommand{\Afield}{\mathcal{A}}
+\newcommand{\proj}{\hat{\pi}}
+\newcommand{\Rcomp}{\mathcal{R} \circ \mathcal{R}}
+\newcommand{\Madm}{\mathbb{M}_{a}}
+\newcommand{\Xtraj}{X}
+\newcommand{\admlog}{\mathcal{L}_{\mathrm{adm}}}
+
+%% ══════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+%% ── Title page ─────────────────────────────────────────────────────────────
+\begin{titlepage}
+\thispagestyle{empty}
+\vspace*{14mm}
+
+{\centering
+  {\fontsize{17}{21}\selectfont\bfseries The Persistence of Structure}\\[8pt]
+  {\normalsize\itshape From Shape Space to Recursive Persistence:\\[3pt]
+  Julian Barbour, Entaxy, and the RSVP Framework}\\[12mm]
+
+  {\normalsize Flyxion}\\[4pt]
+  {\small Independent Researcher}\\[3pt]
+  {\small\color{gray} \today}\\[10mm]
+\par}
+
+\begin{abstract}
+\noindent
+Julian Barbour's relational cosmology, developed most fully in \textit{The Janus Point},
+represents a profound ontological inversion: time, scale, and reference frames dissolve
+into evolving relational configurations, leaving complexity growth as the universe's
+dominant arrow. Yet Barbour's framework remains transitional. Its dynamical grammar
+is still inherited from Newtonian mechanics, complexity is tracked but not
+explained operationally, and the Janus Point functions as a hidden global anchor
+despite the theory's Machian intentions. This essay argues that the Relativistic
+Scalar-Vector Plenum (RSVP) extends Barbour's relational reduction into a
+fully recursive consistency framework. In the RSVP picture, the physically
+meaningful quantity is not entropy, complexity, or entaxy, but
+\emph{recursively maintainable coherence}: only configurations that preserve
+admissibility across scales persist long enough to constitute stable structure.
+Barbour's Janus Point becomes a local admissibility extremum rather than a
+universal origin; his shape space becomes a special case of a constraint-selective
+projection manifold; and his records are reinterpreted as active operational
+constraints required for future inferential continuity. The essay concludes by
+extending the framework toward cognition, where the same recursive admissibility
+operators that govern cosmological persistence reappear as the structural
+conditions for memory, measurement, and predictive continuity.
+\end{abstract}
+
+\end{titlepage}
+
+\newpage
+\setcounter{page}{1}
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Introduction: The Ontological Inversion}
+
+The history of physics can be read as a sequence of ontological compressions.
+Classical mechanics treated reality as matter evolving inside a pre-existing
+spatial container governed by externally imposed laws. Relativity destabilized
+the fixed background, merging space and time into dynamical geometry, yet
+retained the assumption that lawful structure exists independently of the
+systems it governs. Modern cosmology inherited both frameworks while adding
+statistical thermodynamics, producing the contemporary picture of an
+expanding universe in which entropy increase provides the primary directional
+arrow.
+
+Julian Barbour's relational cosmology represents one of the most sustained
+attempts to overturn this inheritance. In \textit{The Janus Point} (2020),
+Barbour argues that neither absolute space, absolute scale, nor conventional
+time are fundamental. Instead, the universe should be described entirely in
+terms of evolving relational configurations. The universe does not expand
+through an external metric backdrop; its internal relational geometry changes
+\emph{shape}. Time itself becomes reconstructible from ordered relational
+differences rather than existing as an independent parameter.
+
+This constitutes a genuine ontological inversion. Reality ceases to be a
+collection of objects embedded within spacetime and becomes instead a
+trajectory through relational configuration space. The Machian commitment is
+total: change is primary; everything else is abstracted from it.
+
+Yet Barbour's framework remains transitional. While it successfully removes
+external coordinate structures, it still presupposes a globally coherent
+dynamical grammar governing the evolution of shape space. The Janus Point
+functions as a privileged geometric pivot around which temporal asymmetry
+organizes. Complexity increases statistically as the system evolves away from
+this pivot, but the framework does not fully account for why coherent
+structure \emph{persists} rather than collapsing into rigidity or
+dissipating into noise.
+
+The Relativistic Scalar-Vector Plenum (RSVP) extends the relational turn
+beyond geometry into recursive admissibility. Rather than treating physical
+law as a pre-existing grammar operating on configurations, RSVP interprets
+persistence itself as the result of constraint-selection across admissibility
+landscapes. Stable structures survive not merely because they are
+statistically favored, but because they maintain recursive consistency across
+scales.
+
+The transition from Barbour to RSVP therefore marks a deeper inversion:
+
+The transition moves from relational geometry to operational persistence,
+from lawful evolution to admissibility management, and from static ontology
+to recursive consistency architecture.
+
+The Janus Point becomes not the origin of order, but a special case within a
+broader landscape of recursive stabilization.
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{The Geometry of the Minimal State}
+
+\subsection{Barbour's Global Anchor}
+
+The Janus Point emerges from the Newtonian \(N\)-body problem under conditions
+of non-negative total energy. In such systems, the global scale of the
+particle distribution decreases from infinity to a finite minimum before
+increasing again. Near this minimal configuration, particle distributions
+become maximally uniform — the most homogeneous state the system can occupy.
+Moving away from the Janus Point in either temporal direction produces
+increasing clustering and relational differentiation.
+
+Barbour formulates this through the concept of \emph{complexity}: a
+scale-invariant quantity measuring the degree to which particles cluster
+rather than distribute uniformly. At the Janus Point, complexity is minimal.
+As the system evolves outward, complexity grows monotonically in both
+temporal directions, giving rise to two bidirectional arrows of time that
+point away from the central configuration.
+
+The elegance of this picture lies precisely in its avoidance of imposed
+initial conditions. Temporal asymmetry does not need to be stipulated; it
+emerges from the gravitational dynamics of relational structure.
+
+\subsection{The Problem of the Hidden Anchor}
+
+Nevertheless, the Janus Point introduces a structural tension that becomes
+visible from within an admissibility framework.
+
+Although Barbour explicitly rejects absolute time, the Janus Point functions
+as a globally privileged geometric state. It implicitly establishes a
+universal ordering principle — a hidden absolute anchor — around which the
+entire cosmological trajectory is coordinated. Even if no observer can access
+both halves of the resulting bi-universe simultaneously, the theory still
+relies upon a globally distinguished minimum configuration as its
+organizational center.
+
+The theory therefore smuggles a form of cosmic meta-time ordering back into
+the geometry. The Janus Point is defined precisely as the moment when global
+shape has reached its most uniform state, which means the theory already
+presupposes that "global state" is a coherent and uniquely identifiable
+object.
+
+That presupposition is not trivially available in a fully relational framework.
+
+\subsection{Decentralized Admissibility}
+
+RSVP critiques this requirement for a singular global minimum.
+
+In recursive admissibility frameworks, there is no necessity for one
+privileged universal pivot. Instead, local regions of high-symmetry
+reintegration continuously emerge within the plenum as part of ongoing
+dynamical regulation. Uniformity is not a singular historical event but a
+recurring accessibility condition — something the system negotiates locally
+rather than instantiates once.
+
+The cosmological question shifts accordingly. Rather than asking why the
+universe began in a low-entropy state, RSVP asks:
+
+\begin{quote}
+\itshape
+What conditions permit recursively maintainable structure to emerge and
+stabilize within an admissibility landscape?
+\end{quote}
+
+This dissolves the need for a universal temporal pivot while preserving the
+emergence of directional persistence. Janus-like states become local
+admissibility extrema — recurring features of the landscape rather than
+cosmological origins.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.95]
+  % Axis
+  \draw[thick] (-5.2,0) -- (5.2,0);
+
+  % Janus point
+  \filldraw (0,0) circle (2.5pt);
+  \node[below=4pt] at (0,0) {\small Janus Point};
+
+  % Bidirectional time arrows
+  \draw[-{Latex[length=3mm]}, thick] (0,0) -- (-4.8,0);
+  \draw[-{Latex[length=3mm]}, thick] (0,0) -- (4.8,0);
+  \node[below=4pt] at (-3.5,0) {\small \textit{t} $\to -\infty$};
+  \node[below=4pt] at (3.5,0) {\small \textit{t} $\to +\infty$};
+
+  % Complexity growth curves
+  \draw[thick] (0,0) .. controls (1,0.9) and (2.5,1.6) .. (4.8,2.0);
+  \draw[thick] (0,0) .. controls (-1,0.9) and (-2.5,1.6) .. (-4.8,2.0);
+  \node[right] at (4.8,2.0) {\small complexity};
+
+  % RSVP local basins (dashed circles at distributed positions)
+  \foreach \x/\y in {-3.8/1.7, -1.6/0.8, 1.4/0.7, 3.5/1.6} {
+    \draw[dashed, gray] (\x,\y) circle (0.45);
+    \filldraw[gray] (\x,\y) circle (1.8pt);
+  }
+  \node[above=2pt] at (-3.8,2.15) {\small\itshape local basin};
+  \node[above=2pt] at (3.5,2.05) {\small\itshape local basin};
+\end{tikzpicture}
+\caption{Barbour's bidirectional Janus geometry (solid) contrasted with
+RSVP distributed local admissibility extrema (dashed). RSVP requires no
+privileged global pivot; admissibility basins recur across the plenum.}
+\end{figure}
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Complexity and the Arrow of Time}
+
+\subsection{The Boltzmann Box and Its Limits}
+
+Barbour's critique of entropy centers on confinement. Classical
+thermodynamics emerged from systems enclosed within boundaries — steam
+engines, gases in containers, mechanically isolated volumes. Under such
+conditions, systems evolve toward equilibrium distributions, and entropy
+becomes associated with increasing uniformity.
+
+Barbour argues this intuition fails entirely for unconfined gravitational
+systems. Gravity naturally amplifies clustering rather than suppressing it.
+A gas in a box spreads; a gravitational system collapses into structure.
+Applying box-thermodynamics to cosmology therefore produces what Barbour
+regards as a systematic distortion: the universe's increasing complexity gets
+misread as entropy increase rather than recognized as relational
+differentiation.
+
+To formalize this inversion, Barbour introduces \emph{entaxy} — a measure
+of the admissible volume of relational configuration space corresponding to
+a given level of structural organization. As the universe moves away from
+the Janus Point, entaxy decreases while complexity increases. Structure is
+not disorder; it is organized relational specificity.
+
+This is a strong and largely correct criticism of naive thermodynamic
+cosmology. Gravitational entropy has always been conceptually anomalous
+precisely because gravity produces structure rather than diffusion. Barbour
+geometrizes this anomaly rather than dismissing it.
+
+\subsection{The Limits of Entaxy}
+
+Yet entaxy remains fundamentally descriptive.
+
+It explains why clustering emerges statistically in unconfined gravitational
+systems. It does not explain why coherent structure persists dynamically —
+why some configurations remain recursively stable across scales while others
+collapse, decohere, or dissipate. Entaxy tracks the growth of structural
+differentiation, but it provides no mechanism by which the system avoids
+two failure modes: terminal rigidity (over-concentrated, causally isolated
+clusters) and diffusive dissolution (structures that differentiate but
+cannot maintain internal coherence).
+
+This is the central gap between Barbour's framework and an admissibility
+theory.
+
+\subsection{The Lamphron–Lamphrodyne Duality}
+
+RSVP addresses this gap through the lamphron–lamphrodyne duality — two
+operationally defined pressures governing the dynamics of structural
+persistence.
+
+\textbf{Lamphron} designates the differentiation pressure: the tendency for
+systems to generate localized structure, constrain relational identity, form
+stable memory configurations, and specialize toward predictive specificity.
+Operationally, lamphron corresponds to local trajectory specialization that
+increases admissibility resolution — the system narrows its accessible future
+states by committing to particular relational configurations.
+
+\textbf{Lamphrodyne} designates the reintegration pressure: the
+redistributive and smoothing dynamics that prevent terminal rigidity.
+Operationally, lamphrodyne corresponds to the entropy-redistribution
+dynamics required when a configuration becomes recursively overconstrained
+— when its internal coherence can no longer be maintained without external
+admissibility exchange. A configuration under lamphrodyne pressure must
+redistribute information and energy across scales to remain dynamically
+legible.
+
+Together, these pressures produce what might be called a \emph{breathing}
+cosmology. Unlike Barbour's one-way trajectory from uniformity to
+clustering, RSVP describes an ongoing cycle in which structure is
+continuously vetted against its capacity to remain recursively admissible.
+
+\subsection{Persistence as the Physically Meaningful Quantity}
+
+This leads to the central claim distinguishing RSVP from both classical
+thermodynamics and Barbour's entaxy framework:
+
+\begin{quote}
+\itshape
+Only recursively admissible configurations persist.
+\end{quote}
+
+The arrow of time therefore ceases to be merely the direction of increasing
+clustering, complexity, or entaxy decrease. It becomes the direction in
+which predictive continuity remains constructible — the direction in which
+the lamphron–lamphrodyne balance permits ongoing structural stabilization
+rather than terminal collapse or dissolution.
+
+This separates three distinct pictures of cosmological directionality:
+
+Standard thermodynamics holds that systems evolve toward equilibrium;
+Barbour's framework holds that systems evolve toward clustering complexity;
+RSVP holds that systems evolve toward recursively maintainable admissibility
+regimes. These are not equivalent descriptions. A crystal is highly ordered; a star
+is dynamically structured; a hurricane is locally coherent; a biosphere is
+recursively stabilized. Only the last constitutes persistence in the RSVP
+sense.
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{The Emergence of Reference: Projection and Constraint}
+
+\subsection{Kepler Pairs as Emergent Clocks}
+
+One of Barbour's most important insights concerns the genesis of
+measurement. As gravitational systems evolve away from the Janus Point,
+particles form stable Kepler pairs — gravitationally bound subsystems that
+function simultaneously as rods, clocks, and compasses. Measurement
+therefore emerges from dynamical stabilization rather than being imposed
+from outside.
+
+This is a profound observation. Clocks are not coordinate devices
+superimposed on physics. They are dynamically stabilized relational
+attractors — structures that persist long enough to serve as reference
+baselines for other structures.
+
+\subsection{The Projection Formalism}
+
+RSVP formalizes this through the projection operator:
+
+\[
+  \proj : \Xtraj \;\longrightarrow\; \Madm
+\]
+
+Here \(\Xtraj\) represents the underlying high-dimensional trajectory space
+of all dynamically possible paths, while \(\Madm\) represents the compressed
+admissibility manifold — the set of trajectories that remain operationally
+accessible given the system's current constraint structure.
+
+Barbour's shape space can be interpreted as an early relational form of such
+a projection geometry. His central move — quotienting out translations,
+rotations, and absolute scale to retain only relational configurations — is
+mathematically close to the RSVP compression operator. Both frameworks
+reduce redundant coordinates and preserve only dynamically meaningful
+relational structure.
+
+\subsection{Projection as Cosmological Grammar}
+
+However, RSVP introduces a claim that Barbour's framework does not make
+explicit: projections are dynamically consequential. Compression changes
+future admissibility conditions.
+
+Consider observational cosmology itself. Once the universe is interpreted
+through the grammar of metric expansion, subsequent theoretical trajectories
+become trapped within expansion-compatible explanatory manifolds. Problems
+such as dark matter, dark energy, inflation, and the horizon problem then
+appear as downstream stabilization artifacts of the original projection
+choice — attempts to preserve coherence within the constraints set by the
+compressed representation.
+
+This is not a criticism of metric expansion as such. It is an illustration
+of a general principle: the choice of projection manifold determines which
+futures remain conceptually accessible. A measuring device, a coordinate
+system, and a theoretical framework all function as projection operators
+that constrain subsequent admissibility.
+
+Measurement does not passively record reality. It participates in its
+stabilization. Reference frames are not descriptive tools; they are active
+operators of recursive persistence, trapping future trajectories into
+specific admissibility namespaces.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=2.6cm,
+    every node/.style={align=center},
+    box/.style={draw, rectangle, minimum width=3cm, minimum height=1cm,
+                font=\small}
+]
+  \node[box] (X) {\(\Xtraj\)\\[2pt]Trajectory Space};
+  \node[box, right=of X] (M) {\(\Madm\)\\[2pt]Admissibility Manifold};
+  \node[box, dashed, below=2cm of M] (F)
+        {Expansion-Compatible\\Namespace};
+
+  \draw[-{Latex[length=3mm]}, thick] (X) -- node[above]{\(\proj\)} (M);
+  \draw[-{Latex[length=3mm]}, thick] (M) -- (F);
+  \draw[dotted, thick] (X) to[bend right=30]
+        node[below, font=\small\itshape]{inaccessible futures} (F);
+\end{tikzpicture}
+\caption{The projection operator \(\proj\) compresses total trajectory space
+\(\Xtraj\) into the admissibility manifold \(\Madm\), constraining which
+future explanatory structures remain accessible. The dashed box illustrates
+how a particular projection grammar (here, metric expansion) traps subsequent
+theoretical development within a specific namespace.}
+\end{figure}
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{The Localist Turn: Event-Level Admissibility}
+
+\subsection{Against Global Reconstruction}
+
+One of the deepest assumptions shared by both conventional signal processing
+and conventional cosmology is the assumption of global reconstruction.
+Raw events are aggregated into large representational buffers and only then
+transformed into coherent structure through global operations. In signal
+processing this appears through Fourier analysis and spectral decomposition.
+In cosmology it appears through globally coordinated metric descriptions,
+universal state functions, and reconstruction of cosmic history through
+large-scale geometric inference.
+
+This methodology implicitly assumes that coherence is something recovered
+\emph{after} aggregation.
+
+RSVP challenges this assumption at the architectural level.
+
+In recursively admissible systems, coherence already exists at the event
+layer itself. Stable recurrence patterns do not need to be globally solved
+because admissible timing relations are locally preserved through recursive
+constraint filtering. The system does not reconstruct coherent structure
+through a global transform; it recognizes structure through persistent local
+parity, interval stability, and admissible recurrence.
+
+The distinction is not merely computational. It is ontological.
+
+A representation-first architecture assumes that reality becomes meaningful
+only after sufficient global aggregation. A persistence-first architecture
+assumes that meaningful structure emerges directly through local recursive
+stabilization.
+
+\subsection{Shape Space and Local Persistence}
+
+This clarifies the central divergence between Barbour's relational cosmology
+and the RSVP framework.
+
+Barbour's shape dynamics still presupposes a globally coherent trajectory
+through relational configuration space. Complexity is defined through the
+global organization of the system as a whole, and the Janus Point functions
+as a distinguished geometric extremum coordinating the emergence of temporal
+directionality.
+
+RSVP instead treats large-scale structure as the emergent consequence of
+distributed local admissibility relations. Geometry is not solved globally
+and then imposed downward. It emerges upward from recursively stabilized
+constraint structures operating directly at the event level.
+
+This transforms the role of cosmological coordination entirely. Reference
+frames become residual stabilization artifacts rather than pre-existing
+coordinate systems. Cosmological regularity becomes the consequence of
+distributed admissibility filtering rather than globally synchronized
+evolution. Memory becomes a recursively accessible trajectory preserved by
+operational continuity rather than a passive storage of representations.
+
+The universe therefore behaves less like a globally integrated equation and
+more like a locality-preserving recursive filter.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.7]
+  % Background grid
+  \foreach \x in {0,...,7} {
+    \foreach \y in {0,...,7} {
+      \draw[gray!40] (\x,\y) rectangle ++(1,1);
+    }
+  }
+  % Central event
+  \filldraw[black] (3.5,3.5) circle (5pt);
+  \node[above=6pt, font=\small] at (3.5,3.5) {event};
+  % Propagation ripples
+  \draw[dashed, gray!70] (3.5,3.5) circle (1.3);
+  \draw[dashed, gray!50] (3.5,3.5) circle (2.2);
+  \draw[dashed, gray!30] (3.5,3.5) circle (3.1);
+  % Local stabilization arrows
+  \draw[-{Latex[length=2mm]}, thick] (3.5,3.5) -- (4.5,4.3);
+  \draw[-{Latex[length=2mm]}, thick] (3.5,3.5) -- (2.4,4.2);
+  \draw[-{Latex[length=2mm]}, thick] (3.5,3.5) -- (4.4,2.6);
+  \draw[-{Latex[length=2mm]}, thick] (3.5,3.5) -- (2.5,2.7);
+  % Labels
+  \node[font=\small\itshape] at (6.5,7.2) {admissibility};
+  \node[font=\small\itshape] at (6.5,6.7) {propagation};
+\end{tikzpicture}
+\caption{Local event-level admissibility propagation. Coherence emerges
+through recursive neighbourhood stabilization rather than global
+reconstruction. Dashed rings indicate successive admissibility horizons;
+arrows indicate locally constrained trajectory directions.}
+\end{figure}
+
+\subsection{Persistence as the Fundamental Invariant}
+
+The resulting shift is profound. Global descriptions do not disappear because
+they are false; they become secondary accounts of structures that are already
+locally stabilized.
+
+The primary invariant is no longer global geometry but recursive persistence
+itself.
+
+Structures survive because they remain admissible across scales. Local
+constraint systems continuously negotiate stabilization without requiring a
+single centralized reconstruction of total state. The cosmos persists not
+because it is coordinated by a universal supervisory geometry, but because
+distributed recursive consistency-management prevents admissible structures
+from vanishing faster than they can reintegrate.
+
+This provides a very different image of physical law. Laws cease to appear
+as opaque global commands imposed upon matter from outside. They become
+emergent regularities generated by locality-preserving recursive persistence.
+
+The universe becomes legible precisely because persistence remains locally
+repairable.
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Records as Operational Constraints}
+
+\subsection{Barbour's Geometric Records}
+
+Barbour frequently treats records as fossilized relational traces embedded
+within present configurations. The past survives through stable geometric
+correlations preserved in current arrangements of matter. Memory is a kind
+of structural sediment — the present configuration carries the imprint of
+prior shapes.
+
+This is geometrically elegant and philosophically significant. It dissolves
+the traditional asymmetry between past and future by locating temporal
+evidence entirely within present structure. There is no need for a
+metaphysical "passage of time"; only configurations that encode differential
+information about prior states.
+
+\subsection{The Admissibility Log}
+
+RSVP radicalizes this insight in a direction Barbour does not pursue.
+
+Records are not merely traces of prior states. They are operational
+constraints required for future continuity. The Admissibility Log,
+\(\admlog\), formalizes this principle: a record exists not because it
+describes a past event, but because maintaining it preserves recursive
+consistency across future trajectories.
+
+The distinction matters enormously.
+
+In Barbour's account, a record is a geometric artifact — something left
+behind by prior dynamical evolution, epistemically available to present
+observers. In the RSVP account, a record is a \emph{functional constraint}
+— something the system must maintain in order to remain recursively
+admissible. A record that ceases to be operationally compatible with the
+system's future trajectory is not merely lost information; it is a structural
+failure that changes which futures remain accessible.
+
+Memory, on this account, is not retrospective. It is infrastructural.
+
+\subsection{Time as Directional Record-Utility}
+
+This reframes the nature of time itself.
+
+Time is not fundamentally the accumulation of complexity. Nor is it the
+ordering of successive relational shapes. Time, in the RSVP picture,
+becomes the directional persistence of usable records — the direction in
+which prior constraints remain operationally functional for maintaining
+future admissibility.
+
+A system experiences temporal continuity insofar as its admissibility log
+remains coherently extensible. When prior constraints can no longer be
+integrated into future trajectories — when the records lose operational
+compatibility — the system undergoes a form of structural rupture that
+constitutes, in a precise sense, temporal discontinuity.
+
+Causality follows from this picture. Causes are not merely prior events.
+They are persistent admissibility constraints governing which futures remain
+accessible. The arrow of time is therefore the direction of
+record-constructibility: the direction in which the admissibility log
+supports rather than blocks future trajectory space.
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Cognition as Recursive Admissibility}
+
+\subsection{From Cosmology to Cognitive Architecture}
+
+The transition from cosmological admissibility to cognitive architecture is
+not a change of subject. It is the recognition that the same organizational
+operators recur across scales because persistence itself obeys shared
+accessibility constraints.
+
+Consider what a cognitive system must do to remain operationally functional.
+It must maintain an admissibility log — a record structure that preserves
+inferential continuity across successive states. It must project
+high-dimensional environmental trajectories onto compressed manifolds that
+remain actionable. It must balance lamphron pressure (the drive toward
+increasingly specific predictive representations) against lamphrodyne
+pressure (the need to remain flexible enough to revise constraints without
+structural collapse).
+
+A mind, on this account, is not a container of representations. It is a
+recursively stabilized admissibility manifold — a system that persists by
+continuously negotiating the compression-reintegration balance.
+
+\subsection{Memory, Measurement, and Predictive Continuity}
+
+Barbour's Kepler pairs and RSVP's projection operators converge here in
+a striking way. Both treat measurement as emergent stabilization rather
+than external imposition. Both recognize that clocks, rods, and reference
+frames are persistent relational attractors rather than coordinate
+conventions.
+
+In cognitive terms: perceptual systems are not passive recorders. They are
+projection operators that collapse environmental trajectory space into
+admissible action manifolds. Memory is not archival storage; it is the
+operational constraint structure that keeps future inference admissible.
+Attention is lamphron pressure — the selective specialization that increases
+predictive resolution at the cost of narrowing accessible futures.
+
+The pathological failure modes are symmetric. Over-specialization (excessive
+lamphron pressure) produces rigid, non-revisable predictive models —
+cognitive brittleness. Over-generalization (excessive lamphrodyne pressure)
+produces diffuse, incoherent representations incapable of maintaining
+predictive continuity — cognitive dissolution.
+
+The healthy cognitive system, like the healthy cosmological structure, is one
+that maintains the lamphron–lamphrodyne balance across scales — recursively
+admissible at every level of description.
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Against the Janus Reversal}
+
+\subsection{The Problem of Bidirectional Time}
+
+One of the most philosophically striking claims in Barbour's framework is
+that temporal arrows emerge bidirectionally from the Janus Point. As the
+system evolves away from the point of minimal complexity, observers on both
+sides experience what appears locally to be a forward-moving arrow of time.
+The resulting picture is not a multiverse but what Barbour calls a
+\emph{bi-universe}: two temporally opposed branches emerging from a common
+state of maximal uniformity.
+
+The elegance of this construction is undeniable. It preserves the time
+symmetry of the underlying equations while simultaneously accounting for the
+experienced asymmetry of temporal direction. Yet the construction introduces
+a deep conceptual difficulty.
+
+The Janus reversal presupposes that the universe possesses a globally
+coherent trajectory capable of being meaningfully partitioned into two
+temporal halves. The universe must therefore already exist as a unified
+meta-history before either branch can inherit its local arrow.
+
+In effect, the framework removes absolute time only to reintroduce a hidden
+global chronology through geometric structure itself. The Janus Point is
+defined as the moment when global shape reaches maximal uniformity — but
+this already presupposes that ``global state'' is a uniquely identifiable and
+coherent object. That presupposition is not trivially available in a fully
+relational framework.
+
+RSVP rejects this requirement. Time does not reverse at a Janus point
+because recursive admissibility does not require a globally mirrored
+trajectory. Temporal direction emerges locally from the preservation of
+predictive continuity within recursively stabilized structures. The arrow of
+time is therefore not generated by motion away from a universal minimum, but
+by the directional extension of admissibility-preserving records.
+
+The distinction is precise:
+\begin{align*}
+\text{Barbour:}&\quad \text{Minimal Complexity} \;\longrightarrow\; \text{Bidirectional Time} \\
+\text{RSVP:}&\quad \text{Recursive Persistence} \;\longrightarrow\; \text{Directional Continuity}
+\end{align*}
+
+Temporal asymmetry does not arise because the universe expands away from a
+special point. It arises because recursively admissible structures can only
+maintain coherent predictive extension in one operational direction at a
+time.
+
+\subsection{Persistence Without Reversal}
+
+The RSVP framework therefore removes the need for a cosmological mirror
+branch entirely. There is no requirement for time to face both ways from a
+privileged geometric pivot because admissibility itself already generates
+directionality.
+
+A record either remains operationally extensible or it does not. A
+constraint either preserves predictive continuity or it fails. The arrow of
+time is simply the direction in which admissibility logs remain recursively
+constructible.
+
+This removes one of the most problematic implications of Janus cosmology:
+that the universe requires a globally coordinated temporal bifurcation to
+produce local asymmetry. RSVP instead treats temporal asymmetry as a local
+consequence of recursive stabilization.
+
+Time does not reverse. Structures persist.
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Void Dominance and Topological Redistribution}
+
+\subsection{Expansion Without Metric Inflation}
+
+Barbour correctly recognizes that observational cosmology directly observes
+changes in relational structure rather than an externally measurable
+expansion through a fixed metric backdrop. RSVP extends this critique
+further by questioning whether cosmological evolution should be interpreted
+primarily as metric expansion at all.
+
+In the RSVP picture, the universe does not fundamentally grow larger.
+Rather, its admissibility structure redistributes.
+
+What conventional cosmology interprets as expansion increasingly appears as
+a shift in topological dominance: void regions progressively occupy larger
+fractions of the relational accessibility landscape while dense structures
+become increasingly filamentary and sparse. Galactic superstructures do not
+separate because space itself stretches. Instead, recursively admissible
+low-density regions become dominant relative to highly constrained baryonic
+configurations. The visible universe appears more diffuse because
+admissibility pathways favor smoothing and redistribution over terminal
+concentration.
+
+The ontological distinction across the three frameworks is therefore:
+\begin{align*}
+\text{Standard cosmology:}&\quad \text{Space expands} \\
+\text{Barbour:}&\quad \text{Shape complexity increases} \\
+\text{RSVP:}&\quad \text{Accessibility structure redistributes}
+\end{align*}
+
+The universe is not primarily a metric object. It is a recursively
+negotiated admissibility field whose large-scale behavior is governed by
+the ongoing redistribution of structural coherence.
+
+\subsection{Filamentary Dissolution}
+
+As void dominance increases, galactic filaments become progressively thinner
+and less dynamically influential. Dense matter distributions appear
+increasingly wispy relative to the growing dominance of low-density
+accessibility regions.
+
+This process is not thermodynamic decay in the conventional sense.
+It is a redistribution of admissibility gradients. Highly localized
+structures lose their capacity to maintain strong causal differentiation
+relative to the increasing smoothness of the surrounding plenum.
+
+The universe therefore evolves toward large-scale topological smoothing
+without requiring either total collapse or runaway metric expansion.
+This avoids two standard cosmological endpoints simultaneously: the
+gravitational singularity of terminal collapse, and the irreversible
+dilution implied by metric heat death.
+
+Instead, RSVP predicts progressive relational homogenization through
+admissibility redistribution — a smoothing that is neither catastrophic
+nor entropic in the classical sense.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.88]
+  % Early dense filamentary structure (left)
+  \draw[thick]
+    (-5.5,0) -- (-4.5,0.9) -- (-3.6,0.2) -- (-2.8,1.1) -- (-2.0,0);
+  \foreach \x/\y in {-5.5/0,-4.5/0.9,-3.6/0.2,-2.8/1.1,-2.0/0} {
+    \filldraw (\x,\y) circle (2.5pt);
+  }
+  \node[font=\small\itshape, above=14pt] at (-3.8,0.9)
+        {dense filamentary epoch};
+
+  % Transition arrow
+  \draw[-{Latex[length=4mm]}, thick] (-1.4,0.5) -- (0.2,0.5);
+  \node[font=\small, above=2pt] at (-0.6,0.5) {$t \to \infty$};
+
+  % Late wispy structure (right)
+  \draw[dashed, gray]
+    (0.8,0) -- (1.8,0.35) -- (2.9,0.15);
+  \foreach \x/\y in {0.8/0,1.8/0.35,2.9/0.15} {
+    \filldraw[gray] (\x,\y) circle (1.5pt);
+  }
+
+  % Void regions
+  \draw[dotted, gray!70] (1.8,1.5) circle (1.25);
+  \draw[dotted, gray!70] (2.2,-1.3) circle (1.55);
+  \node[font=\small\itshape, gray] at (1.8,3.0) {void dominance};
+\end{tikzpicture}
+\caption{Topological redistribution in RSVP cosmology. Dense filamentary
+structure (left) becomes progressively attenuated as low-density
+admissibility regions (dotted) dominate the accessible relational landscape.
+The transition is not metric expansion but structural redistribution.}
+\end{figure}
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Poincar\'e Smoothing and the Return of Symmetry}
+
+\subsection{Smoothness Without Maximum Disorder}
+
+One of the deepest differences between RSVP cosmology and both standard
+thermodynamics and Barbour's entaxy framework concerns the asymptotic fate
+of structure.
+
+Barbour treats increasing complexity as effectively monotonic. The universe
+moves away from maximal uniformity toward progressively richer clustering
+and differentiation, with no developed principle of reintegration.
+
+RSVP instead predicts that sufficiently long timescales produce large-scale
+admissibility smoothing. After Poincar\'{e}-like recurrence intervals,
+recursively unstable distinctions are gradually eliminated. Dense structures
+dissolve, filaments attenuate, and admissibility gradients flatten. Yet
+this process does not produce maximum disorder in the thermodynamic sense.
+
+Instead, the universe approaches a state of maximal relational redundancy.
+
+This distinction is essential. A thermodynamic heat death corresponds to the
+exhaustion of usable energy gradients within a statistical ensemble. RSVP
+smoothing instead corresponds to the collapse of meaningful
+distinguishability itself: variations become operationally identical because
+their admissibility consequences converge. The resulting state resembles a
+crystal lattice more closely than a thermal gas.
+
+\subsection{The Black Hole Era as Admissibility Purification}
+
+In conventional cosmology, the black hole era represents the exhaustion of
+large-scale free-energy gradients. Galaxies disperse, stars decay, and black
+holes eventually evaporate through Hawking radiation, leaving the universe
+in an increasingly dilute thermal equilibrium.
+
+RSVP interprets this era differently.
+
+The late cosmological regime is not merely the disappearance of matter
+structure. It is the progressive elimination of unstable admissible
+distinctions. Black holes act not as entropy sinks in the conventional
+thermodynamic sense, but as long-duration smoothing operators that remove
+recursively unsustainable asymmetries from the admissibility field. They are
+better understood as extreme local admissibility concentration regimes
+participating in the same redistribution dynamics that governs all structural
+evolution within the plenum.
+
+Over cosmological timescales, localized structures lose their capacity to
+preserve independent causal differentiation. Filaments attenuate, constraint
+gradients flatten, and recursively isolated structures dissolve back into the
+surrounding admissibility field.
+
+The universe therefore undergoes a form of admissibility purification.
+What disappears is not merely matter concentration, but operationally
+meaningful distinction itself. The black hole era does not terminate
+cosmological evolution; it acts as a gigantic filtering process through which
+distinctions incapable of remaining recursively integrated are progressively
+eliminated.
+
+\subsection{Lawfulness Without Structure}
+
+Yet the disappearance of structure does not imply the disappearance of
+lawfulness.
+
+In RSVP, laws are not external prescriptions imposed upon matter. They are
+the invariant admissibility relations that survive recursive smoothing.
+As cosmological evolution eliminates unstable distinctions, progressively
+fewer configurations remain operationally differentiable. Matter structures
+fade, but admissibility invariants persist.
+
+This produces a crucial inversion of standard thermodynamic logic.
+
+The asymptotic universe is not maximally chaotic. It is maximally redundant.
+Remaining configurations increasingly belong to the same admissibility
+equivalence classes because their future trajectory consequences converge.
+The universe progressively forgets particular structures while preserving
+the consistency relations governing admissible transformation itself.
+
+\begin{center}
+\itshape
+Objects disappear.\\
+Persistence survives.
+\end{center}
+
+The final cosmological state therefore retains lawfulness even after nearly
+all conventional structure has dissolved. Laws persist not because they are
+encoded in surviving objects, but because they are the invariant relational
+constraints that recursive smoothing cannot eliminate.
+
+In a sense, the universe ends not as matter but as consistency.
+
+
+
+In the asymptotic RSVP regime, the universe approaches an effectively
+scale-invariant smoothing state in which any remaining variations become
+recursively equivalent under admissibility transformations. Distinctions no
+longer meaningfully alter future trajectory accessibility.
+
+This produces an unusual inversion of entropy logic.
+
+Conventionally, maximal smoothness is associated with maximal entropy. Within
+RSVP, however, a perfectly recursive lattice possesses extremely low effective
+entropy precisely because admissible distinctions have collapsed into
+equivalence classes. The state is not one of maximal disorder but of maximal
+informational gauge redundancy.
+
+The universe does not end in chaos. It ends in recursive redundancy.
+
+This asymptotic state is not a return to initial conditions in any cyclical
+cosmological sense, nor is it a reversal through a Janus pivot. The
+late-universe lattice is historically generated through recursive smoothing
+and admissibility redistribution. Its symmetry is emergent rather than
+primordial — the residue of long-duration constraint selection rather than
+a recapitulation of origin.
+
+\subsection{Geometry as the Residue of Persistence}
+
+This clarifies the deepest inversion separating RSVP from Barbour's
+relational cosmology.
+
+For Barbour, geometry generates persistence: the relational structure of
+shape space determines how complexity evolves, and persistence is what
+follows from dynamical stability within that geometry.
+
+For RSVP, recursive persistence generates effective geometry: stable
+geometric structure is the stabilized shadow left behind by admissibility
+relations that survived recursive constraint filtering across cosmological
+timescales.
+
+Geometry is therefore not fundamental ontology. It is stabilized persistence
+made visible. And smoothness — which for Barbour marks only the improbable
+beginning — marks for RSVP both the beginning and the asymptotic limit of
+cosmological evolution: two faces of the same admissibility condition,
+separated by the entire history of recursive structure formation.
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Conclusion: Admissibility as the Architecture of Persistence}
+
+The transition from Barbour's relational cosmology to RSVP's admissibility
+geometry represents a genuine shift in the philosophy of physics — not merely
+an alternative cosmological model, but a reconception of what physics is for.
+
+Barbour dismantles many inherited assumptions: absolute scale, absolute
+temporal background, externally imposed reference frames. His relational
+reduction is philosophically serious and technically precise. The Janus Point
+represents a real contribution to understanding how temporal asymmetry can
+emerge without stipulated initial conditions.
+
+RSVP extends this dismantling by questioning the status of physical law
+itself:
+
+In standard cosmology, laws generate trajectories; in Barbour,
+relational geometry generates temporal structure; in RSVP, recursive
+admissibility generates effective lawfulness.
+
+Laws become emergent operators of consistency management rather than
+transcendent prescriptions imposed upon matter. The universe increasingly
+resembles a self-organizing protocol for preserving recursively stable
+structure across scales — not because it "wants" structure, but because
+only structure that remains admissible persists long enough to appear
+as structure at all.
+
+The Janus Point survives within this framework not as a universal origin,
+but as a local admissibility extremum — a region of the landscape where
+differentiation pressure has temporarily stabilized near maximum symmetry.
+Barbour's shape space survives as a special case of the projection
+formalism, with the crucial addition that compression is dynamically
+consequential. His geometric records survive as operational constraints,
+with the crucial addition that memory is infrastructural rather than
+retrospective. His bi-universe does not survive: time does not reverse
+because directional continuity is a local consequence of recursive
+stabilization, not a global consequence of departure from a privileged pivot.
+
+The universe RSVP describes is neither the thermodynamic machine running
+toward equilibrium nor the geometric expansion process trending toward
+complexity. It is a continuously negotiated admissibility field that begins
+in approximate smoothness, differentiates through lamphron pressure, sustains
+structure through recursive admissibility management, redistributes
+accessibility as voids dominate and filaments attenuate, and asymptotically
+approaches a state of maximal relational redundancy — a crystal-lattice
+limit whose symmetry is emergent rather than primordial.
+
+Smoothness is both beginning and limit. Between them lies the entire history
+of recursive structure: the conditions for cosmological stability, cognitive
+coherence, and temporal experience turn out to be, at the appropriate level
+of abstraction, the same admissibility conditions — encountered at different
+scales of the same ongoing negotiation.
+
+\bigskip
+\begin{center}
+  \rule{60mm}{0.3pt}
+\end{center}
+
+%% ══════════════════════════════════════════════════════════════════════════
+\newpage
+\section{Further Directions}
+
+The foregoing argument establishes the philosophical architecture of RSVP
+admissibility theory. Several directions suggest themselves for rigorous
+extension of the framework into mathematically investigable territory. The
+following subsections identify the most consequential of these.
+
+\subsection{Admissibility as a Stability Functional}
+
+One of the unresolved questions in any recursive admissibility framework is
+whether admissibility can be formalized as a genuine dynamical functional
+rather than treated merely as a descriptive heuristic.
+
+The RSVP framework implicitly assumes that recursively stable structures
+occupy regions of trajectory space that minimize destructive inconsistency
+while preserving coherent future accessibility. This suggests the existence
+of a generalized admissibility functional \(\mathcal{L}[\Afield]\) whose
+evolution governs whether a configuration remains dynamically maintainable
+across scales.
+
+If such a functional exists, recursive persistence begins to resemble a
+Lyapunov-like stability principle:
+\[
+\frac{d\mathcal{L}}{dt} \leq 0.
+\]
+
+The significance of this possibility is substantial. It would imply that
+recursive admissibility is not simply a philosophical reinterpretation of
+survival, but a mathematically identifiable stability condition constraining
+which trajectories remain physically realizable. Establishing whether
+\(\mathcal{L}[\Afield]\) admits monotonic evolution — or identifying the
+conditions under which it fails to do so — would connect the admissibility
+flow directly to gradient-flow systems, renormalization group flows, and
+Lyapunov stability theory. In this picture, cosmological persistence,
+cognitive coherence, and measurement stability all become manifestations of
+the same underlying principle: the minimization of recursively destructive
+inconsistency.
+
+\subsection{Projection Blindness and Irrecoverable Compression}
+
+The RSVP projection operator does more than reduce representational
+complexity. It actively determines which futures remain operationally
+accessible.
+
+Once a trajectory space has been compressed into an admissibility manifold
+\(\proj : \Xtraj \to \Madm\), the discarded dimensions are not merely
+hidden — they may become operationally unrecoverable. The kernel of the
+projection,
+\[
+\ker(\proj),
+\]
+therefore represents not mathematical redundancy but lost trajectory
+accessibility: regions of configuration space that can no longer participate
+in future stabilization because the system's projection grammar has filtered
+them out.
+
+This has implications far beyond cosmology. Scientific paradigms, cognitive
+models, and measurement systems all generate projection-induced blindness.
+Once stabilization occurs within a compressed explanatory manifold, future
+reasoning inherits the admissibility structure of that compression. The
+system no longer merely describes reality; it operates within the
+constraints produced by the projection through which reality became legible.
+Formalizing \(\ker(\proj)\) as an information-destroying morphism would give
+precise content to notions of measurement collapse, historical
+irreversibility, and paradigm lock-in.
+
+\subsection{Coherence Before Reconstruction}
+
+Conventional reconstruction-based architectures assume that coherence is a
+property recovered only after sufficient aggregation. Signal-processing
+systems gather samples into large buffers, perform global transforms, and
+infer structure retrospectively from accumulated data.
+
+The RSVP framework proposes the inverse ordering. Coherence exists prior to
+reconstruction whenever local admissibility relations remain recursively
+stabilized. Structure does not emerge because a global transform discovers
+it; structure persists because local recursive constraints continuously
+preserve admissible relations. The ontological priority reverses:
+\[
+\text{Standard reconstruction:} \quad
+\text{aggregation} \;\to\; \text{coherence}
+\]
+\[
+\text{RSVP localism:} \quad
+\text{coherence} \;\to\; \text{stable aggregation}
+\]
+
+This distinction is fundamental rather than merely computational. In the
+RSVP picture, large-scale order is the macroscopic residue of locally
+persistent admissibility relations that never lost coherence in the first
+place. The actionable consequence is that toy simulations demonstrating
+local recurrence stabilization outperforming global reconstruction under
+noise and latency constraints would constitute direct experimental evidence
+for this ordering — and cellular-automata-scale models could already test
+it.
+
+\subsection{Equivalence Collapse and the Late Universe}
+
+The asymptotic smoothing regime described in Section~X should not be
+interpreted as the destruction of order, but as the progressive collapse of
+operationally meaningful distinction. As recursive smoothing proceeds,
+increasingly many trajectories become admissibly equivalent:
+\[
+d_{\Afield}(\gamma_1,\gamma_2) \to 0.
+\]
+
+This does not imply that all microscopic variation disappears. Rather, it
+means that remaining distinctions no longer alter future admissibility
+structure in physically meaningful ways. The late universe approaches a
+quotient-degenerate regime in which multiple configurations belong to the
+same operational equivalence class. The crystal-lattice limit is not perfect
+classical order; it is recursive smoothing that has eliminated distinctions
+producing different admissibility outcomes. The universe asymptotically
+forgets individuality while preserving consistency. Making this precise
+requires identifying the quotient structure \(\Omega/G_{\Afield}\) where
+\(G_{\Afield}\) denotes the group of admissibility-preserving
+transformations — a well-posed mathematical question whose answer would
+rigorously distinguish RSVP's asymptotic prediction from thermodynamic
+heat death.
+
+\subsection{Geometry as an Emergent Compression Layer}
+
+A central implication of the foregoing framework is that geometry may be
+secondary to recursive admissibility rather than foundational to it.
+
+In standard physical ontology, geometry provides the primary stage upon
+which matter evolves. In Barbour's framework, geometry becomes relational
+but retains explanatory priority through the structure of shape space. RSVP
+instead suggests that geometry is the stabilized compression layer produced
+by recursively persistent admissibility relations. Stable geometries survive
+because they minimize destructive inconsistency across scales. Spatial
+structure therefore behaves less like an externally existing arena and more
+like a dynamically maintained equivalence structure generated through
+recursive stabilization.
+
+The strongest eventual formalization of this claim would likely be
+categorical rather than metric: admissibility-preserving morphisms,
+gluing conditions across local patches, obstruction cancellation, and
+local-to-global consistency theorems are already implicit in the framework's
+architecture. In that formulation, geometry, cognition, measurement,
+lawfulness, and persistence become special cases of recursive constraint
+propagation across admissibility-preserving morphisms — and RSVP becomes
+most rigorous not as an alternative cosmology but as a generalized
+consistency geometry.
+
+%% ══════════════════════════════════════════════════════════════════════════
+\newpage
+\appendix
+\section*{Appendices}
+\addcontentsline{toc}{section}{Appendices}
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Recursive Admissibility Dynamics}
+
+This appendix sketches a minimal mathematical formalization of recursive
+admissibility within the RSVP framework. The goal is not to derive a fully
+predictive cosmology, but to specify the structural conditions under which
+recursive persistence can emerge as a dynamical invariant.
+
+Let the universe be represented by a trajectory space
+\[
+\Xtraj = \{ \gamma(t) \mid \gamma : \mathbb{R} \to \Omega \},
+\]
+where \(\Omega\) denotes the total relational configuration space.
+
+The admissibility field
+\[
+\Afield : \Omega \to \mathbb{R}_{\geq 0}
+\]
+assigns to each configuration a measure of recursively maintainable
+continuity. Configurations with low admissibility fail to preserve stable
+constraint propagation across scales, while high-admissibility regions
+support persistent structural coherence.
+
+The dynamical evolution of admissibility is written schematically as
+\[
+\frac{\partial \Afield}{\partial t}
+=
+\lambda \nabla^2 \Afield
+-
+\mu \|\nabla \Afield\|^2
++
+\nu \mathcal{C}(\Omega),
+\]
+where \(\lambda\) governs smoothing and reintegration dynamics
+(lamphrodyne pressure), \(\mu\) governs local specialization and constraint
+concentration (lamphron pressure), and \(\mathcal{C}(\Omega)\) represents
+recursive coherence production.
+
+The competition between the smoothing term and the specialization term
+determines whether a configuration remains recursively admissible.
+
+A stable admissibility basin satisfies
+\[
+\frac{\partial \Afield}{\partial t} \approx 0,
+\]
+while maintaining bounded curvature:
+\[
+\sup_{\Omega} \|\nabla^2 \Afield\| < \infty.
+\]
+
+Recursive persistence therefore corresponds not to static equilibrium but to
+metastable admissibility balance.
+
+The projection operator
+\[
+\proj : \Xtraj \to \Madm
+\]
+maps the full trajectory space into an admissibility manifold
+\[
+\Madm \subseteq \Omega
+\]
+containing only recursively accessible trajectories.
+
+The physically realized universe is therefore not the total trajectory space
+itself but the subset that survives recursive admissibility filtering:
+\[
+\Madm
+=
+\{ \gamma \in \Xtraj \mid \Afield(\gamma(t)) > \epsilon
+\quad \forall t \in I \},
+\]
+for some admissibility threshold \(\epsilon > 0\).
+
+This formalizes the central RSVP principle:
+
+\begin{quote}
+\itshape
+Persistence is not the default state of matter.
+It is the subset of trajectories capable of recursively preserving
+admissibility across scales.
+\end{quote}
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Projection Geometry and Admissibility Compression}
+
+Barbour's shape space construction removes redundant coordinates by
+quotienting relational configurations under translation, rotation, and
+scaling symmetries. RSVP generalizes this procedure by treating projection
+itself as dynamically consequential.
+
+Let \(\Omega\) denote the total relational configuration space and let
+\(G\) be a symmetry group acting on \(\Omega\). The quotient
+\[
+\Omega / G
+\]
+defines an equivalence structure in which physically redundant distinctions
+are identified. Barbour's shape space may therefore be represented as
+\[
+\mathbb{S}
+=
+\Omega / \mathrm{Sim}(3),
+\]
+where \(\mathrm{Sim}(3)\) denotes the similarity group generated by
+translations, rotations, and global scalings.
+
+RSVP extends this construction by introducing admissibility-weighted
+projection operators. Instead of treating all quotient directions as equally
+irrelevant, the RSVP projection selects trajectories according to recursive
+persistence criteria:
+\[
+\proj(\gamma)
+=
+\arg\max_{\eta \sim \gamma}
+\Afield(\eta),
+\]
+where \(\eta \sim \gamma\) denotes equivalence under
+admissibility-preserving transformations.
+
+Projection therefore ceases to be purely representational. It becomes
+dynamically selective. This induces an admissibility metric on trajectory
+space:
+\[
+d_{\Afield}(\gamma_1,\gamma_2)
+=
+\inf_{\phi \in G}
+\int
+\bigl|
+\Afield(\gamma_1(t))
+-
+\Afield(\phi \cdot \gamma_2(t))
+\bigr|
+\, dt.
+\]
+
+Two trajectories become effectively indistinguishable when their
+admissibility difference vanishes:
+\[
+d_{\Afield}(\gamma_1,\gamma_2) \to 0.
+\]
+
+The asymptotic RSVP universe therefore approaches an admissibility quotient
+regime in which increasingly many trajectories collapse into the same
+equivalence classes. The late universe is not maximally disordered; it is
+maximally quotient-redundant. Distinctions disappear because
+admissibility-preserving transformations map remaining trajectories into
+operational equivalence classes.
+
+%% ══════════════════════════════════════════════════════════════════════════
+\section{Asymptotic Smoothing and the Crystal-Lattice Limit}
+
+Let \(\rho(x,t)\) denote the relational differentiation density of the
+plenum. Regions of high \(\rho\) correspond to strong localized structure,
+constraint concentration, and causal differentiation. The long-duration
+smoothing dynamics may be modeled through a nonlinear admissibility flow:
+\[
+\frac{\partial \rho}{\partial t}
+=
+D \nabla^2 \rho
+-
+\alpha \rho^n
++
+\beta \mathcal{R}(\rho),
+\]
+where \(D \nabla^2 \rho\) represents large-scale smoothing,
+\(\alpha \rho^n\) represents the decay of recursively unstable
+concentrations, and \(\mathcal{R}(\rho)\) represents recursive
+stabilization feedback.
+
+During the structure-dominated epoch,
+\[
+\beta \mathcal{R}(\rho) > \alpha \rho^n,
+\]
+allowing galaxies, stars, and coherent structures to persist.
+
+During the asymptotic smoothing regime,
+\[
+D \nabla^2 \rho + \alpha \rho^n \gg \beta \mathcal{R}(\rho),
+\]
+and recursively unstable distinctions progressively dissolve.
+
+The system evolves toward an admissibility fixed point
+\[
+\rho(x,t) \to \rho_\infty, \qquad \nabla \rho_\infty \to 0.
+\]
+
+Unlike conventional thermal equilibrium, \(\rho_\infty\) does not correspond
+to maximum statistical disorder. Instead, the asymptotic state satisfies an
+admissibility equivalence condition:
+\[
+\forall\, x_i, x_j \in \Omega, \qquad \proj(x_i) = \proj(x_j),
+\]
+meaning that remaining distinctions no longer alter future admissibility
+structure.
+
+The late universe therefore approaches a quotient-symmetric state in which
+all remaining admissible configurations belong to the same operational
+equivalence class:
+
+\begin{quote}
+\itshape
+The universe does not end in chaos.
+It ends in recursive redundancy.
+\end{quote}
+
+The asymptotic cosmological state is therefore best interpreted not as heat
+death but as admissibility degeneracy: the collapse of meaningful
+distinguishability under recursive smoothing.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.0]
+  % Initial distinct trajectories (top row)
+  \foreach \x/\lbl in {-4/x_1, -2/x_2, 0/x_3, 2/x_4, 4/x_5} {
+    \filldraw (\x,2.4) circle (2.5pt);
+    \node[above=3pt, font=\small] at (\x,2.4) {\(\lbl\)};
+  }
+  % Convergence arrows
+  \foreach \x in {-4,-2,0,2,4} {
+    \draw[-{Latex[length=2mm]}, gray!80] (\x,2.2) -- (0,0.6);
+  }
+  % Final equivalence class
+  \draw[thick] (0,0) circle (0.9);
+  \node[font=\small] at (0,0) {\(\proj(x_i)\)};
+  \node[font=\small\itshape, below=14pt] at (0,0)
+        {admissibility equivalence class};
+\end{tikzpicture}
+\caption{Asymptotic recursive smoothing collapses distinguishable
+trajectories \(x_1,\ldots,x_5\) into a shared admissibility equivalence
+class. The late universe is not maximally disordered but maximally
+quotient-redundant: distinctions cease to produce materially different
+admissible futures.}
+\end{figure}
+
+%% ══════════════════════════════════════════════════════════════════════════
+\newpage
+\begin{thebibliography}{99}
+
+\bibitem{Barbour2020}
+Julian Barbour,
+\textit{The Janus Point: A New Theory of Time},
+Basic Books, 2020.
+
+\bibitem{BarbourBertotti1982}
+Julian Barbour and Bruno Bertotti,
+``Mach's Principle and the Structure of Dynamical Theories,''
+\textit{Proceedings of the Royal Society A},
+vol.~382, no.~1783, pp.~295--306, 1982.
+
+\bibitem{Barbour2003}
+Julian Barbour,
+``Scale-Invariant Gravity: Particle Dynamics,''
+\textit{Classical and Quantum Gravity},
+vol.~20, pp.~1543--1570, 2003.
+
+\bibitem{BarbourKoslowskiMercati2014}
+Julian Barbour, Tim Koslowski, and Flavio Mercati,
+``Identification of a Gravitational Arrow of Time,''
+\textit{Physical Review Letters},
+vol.~113, no.~18, 181101, 2014.
+
+\bibitem{Mercati2018}
+Flavio Mercati,
+\textit{Shape Dynamics: Relativity and Relationalism},
+Oxford University Press, 2018.
+
+\bibitem{Mach1893}
+Ernst Mach,
+\textit{The Science of Mechanics},
+Open Court Publishing, 1893.
+
+\bibitem{Boltzmann1896}
+Ludwig Boltzmann,
+\textit{Lectures on Gas Theory},
+University of California Press, 1896.
+
+\bibitem{Penrose1979}
+Roger Penrose,
+``Singularities and Time-Asymmetry,''
+in \textit{General Relativity: An Einstein Centenary Survey},
+ed.\ S.~W. Hawking and W.~Israel,
+Cambridge University Press, 1979.
+
+\bibitem{Penrose2004}
+Roger Penrose,
+\textit{The Road to Reality},
+Jonathan Cape, 2004.
+
+\bibitem{Hawking1975}
+Stephen W. Hawking,
+``Particle Creation by Black Holes,''
+\textit{Communications in Mathematical Physics},
+vol.~43, pp.~199--220, 1975.
+
+\bibitem{Bekenstein1973}
+Jacob D. Bekenstein,
+``Black Holes and Entropy,''
+\textit{Physical Review D},
+vol.~7, no.~8, pp.~2333--2346, 1973.
+
+\bibitem{Carroll2010}
+Sean Carroll,
+\textit{From Eternity to Here},
+Dutton, 2010.
+
+\bibitem{Prigogine1984}
+Ilya Prigogine and Isabelle Stengers,
+\textit{Order Out of Chaos},
+Bantam Books, 1984.
+
+\bibitem{Kauffman1993}
+Stuart Kauffman,
+\textit{The Origins of Order},
+Oxford University Press, 1993.
+
+\bibitem{Haken1983}
+Hermann Haken,
+\textit{Synergetics: An Introduction},
+Springer, 1983.
+
+\bibitem{Friston2010}
+Karl Friston,
+``The Free-Energy Principle: A Unified Brain Theory?''
+\textit{Nature Reviews Neuroscience},
+vol.~11, pp.~127--138, 2010.
+
+\bibitem{FristonKilnerHarrison2006}
+Karl Friston, James Kilner, and Lee Harrison,
+``A Free Energy Principle for the Brain,''
+\textit{Journal of Physiology-Paris},
+vol.~100, pp.~70--87, 2006.
+
+\bibitem{Shannon1948}
+Claude E. Shannon,
+``A Mathematical Theory of Communication,''
+\textit{Bell System Technical Journal},
+vol.~27, pp.~379--423 and 623--656, 1948.
+
+\bibitem{Wheeler1990}
+John Archibald Wheeler,
+``Information, Physics, Quantum: The Search for Links,''
+in \textit{Complexity, Entropy, and the Physics of Information},
+ed.\ W.~Zurek, Addison-Wesley, 1990.
+
+\bibitem{Landauer1961}
+Rolf Landauer,
+``Irreversibility and Heat Generation in the Computing Process,''
+\textit{IBM Journal of Research and Development},
+vol.~5, no.~3, pp.~183--191, 1961.
+
+\bibitem{Smolin2001}
+Lee Smolin,
+\textit{Three Roads to Quantum Gravity},
+Basic Books, 2001.
+
+\bibitem{Rovelli2004}
+Carlo Rovelli,
+\textit{Quantum Gravity},
+Cambridge University Press, 2004.
+
+\bibitem{Rovelli2018}
+Carlo Rovelli,
+\textit{The Order of Time},
+Riverhead Books, 2018.
+
+\bibitem{GellMannHartle1994}
+Murray Gell-Mann and James B. Hartle,
+``Time Symmetry and Asymmetry in Quantum Mechanics and Quantum Cosmology,''
+in \textit{Physical Origins of Time Asymmetry},
+ed.\ J.~J. Halliwell et al.,
+Cambridge University Press, 1994.
+
+\bibitem{Zurek2003}
+Wojciech H. Zurek,
+``Decoherence, Einselection, and the Quantum Origins of the Classical,''
+\textit{Reviews of Modern Physics},
+vol.~75, pp.~715--775, 2003.
+
+\bibitem{Lloyd2006}
+Seth Lloyd,
+\textit{Programming the Universe},
+Knopf, 2006.
+
+\bibitem{Deutsch1997}
+David Deutsch,
+\textit{The Fabric of Reality},
+Penguin Books, 1997.
+
+\bibitem{Whitehead1929}
+Alfred North Whitehead,
+\textit{Process and Reality},
+Macmillan, 1929.
+
+\bibitem{DeLanda2002}
+Manuel DeLanda,
+\textit{Intensive Science and Virtual Philosophy},
+Continuum, 2002.
+
+\bibitem{Anderson1972}
+Philip W. Anderson,
+``More Is Different,''
+\textit{Science},
+vol.~177, no.~4047, pp.~393--396, 1972.
+
+\end{thebibliography}
+
+\end{document}
+

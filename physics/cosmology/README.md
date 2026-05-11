@@ -4,9 +4,11 @@
 
 * [Dark Matter as a Geometric Phase Transition](https://standardgalactic.github.io/alphabet/physics/cosmology/) — *Audio Overviews*
 
-This collection explores the Relativistic Scalar-Vector Plenum (RSVP) framework through multiple complementary perspectives, ranging from conceptual introductions and student-facing explanations to technical architecture reviews and long-term research validation programs. Together, these essays develop the RSVP interpretation of physics as a constraint-first admissibility geometry in which particles, forces, and spacetime emerge as stable reconstruction modes permitted by global coherence conditions.
+[The Persistence of Structure](https://standardgalactic.github.io/alphabet/physics/cosmology/persistence_of_structure.pdf)
 
-## Documents
+* [Space is the Residue of Persistent Structure](https://standardgalactic.github.io/alphabet/physics/cosmology/persistent-structure.html) — *Audio Overview*
+
+This collection explores the Relativistic Scalar-Vector Plenum (RSVP) framework through multiple complementary perspectives, ranging from conceptual introductions and student-facing explanations to technical architecture reviews and long-term research validation programs. Together, these essays develop the RSVP interpretation of physics as a constraint-first admissibility geometry in which particles, forces, and spacetime emerge as stable reconstruction modes permitted by global coherence conditions.
 
 - [The Great Inversion: A Journey into Admissibility Geometry](concept-narrative.md)  
   A conceptual narrative introducing the RSVP framework through the “Great Inversion,” shifting physics from a universe of substances to a universe of admissible geometric structures.
@@ -38,3 +40,84 @@ Across these essays, several recurring ideas define the RSVP program:
 ## Guiding Perspective
 
 The RSVP framework proposes that reality is not fundamentally built from particles or forces, but from the conditions under which local structures can persist coherently across scales. In this interpretation, physical law is redefined as a geometry of admissibility: a global consistency structure governing which patterns can survive recursive reconstruction without contradiction.
+
+--- 
+
+# Recursive Persistence
+
+A collection of essays and theoretical documents exploring recursive admissibility, relational cosmology, persistence-based ontology, and the Relativistic Scalar-Vector Plenum (RSVP) framework. These documents examine the transition from classical thermodynamic and relational models toward a constraint-first architecture where persistence, admissibility, and recursive consistency become the primary invariants of physical and cognitive systems.
+
+
+### [Beyond the Janus Point](beyond-the-janus-point.md)
+
+An accessible conceptual exploration of recursive admissibility and persistence-based cosmology. This essay contrasts thermodynamic heat death with RSVP’s concept of recursive redundancy, critiques global cosmological anchors such as the Janus Point, and introduces the Lamphron–Lamphrodyne duality as the operational engine of structural persistence.
+
+### [Briefing Doc](briefing-doc.md)
+
+An executive-level overview of the transition from Barbour’s relational shape space to RSVP recursive persistence. This document summarizes the ontological inversion from geometry-first cosmology to persistence-first admissibility architecture and outlines the asymptotic “crystal-lattice limit” of recursive redundancy.
+
+### [Comparative Analysis](comparative-analysis.md)
+
+A detailed comparative study between Julian Barbour’s Janus Point framework and the RSVP model. Topics include relational geometry, recursive consistency, admissibility landscapes, projection operators, operational persistence, and the replacement of global anchors with distributed admissibility extrema.
+
+### [Concept Review](concept-review.md)
+
+A broad conceptual survey examining the origin and persistence of universal order. This document traces the progression from lawful evolution toward admissibility management while comparing thermodynamics, relational cosmology, and recursive persistence architectures.
+
+### [System Design](system-design.md)
+
+A systems-oriented specification describing recursive admissibility as a cognitive and infrastructural architecture. This document formalizes concepts such as projection operators, admissibility logs, local stabilization, recursive persistence, and asymptotic smoothing within distributed cognitive systems.
+
+### [Theoretical Primer](theoretical-primer.md)
+
+An introduction to the Lamphron–Lamphrodyne duality and the RSVP persistence paradigm. This primer explains differentiation pressure, reintegration pressure, recursive admissibility, cognitive persistence, and the role of infrastructural records in maintaining operational continuity.
+
+---
+
+## Core Themes
+
+The collection develops several recurring theoretical themes:
+
+- Recursive admissibility as the primary invariant of physical persistence.
+- The replacement of global cosmological anchors with local admissibility extrema.
+- Projection operators and admissibility manifolds as generators of observational structure.
+- Persistence as a process of recursive consistency management across scales.
+- Lamphron–Lamphrodyne dynamics as the operational duality governing specialization and reintegration.
+- The reinterpretation of entropy, expansion, and cosmological asymptotics through topological redistribution and recursive redundancy.
+- The extension of admissibility geometry into cognition, memory, and infrastructural continuity.
+
+---
+
+## Conceptual Shift
+
+The central inversion underlying these documents can be summarized simply:
+
+Traditional physics asks:
+
+> What objects exist, and how do they evolve?
+
+Recursive admissibility asks:
+
+> What configurations are capable of remaining recursively consistent long enough to persist at all?
+
+Under this interpretation, physical laws are not external prescriptions imposed upon matter. They are stabilized regularities emerging from the ongoing negotiation of admissibility across scales.
+
+---
+
+## Related Concepts
+
+Recurring ideas throughout the collection include:
+
+- Recursive Persistence
+- Admissibility Geometry
+- Projection Formalism
+- Admissibility Log (ℒₐdm)
+- Lamphron–Lamphrodyne Dynamics
+- Topological Redistribution
+- Void Dominance
+- Poincaré Smoothing
+- Crystal-Lattice Limit
+- Local Admissibility Extrema
+- Recursive Redundancy
+- Operational Continuity
+- Constraint-First Physics

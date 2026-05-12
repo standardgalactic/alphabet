@@ -1,0 +1,1644 @@
+%!TEX program = lualatex
+\documentclass[11pt,openany]{book}
+
+% =========================================================
+% Fonts and Typography
+% =========================================================
+
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{DejaVu Sans Mono}[Scale=0.92]
+
+\usepackage{unicode-math}
+\setmathfont{Latin Modern Math}
+
+% =========================================================
+% Encoding and Language
+% =========================================================
+
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
+
+% =========================================================
+% Mathematics
+% =========================================================
+
+\usepackage{mathtools}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{tensor}
+\usepackage{tikz-cd}
+
+% =========================================================
+% Layout
+% =========================================================
+
+\usepackage[a4paper,margin=1.15in]{geometry}
+\usepackage{microtype}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{parskip}
+
+% =========================================================
+% Graphics and Figures
+% =========================================================
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% =========================================================
+% Color and Hyperlinks
+% =========================================================
+
+\usepackage{xcolor}
+\definecolor{linkblue}{RGB}{40,70,140}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=linkblue,
+    citecolor=linkblue,
+    urlcolor=linkblue,
+    pdftitle={Univalent Photonics},
+    pdfauthor={Flyxion},
+    pdfsubject={Homotopy Type Theory and Photonic Systems},
+    pdfkeywords={HoTT, photonics, univalence, topology, optics, RSVP}
+}
+
+% =========================================================
+% Theorem Environments
+% =========================================================
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{axiom}[definition]{Axiom}
+\newtheorem{construction}[definition]{Construction}
+\newtheorem{example}[definition]{Example}
+\newtheorem{remark}[definition]{Remark}
+\newtheorem*{remark*}{Remark on Formalization}
+
+\theoremstyle{plain}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{conjecture}[definition]{Conjecture}
+
+% =========================================================
+% Custom Commands
+% =========================================================
+
+\newcommand{\Type}{\mathsf{Type}}
+\newcommand{\idtype}{\mathsf{Id}}
+\newcommand{\transport}{\mathsf{transport}}
+\newcommand{\Equiv}{\mathsf{Equiv}}
+\newcommand{\Path}{\mathsf{Path}}
+\newcommand{\HoTT}{\textsc{HoTT}}
+\newcommand{\RSVP}{\textsc{RSVP}}
+
+\newcommand{\Afield}{\mathcal{A}}
+\newcommand{\Cfield}{\mathcal{C}}
+\newcommand{\Mspace}{\mathcal{M}}
+\newcommand{\Xspace}{\mathcal{X}}
+\newcommand{\Ffrontier}{\mathcal{F}}
+
+\newcommand{\lamphron}{\mathcal{L}_{+}}
+\newcommand{\lamphrodyne}{\mathcal{L}_{-}}
+
+% =========================================================
+% Chapter Formatting
+% =========================================================
+
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries}
+{\chaptertitlename\ \thechapter}
+{20pt}
+{\Huge}
+
+% =========================================================
+% Front Matter
+% =========================================================
+
+\title{
+    \Huge Univalent Photonics \\
+    \vspace{0.5em}
+    \Large Coherence, Transport, and Admissibility Geometry
+}
+\author{Flyxion}
+\date{\today}
+
+% =========================================================
+% Document
+% =========================================================
+
+\begin{document}
+
+\frontmatter
+\maketitle
+\tableofcontents
+
+% =========================================================
+% Abstract
+% =========================================================
+
+\chapter*{Abstract}
+
+This book develops a new theoretical framework for photonic systems grounded in homotopy type theory, admissibility geometry, and coherence-preserving transport dynamics. Conventional photonics is typically formulated in terms of local electromagnetic field evolution, spectral decomposition, and signal-processing architectures inherited from sequential computational paradigms. The present work argues instead that coherent optical systems are more naturally understood as admissibility-preserving transport structures whose operational identity is determined not by pointwise configuration, but by equivalence under constrained deformation.
+
+The mathematical foundation is homotopy type theory (\HoTT) and the univalent foundations program. Types are interpreted as structured coherence spaces, identity types as admissible transport witnesses, and equivalences as operationally meaningful transformations between coherent optical configurations. Univalence acquires a direct physical interpretation: photonic systems possessing equivalent coherence-preserving transport structure may be treated as operationally identical despite differing material realization. The admissibility field $\mathcal{A}(x,t) : \Omega \times \mathbb{R}_{\geq 0} \to \mathbb{R}_{\geq 0}$ governs recursive accessibility across coherence transport space, while the coherence type $\mathcal{C}$ specifies which electromagnetic configurations satisfy Maxwell transport constraints together with recursive admissibility conditions.
+
+A central contribution is the integration of proof assistants and machine-verifiable mathematics directly into the epistemic structure of the theory. The book also proposes that measurement architecture admits a type-theoretic classification indexed by preserved homotopy depth, and that coherence-preserving admissibility geometry may constitute a substrate-independent organizational principle recurring across photonic, cognitive, biological, and cosmological systems.
+
+\mainmatter
+
+% =========================================================
+% Part I
+% =========================================================
+
+\part{Why Photonics Needs a New Foundation}
+
+% =========================================================
+% Chapter 1
+% =========================================================
+
+\chapter{The Failure of Sequential Optical Thinking}
+
+\noindent\textit{Light is rarely what we think it is when we measure it. Every time we sample a waveform, decompose a spectrum, or record a detector click, we are reading a shadow --- a compressed trace of something more organized than any sequence of numbers can fully express. This chapter examines how the habit of treating that shadow as the primary object has quietly distorted our understanding of what optical coherence actually is, and begins to sketch what a more honest account would look like.}
+
+\bigskip
+
+\section{The Sequential Inheritance Problem}
+
+Modern photonics emerged historically alongside electronic computation, signal theory, and communication engineering. As a consequence, much of its conceptual vocabulary remains inherited from sequential computational paradigms whose assumptions are rarely examined explicitly. Optical systems are routinely described as carriers of signals, transformations of frequency spectra, or channels for symbolic information transfer. While these descriptions are operationally successful in many engineering contexts, they impose a particular ontological framing upon coherent optical systems: namely, that the primary object of analysis is a temporally ordered sequence of localized informational states.
+
+This sequential inheritance is so deeply embedded in modern computational language that it often appears self-evident. Electromagnetic propagation is decomposed into signals. Signals are decomposed into frequencies. Frequencies are decomposed into symbolic encodings. Information processing is then described as the manipulation of these encodings through rule-governed transformations. Even when wave mechanics is acknowledged formally, the interpretive framework surrounding practical photonic systems often remains fundamentally symbolic and sequential.
+
+The present work argues that this inheritance obscures the actual organizational structure responsible for coherence preservation in optical systems. Coherent photonic systems do not primarily operate by manipulating sequential symbolic tokens. Rather, they maintain admissible transport relations across dynamically evolving coherence manifolds. The relevant invariants are therefore not local symbols or instantaneous field values alone, but equivalence-preserving transport structures surviving under constrained deformation.
+
+The distinction is subtle but fundamental. In a sequential paradigm, perturbation is treated as corruption of a signal. In a coherence-preserving paradigm, perturbation becomes meaningful only insofar as it alters admissible transport structure. Two optical trajectories differing substantially at the level of local realization may nevertheless remain operationally equivalent if the relevant coherence-preserving invariants survive deformation. Conversely, infinitesimal local perturbations may catastrophically destroy admissibility even when conventional signal metrics appear stable.
+
+The sequential viewpoint therefore privileges representation over persistence. The framework developed in this book reverses that priority.
+
+To sharpen this observation: let $\Xspace$ denote the total space of admissible optical trajectories and let $\Mspace_{\mathrm{seq}}$ denote the sequential representation manifold produced by sampling, discretization, spectral decomposition, or symbolic encoding. A sequential representation is then a projection
+\[
+\pi_{\mathrm{seq}} : \Xspace \to \Mspace_{\mathrm{seq}}.
+\]
+The loss incurred by this projection is not merely quantitative. It may collapse distinct admissible transport histories into the same symbolic residue: for $x_1, x_2 \in \Xspace$, one may have $\pi_{\mathrm{seq}}(x_1) = \pi_{\mathrm{seq}}(x_2)$ even when $x_1$ and $x_2$ differ in their future admissibility structure. The central failure of sequential optical thinking is therefore not that it represents optical systems, but that it often treats the projection residue as though it preserved all coherence-relevant structure. This is not a quantitative approximation error. It is a topological collapse.
+
+\section{The Limits of Spectral Decomposition}
+
+The dominance of Fourier analysis in modern optics provides one of the clearest examples of sequential inheritance. Spectral decomposition has extraordinary mathematical power and remains indispensable across physics and engineering. However, its conceptual success has encouraged an implicit identification between physical organization and spectral representation.
+
+Within the conventional paradigm, coherent optical behavior is frequently interpreted through frequency-domain decomposition. Signals become collections of frequency components whose interactions are analyzed through harmonic expansion, filtering, interference analysis, and spectral transport. The operational assumption underlying such approaches is that decomposition into spectral primitives captures the essential structure of the system.
+
+Yet coherent optical systems often exhibit organizational behaviors that resist purely spectral interpretation. Mode-locking phenomena, cavity stabilization, topologically protected transport, and nonlinear resonance dynamics depend critically upon relational coherence structures extending across entire admissibility manifolds. These structures are not reducible to static spectral components considered independently.
+
+Indeed, Fourier methods themselves implicitly rely upon global coherence assumptions. Spectral decomposition presupposes admissibility conditions under which phase relations remain sufficiently stable for decomposition to possess operational meaning. When those admissibility conditions fail, the decomposition itself becomes unstable or physically misleading.
+
+This suggests an inversion of explanatory priority. Spectral structure does not generate coherence. Rather, coherence-preserving admissibility permits stable spectral interpretation.
+
+\section{Perturbation Suppression and the Misidentification of Noise}
+
+Conventional optical engineering frequently treats perturbation as an intrinsically undesirable deviation from ideal signal propagation. Noise reduction, error correction, phase stabilization, and perturbation suppression become dominant design objectives. Such approaches are entirely reasonable within communication systems whose primary goal is symbolic fidelity. However, they become less adequate when coherent transport itself is the primary operational object.
+
+A coherence-preserving system does not necessarily require suppression of all perturbations. It requires preservation of admissible transport structure. Certain perturbations may therefore be operationally irrelevant, while others become structurally catastrophic despite possessing negligible local magnitude.
+
+This distinction already appears implicitly within topological photonics. Protected edge modes remain stable under broad classes of deformation because the relevant operational invariants are global rather than local. The system preserves transport equivalence despite substantial perturbation of microscopic realization.
+
+The present framework generalizes this insight. Perturbation should not be classified according to amplitude alone, but according to admissibility effect. The central question becomes: does a deformation preserve coherent transport structure? If it does, the deformation belongs to the same admissible equivalence class regardless of substantial local variation. If it does not, even infinitesimal deviations may destroy operational identity.
+
+\section{From Local State to Transport Structure}
+
+The sequential paradigm also privileges local state descriptions over transport relations. Physical systems are modeled as collections of states evolving through time according to deterministic or probabilistic update rules. Identity is assigned primarily to local configuration.
+
+Homotopy type theory suggests a fundamentally different ontological perspective. Within \HoTT, identity is not primitive equality between isolated objects, but path structure inside a type. Objects become meaningful through admissible transformations relating them to other objects within structured spaces of equivalence.
+
+A coherent optical configuration should not be understood merely as an instantaneous field assignment. Rather, it should be regarded as an element of a structured coherence type whose operational identity depends upon admissible transport relations preserving recursive consistency across deformation space. The primitive object therefore becomes transport rather than state.
+
+\section{Toward an Admissibility Ontology}
+
+The framework developed in this book proceeds from the following inversion:
+
+\begin{quote}
+The operational identity of a coherent photonic system is determined not by local realization alone, but by admissible transport structure preserved under constrained deformation.
+\end{quote}
+
+This requires replacing several inherited assumptions. Signal becomes coherence transport. State becomes admissibility structure. Perturbation becomes deformation. Identity becomes equivalence-preserving transport. Computation becomes recursive admissibility relaxation.
+
+Within this perspective, coherent optical systems are interpreted as structured admissibility manifolds governed by persistence constraints rather than merely sequential carriers of symbolic information.
+
+% =========================================================
+% Chapter 2
+% =========================================================
+
+\chapter{From Geometry to Admissibility}
+
+\noindent\textit{A whirlpool is not a thing. It is a process that maintains itself by continuously satisfying the conditions for its own continuation. If those conditions fail --- the flow changes, the geometry shifts --- the whirlpool vanishes, not because any substance was removed, but because the organizational requirements for its persistence were no longer met. This chapter proposes that coherent optical systems are better understood in exactly this way: not as objects moving through space, but as patterns of admissible transport that persist because they can.}
+
+\bigskip
+
+\section{The Ontological Priority of Persistence}
+
+Classical physical ontology typically begins with objects, fields, or geometric structures whose persistence through time is treated as self-evident. The admissibility framework developed in this work reverses this explanatory order. Persistence is not assumed as primitive. Persistence itself becomes the phenomenon requiring explanation.
+
+The central claim is therefore not that coherent structures exist and subsequently evolve. Rather, coherent structures emerge precisely because certain regions of trajectory space admit recursively stable transport relations while others do not. What survives operationally is not arbitrary local configuration but admissible coherence under constrained deformation.
+
+Consider the analogy of a whirlpool. The whirlpool persists not because some local material substrate remains fixed, but because the admissibility conditions governing recursive flow stability continue to hold. Similarly, coherent photonic systems persist operationally because admissible transport relations survive perturbation and recursive deformation.
+
+\section{Trajectory Space and Projection}
+
+Let $\Xspace$ denote the total space of physically admissible trajectories associated with some optical system. We introduce a projection operator
+\[
+\pi : \Xspace \to \Mspace
+\]
+where $\Mspace$ represents the observable or operational manifold associated with the system.
+
+The crucial point is that $\pi$ is not informationally neutral. Projection changes admissibility structure. Certain distinctions present within total trajectory space collapse under projection, while others become amplified. Some future trajectories remain operationally accessible after projection, while others disappear entirely. Observable representations therefore participate actively in the organization of admissible futures.
+
+\section{Admissibility Spaces}
+
+\begin{definition}
+An \emph{admissibility space} is a structured manifold $\Afield$ equipped with local coherence constraints governing which trajectories, deformations, or transport relations remain recursively consistent under evolution.
+\end{definition}
+
+A region of $\Afield$ is admissible if trajectories entering that region preserve the coherence relations necessary for recursive persistence. Admissibility defines an operational topology over trajectory space rather than merely a metric geometry.
+
+In photonic systems, admissibility constraints arise from the requirement that coherent transport remain recursively stable under deformation. Such constraints govern whether phase relations preserve coherence across propagation, whether resonant structures maintain stability under perturbation, whether energy transport remains globally compatible with the surrounding coherence manifold, and whether topological transport invariants survive admissible deformation.
+
+\section{Persistence and Recursive Stability}
+
+\begin{definition}
+A structure \emph{persists} if admissible transport relations preserving recursive coherence remain available under continued deformation.
+\end{definition}
+
+This definition removes the requirement that any particular local realization remain fixed. Persistence instead becomes equivalence-preserving survivability under constrained transformation. This interpretation naturally explains why many coherent optical systems remain operationally stable despite substantial perturbation, and why certain systems fail catastrophically despite apparently minor perturbations.
+
+\section{Lamphron and Lamphrodyne Dynamics}
+
+\begin{definition}
+\emph{Lamphron dynamics} $\lamphron$ describe the tendency toward crystallization, stabilization, and localized persistence basin formation.
+\end{definition}
+
+\begin{definition}
+\emph{Lamphrodyne dynamics} $\lamphrodyne$ describe the tendency toward reintegration, diffusion, redistribution, and admissibility smoothing.
+\end{definition}
+
+Neither tendency is intrinsically desirable or pathological. Productive persistence emerges through their regulated interaction. Excessive lamphron pressure produces over-rigid structures incapable of adaptive transport under perturbation. Excessive lamphrodyne pressure produces indefinite destabilization where coherence structures fail to stabilize sufficiently for persistent transport organization to emerge.
+
+\section{Admissibility Evolution}
+
+To describe admissibility dynamics formally, we introduce the admissibility field
+\[
+\Afield(x,t) : \Omega \times \mathbb{R}_{\geq 0} \to \mathbb{R}_{\geq 0},
+\]
+where $\Omega \subseteq \mathbb{R}^3$ is the photonic domain and $\Afield(x,t)$ assigns to each spatial location a local measure of recursive coherence accessibility under admissibility evolution.
+
+This field admits a natural interpretation as an accessibility functional. If $c(x,t)$ denotes the local coherence state induced by an electromagnetic configuration at position $x$ and time $t$, then schematically
+\[
+\Afield(x,t) = \mathsf{Acc}(c(x,t)),
+\]
+where $\mathsf{Acc}$ measures the density of recursively sustainable continuations available from that configuration. High admissibility does not mean high energy or high intensity. It means that many coherence-preserving continuations remain available under constrained deformation. A mode trapped in a narrow admissibility basin may be energetically large but operationally fragile; a mode inhabiting a broad admissibility basin may be energetically modest but operationally robust.
+
+The evolution of this field is governed schematically by
+\[
+\frac{\partial \Afield}{\partial t}
+=
+\lambda \nabla^2 \Afield
+-
+\mu \|\nabla \Afield\|^2
++
+\nu \Cfield(\Omega).
+\]
+
+The diffusive term $\lambda \nabla^2 \Afield$ represents admissibility smoothing and redistribution, reducing local instability gradients. The nonlinear sharpening term $-\mu \|\nabla \Afield\|^2$ concentrates admissibility boundaries around instability frontiers. The recursive correction term $\nu \Cfield(\Omega)$ represents global coherence constraints imposed by higher-order consistency structure, including memory reservoirs, global transport invariants, and recursive compatibility constraints.
+
+The admissibility PDE may therefore be read as a competition between smoothing, boundary sharpening, and global coherence correction. The first term distributes accessibility, the second sharpens regions where accessibility changes rapidly, and the third reintroduces global recursive constraints that cannot be inferred from local gradients alone.
+
+A variational interpretation is also suggestive. Suppose there exists a functional $\mathcal{L}[\Afield]$ such that admissibility evolution approximately follows
+\[
+\frac{\partial \Afield}{\partial t}
+=
+-\frac{\delta \mathcal{L}}{\delta \Afield}
++
+\nu\Cfield(\Omega).
+\]
+When the coherence correction term is conservative, stable admissibility evolution corresponds to descent in $\mathcal{L}$: the system relaxes toward configurations satisfying $\frac{d}{dt}\mathcal{L}[\Afield(t)] \leq 0$. Cavity locking, mode stabilization, and recursive coherence closure may then be interpreted as convergence toward local minima of an admissibility energy functional, while bifurcation occurs when the landscape changes topology under parameter deformation. This gives a possible route toward a variational derivation of admissibility dynamics, likely connecting to the Allen--Cahn and Ginzburg--Landau gradient flow tradition as noted previously.
+
+This equation should be understood as a structural evolution schema rather than a completed physical law. A rigorous derivation from first variational principles remains an important direction for future work.
+
+\section{Observable States as Projection Residues}
+
+The admissibility framework implies a fundamental reinterpretation of observable physical states. Conventionally, measured optical outputs are treated as direct representations of physical reality. Within the present framework, observable states are interpreted as projection residues generated by deeper admissibility organization. A detector output collapses unresolved coherence relations into lower-dimensional observational structure. Spectral decomposition compresses transport organization into harmonic residue. Symbolic encodings collapse high-dimensional admissibility geometry into sequential representation.
+
+\section{Homotopical Entropy and Accessible Future Volume}
+
+Conventional entropy measures count accessible microstates. The admissibility framework emphasizes a different quantity: recursively sustainable continuation structure. Let $\Gamma(c)$ denote the space of admissible future continuations accessible from coherence configuration $c$. We define the homotopical entropy schematically as
+\[
+S_{\mathrm{HoTT}}(c) = \log \mathrm{Vol}\bigl(\Gamma(c)\bigr),
+\]
+where the volume is measured not merely combinatorially but through admissibility-preserving transport accessibility.
+
+A coherence structure possessing many future continuations but few recursively stable transport continuations may exhibit high conventional entropy yet low homotopical entropy. Conversely, a highly constrained coherent structure may preserve broad recursive transport accessibility despite low local configurational freedom. The two measures need not agree, and their divergence is physically meaningful: it marks the difference between systems that are statistically open and systems that are operationally accessible.
+
+This distinction aligns naturally with the admissibility field $\Afield(x,t)$ introduced above. High admissibility at a location means that the region supports many recursively sustainable transport evolutions; low admissibility means that the region is a dead end despite possibly high statistical entropy. Persistence corresponds to regions supporting high homotopical entropy in the sense of broad recursive continuation volume, not regions of low statistical entropy alone.
+
+\section{Toward Homotopical Admissibility}
+
+The admissibility framework has already prepared the conceptual transition necessary for homotopy type theory. Identity is determined through admissible transport rather than primitive local equality. Persistence depends upon equivalence-preserving deformation rather than static material continuity. Observable structure emerges through projection from deeper admissibility organization. These principles align naturally with the homotopical interpretation of identity developed within \HoTT.
+
+% =========================================================
+% Chapter 3
+% =========================================================
+
+\chapter{Why Homotopy Type Theory Changes Physics}
+
+\noindent\textit{In ordinary mathematics, two things are either equal or they are not. But physical systems do not behave this way. A gauge-transformed field and the original field are not equal, yet they are physically indistinguishable. Two topological waveguides with completely different geometries may implement the same transport operation. Conventional mathematics handles this by appending equivalence relations as an afterthought. Homotopy type theory instead builds equivalence into the very meaning of identity --- and that single move turns out to change what kind of questions about physical systems can even be asked.}
+
+\bigskip
+
+\section{The Crisis of Identity in Physical Theory}
+
+One of the deepest unresolved problems in modern physics concerns the meaning of identity. Classical mechanics inherited from ordinary intuition the assumption that physical objects possess primitive self-identity independent of transformation. Yet coherent physical systems repeatedly resist such local notions of sameness. Gauge theories identify physically equivalent configurations differing substantially at the representational level. Topological phases preserve transport invariants under dramatic local deformation. Optical systems remain coherent despite perturbations that radically alter local realization.
+
+The difficulty arises because conventional ontology attempts to define identity prior to transformation. Homotopy type theory reverses this order.
+
+\begin{quote}
+Homotopy type theory changes physics because it replaces static identity with admissible transport structure as the fundamental organizational principle.
+\end{quote}
+
+\section{Relation to Cohesive Homotopy Type Theory}
+
+The application of homotopy type theory to physical systems is not entirely new. Existing work in cohesive homotopy type theory, particularly the program developed by Schreiber and collaborators \cite{schreiber}, has developed sophisticated frameworks relating higher geometry, gauge structure, differential cohomology, and physical field theory.
+
+The present framework differs in emphasis and ontological priority. Cohesive homotopy type theory primarily geometrizes differential and gauge-theoretic structure: smooth cohesion, differential cocycles, and higher geometric organization become central organizing principles.
+
+The admissibility framework developed in this text instead places recursive persistence under constrained transport evolution at the center of the ontology. The primary object is not differential cohesion alone but admissibility-preserving transport survivability. Operational persistence becomes fundamental. Transport equivalence becomes identity. Recursive compatibility governs coherent continuation.
+
+The resulting framework therefore complements rather than replaces existing cohesive \HoTT\ approaches. Cohesive geometry provides essential mathematical infrastructure. Admissibility geometry introduces recursive persistence organization as an additional operational principle governing coherent transport systems.
+
+It is also plausible that admissibility geometry may ultimately admit formulation within a cohesive homotopy-theoretic setting. Cohesive \HoTT\ already contains modalities governing differential cohesion, shape structure, and stable homotopy organization. One possible future direction would introduce persistence-sensitive admissibility modalities governing recursive transport survivability under deformation. The present work does not attempt such a full categorical integration, but the possibility suggests an important future bridge.
+
+\section{Types as Structured Spaces}
+
+In homotopy type theory, types are not merely collections of isolated elements. They possess internal geometric and transformational structure. The homotopical interpretation treats a type as analogous to a space, an element as analogous to a point, and the identity relation between two elements as a path connecting them.
+
+For physical systems, this immediately suggests a more natural description of coherence-preserving transformation. Two optical configurations need not be identical pointwise in order to belong to the same operational equivalence class. What matters is whether admissible transport witnesses exist preserving the relevant coherence structure.
+
+\section{Identity as Transport}
+
+The identity type constitutes the central conceptual innovation enabling \HoTT\ to interact naturally with physical systems. Let $A$ be a type and let $a,b : A$ be elements. The identity type is written $\idtype_A(a,b)$ and interpreted as the space of paths connecting $a$ and $b$. Identity therefore becomes transport.
+
+For coherent optical systems, an identity witness $p : \idtype_{\mathcal{C}}(c_1,c_2)$ is not merely an abstract equality claim. It certifies that recursive coherence may be preserved through admissible deformation connecting the two configurations.
+
+This perspective makes the relationship between identity types and gauge redundancy precise. Suppose two field descriptions $c_1, c_2 : \mathcal{C}$ differ by a gauge transformation but yield the same admissible transport behavior. In a set-theoretic ontology, these descriptions remain distinct representatives modulo an externally imposed equivalence relation. In a homotopical ontology, the equivalence is internalized as a path $p : \idtype_{\mathcal{C}}(c_1,c_2)$. The gauge redundancy is no longer an after-the-fact quotient. It becomes part of the identity structure of the coherence type itself. This is the crucial physical advantage of \HoTT: it does not merely say that equivalent descriptions should be identified informally. It provides a language in which such identifications are themselves structured objects capable of being transported, composed, compared, and lifted to higher coherence relations.
+
+\section{Higher Identity Structure}
+
+Suppose $p,q : \idtype_A(a,b)$ are two distinct identity witnesses. In ordinary logic, no further structure would exist. In \HoTT, one may consider identities between identities:
+\[
+\idtype_{\idtype_A(a,b)}(p,q).
+\]
+These higher identities correspond geometrically to homotopies between paths. For physical systems, higher identity structure becomes especially important near instability boundaries, nonlinear resonance transitions, or topological transport regimes. Higher coherence requires higher identity structure.
+
+\section{Equivalence and Univalence}
+
+An equivalence between types $A$ and $B$ is written $\Equiv(A,B)$, certifying that the two types possess identical structure up to admissible transport. The univalence axiom, introduced formally in Chapter~7, strengthens this dramatically by asserting that equivalence itself determines identity. For physics, this becomes transformative: the operational identity of a system is no longer determined by microscopic realization alone, but by admissible coherence-preserving transport equivalence.
+
+\section{The Constructive Character of Physical Coherence}
+
+Homotopy type theory possesses a fundamentally constructive character. Proving existence generally requires constructing an explicit witness. This constructive orientation aligns naturally with coherent physical systems. A coherence-preserving transport is not merely an abstract possibility. It must be operationally realizable within the admissibility constraints governing the system.
+
+% =========================================================
+% Part II
+% =========================================================
+
+\part{Foundations of Univalent Photonics}
+
+% =========================================================
+% Chapter 4
+% =========================================================
+
+\chapter{Type Theory for Physical Systems}
+
+\noindent\textit{A type, in the sense used here, is not a category or a set or a data structure. It is more like a habitat: a structured region whose inhabitants are precisely the configurations that satisfy whatever admissibility conditions define it. When a configuration belongs to a type, it belongs because it already satisfies those conditions --- not because it was placed there afterward and then checked. This chapter introduces the formal language of dependent type theory while insisting, from the first definition onward, that the syntax carries physical meaning.}
+
+\bigskip
+
+\section{Formalism and Physical Interpretation}
+
+The goal of this chapter is not merely to introduce dependent type theory abstractly. Rather, the formal constructions themselves will be interpreted physically from the outset. The central methodological claim is:
+
+\begin{quote}
+The syntax of dependent type theory acquires direct operational interpretation when coherent photonic systems are treated as admissibility-preserving transport structures.
+\end{quote}
+
+\section{Types and Coherence Spaces}
+
+The primitive judgment $A : \Type$ asserts that $A$ is a type, interpreted as a structured coherence space whose elements represent admissible configurations compatible with some persistence constraints. An element $a : A$ is an admissible coherent optical configuration inhabiting the coherence space represented by $A$. Admissibility is built into the very formation of the space itself, making operational consistency intrinsic rather than auxiliary.
+
+\section{Function Types and Coherent Transport}
+
+A function $f : A \to B$ is interpreted as a coherence-preserving transport operator carrying admissible configurations of $A$ into admissible configurations of $B$. A function is not merely an arbitrary mapping between representations. It is a transport mechanism maintaining recursive coherence compatibility between admissibility spaces.
+
+\section{Dependent Types and Resonance Families}
+
+Dependent types constitute one of the most important constructions in modern type theory and provide one of the clearest bridges to photonic systems. Given a type $B$, a dependent type over $B$ is written $A : B \to \Type$, where for each element $b : B$, the expression $A(b)$ defines a type depending upon the parameter $b$.
+
+In photonic systems, dependent types naturally describe resonance-dependent coherence spaces. If $B$ represents a deformation parameter space associated with a family of optical cavities, and each parameter value $b : B$ determines a particular geometric realization, then $A : B \to \Type$ assigns to each geometric realization its admissible coherence space $A(b)$. The admissible mode structure of a coherent optical system depends upon deformation parameters.
+
+\section{Transport in Dependent Families}
+
+Given a dependent type family $A : B \to \Type$ and a path $p : \idtype_B(b_1,b_2)$, type theory provides a transport operation
+\[
+\transport^A(p) : A(b_1) \to A(b_2).
+\]
+This operation transports admissible configurations from one coherence space into another along the deformation path $p$. Transport is not secondary geometry applied externally to a fixed physical object. Transport becomes intrinsic logical structure governing admissible coherence evolution itself.
+
+This gives a useful criterion for resonance continuation. If $A(b) = \mathcal{C}_b$, a mode $c_0 : A(b_0)$ continues admissibly along the path $p$ precisely when $\transport^A(p)(c_0)$ is defined as an inhabitant of $A(b_1)$ without violating the admissibility predicate defining $\mathcal{C}_{b_1}$. When no such transported inhabitant exists, resonance continuation fails. Transport in a dependent type family therefore formalizes the physical distinction between smooth geometric deformation and admissible modal continuation --- a distinction invisible to purely local analysis but fundamental to coherent optical design.
+
+\section{Sigma Types, Product Types, and Universes}
+
+The dependent sum type $\sum_{b:B} A(b)$ consists of pairs $(b,a)$ where $b : B$ and $a : A(b)$. In photonic systems, if $B$ represents cavity geometries and $A(b)$ represents admissible mode structures, then $\sum_{b:B} A(b)$ represents the total resonance manifold. Admissibility cannot generally be specified independently of geometric deformation.
+
+Universes $\mathcal{U} : \Type$ are types whose elements are themselves types, becoming structured spaces of coherence spaces. Their significance becomes especially important once equivalence and univalence are introduced.
+
+% =========================================================
+% Chapter 5
+% =========================================================
+
+\chapter{Optical Paths as Identity Types}
+
+\noindent\textit{Two optical configurations can be locally identical in every measurable sense and yet be operationally different --- because the paths through which they were reached are different, and those paths constrain what comes next. Conversely, two configurations that look nothing alike locally may be operationally the same, connected by a continuous admissible deformation that preserves everything that matters. This chapter asks what it would mean to take this seriously mathematically, and answers by constructing, for the first time in the book, a concrete and formally specified space whose identity structure is exactly coherent optical transport.}
+
+\bigskip
+
+\section{The Problem of Optical Identity}
+
+Two optical configurations may differ substantially at the level of local field realization while exhibiting identical transport behavior. This tension reflects a deeper inadequacy in ordinary equality relations. Coherent photonic systems force a different question: under what admissible transformations does coherent transport remain operationally preserved?
+
+\section{Constructing the Coherence Type}
+
+Before introducing identity transport formally, the ambient coherence type itself must be specified explicitly. Within \HoTT, identity structure is inherited from the internal organization of the type under consideration. Paths are not freestanding objects; their operational meaning depends entirely upon the admissibility structure of the surrounding type.
+
+For coherent photonic systems, the natural construction begins with admissible electromagnetic field configurations. Let a photonic domain be represented by a spatial region $\Omega \subseteq \mathbb{R}^3$ equipped with material response functions $\epsilon(x)$ and $\mu(x)$, together with boundary admissibility conditions determined by the physical architecture under consideration.
+
+We define the coherence type $\mathcal{C}$ to be the type of admissible electromagnetic field configurations satisfying Maxwell transport constraints together with recursive coherence admissibility conditions:
+\[
+\mathcal{C}
+:=
+\left\{
+(E,H)
+\;\middle|\;
+\begin{aligned}
+&
+\nabla \times E
+=
+-\mu \frac{\partial H}{\partial t},
+\\
+&
+\nabla \times H
+=
+\epsilon \frac{\partial E}{\partial t},
+\\
+&
+\nabla \cdot (\epsilon E)=0,
+\\
+&
+\nabla \cdot (\mu H)=0,
+\\
+&
+\mathsf{Adm}(E,H)
+\end{aligned}
+\right\}
+\]
+where the admissibility predicate $\mathsf{Adm}(E,H)$ collects the following conditions.
+
+\textbf{Phase continuity} requires that tangential field components extend continuously across admissible material interfaces, preventing discontinuous phase singularities during admissible deformation:
+\[
+[E_{\parallel}] = 0
+\qquad
+\text{on}
+\qquad
+\partial\Omega.
+\]
+
+\textbf{Energy admissibility} requires that coherent transport remain energetically bounded:
+\[
+\int_\Omega
+\left(
+\epsilon |E|^2
++
+\mu |H|^2
+\right)
+dx
+<
+\infty
+\]
+throughout admissible deformation, with lower-bounded transport stability preventing unphysical divergence.
+
+\textbf{Mode stability} requires that the linearized transport operator $L_{(E,H)}$ --- governing linearized perturbation evolution $(\delta E, \delta H)$ around the coherent configuration $(E,H)$ under the Maxwell system with admissibility constraints --- possess no exponentially unstable admissible modes:
+\[
+\mathrm{Re}(\lambda_i)
+\leq
+0
+\]
+throughout admissible transport evolution, where $\lambda_i$ are eigenvalues of $L_{(E,H)}$.
+
+\textbf{Boundary coherence compatibility} requires that admissible transport preserve recursive coherence relations imposed by cavity geometry, interface conditions, and global transport topology. This condition is necessarily system-dependent; different photonic architectures impose distinct recursive transport constraints, and the admissibility framework treats boundary coherence compatibility as a family of constraints determined by the operational coherence architecture under consideration.
+
+Admissibility conditions form part of the type itself rather than external constraints imposed afterward. A coherence state is therefore not merely an electromagnetic field realization but an admissible transport configuration inhabiting recursive coherence space.
+
+\section{The Coherence Type and Admissibility Dynamics}
+
+The coherence type $\mathcal{C}$ and the admissibility field $\Afield(x,t)$ introduced in Chapter~2 are not independent. The admissibility field governs which regions of the coherence manifold remain recursively accessible dynamically under transport evolution. Operationally, $\mathcal{C}$ specifies which transport configurations are admissible locally, while $\Afield$ governs which regions of the coherence manifold remain recursively accessible globally as recursive accessibility evolves across the photonic manifold.
+
+Identity transport in homotopy type theory formalizes admissible continuation between coherence states, while admissibility dynamics determines whether such transport remains recursively sustainable globally. These are not parallel descriptions. They describe different aspects of the same recursive coherence organization: \HoTT\ formalizes the transport topology of admissible coherence structure, while admissibility dynamics governs the recursive evolution and stabilization of accessibility across that topology.
+
+\section{Identity Types as Transport Spaces}
+
+Given two admissible coherence states $c_1, c_2 : \mathcal{C}$, the identity type $\idtype_{\mathcal{C}}(c_1,c_2)$ is interpreted as the space of admissible coherence-preserving transport witnesses connecting $c_1$ and $c_2$.
+
+An element $p : \idtype_{\mathcal{C}}(c_1,c_2)$ therefore represents a one-parameter admissible homotopy
+\[
+(E_t, H_t), \qquad t \in [0,1],
+\]
+such that $(E_{t=0}, H_{t=0}) = c_1$, $(E_{t=1}, H_{t=1}) = c_2$, and every intermediate configuration remains admissible.
+
+The path therefore represents a genuine coherence-preserving transport homotopy rather than a merely symbolic equality relation. A transport witness does not assert that two configurations possess identical local realization. Rather, it certifies that recursive coherence may be preserved through admissible deformation connecting them.
+
+\section{Waveguides as Path Objects}
+
+Waveguides provide one of the clearest physical realizations of admissible transport structure. Within the present framework, a waveguide is interpreted as a physical realization of a path object inside coherence space.
+
+\textbf{Worked example.} Consider a family of waveguides parameterized by a deformation coordinate $\lambda \in [0,1]$, where the refractive-index profile evolves continuously from $n_0(x)$ to $n_1(x)$. Each admissible geometry determines a coherence configuration $c_\lambda : \mathcal{C}$. Suppose the deformation preserves phase continuity, modal confinement, and energy admissibility throughout. Then the family $\lambda \mapsto c_\lambda$ defines a transport witness
+\[
+p : \idtype_{\mathcal{C}}(c_0,c_1).
+\]
+
+Now suppose the deformation crosses a cutoff singularity where modal confinement fails. At some critical parameter $\lambda^\ast$, the intermediate configuration ceases to satisfy admissibility conditions. The transport witness then fails to extend globally across the deformation interval.
+
+Crucially, this failure is not geometric in the ordinary sense. The refractive-index profile continues to evolve smoothly through $\lambda^\ast$. No discontinuity appears in the underlying material deformation itself. The obstruction is instead admissibility-topological: beyond $\lambda^\ast$, no intermediate coherence configuration satisfying modal confinement and recursive transport stability exists continuously across the deformation interval. Operational identity breaks because admissibility continuation becomes impossible, not because geometry becomes discontinuous.
+
+In type-theoretic terms, this failure has a precise expression. Let $\gamma : [0,1] \to B$ be the smooth path in geometry space, and let $A(\gamma(\lambda)) = \mathcal{C}_{\gamma(\lambda)}$ be the corresponding coherence type. A transported mode is a dependent section $s(\lambda) : A(\gamma(\lambda))$, and admissible continuation requires that $s(\lambda)$ exist for all $\lambda \in [0,1]$. At cutoff, there exists $\lambda^\ast$ such that the fiber $A(\gamma(\lambda^\ast))$ contains no inhabitant satisfying the same admissibility class as the incoming mode. The dependent section cannot be extended through $\lambda^\ast$ not because the base path $\gamma$ ceases to exist --- the base deformation remains smooth --- but because the dependent coherence section ceases to inhabit the admissible fiber. The admissibility-topological nature of cutoff is thereby expressed precisely through the failure of section extension in a dependent type family.
+
+\section{Interference as Path Composition}
+
+Given paths $p : \idtype_{\mathcal{C}}(c_1,c_2)$ and $q : \idtype_{\mathcal{C}}(c_2,c_3)$, composition yields $q \circ p : \idtype_{\mathcal{C}}(c_1,c_3)$. This corresponds to chained coherence transport through coupled optical structures. Interference phenomena emerge naturally: two distinct admissible transport witnesses connecting identical coherence configurations may coexist simultaneously, and their interaction generates interference structure not reducible to either path independently. An interferometer does not merely compare signals; it compares admissible transport histories.
+
+\section{Higher Optical Homotopies}
+
+Suppose $p,q : \idtype_{\mathcal{C}}(c_1,c_2)$ are distinct admissible coherence transports. Higher identities
+\[
+\alpha : \idtype_{\idtype_{\mathcal{C}}(c_1,c_2)}(p,q)
+\]
+represent homotopies between transport witnesses themselves. This becomes important in nonlinear optical systems, coupled resonator networks, cavity bifurcation regimes, and topological transport structures where multiple admissible coherence transport histories remain recursively compatible under higher-order deformation.
+
+\section{Encode--Decode and Optical Reconstruction}
+
+The encode--decode method in \HoTT\ establishes equivalences between identity types and more explicitly computable structures. In coherent photonic systems, this corresponds to encoding transport witnesses into computable coherence invariants --- phase winding structure, resonance compatibility classes, topological transport indices, admissibility-preserving mode decompositions --- and decoding transport witnesses from these invariants. Observable quantities become compressed encodings of deeper admissibility geometry.
+
+% =========================================================
+% Chapter 6
+% =========================================================
+
+\chapter{Resonance Manifolds and Dependent Types}
+
+\noindent\textit{A cavity does not have a fixed set of modes. It has the modes its geometry allows, and as the geometry changes, the modes change with it. This sounds obvious, but its implications are deeper than they appear: the admissible configurations of a system are not independent objects that happen to vary with parameters --- they are intrinsically dependent on those parameters, and any adequate formalism must build that dependence in from the start rather than patching it on afterward. This chapter develops the mathematics of such intrinsic dependence and shows how resonance, bifurcation, and mode splitting appear naturally within it.}
+
+\bigskip
+
+\section{Resonance as Structured Dependence}
+
+A resonance structure is not merely a collection of frequencies supported by a physical device. Rather, it is a parameter-indexed family of admissible coherence spaces whose internal transport organization evolves under constrained deformation.
+
+\begin{quote}
+Resonance is fundamentally a dependent phenomenon. The admissible coherence structure of a system depends intrinsically upon the geometry, topology, and transport constraints generating it.
+\end{quote}
+
+\section{Dependent Resonance Families and Coherence Types}
+
+The dependent resonance families introduced in Chapter~4 may now be connected explicitly to the coherence type construction developed in Chapter~5.
+
+Let $B : \Type$ denote a parameter space of admissible photonic geometries. Each parameter value $b : B$ determines boundary conditions, refractive-index distributions, cavity constraints, and transport admissibility structure. The associated dependent resonance family
+\[
+A : B \to \Type
+\]
+is defined by
+\[
+A(b) := \mathcal{C}_b,
+\]
+where $\mathcal{C}_b$ denotes the type of admissible Maxwell field configurations satisfying the coherence constraints induced by geometry parameter $b$. The geometry determines the admissibility structure of the coherence type itself. Dependent transport therefore corresponds operationally to coherence-preserving deformation between admissible photonic geometries.
+
+\section{The Total Resonance Space}
+
+The dependent sum $\sum_{b:B} A(b)$ represents the full resonance manifold of the photonic system. Each point specifies both a physical parameter configuration and an admissible coherent optical mode compatible with that configuration. This resembles a fiber bundle, but with a crucial distinction: the fibers are admissibility types possessing internal transport structure governed by homotopical identity relations. The resonance manifold becomes a genuinely higher-structured object.
+
+\section{Transport Across Resonance Manifolds}
+
+Given a path $p : \idtype_B(b_1,b_2)$ connecting two admissible parameter configurations, dependent transport induces
+\[
+\transport^A(p) : A(b_1) \to A(b_2),
+\]
+describing the evolution of admissible resonance structure under deformation. The deformation path itself matters: different admissible deformation histories connecting identical geometric endpoints may induce distinct resonance transports. The resonance manifold possesses memory encoded directly into admissible transport structure.
+
+\section{Bifurcation and Transport Splitting}
+
+The relationship between resonance bifurcation and higher identity structure may be illustrated concretely.
+
+For $b < b^\ast$, suppose the transport space $\idtype_{A(b)}(c_1,c_2)$ is contractible, meaning $\mathsf{isContr}(\idtype_{A(b)}(c_1,c_2))$ holds. There is, up to higher coherence, essentially one admissible transport witness. As the system approaches the critical parameter $b^\ast$, the transport organization destabilizes recursively.
+
+Beyond the bifurcation point, the transport space decomposes:
+\[
+\idtype_{A(b)}(c_1,c_2) \simeq P \sqcup Q,
+\]
+yielding two distinct transport witnesses $p : P$ and $q : Q$. The bifurcation is therefore not merely the splitting of a frequency value. It is the loss of contractibility of the transport space and the emergence of multiple connected components in the identity type.
+
+Initially, near the bifurcation boundary, there may exist a higher coherence witness
+\[
+\alpha : \idtype_{\idtype_{A(b)}(c_1,c_2)}(p,q)
+\]
+relating the two transport branches. As admissibility evolution proceeds further, the higher homotopy itself may fail to persist, and the transport branches separate into genuinely distinct coherence classes.
+
+A physically important example occurs near avoided crossings in coupled resonator systems. As the control parameter approaches $b^\ast$, two resonance modes approach degeneracy and enter a coherent mixing regime. Near the bifurcation boundary, admissible transport witnesses remain related through higher coherence structure $\alpha$ --- the modes remain recursively coupled through admissible transport mixing. As the control parameter moves sufficiently beyond the critical regime, the resonance branches separate into distinct operational transport classes, the higher homotopy $\alpha$ fails to persist globally, and the transport structures become genuinely distinct admissibility branches.
+
+The bifurcation therefore corresponds not merely to frequency splitting but to recursive reorganization of higher transport topology across the resonance manifold.
+
+\section{Singular Resonance Transitions and Recursive Stability}
+
+Singular resonance transitions occur when induced transport $\transport^A(p)$ fails to preserve recursive coherence compatibility for some regions of the resonance manifold. Such failures --- abrupt cavity-locking failure, nonlinear mode collapse, topological transport discontinuity --- represent points at which admissible transport structure fails operationally, not merely geometric failures.
+
+Resonance stability should be interpreted recursively. A resonance mode remains stable if admissible coherence-preserving transport continues to exist under recursive deformation. This naturally incorporates higher-order coherence relations ignored by purely local stability analysis.
+
+% =========================================================
+% Chapter 7
+% =========================================================
+
+\chapter{Univalence and Operational Equivalence}
+
+\noindent\textit{Engineers already know that two optical systems can be ``the same'' despite being physically different. A silicon ring resonator and a glass microsphere implementing identical transport behavior are, for most purposes, interchangeable. What is less obvious is that this intuition, once formalized, turns out to be mathematically radical: it says that equivalence is not merely a useful approximation but a form of identity itself. The principle that makes this precise is univalence, and its physical meaning is that the operational universe cares about transport structure, not material substrate.}
+
+\bigskip
+
+\section{The Problem of Structural Sameness}
+
+Suppose two coherence spaces possess indistinguishable transport organization. Suppose every admissible transport operation in one system corresponds coherently to an admissible transport operation in the other. Should the systems be regarded as different merely because their local realization differs?
+
+Classical mathematics typically answers yes. Yet physicists and engineers routinely ignore this distinction operationally. The univalence principle formalizes this operational intuition, transforming equivalence from an external comparison between structures into a form of identity itself.
+
+\section{Equivalence Between Coherence Types}
+
+Let $A, B : \Type$ be coherence types. An equivalence $\Equiv(A,B)$ certifies that the two coherence spaces possess identical admissibility-preserving transport organization. More precisely, it consists of transport maps $f : A \to B$ and $g : B \to A$ together with coherence witnesses demonstrating that transport in one direction followed by the other preserves operational structure up to admissible homotopy.
+
+\section{The Formal Statement of Univalence}
+
+Let $\mathcal{U}$ denote a universe of types. For any two types $A, B : \mathcal{U}$, there exists a canonical map
+\[
+\mathsf{idtoequiv} : \idtype_{\mathcal{U}}(A,B) \to \mathrm{Equiv}(A,B)
+\]
+sending identity witnesses to equivalences. The canonical map exists constructively because identity always induces equivalence.
+
+\begin{axiom}[Univalence]
+The map $\mathsf{idtoequiv}$ is itself an equivalence:
+\[
+\idtype_{\mathcal{U}}(A,B) \simeq \mathrm{Equiv}(A,B).
+\]
+\end{axiom}
+
+The univalence axiom asserts the stronger converse: every admissible equivalence arises from identity structure itself. Operationally, this means that coherence-preserving equivalence between photonic systems is not merely a convenient comparison relation imposed externally. Equivalent coherence architectures are genuinely identical within the admissibility framework. The theory therefore elevates operational transport equivalence from isomorphism to identity.
+
+\section{Optical Equivalence Classes and Engineering Implications}
+
+Univalence has direct engineering consequences. Two topological waveguides possessing radically different microscopic geometry while preserving identical protected transport structure belong to the same operational equivalence class. Two interferometric systems implementing equivalent coherence transformations despite differing physical layout are operationally identical. Distinct resonator networks generating identical admissibility-preserving mode evolution are formally the same.
+
+Without univalence, one must repeatedly reconstruct essentially identical coherence arguments for each physical realization independently. With univalence, operational equivalence itself guarantees coherent transferability of all structures, proofs, and constructions. To see this precisely: suppose $e : \Equiv(A,B)$ is an admissibility-preserving equivalence between coherence types. By univalence, this corresponds to a path $\mathsf{ua}(e) : \idtype_{\mathcal{U}}(A,B)$. For any construction $P : \mathcal{U} \to \Type$ defined on coherence types, transport along this path yields
+\[
+\transport^P(\mathsf{ua}(e)) : P(A) \to P(B).
+\]
+If $P(A)$ denotes a verified coherence property, resonance invariant, or admissibility theorem for system $A$, then univalence transports that property to system $B$ automatically whenever the two systems are operationally equivalent. Engineering insight established for one physical realization propagates to all equivalent realizations without reconstruction.
+
+\section{Topological Robustness as Univalent Stability}
+
+Topological photonic systems exhibit extraordinary resilience against perturbation because admissible transport equivalence classes remain invariant under admissible deformation. Protected edge modes persist because the relevant admissibility topology remains connected through equivalence-preserving transport structure. Topological robustness is a manifestation of operational univalence.
+
+\section{Higher Equivalences and Recursive Coherence}
+
+Two equivalences $e_1, e_2 : \Equiv(A,B)$ may themselves be related through higher identities. Operationally, these correspond to distinct admissibility-preserving realizations of operational equivalence. This becomes important in systems possessing multiple competing transport organizations or recursively layered resonance structures. The relationships between equivalences themselves possess physical significance.
+
+\section{Functorial Transfer Between Physical Substrates}
+
+One of the strongest implications of univalence is that coherent operational structure may transfer across radically different physical substrates. Suppose $F : \mathcal{C}_1 \to \mathcal{C}_2$ is an admissibility-preserving functor between coherence architectures implemented in distinct physical media. The operational significance of the transport organization survives independently of the material realization itself.
+
+A silicon photonic lattice, a superconducting microwave cavity system, and a biological wave-propagation network may therefore instantiate equivalent admissibility organization despite differing microscopic physics. The physically relevant object is not substrate composition alone but recursive coherence-preserving transport structure. This motivates a generalized substrate independence principle:
+
+\begin{quote}
+Any physical system capable of realizing equivalent admissibility-preserving transport organization belongs to the same operational coherence class.
+\end{quote}
+
+The implications extend beyond photonics. Cognition, biological regulation, and cosmological persistence structures may each instantiate admissibility-preserving transport organization at different scales and substrates. Univalence provides the formal warrant for treating such systems as operationally equivalent when their transport organization genuinely corresponds --- not as an analogy but as an identity within the admissibility framework.
+
+% =========================================================
+% Part III
+% =========================================================
+
+\part{Higher Structures in Photonic Systems}
+
+% =========================================================
+% Chapter 8
+% =========================================================
+
+\chapter{Higher Inductive Structures and Optical Construction}
+
+\noindent\textit{A ring resonator is not a circle of glass. It is a loop of coherent transport that closes on itself. The distinction matters because the glass can be shaped in countless ways while the transport loop remains the same thing --- and conversely, the same piece of glass can fail to be a resonator at all if the transport conditions are not satisfied. This chapter takes that insight seriously by developing a mathematics in which optical architectures are constructed directly from their transport relations, rather than described as structures embedded in pre-existing geometry. The loop comes first; the glass is incidental.}
+
+\bigskip
+
+\section{Construction Versus Description}
+
+Higher inductive types suggest a fundamentally different viewpoint: rather than beginning with a fully formed geometrical substrate, one may construct coherent operational spaces directly from admissibility generators and transport relations. A coherent optical architecture need not be understood merely as a passive geometry supporting transport. The architecture itself may be generated inductively through admissibility-preserving coherence relations.
+
+\section{Higher Inductive Types}
+
+In addition to point constructors generating elements, higher inductive types also specify path constructors generating admissible identities between elements, and higher paths between paths, recursively generating entire higher coherence structures directly within the type. Operationally, this means that a coherence space may be constructed simultaneously with its admissibility-preserving transport relations.
+
+\section{The Optical Circle and Ring Resonators}
+
+The circle type is generated by a point $\mathsf{base} : S^1$ together with a path $\mathsf{loop} : \idtype_{S^1}(\mathsf{base},\mathsf{base})$. The circle is not defined first as a geometric object embedded within an external space. It is generated directly through admissibility-preserving transport structure.
+
+A ring resonator may be interpreted as a higher inductive coherence structure generated by a base admissible configuration together with a recursive transport loop preserving coherence under cyclic evolution. Resonance quantization emerges as a constraint on admissible higher transport consistency. Mode formation becomes the stabilization of recursively admissible transport structure under repeated loop composition.
+
+This interpretation admits a precise formulation. Let $\ell : \idtype_{\mathcal{C}}(c,c)$ be the admissible loop corresponding to one circuit of the resonator. Repeated circulation corresponds to powers $\ell^n : \idtype_{\mathcal{C}}(c,c)$. A stable resonant mode is one for which iterated composition remains recursively admissible: $\forall n \in \mathbb{N}$, $\ell^n$ remains admissible. Phase closure corresponds to the condition that iterated loop transport returns coherently to the same operational class. In ordinary optical language, this is the familiar resonance condition requiring an integer multiple of $2\pi$ round-trip phase. In the present framework, that condition becomes a special case of recursive admissibility of loop composition, and the discreteness of resonance modes follows from the homotopy-theoretic structure of the loop space rather than from harmonic analysis imposed externally.
+
+\section{Interferometers as Higher Coherence Objects}
+
+An interferometric system comparing two admissible transport paths $p, q : \idtype_{\mathcal{C}}(c_1,c_2)$ is a physical realization of higher path structure. Its operational significance lies in organizing recursive compatibility relations between admissible transport histories. Interference phenomena resist purely local state descriptions because the physically meaningful structure resides in higher transport organization.
+
+\section{Optical Cell Complexes and Topological Generation}
+
+Higher inductive construction generalizes naturally to more complicated coherence architectures. Photonic lattices may be generated inductively through coherence constructors together with transport constraints enforcing recursive admissibility around higher loops. The resulting operational topology emerges intrinsically from admissibility structure itself. Protected transport modes correspond to admissibility-preserving higher paths surviving recursive deformation.
+
+% =========================================================
+% Chapter 9
+% =========================================================
+
+\chapter{Topological Photonics Through Homotopy Type Theory}
+
+\noindent\textit{Topological photonics is built on an observation that initially seems paradoxical: some optical behaviors are so robust that they survive almost any perturbation you can apply. Scratch the surface, disorder the lattice, change the material --- the edge mode persists. The standard explanation invokes global topological invariants, numbers that cannot change continuously. But invariants are just the symptom. The deeper reason is that the relevant transport structure lives in an equivalence class, and perturbations that do not push the system across a class boundary cannot destroy what the class protects. This chapter makes that reasoning explicit using the language developed so far.}
+
+\bigskip
+
+\section{Topology and Operational Robustness}
+
+Topological robustness arises because coherent transport itself is organized homotopically through admissibility-preserving equivalence structure. Operational stability depends not primarily upon local field preservation but upon persistence of admissible transport organization under deformation.
+
+\section{Protected Edge Modes as Transport Witnesses}
+
+A protected edge mode is interpreted as a stable admissible transport witness inhabiting a nontrivial coherence class. A perturbation may distort local realization substantially while nevertheless preserving the existence of the transport witness itself. The mode persists because its admissibility topology remains connected --- admissible transport cannot be continuously removed without topological obstruction.
+
+\section{Band Topology and Coherence Families}
+
+Families of resonance structures indexed over parameter spaces such as momentum manifolds are naturally interpreted as dependent coherence families $A : B \to \Type$. Transport around closed parameter loops $p : \idtype_B(b,b)$ induces operations $\transport^A(p) : A(b) \to A(b)$. Nontrivial topological organization arises when transport around closed loops fails to reduce to trivial admissible deformation. Band topology becomes a manifestation of higher transport organization inside resonance manifolds.
+
+\section{Berry Transport and Higher Identity}
+
+A closed admissible loop $p : \idtype_B(b,b)$ induces $\transport^A(p) : A(b) \to A(b)$ where the coherence configuration may fail to return identically to its original transport organization. Berry transport becomes a manifestation of higher coherence topology: the phase accumulation reflects nontrivial higher identity structure within the resonance family itself.
+
+This yields a precise formulation. The transport automorphism $\transport^A(p) : A(b) \to A(b)$ may or may not be homotopic to the identity. If it is not homotopic to the identity, then transport around the loop has generated nontrivial holonomy: the system returns to the same base parameter $b$, but the coherence state has been transformed by the topology of the path. Berry phase is therefore not merely an added scalar phase appended to otherwise standard mode dynamics. It is the visible residue of nontrivial dependent transport in the resonance family, whose existence is a consequence of the homotopy class of the parameter loop rather than any local property of the system at the basepoint.
+
+\section{Topological Defects and Admissibility Singularities}
+
+A topological defect corresponds to an obstruction in admissibility-preserving transport structure. Local coherence sections may exist across neighboring regions while failing to extend into a globally compatible organization. The defect reflects a failure of recursive coherence extension rather than merely a geometric irregularity.
+
+\section{Homotopy Classes and Topological Protection}
+
+Transport witnesses $p, q : \idtype_{\mathcal{C}}(c_1,c_2)$ belong to the same admissible deformation class if a higher homotopy $\alpha : \idtype_{\idtype_{\mathcal{C}}(c_1,c_2)}(p,q)$ exists. Topological protection arises because admissibility-preserving deformation cannot collapse one transport class into another continuously. The operational object is the equivalence class.
+
+% =========================================================
+% Chapter 10
+% =========================================================
+
+\chapter{Optical Homotopy Dynamics}
+
+\noindent\textit{So far the framework has been largely static: here is a space, here is a type, here are its transport witnesses. But real optical systems are not static. They lock, they bifurcate, they reorganize. A mode that was uniquely defined yesterday may split into two today as a parameter crosses a threshold. A cavity that was freely deformable may suddenly resist any further change. These are not just numerical phenomena --- they are changes in the identity structure of the system, and they call for a mathematical language in which transport topology itself is allowed to evolve. That language is developed here.}
+
+\bigskip
+
+\section{From Static Structure to Dynamical Coherence}
+
+Coherent photonic systems are not static objects. Their admissibility topology evolves. Transport witnesses stabilize, bifurcate, collapse, reconnect, or become obstructed under recursive coherence pressure. Coherent evolution is dynamical reorganization of admissibility-preserving transport structure itself.
+
+\section{Admissibility Evolution as Transport Dynamics}
+
+The admissibility field $\Afield(x,t)$ measures the local density of recursively coherent transport accessibility inside a higher admissibility manifold. The evolution equation
+\[
+\frac{\partial \Afield}{\partial t}
+=
+\lambda \nabla^2 \Afield
+-
+\mu \|\nabla \Afield\|^2
++
+\nu \Cfield(\Omega)
+\]
+governs not local state evolution alone but recursive reorganization of transport topology itself.
+
+\section{Cavity Locking as Recursive Transport Stabilization}
+
+A cavity becomes locked when recursive admissibility evolution stabilizes a coherence transport loop $p : \idtype_{\mathcal{C}}(c,c)$ into a persistent higher identity structure. Resonance stabilization is not merely frequency selection. It is recursive transport closure. Nonlinear cavity systems exhibit abrupt mode-locking transitions and hysteresis because the system reorganizes its admissibility topology dynamically until recursively stable transport structure emerges.
+
+\section{Bifurcation as Homotopical Branching}
+
+Bifurcation does not merely reflect local instability. It reflects reorganization of admissible identity structure itself. Distinct operational transport histories emerge because recursive coherence evolution partitions the admissibility manifold into separate transport basins. Optical bifurcations exhibit qualitative organizational transitions disproportionate to local parameter change because the operational topology of coherence transport reorganizes globally.
+
+\section{Instability Frontiers}
+
+The active instability frontier $\Ffrontier \subseteq \mathcal{C}$ is the dynamically evolving boundary separating recursively stable transport organization from incoherent transport collapse. The sharpening term $-\mu \|\nabla \Afield\|^2$ concentrates admissibility gradients around instability boundaries, dynamically sharpening transport separation. Transport witnesses crossing these frontiers may collapse abruptly, bifurcate, or reorganize into new admissibility basins.
+
+\section{Homotopy Flows and Recursive Stabilization}
+
+The transport witnesses themselves evolve homotopically. A time-indexed family $p_t : \idtype_{\mathcal{C}}(c_1,c_2)$ represents a homotopy flow through transport space. Higher identities $\alpha : \idtype_{\idtype_{\mathcal{C}}(c_1,c_2)}(p_t, p_{t+\Delta t})$ describe admissible deformations between successive transport organizations. Persistent coherence emerges because recursively coherent structures survive admissibility evolution more effectively than incompatible alternatives.
+
+\section{Coherence Collapse as Admissibility Phase Transition}
+
+The loss of coherence in a photonic system is often treated operationally as signal degradation, decoherence, or transport instability. Within the admissibility framework, coherence collapse is more naturally interpreted as a phase transition in admissibility topology itself.
+
+Let $\mathcal{C}_\lambda$ denote a family of coherence types parameterized by a control variable $\lambda$. As $\lambda$ varies, the admissibility structure governing recursive transport may reorganize qualitatively. A previously connected transport space may fragment into disconnected admissibility components:
+\[
+\idtype_{\mathcal{C}_\lambda}(c_1,c_2) \simeq P \sqcup Q.
+\]
+The collapse of coherence therefore corresponds not merely to amplitude attenuation or stochastic disturbance, but to the disappearance of admissible transport witnesses connecting operationally related configurations. What was a single connected space of viable paths becomes two or more mutually inaccessible regions.
+
+This interpretation clarifies why coherent systems frequently exhibit abrupt threshold behavior. The underlying admissibility topology may remain stable across large perturbation ranges before suddenly reorganizing once a critical transport boundary is crossed. The system does not degrade gradually; it undergoes a qualitative transition in which previously available continuations simply cease to exist. Coherence collapse is therefore topological before it is statistical --- the disappearance of a path structure, not the accumulation of noise.
+
+% =========================================================
+% Chapter 11
+% =========================================================
+
+\chapter{Admissibility Geometry and Constraint Transport}
+
+\noindent\textit{Local coherence is easy to achieve. Global coherence is hard. A photonic lattice can have perfectly well-behaved modes in every small patch while still failing to support a globally consistent transport organization --- because the patches, when assembled, refuse to fit together. This is not a perturbation problem or a fabrication problem. It is a topological problem: the local descriptions carry conflicting information that accumulates as you travel around the system. This chapter develops the sheaf-theoretic framework that makes such global failure precise and shows how it connects to the obstructions already familiar from topological physics.}
+
+\bigskip
+
+\section{The Local-to-Global Problem}
+
+Local coherence organization does not automatically guarantee global coherence compatibility. A photonic system may possess locally admissible transport structures which nevertheless fail to extend into globally consistent operational organization. A coherent photonic system is most naturally interpreted as a sheaf-like admissibility structure whose operational behavior depends upon the existence of globally compatible coherence transport organization.
+
+\section{Local Coherence Sections and Restriction}
+
+Let $B$ denote a deformation base space. Over each sufficiently small region $U \subseteq B$, there exists a coherence type $\mathcal{C}(U)$. An element $c \in \mathcal{C}(U)$ represents an admissible local coherence section defined over the region $U$. For $V \subseteq U$, restriction operations $\rho_{U,V} : \mathcal{C}(U) \to \mathcal{C}(V)$ govern recursive compatibility across overlapping admissibility domains.
+
+The sheaf condition may be stated directly. Suppose local coherence sections $c_i \in \mathcal{C}(U_i)$ satisfy compatibility on overlaps:
+\[
+\rho_{U_i, U_i \cap U_j}(c_i) = g_{ij}\!\left(\rho_{U_j, U_i \cap U_j}(c_j)\right).
+\]
+A global coherence section is an element $c \in \mathcal{C}(U)$ such that $\rho_{U,U_i}(c) = c_i$ up to the admissibility-preserving transition structure. The existence of such a global section is not guaranteed; it requires that the local transition data be recursively compatible around every overlap cycle.
+
+\section{A Concrete Gluing Obstruction}
+
+Consider a photonic transport lattice covered by three overlapping admissibility regions $U_i, U_j, U_k$, each supporting local coherence sections $c_i \in \mathcal{C}(U_i)$, $c_j \in \mathcal{C}(U_j)$, $c_k \in \mathcal{C}(U_k)$.
+
+On pairwise overlaps, admissible transport relations determine transition automorphisms
+\[
+g_{ij} : \mathcal{C}(U_i \cap U_j) \to \mathcal{C}(U_i \cap U_j),
+\]
+where $g_{ij}$ represents an admissibility-preserving transport automorphism relating local coherence sections across overlapping domains, and composition denotes recursive transport composition.
+
+If recursive coherence compatibility extends globally, transport around the overlap cycle must compose trivially:
+\[
+g_{ij} g_{jk} g_{ki} = 1.
+\]
+Suppose instead that $g_{ij} g_{jk} g_{ki} \neq 1$. Then recursive transport compatibility fails globally despite local admissibility across all pairwise overlaps.
+
+The failure of the cocycle condition defines an obstruction class
+\[
+[g] \in \check{H}^1(\{U_i\}, \mathcal{G}),
+\]
+where $\mathcal{G}$ denotes the sheaf of admissibility-preserving transport automorphisms and $\check{H}^1(\{U_i\}, \mathcal{G})$ is the first \v{C}ech cohomology group measuring persistent recursive incompatibility.
+
+This obstruction has direct physical interpretation closely related to Berry holonomy. Transport around the admissibility loop accumulates nontrivial coherence phase structure rather than returning trivially to the original organization. A transport mode may remain locally stable while failing to extend globally because recursive coherence accumulation around the lattice generates incompatible transport holonomy.
+
+In general, $\mathcal{G}$ need not be abelian. Admissibility-preserving transport automorphisms may fail to commute under recursive composition, particularly in coherence architectures supporting nontrivial gauge-like transport organization. The obstruction theory therefore naturally extends into nonabelian \v{C}ech cohomology, where obstruction classes classify recursive transport bundle structure --- an entire admissibility transport gauge organization --- rather than merely scalar phase accumulation. A single sentence for future development: the quotient structure $\check{H}^1(\{U_i\}, \mathcal{G})$ with nonabelian $\mathcal{G}$ classifies principal $\mathcal{G}$-bundles, giving the photonic obstruction a richer gauge-theoretic interpretation.
+
+\section{Global Sections, Admissibility Morphisms, and Local-to-Global Coherence}
+
+A global coherence section, defined consistently across the entire deformation base, corresponds to a fully coherent photonic system whose local transport structures remain recursively compatible globally. Admissibility morphisms --- transport-preserving maps between coherence structures preserving recursive compatibility under admissible deformation --- formalize coherence-preserving realization transfer.
+
+Coherence is fundamentally local-to-global. A coherent photonic system stabilizes operationally only when recursively compatible transport organization extends consistently across overlapping admissibility domains. Topological robustness becomes persistence of globally compatible transport organization. Resonance stabilization becomes recursive coherence extension. Defects become obstruction structure.
+
+\section{Admissibility Curvature and Transport Resistance}
+
+Not all coherence manifolds permit transport equally. Certain regions of admissibility space strongly resist recursive continuation, while others permit stable coherence propagation across broad deformation classes. This variation motivates the introduction of an admissibility curvature functional $\mathfrak{R}_{\mathcal{A}}$ measuring the local resistance of coherence transport under admissible deformation.
+
+Regions of high admissibility curvature correspond operationally to instability bottlenecks, transport singularities, bifurcation boundaries, or coherence collapse frontiers. Regions of low admissibility curvature correspond to stable coherence basins supporting broad classes of recursively compatible transport. The geometry a photonic system inhabits is therefore not simply the geometry of its physical substrate but the curvature landscape of its admissibility structure --- and these can differ dramatically.
+
+Unlike ordinary geometric curvature, admissibility curvature measures recursive transport survivability rather than metric bending alone. Two geometrically similar systems may possess radically different admissibility curvature if one preserves recursive transport organization while the other does not. This suggests that the operational geometry governing coherent systems is fundamentally persistence-theoretic rather than metrically geometric, and that designing for admissibility flatness --- systems with broad, stable transport basins --- is a different engineering objective from designing for geometric smoothness.
+
+% =========================================================
+% Part IV
+% =========================================================
+
+\part{Optical Computation and Semantic Photonics}
+
+% =========================================================
+% Chapter 12
+% =========================================================
+
+\chapter{Optical Computation Beyond Symbolic Processing}
+
+\noindent\textit{When a soap film finds the minimum-area surface spanning a wire frame, it is computing --- not by following rules, but by settling into the configuration that resolves all local tensions simultaneously. Coherent optical systems do something structurally similar. They do not execute programs. They stabilize. The claim of this chapter is that this kind of computation is not a metaphor or an approximation of real computation; it is a different and in some respects more fundamental form of it. And the homotopy truncation hierarchy turns out to classify, with unexpected precision, what kind of information a measurement device can extract from such a process.}
+
+\bigskip
+
+\section{The Limits of Symbolic Computation}
+
+Coherent optical systems are not merely faster symbolic processors. They instantiate an alternative computational ontology.
+
+\begin{quote}
+Computation in coherent photonic systems is most naturally interpreted as recursive admissibility relaxation over coherence manifolds rather than symbolic rule application over sequential representations.
+\end{quote}
+
+\section{Constraint Relaxation as Computation}
+
+Many physical systems evolve by minimizing recursive incompatibility. Resonant optical cavities stabilize coherence structure through recursive transport reinforcement. In each case, the system computes operationally through relaxation. The resulting organization emerges because recursively incompatible structures fail to persist while admissibility-preserving structures stabilize dynamically.
+
+\section{Measurement as Homotopy Truncation}
+
+A coherent photonic system possesses higher transport structure. A detector, however, does not preserve this higher structure operationally. Measurement projects recursive coherence organization into observational residue.
+
+Within \HoTT, this operation resembles truncation. Let $\|A\|_n$ denote the $n$-truncation of a higher type $A$, collapsing identity structure above level $n$. Different measurement architectures correspond to different truncation levels, giving a type-theoretic classification of observational architecture indexed by preserved coherence depth.
+
+\textbf{Propositional truncation} $\|A\|_{-1}$ collapses coherence structure into binary observational residue, corresponding to measurements recording only existence-type outcomes such as detector activation.
+
+\textbf{Set truncation} $\|A\|_0$ preserves discrete outcome distinguishability while suppressing higher transport structure, corresponding to measurements resolving mode number or frequency channel while discarding recursive coherence organization.
+
+\textbf{Groupoid truncation} $\|A\|_1$ preserves equivalence structure between outcomes while collapsing higher homotopies, corresponding to interference-preserving measurements that lose higher recursive phase organization.
+
+The truncation hierarchy almost certainly extends further. A hypothetical measurement architecture preserving second-order coherence relations while collapsing higher recursive transport organization would correspond schematically to $\|A\|_2$, preserving certain classes of holonomy-between-holonomies. Whether physical photonic systems can realize such higher truncation-sensitive observational architectures remains an open question. Nevertheless, the existence of the homotopy truncation hierarchy strongly suggests that measurement coarseness itself admits a type-theoretic classification indexed by preserved coherence depth --- a claim, to our knowledge, not previously stated in the literature.
+
+Measurement may also be formalized as a functor. Define a measurement functor
+\[
+M_n : \mathcal{C} \to \|\mathcal{C}\|_n,
+\]
+mapping a coherence type to its $n$-truncation. The value of $n$ determines the homotopy depth preserved by the measurement architecture. This formulation makes explicit that measurement does not merely reveal a pre-existing value. It selects a truncation level and thereby determines which coherence relations remain operationally visible. Measurement is therefore a structured projection of transport topology rather than a neutral extraction of local state. Two measurement systems with different truncation levels cannot, in principle, access the same coherence information even when operating on identical physical systems --- not because of instrumental resolution but because of the homotopy depth at which they project.
+
+This interpretation also clarifies the relationship between symbolic systems and coherent transport architectures. Symbolic representations are truncated admissibility projections generated from higher transport organization. Symbolic computation operates over $0$-truncated coherence structure: elements are distinguishable but higher identity structure is suppressed, schematically $S \simeq \|\mathcal{C}\|_0$. The advantage of this truncation is stability and manipulability. The disadvantage is loss of higher transport organization. The power and brittleness of symbolic systems have a common source: both arise from the same collapse of transport richness into projection stability.
+
+\section{Transport Logic, Admissibility Descent, and Topological Computation}
+
+Transport logic replaces symbolic logic with admissibility-preserving coherence transport as primitive. Logical consequence becomes admissibility continuation. Contradiction becomes transport obstruction. Inference becomes recursive coherence stabilization.
+
+The admissibility PDE acts directly upon coherence organization rather than merely numerical representation, performing admissibility descent over coherence topology. Topological photonics acquires a direct computational interpretation: protected transport modes correspond to recursively stable admissibility structures resistant to local perturbation, and topological robustness becomes computational robustness.
+
+% =========================================================
+% Chapter 13
+% =========================================================
+
+\chapter{Recursive Coherence Architectures}
+
+\noindent\textit{The most interesting optical systems are not those that simply stabilize. They are those that regulate their own stabilization --- systems where the pattern of coherence actively reshapes the conditions under which future coherence is possible. A cavity that locks alters the effective admissibility landscape for modes that arrive afterward. A topological transport network that routes one signal changes what paths remain available to the next. This self-referential quality, where coherence organization feeds back into the conditions for coherent organization, is what distinguishes a recursive coherence architecture from a mere relaxation system.}
+
+\bigskip
+
+\section{From Relaxation to Recursive Organization}
+
+Many coherent systems regulate their own coherence evolution recursively. Instability regions are detected dynamically. Constraint propagation reorganizes itself adaptively. Persistent transport structures alter future admissibility accessibility. The resulting systems become recursive coherence architectures.
+
+\section{Active Instability Frontiers and Hierarchical Organization}
+
+The active instability frontier $\Ffrontier \subseteq \mathcal{C}$ concentrates computational activity. Stable regions require little reorganization once recursive admissibility has converged. Instability frontiers remain dynamically active. Recursive coherence evolution therefore behaves selectively, resembling focused topological repair rather than blind global optimization.
+
+The frontier admits a schematic definition. Pulling the admissibility field $\Afield$ back along coherence configurations induces an accessibility gradient over transport space. The active instability frontier is the region where this gradient exceeds a threshold:
+\[
+\Ffrontier_t = \{c \in \mathcal{C} \mid \|\nabla \Afield(c,t)\| > \theta\}.
+\]
+This is the interface where admissibility structure is still being decided. Computation localizes near $\Ffrontier_t$ because stable regions require little further reorganization, while unstable regions lack coherent continuation. Recursive coherence architectures compute by moving, shrinking, splitting, or stabilizing instability frontiers.
+
+Many coherent photonic systems exhibit layered transport organization across multiple scales. Local resonance loops stabilize within larger transport structures. Constraint propagation occurs recursively across nested coherence hierarchies. The resulting architectures possess genuinely hierarchical admissibility topology, resembling recursive sheaf gluing across nested coherence manifolds.
+
+\section{Lamphron--Lamphrodyne Regulation}
+
+Recursive coherence architectures require both stabilization and reintegration. Excessive lamphron pressure produces rigid transport fixation --- over-specialized transport architectures incapable of tolerating deformation. Excessive lamphrodyne pressure produces perpetual destabilization --- transport organization never converges. Operational persistence emerges through recursive regulation near the critical balance.
+
+This balance governs mode locking (sufficient stabilization to preserve coherence loops, sufficient flexibility for recursive compatibility under perturbation), topological robustness (protected admissibility structure without catastrophic rigidity), and recursive photonic computation (stable transport organization without collapse into frozen symbolic residue).
+
+\section{Recursive Memory and Semantic Organization}
+
+Persistent transport organization does not merely preserve prior coherence structure passively; it actively reshapes future admissibility evolution. The system ``remembers'' because recursive coherence persistence alters the transport accessibility landscape itself. Memory is infrastructural rather than retrospective.
+
+At sufficiently high levels of recursive coherence organization, transport stabilization begins to resemble semantic organization. This reflects a structural principle: a recursive coherence architecture organizes transport evolution according to global admissibility compatibility rather than merely local interaction rules. This provides the bridge between photonic admissibility computation and broader recursive organizational systems.
+
+\section{Memory as Homotopy Class of Transport History}
+
+Many coherent optical systems exhibit hysteresis, path dependence, and stabilization memory. Such effects are difficult to interpret purely through instantaneous state descriptions because the operational behavior depends explicitly upon prior admissible transport history.
+
+Within the present framework, memory is represented directly through higher transport organization. Let $p, q : \idtype_{\mathcal{C}}(c_1,c_2)$ be distinct admissible transport witnesses connecting identical endpoint configurations. The operational behavior of the resulting configuration may depend upon which transport witness generated it. Two systems that arrived at the same local configuration by different admissible paths may behave differently under subsequent perturbation because they inhabit different homotopy classes of transport history.
+
+Memory therefore resides not in local configuration alone but in the homotopy class of admissible transport history. Recursive coherence architectures preserve traces of prior admissibility evolution because admissible transport paths themselves participate in future coherence organization. This suggests that certain forms of optical memory --- hysteretic mode selection, path-dependent locking, history-sensitive interference --- are fundamentally topological rather than representational, and cannot in principle be captured by descriptions that record only instantaneous state without tracking the transport history that produced it.
+
+% =========================================================
+% Chapter 14
+% =========================================================
+
+\chapter{Coherence as Computation}
+
+\noindent\textit{The history of computation is largely a history of deciding what to ignore. Punch cards ignored the physical properties of the cards. Transistors ignored the quantum mechanics of their electrons. Tokens in a language model ignore the admissibility structure that organizes meaning. Each reduction was productive and each one carried a cost. This chapter asks what would change if the ignored structure --- the transport topology, the recursive admissibility, the coherence geometry --- were taken as primary rather than projected away. The answer, tentatively, is that computation itself becomes a different kind of thing: not the execution of rules, but the stabilization of admissible continuation.}
+
+\bigskip
+
+\section{The Historical Reduction and Its Reversal}
+
+The history of computation is largely the history of progressive symbolic reduction. Even contemporary machine learning systems largely preserve this inheritance through sequential token processing.
+
+\begin{quote}
+Computation is not fundamentally symbolic manipulation. Computation is recursive stabilization of admissibility-preserving coherence organization.
+\end{quote}
+
+Symbolic representations are not primary computational objects. They are projection residues generated by recursive coherence organization occurring in higher admissibility spaces. This explains many limitations of purely symbolic computational systems: the operational coherence structures generating stable admissibility evolution remain partially hidden beneath projection compression.
+
+\section{Computation Without Representation}
+
+A recursive coherence architecture computes insofar as admissibility evolution reorganizes transport topology toward stable recursive continuation. Inference becomes transport continuation. Memory becomes persistent coherence topology. Optimization becomes recursive incompatibility suppression. Topological protection becomes computational robustness.
+
+Coherent photonic systems provide unusually direct physical realizations of recursive coherence computation. Unlike many electronic architectures, photonic systems naturally preserve transport topology, phase coherence, recursive interference structure, and admissibility-sensitive propagation organization. They compute directly through coherence evolution itself.
+
+The recursive coherence framework also suggests a possible explanation for why similar organizational principles appear across apparently unrelated systems. Physical coherence systems, biological regulation, cognitive organization, and distributed computation all require recursive admissibility preservation under constrained evolution. The common feature is not shared material substrate. It is recursive coherence topology.
+
+% =========================================================
+% Part V
+% =========================================================
+
+\part{Formal Verification and Machine-Verified Photonics}
+
+\begin{remark*}
+All code presented in Part~V is schematic Lean-like pseudocode intended to illustrate the transport-theoretic organization of the framework rather than fully verified industrial implementations. The formalization program developed in this work remains ongoing. Many constructions presented here would require substantial refinement, library development, and foundational specification before machine-checkable verification could be completed rigorously within Lean, Agda, or related proof assistants. The purpose of these chapters is therefore architectural rather than exhaustive: to demonstrate that admissibility-preserving coherence transport admits constructive representation within proof-theoretic systems and that the resulting organizational principles align naturally with homotopical transport logic.
+\end{remark*}
+
+% =========================================================
+% Chapter 15
+% =========================================================
+
+\chapter{Formalizing Coherent Photonic Systems}
+
+\noindent\textit{There is a difference between saying a transport exists and exhibiting one. In ordinary mathematical writing, existence proofs often work by indirect argument: assume it does not exist, derive a contradiction, conclude it must. But in constructive proof theory, that move is not available. To prove a transport exists, you have to build it. The remarkable thing about coherent photonic systems is that they already work this way: a mode either actually propagates through a structure or it does not, and no indirect argument changes the physics. This chapter explores what it would mean to take that operational parallel seriously, by expressing photonic coherence constructions in the language of proof assistants.}
+
+\bigskip
+
+\section{Why Formal Verification Matters}
+
+\begin{quote}
+If coherent photonic systems genuinely instantiate admissibility-preserving transport structure, then their operational organization should be expressible directly within constructive proof-theoretic systems.
+\end{quote}
+
+Proof assistants such as Lean and Agda become important not merely because they increase rigor externally, but because the very logic governing coherent transport already resembles the constructive transport logic internal to \HoTT\ itself.
+
+\section{Coherence Types and Transport in Lean-like Pseudocode}
+
+\begin{verbatim}
+structure CoherenceState where
+  phase      : ℝ
+  amplitude  : ℝ
+  admissible : Prop
+
+def transport
+  (c₁ c₂ : CoherenceState)
+  : Type :=
+  { p : Path c₁ c₂ //
+      preserves_admissibility p }
+\end{verbatim}
+
+The admissibility condition forms part of the structure itself. One may then define coherence-preserving transport operations, with identity transport formalized directly as operational coherence continuation.
+
+\section{Dependent Resonance Families}
+
+\begin{verbatim}
+structure Geometry where
+  radius : ℝ
+  index  : ℝ
+
+def ResonanceFamily
+  : Geometry → Type
+
+def resonance_transport
+  {g₁ g₂ : Geometry}
+  (p : g₁ = g₂)
+  : ResonanceFamily g₁ → ResonanceFamily g₂
+\end{verbatim}
+
+Each geometry determines its own admissible coherence type. Transport between geometries induces corresponding transport between resonance manifolds.
+
+\section{Formalizing Admissibility}
+
+\begin{verbatim}
+def admissible
+  (c : CoherenceState)
+  : Prop :=
+  coherence_constraint c ∧
+  transport_stable c ∧
+  energy_compatible c
+\end{verbatim}
+
+A transport witness must preserve admissibility constructively rather than merely symbolically. The proof assistant becomes a computational realization of admissibility-preserving transport logic itself.
+
+\section{The Epistemic Shift and Its Limitations}
+
+The integration of proof assistants produces an important epistemic shift: coherent physical systems already instantiate transport logic operationally. Formal proof systems do not merely describe coherent transport externally. They partially reproduce its organizational structure internally.
+
+This convergence has a precise form. In a constructive proof assistant, a proof of admissible transport is not merely a statement that transport exists. It is a witness inhabiting the corresponding type. If $\mathsf{Transport}(c_1,c_2)$ is defined as the type of admissibility-preserving transports from $c_1$ to $c_2$, then a proof $p : \mathsf{Transport}(c_1,c_2)$ is itself a transport certificate. Proof assistants therefore do not merely verify propositions about photonic systems. They require explicit construction of the transport structures whose existence is being claimed. Constructive proof mirrors physical admissibility in the strongest possible sense: both demand that coherence continuation be operationally realized, not merely asserted.
+
+However, formal verification does not magically solve physical uncertainty. Many admissibility structures remain only partially understood. Real photonic systems contain noise, dissipation, fabrication variation, and nonlinear effects difficult to capture completely within simplified formal systems. The broader cross-scale claims suggested throughout the text remain partly conjectural. The distinction between rigorous derivation and suggestive universality must remain explicit.
+
+\section{Proof Assistants as Operational Laboratories}
+
+A proof assistant is not merely a verification environment. Within the admissibility framework, it becomes an operational laboratory for coherence transport itself. The act of formalizing a photonic system inside a proof assistant does not just check whether a claim is true. It forces every admissibility condition to become computable, every transport witness to be explicitly constructed, and every coherence dependency to be tracked rather than assumed.
+
+Machine-verifiable photonic design therefore becomes possible in principle: coherence architectures may be verified at the level of recursive transport compatibility before fabrication occurs physically. A design that admits no proof of global admissibility within the formal system is a design that lacks a certified global transport organization --- and that failure has operational consequences. The distinction between theorem and operational transport witness begins to collapse.
+
+This perspective also illuminates why the pseudocode in these chapters, though schematic, is not arbitrary. Each type declaration, each proof obligation, each theorem statement corresponds to a real structural claim about admissibility organization. When the full formalization program is eventually completed, the transition from schematic to verified will not require reconceptualization. It will require precision where precision was previously deferred.
+
+% =========================================================
+% Chapter 16
+% =========================================================
+
+\chapter{Machine-Verified Resonance Architectures}
+
+\noindent\textit{The test of a formal framework is whether it can be made to work in practice --- whether the constructions that look coherent on paper remain coherent when subjected to the discipline of machine verification, which has no patience for vague gestures and no ability to infer what you meant when what you wrote was ambiguous. This chapter works through several concrete photonic architectures in schematic proof-assistant form, not because the code is ready to run, but because the exercise of writing it forces every admissibility claim to become explicit, and explicit claims can be evaluated, extended, and corrected.}
+
+\bigskip
+
+\section{Verified Ring Resonators}
+
+\begin{verbatim}
+structure ResonatorState where
+  phase      : ℝ
+  amplitude  : ℝ
+  admissible : Prop
+
+def resonance_loop
+  (s : ResonatorState)
+  : Type :=
+  { p : s = s //
+      phase_closed p ∧
+      preserves_coherence p }
+
+theorem resonance_stable
+  (s : ResonatorState)
+  : ∃ p : resonance_loop s,
+    recursively_stable p
+\end{verbatim}
+
+The theorem certifies that admissibility-preserving recursive transport exists constructively for the specified coherence architecture. Resonance stabilization becomes machine-verifiable recursive transport persistence.
+
+\section{Interferometric Coherence Networks}
+
+\begin{verbatim}
+structure Interference where
+  left_path   : transport c₁ c₂
+  right_path  : transport c₁ c₂
+  compatible  :
+    coherence_relation left_path right_path
+
+theorem interference_preserved
+  (I : Interference)
+  : recursively_compatible I
+\end{verbatim}
+
+The interferometer computes through recursive coherence interaction between transport histories. Interference becomes formalized higher coherence compatibility.
+
+\section{Topological Transport Verification}
+
+\begin{verbatim}
+structure TopologicalMode where
+  transport_class :
+    CoherenceState → CoherenceState → Type
+  protected :
+    ∀ perturbation,
+      admissible perturbation →
+      preserves_transport_class perturbation
+
+theorem topological_protection
+  (T : TopologicalMode)
+  : transport_persistent T
+\end{verbatim}
+
+This theorem states constructively that admissibility-preserving transport organization survives recursive perturbation. Topological robustness becomes formal persistence of transport equivalence classes.
+
+\section{Recursive Coherence Stabilization}
+
+\begin{verbatim}
+def update
+  (C : CoherenceSpace)
+  : CoherenceSpace
+
+def stabilize
+  : ℕ → CoherenceSpace → CoherenceSpace
+| 0,     C => C
+| n + 1, C => stabilize n (update C)
+
+theorem recursive_convergence
+  (C : CoherenceSpace)
+  : ∃ limit,
+    admissibly_stable limit ∧
+    converges_to (stabilize) C limit
+\end{verbatim}
+
+This theorem certifies that recursive admissibility evolution converges toward stable transport organization. Coherence stabilization becomes machine-verifiable admissibility descent.
+
+\section{Constraint Sheaves and Global Coherence}
+
+\begin{verbatim}
+def LocalSection
+  (U : Region)
+  : Type
+
+def restrict
+  {U V : Region}
+  (h : V ⊆ U)
+  : LocalSection U → LocalSection V
+
+theorem global_gluing
+  (sections : Π i, LocalSection (U i))
+  : compatible sections →
+    ∃ global, extends global sections
+\end{verbatim}
+
+This theorem expresses recursive coherence stabilization across distributed admissibility domains. Topological defects correspond precisely to failure of such extension. The physical interpretation is direct: a verified gluing theorem is a defect-exclusion result. If the proof assistant verifies that compatible local coherence sections admit global extension, the theorem certifies that no obstruction prevents coherent organization across the entire lattice. Conversely, failure to construct such a global witness may indicate either missing proof information or a genuine coherence obstruction. Machine verification thereby separates apparent numerical stability from genuine global admissibility: modes that look well-behaved locally but whose local coherence sections fail to compose into globally consistent transport organization are operationally inadmissible even when they appear energetically stable. Proof objects are themselves admissibility-preserving transport witnesses inhabiting the corresponding identity structure.
+
+% =========================================================
+% Part VI
+% =========================================================
+
+\part{Cross-Scale Admissibility and Recursive Persistence}
+
+% =========================================================
+% Chapter 17
+% =========================================================
+
+\chapter{Cross-Scale Coherence and Recursive Persistence}
+
+\noindent\textit{The same organizational logic keeps appearing in unexpected places. A metabolic network that must remain viable under environmental fluctuation faces a structurally similar problem to a topological photonic lattice that must remain coherent under fabrication disorder. A mind that must preserve inferential continuity across successive states faces a structurally similar problem to an optical cavity that must preserve resonance under deformation. The question is whether this resemblance is superficial --- a loose family of analogies --- or whether it reflects something genuine about what recursive persistence requires of any system that must maintain it. This chapter investigates that question carefully, and with the specific morphism criterion needed to tell the difference.}
+
+\bigskip
+
+\section{The Problem of Structural Recurrence}
+
+Similar organizational principles have appeared repeatedly across apparently different domains throughout this text. This raises an unavoidable question: why do structurally similar organizational patterns recur across systems differing radically in scale, substrate, and implementation?
+
+One possible answer is that the similarities are superficial metaphors. Another possibility is more ambitious: recursive admissibility-preserving transport organization may constitute a genuine structural principle recurring across multiple classes of physical and informational systems. The present chapter investigates this possibility carefully, with explicit attention to the distinction between rigorous transport-preserving morphisms and suggestive analogy.
+
+\section{Persistence Before Representation}
+
+Systems capable of sustaining recursive persistence under admissibility constraints may converge toward similar transport organizations regardless of substrate. The commonality therefore lies not in material identity but in persistence topology.
+
+\section{Recursive Compatibility as a Scale-Independent Principle}
+
+Requirements of local-to-global coherence extension, persistence under deformation, constraint propagation, and operational continuity through higher coherence compatibility appear in coherent photonic systems (phase locking, resonance stabilization, topological transport), biological systems (metabolic regulation, developmental stability, adaptive persistence), cognitive systems (semantic stabilization, inference continuation, memory integration), and distributed computational systems (synchronization, consistency maintenance, persistent operational organization).
+
+The resulting recurrence suggests that recursive compatibility may function as a scale-independent organizational constraint.
+
+\section{Admissibility Morphisms Across Scales}
+
+Admissibility morphisms preserve transport organization, not substrate realization. This permits structural comparison across apparently different systems. A resonance stabilization process in a photonic cavity and a recursive semantic stabilization process in a cognitive architecture may differ materially while exhibiting structurally similar admissibility-preserving transport organization.
+
+The criterion for such comparison is precise. A cross-scale admissibility morphism
+\[
+F : \mathcal{C}_1 \to \mathcal{C}_2
+\]
+between coherence systems in different domains is meaningful only if it preserves admissible continuation:
+\[
+p : \idtype_{\mathcal{C}_1}(c,d) \quad\mapsto\quad F(p) : \idtype_{\mathcal{C}_2}(F(c),F(d)).
+\]
+Cross-scale comparison is therefore not based on superficial resemblance. It is based on whether recursive transport structure is preserved under the morphism. This criterion sharply separates rigorous admissibility analogy from loose metaphor. Two systems are comparable in the admissibility sense only when their transport topology can be related by a structure-preserving morphism, not merely when their dynamical descriptions use similar vocabulary.
+
+\section{The Danger of Overextension}
+
+The present claim is intentionally limited. The framework does not assert that all coherent systems instantiate identical equations, identical substrates, or identical mechanisms. The claim is structural: systems required to preserve recursive admissibility under constrained transport evolution may converge toward similar higher organizational principles. This remains a mathematically investigable hypothesis rather than a completed theorem. The distinction between rigorous transport-preserving morphism and suggestive analogy must remain explicit at all times.
+
+\section{Toward a Persistence Topology and Constructive Logic}
+
+Perhaps operational persistence itself possesses a topology: structures surviving recursive deformation under admissibility constraints may naturally organize into transport equivalence classes independent of specific substrate realization. Such a persistence topology remains speculative, but the mathematical machinery developed throughout this text suggests it may be formally approachable.
+
+The convergence between constructive proof theory and recursive coherence organization now becomes especially significant. A proof stabilizes recursive compatibility within formal coherence space. A coherent physical system stabilizes recursive compatibility within admissibility space. Both operate through recursive transport organization. The relationship between proof and persistence may be unusually deep.
+
+% =========================================================
+% Chapter 18
+% =========================================================
+
+\chapter{Conclusion: Toward a Persistence-First Physics}
+
+\noindent\textit{Every theoretical program eventually reaches the point where it must say clearly what it has actually claimed, as distinct from what it has suggested, gestured toward, or left open as a research program. This conclusion tries to do that honestly. The framework developed across these chapters has a definite thesis: that physical persistence is prior to representation, that transport is prior to state, and that coherence-preserving equivalence is more fundamental than local identity. Some of this has been formalized precisely. Some remains schematic. The distinction between those categories matters, and this chapter tries to keep it visible.}
+
+\bigskip
+
+\section{The Central Inversion}
+
+The central argument developed throughout this text may now be stated plainly.
+
+Modern physical and computational theory has generally treated representation as primary. The framework developed in this work reverses this explanatory order. Persistence becomes primary. Coherent structures survive because admissibility-preserving transport organization remains recursively available under constrained deformation. Representation emerges afterward as projection residue generated by stabilized coherence topology.
+
+This inversion changes the meaning of identity, computation, topology, coherence, and operational equivalence simultaneously. Identity becomes admissible transport. Persistence becomes recursive compatibility preservation. Computation becomes admissibility relaxation. Topology becomes operational transport invariance. Meaning becomes recursive coherence participation.
+
+\section{The Interpretive Loop}
+
+The core load-bearing architecture of the book is the interpretive cycle:
+\[
+\mathcal{C}
+\;\longrightarrow\;
+\idtype_{\mathcal{C}}
+\;\longrightarrow\;
+\text{transport topology}
+\;\longrightarrow\;
+\Afield(x,t)
+\;\longrightarrow\;
+\text{recursive accessibility evolution.}
+\]
+The coherence type determines admissible transport structure. Identity transport determines persistence relations. Admissibility dynamics determines which transports remain globally sustainable. Recursive evolution reshapes the accessibility topology itself.
+
+\section{Three Original Contributions}
+
+The strongest original contributions of the framework are three. First, admissibility-preserving transport as the operational meaning of persistence: structures survive because admissible transport remains recursively sustainable under constrained deformation, not because local configuration remains fixed. Second, recursive accessibility evolution as distinct from local geometric evolution: the admissibility field $\Afield(x,t)$ governing global transport sustainability is not reducible to the underlying Maxwell field dynamics. Third, the Measurement Truncation Correspondence: detector architectures are characterized by preserved homotopy depth, giving a type-theoretic index of measurement coarseness from $\|-\|_{-1}$ (binary detection) through $\|-\|_0$ (mode-resolved) and $\|-\|_1$ (interference-preserving) to potentially higher levels corresponding to exotic observational regimes. This classification does not, to our knowledge, appear in this form in existing literature.
+
+\section{Homotopy Type Theory as Physical Logic}
+
+Types became admissibility spaces. Identity types became coherence-preserving transport witnesses. Dependent types became resonance manifolds indexed by admissibility parameters. Higher identities became recursive coherence relations between transport histories. Univalence became operational equivalence between coherence structures. Higher inductive types became recursively generated optical coherence architectures.
+
+The convergence suggests that \HoTT\ may capture something structurally fundamental about recursive persistence itself rather than merely serving as an abstract formal language applied externally to physical systems.
+
+\section{Limitations and Future Directions}
+
+The framework remains incomplete in many respects. The admissibility evolution equation remains schematic. Many proposed coherence-topological structures require deeper categorical formalization. The relationship between admissibility geometry and existing physical field theories remains only partially developed. The cross-scale persistence conjecture remains mathematically underdetermined. The formalization presented here is architectural rather than industrial-strength.
+
+Several directions appear especially important. First, the categorical foundations require substantial refinement: higher categorical definitions of admissibility stacks, rigorous variational derivation of the admissibility PDE from first principles (likely connecting to the Allen--Cahn and Ginzburg--Landau gradient flow tradition), formal transport categories, explicit functorial semantics. Second, photonic implementations of recursive coherence computation deserve experimental investigation. Third, constructive proof verification should be expanded substantially toward actual machine-checked Lean libraries. Fourth, the cross-scale persistence conjecture requires careful mathematical investigation to determine precisely which transport-preserving structures genuinely recur across admissibility-preserving systems. Fifth, the measurement truncation hierarchy deserves investigation both theoretically (what does $\|-\|_2$ measurement require physically?) and experimentally (can topological photonic systems realize it?).
+
+\section{A Different Physical Imagination}
+
+The purpose of this work was not merely to apply homotopy type theory to photonics. It was to investigate whether coherent physical systems themselves already instantiate a transport-oriented logic whose mathematical expression naturally appears within homotopical and constructive frameworks.
+
+If so, then photonics may represent more than a technological substrate. It may provide one of the clearest experimentally accessible windows into a deeper persistence-first organization governing recursive coherence across physical systems generally.
+
+\section{Toward a Persistence-First Physical Ontology}
+
+The historical trajectory of physics has repeatedly displaced primitive substance in favor of deeper relational organization. Matter gave way to fields, fields to symmetries, and symmetries to gauge structure. The admissibility framework suggests a further transition in the same direction.
+
+Persistence itself becomes primary. Objects are no longer primitive entities moving through a fixed substrate. They are recursively stabilized admissibility structures surviving within transport space because recursive coherence continuation remains possible. When the continuation conditions fail, the object does not merely change --- it ceases, in the operationally relevant sense, to exist.
+
+Physical reality, under this interpretation, becomes persistence geometry. The universe is not fundamentally composed of things. It is composed of recursively admissible transport relations whose stable regions appear observationally as enduring structure. Measurement extracts projections of this structure at various truncation levels. Computation stabilizes portions of it. Memory preserves the homotopy classes of paths through it. And physical law expresses the constraints on which transport organizations remain recursively sustainable across scales.
+
+This is not a claim about the ultimate nature of reality. It is a claim about which mathematical language is most natural for describing what coherent physical systems actually do. The evidence from photonics, topological physics, and constructive proof theory converges on the same answer: transport, not state. Persistence, not position. Equivalence, not identity.
+
+The theory remains unfinished. But the transport structures are already visible.
+
+The complete framework may be summarized by the following dependency chain:
+\[
+\text{coherence configuration}
+\;\to\;
+\text{admissible transport}
+\;\to\;
+\text{recursive persistence}
+\;\to\;
+\text{operational identity}
+\;\to\;
+\text{projected representation.}
+\]
+Classical representation-first ontology reads this chain backward. It begins with projected representation and attempts to infer persistence from symbolic continuity. The present framework reads the chain forward. Persistence is generated by admissible transport, and representation is the residue of stabilized coherence organization. What changes the world is not the representation but the admissibility landscape from which representations are projected.
+
+% =========================================================
+% Appendix
+% =========================================================
+
+\appendix
+
+\chapter{Mathematical Foundations of Admissibility Geometry}
+
+\noindent\textit{A theoretical framework earns trust in two ways: by explaining things, and by being checkable. The first eighteen chapters did the explaining. This appendix attempts the second. It collects the central formal objects of the framework --- admissibility spaces, coherence configurations, transport witnesses, dependent families, the evolution equation, sheaf structure, univalence, and the truncation hierarchy --- in a single compressed form, stripped of motivation and analogy, so that any reader who wants to stress-test a specific claim knows exactly where to find its formal statement.}
+
+\bigskip
+
+\section{Admissibility Spaces}
+
+Let $\Omega \subseteq \mathbb{R}^n$ denote a physical or abstract transport domain. An \emph{admissibility space} consists of a coherence configuration type $\mathcal{C}$ together with an admissibility functional
+\[
+\Afield : \Omega \times \mathbb{R}_{\geq 0} \to \mathbb{R}_{\geq 0}
+\]
+governing recursive accessibility across the coherence manifold.
+
+\section{Coherence Configurations}
+
+\[
+\mathcal{C}
+:=
+\left\{
+(E,H)
+\;\middle|\;
+\begin{aligned}
+&\nabla \times E = -\mu \tfrac{\partial H}{\partial t},\quad
+\nabla \times H = \epsilon \tfrac{\partial E}{\partial t},\\
+&\nabla \cdot (\epsilon E)=0,\quad
+\nabla \cdot (\mu H)=0,\quad
+\mathsf{Adm}(E,H)
+\end{aligned}
+\right\}
+\]
+where $\mathsf{Adm}(E,H)$ collects phase continuity, energy boundedness, mode stability, and boundary coherence compatibility constraints as defined in Chapter~5.
+
+\section{Admissibility Transport}
+
+Given $c_1, c_2 : \mathcal{C}$, an admissibility transport witness $p : \idtype_{\mathcal{C}}(c_1,c_2)$ is a one-parameter admissible homotopy $(E_t,H_t)$, $t \in [0,1]$, with $(E_{t=0},H_{t=0}) = c_1$, $(E_{t=1},H_{t=1}) = c_2$, and every intermediate configuration admissible. Identity becomes admissible continuation.
+
+\section{Higher Transport Structure}
+
+Given $p,q : \idtype_{\mathcal{C}}(c_1,c_2)$, a higher transport witness $\alpha : \idtype_{\idtype_{\mathcal{C}}(c_1,c_2)}(p,q)$ represents recursive compatibility between coherence transports themselves.
+
+\section{Dependent Resonance Families}
+
+A dependent resonance family $A : B \to \Type$ is defined by $A(b) = \mathcal{C}_b$, where $\mathcal{C}_b$ denotes the admissible coherence type induced by geometry parameter $b$. Transport in parameter space induces coherence transport between resonance manifolds.
+
+\section{Admissibility Evolution}
+
+\[
+\frac{\partial \Afield}{\partial t}
+=
+\lambda \nabla^2 \Afield
+-
+\mu \|\nabla \Afield\|^2
++
+\nu \Cfield(\Omega)
+\]
+The diffusive term smooths recursive accessibility gradients. The nonlinear sharpening term concentrates instability frontiers. The recursive correction term encodes higher coherence organization influencing admissibility evolution globally.
+
+\section{Admissibility Sheaves}
+
+Transition automorphisms $g_{ij} : \mathcal{C}(U_i \cap U_j) \to \mathcal{C}(U_i \cap U_j)$ encode coherence transport between overlapping local sections. Failure of $g_{ij} g_{jk} g_{ki} = 1$ defines an obstruction class $[g] \in \check{H}^1(\{U_i\},\mathcal{G})$ where $\mathcal{G}$ is the sheaf of admissibility-preserving transport automorphisms. In general $\mathcal{G}$ is nonabelian, and the full obstruction theory extends into nonabelian \v{C}ech cohomology classifying principal $\mathcal{G}$-bundles.
+
+\section{Univalence and Operational Identity}
+
+\[
+\mathsf{idtoequiv} : \idtype_{\mathcal{U}}(A,B) \to \mathrm{Equiv}(A,B)
+\]
+is canonical and constructive. The univalence axiom asserts $\idtype_{\mathcal{U}}(A,B) \simeq \mathrm{Equiv}(A,B)$. Coherence-preserving equivalence becomes identity. The physically meaningful object is admissibility-preserving transport organization rather than substrate realization alone.
+
+\section{Measurement and Truncation}
+
+The truncation hierarchy classifies observational architectures according to preserved coherence depth:
+\[
+\|A\|_{-1} \text{ (binary detection)},\quad
+\|A\|_0 \text{ (mode-resolved)},\quad
+\|A\|_1 \text{ (interference-preserving)},\quad
+\ldots
+\]
+The truncation level of a detector is a physically meaningful operational property.
+
+\section{Recursive Persistence Principle}
+
+Persistent structures survive because admissibility-preserving transport remains recursively sustainable under constrained deformation. Operational identity is determined by recursive coherence continuation rather than static local realization. Computation emerges through recursive admissibility stabilization. Topology emerges through persistence of transport organization under deformation. The resulting framework replaces representation-first ontology with persistence-first coherence organization.
+
+\section{Future Mathematical Directions}
+
+A fully rigorous formulation requires integration with higher category theory, cohesive homotopy type theory with persistence-sensitive modalities, nonabelian obstruction theory, and derivation of the admissibility PDE from variational principles (likely connecting to the Allen--Cahn and Ginzburg--Landau gradient flow tradition). The relationship between admissibility transport and derived geometric structures remains largely unexplored. The possibility that recursive persistence admits a universal higher categorical organization across multiple physical scales remains speculative but mathematically approachable. The present framework should be understood as an emerging transport-oriented mathematical research program centered upon recursive admissibility-preserving coherence organization.
+
+% =========================================================
+% Bibliography
+% =========================================================
+
+\begin{thebibliography}{99}
+
+\bibitem{hottbook}
+The Univalent Foundations Program,
+\textit{Homotopy Type Theory: Univalent Foundations of Mathematics},
+Institute for Advanced Study, 2013.
+
+\bibitem{awodey}
+Steve Awodey,
+\textit{Type Theory and Homotopy},
+Lecture Notes in Mathematics, Springer, 2018.
+
+\bibitem{rijke}
+Egbert Rijke,
+\textit{Introduction to Homotopy Type Theory},
+Cambridge University Press, 2022.
+
+\bibitem{shulman}
+Michael Shulman,
+``Homotopy Type Theory: A Synthetic Approach to Higher Equalities,''
+\textit{Proceedings of the International Congress of Mathematicians}, 2018.
+
+\bibitem{voevodsky}
+Vladimir Voevodsky,
+``Univalent Foundations and the Future of Mathematics,''
+Institute for Advanced Study Lectures, 2010.
+
+\bibitem{lurie}
+Jacob Lurie,
+\textit{Higher Topos Theory},
+Princeton University Press, 2009.
+
+\bibitem{maclane}
+Saunders Mac Lane,
+\textit{Categories for the Working Mathematician}, Second Edition,
+Springer, 1998.
+
+\bibitem{riehl}
+Emily Riehl,
+\textit{Category Theory in Context},
+Dover Publications, 2016.
+
+\bibitem{schreiber}
+Urs Schreiber,
+``Differential Cohomology in a Cohesive Infinity-Topos,''
+arXiv preprint arXiv:1310.7930, 2013.
+
+\bibitem{baez}
+John Baez and Mike Stay,
+``Physics, Topology, Logic and Computation: A Rosetta Stone,''
+in \textit{New Structures for Physics}, Springer, 2010.
+
+\bibitem{martinlof}
+Per Martin-L\"of,
+\textit{Intuitionistic Type Theory},
+Bibliopolis, 1984.
+
+\bibitem{lean}
+Leonardo de Moura et al.,
+``The Lean Theorem Prover,'' \url{https://leanprover.github.io}.
+
+\bibitem{agda}
+The Agda Development Team,
+``Agda Documentation,'' \url{https://agda.readthedocs.io}.
+
+\bibitem{ozawa}
+Tomoki Ozawa et al.,
+``Topological Photonics,''
+\textit{Reviews of Modern Physics}, Vol.~91, 2019.
+
+\bibitem{lu}
+Ling Lu, John D.\ Joannopoulos, and Marin Solja\v{c}i\'c,
+``Topological Photonics,''
+\textit{Nature Photonics}, Vol.~8, 2014.
+
+\bibitem{joannopoulos}
+John D.\ Joannopoulos, Steven G.\ Johnson, Joshua N.\ Winn, and Robert D.\ Meade,
+\textit{Photonic Crystals: Molding the Flow of Light}, Second Edition,
+Princeton University Press, 2008.
+
+\bibitem{saleh}
+Bahaa E.\ A.\ Saleh and Malvin Carl Teich,
+\textit{Fundamentals of Photonics}, Third Edition,
+Wiley, 2019.
+
+\bibitem{bornwolf}
+Max Born and Emil Wolf,
+\textit{Principles of Optics}, Seventh Edition,
+Cambridge University Press, 1999.
+
+\bibitem{berry}
+Michael Berry,
+``Quantal Phase Factors Accompanying Adiabatic Changes,''
+\textit{Proceedings of the Royal Society~A}, Vol.~392, 1984.
+
+\bibitem{wen}
+Xiao-Gang Wen,
+\textit{Quantum Field Theory of Many-Body Systems},
+Oxford University Press, 2004.
+
+\bibitem{kitaev}
+Alexei Kitaev,
+``Fault-Tolerant Quantum Computation by Anyons,''
+\textit{Annals of Physics}, Vol.~303, 2003.
+
+\bibitem{barbour}
+Julian Barbour,
+\textit{The Janus Point},
+Basic Books, 2020.
+
+\bibitem{friston}
+Karl Friston,
+``The Free-Energy Principle: A Unified Brain Theory?''
+\textit{Nature Reviews Neuroscience}, Vol.~11, 2010.
+
+\bibitem{prigogine}
+Ilya Prigogine and Isabelle Stengers,
+\textit{Order Out of Chaos},
+Bantam Books, 1984.
+
+\bibitem{maturana}
+Humberto Maturana and Francisco Varela,
+\textit{Autopoiesis and Cognition},
+Springer, 1980.
+
+\bibitem{pierce}
+Benjamin Pierce,
+\textit{Types and Programming Languages},
+MIT Press, 2002.
+
+\bibitem{fant}
+Karl M.\ Fant,
+\textit{Computer Science Reconsidered: The Invocation Model of Process Expression},
+Wiley-Interscience, 2007.
+
+\end{thebibliography}
+
+\end{document}

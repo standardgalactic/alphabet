@@ -10,6 +10,14 @@ The documents progress from accessible conceptual introductions toward increasin
 
 # Documents
 
+[Univalent Photonics](https://standardgalactic.github.io/alphabet/physics/univalent-photonics.pdf)
+
+* [Univalent Photonics and the Persistence of Identity](https://standardgalactic.github.io/alphabet/physics/processing/) — *Audio Overview*
+
+[Never Predict Noise](https://standardgalactic.github.io/alphabet/Never-Predict-Noise.pdf)
+
+* [Why True Intelligence Refuses Noise](https://standardgalactic.github.io/alphabet/physics/working/) — *Audio Overview*
+
 ## [The Universe as a Global Sheaf: Why Consistency Might Be the Ultimate Law of Physics](blog-post.md)
 
 A broad conceptual introduction to the RSVP framework aimed at general readers. Introduces the idea that physics may emerge from recursive consistency and local-to-global admissibility rather than fundamental particles or externally imposed laws.

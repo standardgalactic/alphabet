@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abstraction as Reduction</title>
+
+<style>
+
+:root{
+  --fg:#9dffd3;
+  --bright:#00ff88;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  font-family:monospace;
+  color:var(--fg);
+  cursor:pointer;
+  touch-action:manipulation;
+}
+
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* scanlines */
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:70;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.03) 0px,
+      rgba(255,255,255,0.03) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+
+  opacity:.12;
+}
+
+/* glitch tear */
+
+#tear{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:120;
+
+  opacity:0;
+
+  mix-blend-mode:screen;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      rgba(255,255,255,0.08) 2px,
+      transparent 4px,
+      transparent 8px
+    );
+}
+
+/* background */
+
+#background{
+  position:fixed;
+  inset:0;
+  z-index:1;
+}
+
+/* title */
+
+.title{
+  position:fixed;
+
+  top:18px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:min(92vw,760px);
+
+  text-align:center;
+
+  color:var(--bright);
+
+  text-transform:uppercase;
+
+  letter-spacing:0.16em;
+
+  font-size:clamp(10px,2.5vw,13px);
+
+  line-height:1.4;
+
+  text-shadow:
+    0 0 12px #00ff66;
+
+  z-index:30;
+}
+
+/* controls */
+
+.controls{
+  position:fixed;
+
+  top:58px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+
+  width:min(92vw,720px);
+
+  z-index:50;
+}
+
+.track{
+  background:
+    rgba(0,20,0,0.5);
+
+  border:
+    1px solid rgba(0,255,120,0.18);
+
+  color:#9dffd3;
+
+  padding:6px 10px;
+
+  font-family:monospace;
+  font-size:11px;
+
+  cursor:pointer;
+
+  text-transform:uppercase;
+
+  letter-spacing:0.08em;
+
+  border-radius:4px;
+
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    opacity 0.2s;
+
+  opacity:0.65;
+}
+
+.track.active{
+  opacity:1;
+
+  border-color:
+    rgba(0,255,120,0.55);
+
+  background:
+    rgba(0,40,0,0.65);
+
+  box-shadow:
+    0 0 10px rgba(0,255,120,0.16);
+}
+
+/* portal */
+
+.portal{
+  position:relative;
+  z-index:10;
+}
+
+#viz{
+  width:min(540px,90vw);
+  height:min(540px,90vw);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle at center,
+      rgba(0,30,20,0.98) 0%,
+      rgba(0,8,6,1) 42%,
+      #000 100%);
+
+  border:2px solid rgba(0,255,120,0.20);
+
+  box-shadow:
+    inset 0 0 90px rgba(0,255,120,0.05),
+    0 0 70px rgba(0,255,120,0.10);
+}
+
+/* subtitles */
+
+#subs{
+  position:fixed;
+
+  bottom:72px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:min(680px,92vw);
+
+  min-height:2em;
+
+  text-align:center;
+
+  line-height:1.45;
+
+  font-size:14px;
+
+  padding:8px 12px;
+
+  border-radius:6px;
+
+  color:#d8ffe8;
+
+  text-shadow:
+    0 0 8px #00ff88;
+
+  background:
+    rgba(0,20,0,0.22);
+
+  border:
+    1px solid rgba(0,255,120,0.10);
+
+  z-index:30;
+}
+
+/* essay */
+
+#essay{
+  position:fixed;
+
+  bottom:12px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:min(92vw,720px);
+
+  text-align:center;
+
+  color:#7cffc4;
+
+  opacity:0.72;
+
+  text-decoration:none;
+
+  font-size:12px;
+
+  z-index:30;
+}
+
+#essay:hover{
+  opacity:1;
+}
+
+/* startup */
+
+#overlay{
+  position:fixed;
+  inset:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:#000;
+
+  z-index:100;
+
+  color:#00ff88;
+
+  letter-spacing:0.15em;
+
+  text-shadow:
+    0 0 10px #00ff66;
+}
+
+#overlay.hidden{
+  display:none;
+}
+
+#overlay span{
+  animation:blink 1.2s step-start infinite;
+}
+
+@keyframes blink{
+  50%{ opacity:0; }
+}
+
+/* glitch */
+
+body.glitch{
+  animation:glitch 0.24s linear;
+  filter:contrast(1.2) brightness(1.1);
+}
+
+@keyframes glitch{
+  0%{ transform:translate(0,0); }
+  20%{ transform:translate(-8px,4px); }
+  40%{ transform:translate(7px,-3px); }
+  60%{ transform:translate(-4px,5px); }
+  80%{ transform:translate(5px,-2px); }
+  100%{ transform:translate(0,0); }
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="background"></canvas>
+
+<div id="tear"></div>
+
+<div id="overlay">
+  <span>[ TAP OR CLICK ANYWHERE ]</span>
+</div>
+
+<div class="title" id="titleText">
+  Abstraction as Reduction
+</div>
+
+<div class="controls">
+  <button class="track active" data-track="0">
+    Energy Minimization
+  </button>
+
+  <button class="track" data-track="1">
+    Reduction and Energy
+  </button>
+</div>
+
+<div class="portal">
+  <canvas id="viz"></canvas>
+</div>
+
+<div id="subs"></div>
+
+<a id="essay"
+href="https://standardgalactic.github.io/alphabet/Abstraction%20as%20Reduction.pdf"
+target="_blank">
+Abstraction as Reduction
+</a>
+
+<audio id="audio" preload="auto"></audio>
+
+<script>
+
+/* =========================================================
+   TRACKS
+========================================================= */
+
+const tracks = [
+
+{
+  file:
+    "Abstraction_Is_Just_Energy_Minimization.mp3",
+
+  vtt:
+    "Abstraction_Is_Just_Energy_Minimization.vtt",
+
+  label:
+    "Energy Minimization"
+},
+
+{
+  file:
+    "Abstraction_as_Reduction.mp3",
+
+  vtt:
+    "Abstraction_as_Reduction.vtt",
+
+  label:
+    "Reduction and Energy"
+}
+
+];
+
+let currentTrack = 0;
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const audio =
+  document.getElementById("audio");
+
+const viz =
+  document.getElementById("viz");
+
+const g =
+  viz.getContext("2d");
+
+const bg =
+  document.getElementById("background");
+
+const bgc =
+  bg.getContext("2d");
+
+const subs =
+  document.getElementById("subs");
+
+const overlay =
+  document.getElementById("overlay");
+
+const tear =
+  document.getElementById("tear");
+
+const titleText =
+  document.getElementById("titleText");
+
+const trackButtons =
+  [...document.querySelectorAll(".track")];
+
+/* prevent essay click */
+
+document.getElementById("essay")
+.onclick = e=>e.stopPropagation();
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+const DPR =
+  window.devicePixelRatio || 1;
+
+viz.width  = 500 * DPR;
+viz.height = 500 * DPR;
+
+g.scale(DPR,DPR);
+
+function resizeBG(){
+
+  bg.width =
+    innerWidth * DPR;
+
+  bg.height =
+    innerHeight * DPR;
+
+  bgc.scale(DPR,DPR);
+}
+
+resizeBG();
+
+window.addEventListener(
+  "resize",
+  resizeBG
+);
+
+/* =========================================================
+   BACKGROUND PARTICLES
+========================================================= */
+
+const particles = [];
+
+for(let i=0;i<160;i++){
+
+  particles.push({
+
+    angle:
+      Math.random()*Math.PI*2,
+
+    radius:
+      80 + Math.random()*900,
+
+    speed:
+      0.2 + Math.random()*0.7,
+
+    size:
+      1 + Math.random()*2
+  });
+}
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+let ctxAudio;
+let analyser;
+let data;
+let started = false;
+
+function initAudio(){
+
+  if(ctxAudio) return;
+
+  ctxAudio =
+    new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )();
+
+  analyser =
+    ctxAudio.createAnalyser();
+
+  analyser.fftSize = 2048;
+
+  data =
+    new Uint8Array(
+      analyser.fftSize
+    );
+
+  const src =
+    ctxAudio.createMediaElementSource(audio);
+
+  src.connect(analyser);
+  analyser.connect(ctxAudio.destination);
+}
+
+async function start(){
+
+  if(started) return;
+
+  started = true;
+
+  overlay.classList.add("hidden");
+
+  initAudio();
+
+  if(ctxAudio.state==="suspended"){
+    await ctxAudio.resume();
+  }
+
+  await loadTrack(0,true);
+
+  enableMotion();
+}
+
+/* persistent playback toggle */
+
+document.body.addEventListener(
+  "click",
+  async e=>{
+
+    if(e.target.closest("#essay")) return;
+
+    if(e.target.closest(".track")) return;
+
+    if(!started){
+      await start();
+      return;
+    }
+
+    if(
+      ctxAudio &&
+      ctxAudio.state === "suspended"
+    ){
+      await ctxAudio.resume();
+    }
+
+    if(audio.paused){
+
+      try{
+        await audio.play();
+      }catch(err){
+        console.warn(err);
+      }
+
+    }else{
+
+      audio.pause();
+    }
+  }
+);
+
+/* =========================================================
+   TRACK LOADING
+========================================================= */
+
+let cues = [];
+
+async function loadTrack(index,autoplay=false){
+
+  currentTrack = index;
+
+  const t =
+    tracks[index];
+
+  audio.src = t.file;
+
+  audio.load();
+
+  updateButtons();
+
+  await loadVTT(t.vtt);
+
+  if(autoplay){
+
+    try{
+      await audio.play();
+    }catch(err){
+      console.warn(err);
+    }
+  }
+}
+
+function updateButtons(){
+
+  trackButtons.forEach((b,i)=>{
+
+    if(i===currentTrack)
+      b.classList.add("active");
+    else
+      b.classList.remove("active");
+  });
+}
+
+trackButtons.forEach((b,i)=>{
+
+  b.onclick = async e=>{
+
+    e.stopPropagation();
+
+    if(!started){
+      await start();
+    }
+
+    await loadTrack(i,true);
+  };
+});
+
+/* auto advance */
+
+audio.addEventListener(
+  "ended",
+  async ()=>{
+
+    const next =
+      (currentTrack+1) %
+      tracks.length;
+
+    await loadTrack(next,true);
+  }
+);
+
+/* =========================================================
+   SUBTITLES
+========================================================= */
+
+async function loadVTT(file){
+
+  cues = [];
+
+  try{
+
+    const r =
+      await fetch(file);
+
+    if(!r.ok){
+      throw new Error(file);
+    }
+
+    const txt =
+      await r.text();
+
+    const blocks =
+      txt.split(/\n{2,}/);
+
+    for(const block of blocks){
+
+      const lines =
+        block.trim().split("\n");
+
+      const ts =
+        lines.find(
+          l=>l.includes("-->")
+        );
+
+      if(!ts) continue;
+
+      const [s,e] =
+        ts.split("-->")
+          .map(x=>x.trim());
+
+      const text =
+        lines
+          .slice(lines.indexOf(ts)+1)
+          .join(" ")
+          .trim();
+
+      cues.push({
+
+        start:
+          parseTime(s),
+
+        end:
+          parseTime(e),
+
+        text
+      });
+    }
+
+  }catch(err){
+
+    console.warn(
+      "VTT error:",
+      err
+    );
+  }
+}
+
+function parseTime(t){
+
+  const p =
+    t.replace(",",".")
+     .split(":");
+
+  return p.length===3
+    ? +p[0]*3600 + +p[1]*60 + +p[2]
+    : +p[0]*60 + +p[1];
+}
+
+audio.ontimeupdate = ()=>{
+
+  const t =
+    audio.currentTime;
+
+  const cue =
+    cues.find(c =>
+      t >= c.start &&
+      t < c.end + 0.2
+    );
+
+  subs.textContent =
+    cue ? cue.text : "";
+};
+
+/* =========================================================
+   TRACE MOVEMENT
+========================================================= */
+
+let targetX = 0;
+let targetY = 0;
+
+let offsetX = 0;
+let offsetY = 0;
+
+window.addEventListener(
+  "mousemove",
+  e=>{
+
+    const nx =
+      e.clientX / innerWidth - 0.5;
+
+    const ny =
+      e.clientY / innerHeight - 0.5;
+
+    targetX = nx * 22;
+    targetY = ny * 22;
+  }
+);
+
+/* motion */
+
+function enableMotion(){
+
+  if(
+    typeof DeviceOrientationEvent ===
+    "undefined"
+  ) return;
+
+  if(
+    typeof DeviceOrientationEvent.requestPermission ===
+    "function"
+  ){
+
+    DeviceOrientationEvent
+    .requestPermission()
+    .then(state=>{
+
+      if(state==="granted"){
+        attachMotion();
+      }
+    })
+    .catch(()=>{});
+
+  }else{
+
+    attachMotion();
+  }
+}
+
+function attachMotion(){
+
+  window.addEventListener(
+    "deviceorientation",
+    e=>{
+
+      const gamma =
+        e.gamma || 0;
+
+      const beta =
+        e.beta || 0;
+
+      targetX =
+        Math.max(
+          -24,
+          Math.min(24,gamma*0.8)
+        );
+
+      targetY =
+        Math.max(
+          -24,
+          Math.min(24,(beta-45)*0.5)
+        );
+    }
+  );
+}
+
+/* =========================================================
+   GLITCH
+========================================================= */
+
+let nextGlitch =
+  performance.now() + 20000;
+
+const alphabet =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+function corruptTitle(){
+
+  const original =
+    "Abstraction as Reduction";
+
+  const chars =
+    original.split("");
+
+  const index =
+    Math.floor(
+      Math.random()*chars.length
+    );
+
+  if(chars[index] !== " "){
+
+    chars[index] =
+      alphabet[
+        Math.floor(
+          Math.random()*alphabet.length
+        )
+      ];
+  }
+
+  titleText.textContent =
+    chars.join("");
+
+  setTimeout(()=>{
+
+    titleText.textContent =
+      original;
+
+  },250);
+}
+
+function triggerGlitch(){
+
+  document.body.classList.add(
+    "glitch"
+  );
+
+  tear.style.opacity =
+    0.65;
+
+  corruptTitle();
+
+  setTimeout(()=>{
+
+    document.body.classList.remove(
+      "glitch"
+    );
+
+    tear.style.opacity = 0;
+
+  },240);
+}
+
+/* =========================================================
+   DRAW
+========================================================= */
+
+let tick = 0;
+let phase = 0;
+
+function draw(now){
+
+  tick++;
+
+  bgc.fillStyle =
+    "rgba(0,0,0,0.16)";
+
+  bgc.fillRect(
+    0,0,
+    innerWidth,
+    innerHeight
+  );
+
+  const centerX =
+    innerWidth/2;
+
+  const centerY =
+    innerHeight/2;
+
+  for(const p of particles){
+
+    p.radius -= p.speed;
+
+    if(p.radius < 20){
+
+      p.radius =
+        900 + Math.random()*500;
+
+      p.angle =
+        Math.random()*Math.PI*2;
+    }
+
+    const x =
+      centerX +
+      Math.cos(p.angle) *
+      p.radius;
+
+    const y =
+      centerY +
+      Math.sin(p.angle) *
+      p.radius;
+
+    const alpha =
+      Math.max(
+        0,
+        1 - p.radius/900
+      ) * 0.22;
+
+    bgc.fillStyle =
+      `rgba(180,255,220,${
+        alpha
+      })`;
+
+    bgc.fillRect(
+      x,
+      y,
+      p.size,
+      p.size
+    );
+  }
+
+  g.fillStyle =
+    "rgba(0,4,0,0.05)";
+
+  g.fillRect(0,0,500,500);
+
+  const cx = 250;
+  const cy = 250;
+  const R  = 190;
+
+  let energy = 0;
+
+  if(analyser){
+
+    analyser.getByteTimeDomainData(
+      data
+    );
+
+    for(let i=0;i<data.length;i+=8){
+
+      energy +=
+        Math.abs(
+          (data[i]-128)/128
+        );
+    }
+
+    energy /= (data.length/8);
+  }
+
+  offsetX +=
+    (targetX-offsetX)*0.03;
+
+  offsetY +=
+    (targetY-offsetY)*0.03;
+
+  if(now > nextGlitch){
+
+    triggerGlitch();
+
+    nextGlitch =
+      now +
+      15000 +
+      Math.random()*24000;
+  }
+
+  phase +=
+    0.012 + energy*0.03;
+
+  g.save();
+
+  g.beginPath();
+
+  g.arc(cx,cy,R,0,Math.PI*2);
+
+  g.clip();
+
+  for(let i=1;i<=5;i++){
+
+    g.beginPath();
+
+    const rr =
+      (R/5)*i +
+      Math.sin(
+        tick*0.003+i
+      ) * 2;
+
+    g.arc(
+      cx,
+      cy,
+      rr,
+      0,
+      Math.PI*2
+    );
+
+    g.strokeStyle =
+      `rgba(120,255,180,${
+        0.01+i*0.008
+      })`;
+
+    g.lineWidth = 1;
+
+    g.stroke();
+  }
+
+  if(analyser){
+
+    const lag =
+      Math.floor(
+        data.length * (
+          0.12 +
+          Math.sin(
+            tick*0.002
+          ) * 0.05
+        )
+      );
+
+    g.beginPath();
+
+    for(let i=0;i<data.length;i++){
+
+      const a =
+        (data[i]-128)/128;
+
+      const b =
+        (data[
+          (i+lag)%data.length
+        ]-128)/128;
+
+      const theta =
+        (i/data.length) *
+        Math.PI*2;
+
+      const fold =
+        1 +
+        Math.sin(
+          theta*6 + phase
+        ) * 0.05;
+
+      const x =
+        cx +
+        offsetX +
+        a * R *
+        fold * 0.92;
+
+      const y =
+        cy +
+        offsetY +
+        b * R *
+        fold * 0.82;
+
+      if(i===0)
+        g.moveTo(x,y);
+      else
+        g.lineTo(x,y);
+    }
+
+    g.strokeStyle =
+      `rgba(120,255,180,${
+        0.10+energy*0.22
+      })`;
+
+    g.lineWidth = 6;
+
+    g.stroke();
+
+    g.beginPath();
+
+    for(let i=0;i<data.length;i++){
+
+      const a =
+        (data[i]-128)/128;
+
+      const b =
+        (data[
+          (i+lag)%data.length
+        ]-128)/128;
+
+      const theta =
+        (i/data.length) *
+        Math.PI*2;
+
+      const fold =
+        1 +
+        Math.sin(
+          theta*6 + phase
+        ) * 0.05;
+
+      const x =
+        cx +
+        offsetX +
+        a * R *
+        fold * 0.92;
+
+      const y =
+        cy +
+        offsetY +
+        b * R *
+        fold * 0.82;
+
+      if(i===0)
+        g.moveTo(x,y);
+      else
+        g.lineTo(x,y);
+    }
+
+    g.strokeStyle =
+      "#9dffd3";
+
+    g.lineWidth =
+      1.4 + energy*1.8;
+
+    g.shadowBlur =
+      12 + energy*24;
+
+    g.shadowColor =
+      "#00ff88";
+
+    g.stroke();
+
+    g.shadowBlur = 0;
+  }
+
+  g.beginPath();
+
+  g.arc(cx,cy,R,0,Math.PI*2);
+
+  g.strokeStyle =
+    "rgba(120,255,180,0.22)";
+
+  g.lineWidth = 2;
+
+  g.stroke();
+
+  g.restore();
+
+  requestAnimationFrame(draw);
+}
+
+draw(performance.now());
+
+</script>
+
+</body>
+</html>

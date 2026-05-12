@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Never Predict Noise</title>
+
+<style>
+
+:root{
+  --green:#7cffc4;
+}
+
+body{
+  margin:0;
+  background:#010201;
+  overflow:hidden;
+
+  font-family:monospace;
+  color:var(--green);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  min-height:100vh;
+  cursor:pointer;
+}
+
+/* faint scanlines */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.022) 0px,
+      rgba(255,255,255,0.022) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+
+  opacity:0.08;
+}
+
+/* title */
+.title{
+  margin-bottom:10px;
+
+  font-size:14px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+
+  color:#00ff88;
+
+  text-shadow:
+    0 0 10px #00ff66;
+}
+
+/* portal */
+canvas{
+  width:min(470px,88vw);
+  height:min(470px,88vw);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle at center,
+      #101410 0%,
+      #000 100%);
+
+  border:2px solid rgba(0,255,120,0.28);
+
+  box-shadow:
+    0 0 28px rgba(0,255,120,0.10),
+    inset 0 0 100px rgba(0,255,120,0.05);
+}
+
+/* subtitles */
+.subs{
+  position:fixed;
+
+  bottom:38px;
+
+  width:min(580px,92vw);
+
+  min-height:2em;
+
+  padding:6px 10px;
+
+  text-align:center;
+  line-height:1.45;
+  font-size:14px;
+
+  color:#e0ffee;
+
+  text-shadow:
+    0 0 6px #00ff66;
+
+  background:
+    rgba(0,20,0,0.22);
+
+  border:
+    1px solid rgba(0,255,120,0.10);
+
+  border-radius:6px;
+
+  pointer-events:none;
+}
+
+/* essay link */
+.link{
+  position:fixed;
+
+  bottom:8px;
+
+  width:min(580px,92vw);
+
+  text-align:center;
+
+  font-size:12px;
+
+  color:#7cffc4;
+
+  opacity:0.72;
+
+  text-decoration:none;
+}
+
+.link:hover{
+  opacity:1;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="title">
+  Never Predict Noise
+</div>
+
+<canvas id="viz"></canvas>
+
+<div class="subs" id="subs"></div>
+
+<a class="link"
+   href="https://standardgalactic.github.io/alphabet/Never-Predict-Noise.pdf"
+   target="_blank">
+  Never Predict Noise
+</a>
+
+<audio id="audio" preload="auto">
+  <source
+    src="Why_True_Intelligence_Refuses_Noise.mp3"
+    type="audio/mpeg">
+</audio>
+
+<script>
+
+/* ─────────────────────────────────────
+   ELEMENTS
+───────────────────────────────────── */
+
+const audio =
+  document.getElementById("audio");
+
+const subs =
+  document.getElementById("subs");
+
+const canvas =
+  document.getElementById("viz");
+
+const g =
+  canvas.getContext("2d");
+
+/* prevent essay click pausing */
+document.querySelector(".link")
+.onclick = e=>{
+  e.stopPropagation();
+};
+
+/* ─────────────────────────────────────
+   AUDIO
+───────────────────────────────────── */
+
+let ctxAudio;
+let analyser;
+let data;
+
+function initAudio(){
+
+  if(ctxAudio) return;
+
+  ctxAudio =
+    new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )();
+
+  analyser =
+    ctxAudio.createAnalyser();
+
+  analyser.fftSize = 2048;
+
+  data =
+    new Uint8Array(
+      analyser.fftSize
+    );
+
+  const src =
+    ctxAudio.createMediaElementSource(audio);
+
+  src.connect(analyser);
+  analyser.connect(ctxAudio.destination);
+}
+
+/* click anywhere */
+
+document.body.onclick = async ()=>{
+
+  initAudio();
+
+  if(ctxAudio.state==="suspended"){
+    await ctxAudio.resume();
+  }
+
+  if(audio.paused){
+    await audio.play();
+  }else{
+    audio.pause();
+  }
+};
+
+/* ─────────────────────────────────────
+   SUBTITLES
+───────────────────────────────────── */
+
+let cues = [];
+
+async function loadVTT(file){
+
+  cues = [];
+
+  try{
+
+    const r =
+      await fetch(file);
+
+    if(!r.ok){
+      throw new Error(r.status);
+    }
+
+    const txt =
+      await r.text();
+
+    const blocks =
+      txt.split(/\n{2,}/);
+
+    for(const block of blocks){
+
+      const lines =
+        block.trim().split("\n");
+
+      const ts =
+        lines.find(
+          l=>l.includes("-->")
+        );
+
+      if(!ts) continue;
+
+      const [s,e] =
+        ts.split("-->")
+          .map(x=>x.trim());
+
+      const cueText =
+        lines
+          .slice(lines.indexOf(ts)+1)
+          .join(" ");
+
+      cues.push({
+        start:parseTime(s),
+        end:parseTime(e),
+        text:cueText
+      });
+    }
+
+  }catch(err){
+
+    console.warn(
+      "VTT failed:",
+      err
+    );
+  }
+}
+
+function parseTime(t){
+
+  const p =
+    t.replace(",",".")
+     .split(":");
+
+  return p.length===3
+    ? +p[0]*3600 + +p[1]*60 + +p[2]
+    : +p[0]*60 + +p[1];
+}
+
+audio.ontimeupdate = ()=>{
+
+  const t =
+    audio.currentTime;
+
+  const cue =
+    cues.find(c =>
+      t >= c.start &&
+      t <  c.end + 0.2
+    );
+
+  subs.textContent =
+    cue ? cue.text : "";
+};
+
+/* IMPORTANT:
+   underscores in subtitle filename
+*/
+
+loadVTT(
+  "Why_True_Intelligence_Refuses_Noise.vtt"
+);
+
+/* ─────────────────────────────────────
+   CANVAS
+───────────────────────────────────── */
+
+const DPR =
+  window.devicePixelRatio || 1;
+
+canvas.width  = 380 * DPR;
+canvas.height = 380 * DPR;
+
+g.scale(DPR,DPR);
+
+let tick = 0;
+
+/* smooth helper */
+
+function smoothNoise(x){
+
+  return (
+    Math.sin(x)*0.5 +
+    Math.sin(x*0.73)*0.28 +
+    Math.sin(x*1.37)*0.14
+  );
+}
+
+/* ─────────────────────────────────────
+   DRAW
+───────────────────────────────────── */
+
+function draw(){
+
+  tick++;
+
+  /* stronger persistence fade:
+     less chaos accumulation
+  */
+
+  g.fillStyle =
+    "rgba(0,6,0,0.09)";
+
+  g.fillRect(
+    0,0,380,380
+  );
+
+  const cx = 190;
+  const cy = 190;
+  const R  = 152;
+
+  g.save();
+
+  g.beginPath();
+
+  g.arc(
+    cx,
+    cy,
+    R,
+    0,
+    Math.PI*2
+  );
+
+  g.clip();
+
+  /* ─────────────────────────────────
+     STABLE FIELD
+  ───────────────────────────────── */
+
+  /* extremely low-noise geometry */
+
+  for(let i=0;i<12;i++){
+
+    const rr =
+      26 + i*12;
+
+    g.beginPath();
+
+    g.arc(
+      cx,
+      cy,
+      rr,
+      0,
+      Math.PI*2
+    );
+
+    g.strokeStyle =
+      `rgba(120,255,180,${
+        0.01 + i*0.004
+      })`;
+
+    g.lineWidth = 1;
+
+    g.stroke();
+  }
+
+  /* sparse radial structure */
+
+  for(let i=0;i<18;i++){
+
+    const a =
+      (i/18)*Math.PI*2 +
+      Math.sin(tick*0.0004)*0.1;
+
+    const rr =
+      R * (
+        0.84 +
+        smoothNoise(
+          i+tick*0.001
+        ) * 0.015
+      );
+
+    g.beginPath();
+
+    g.moveTo(cx,cy);
+
+    g.lineTo(
+      cx + Math.cos(a)*rr,
+      cy + Math.sin(a)*rr
+    );
+
+    g.strokeStyle =
+      "rgba(0,255,120,0.018)";
+
+    g.stroke();
+  }
+
+  /* ─────────────────────────────────
+     TRACE
+  ───────────────────────────────── */
+
+  if(analyser){
+
+    analyser.getByteTimeDomainData(data);
+
+    let energy = 0;
+
+    for(let i=0;i<data.length;i+=8){
+
+      energy +=
+        Math.abs(
+          (data[i]-128)/128
+        );
+    }
+
+    energy /= (data.length/8);
+
+    /* key idea:
+       smooth attractor,
+       almost no jitter
+    */
+
+    const lag =
+      Math.floor(
+        data.length * (
+          0.09 +
+          smoothNoise(
+            tick*0.004
+          ) * 0.02
+        )
+      );
+
+    const driftX =
+      Math.sin(
+        tick*0.0008
+      ) * 4;
+
+    const driftY =
+      Math.cos(
+        tick*0.0007
+      ) * 3;
+
+    /* ghost layer */
+
+    g.beginPath();
+
+    for(let i=0;i<data.length;i++){
+
+      const a =
+        (data[i]-128)/128;
+
+      const b =
+        (data[
+          (i+lag)%data.length
+        ]-128)/128;
+
+      const theta =
+        (i/data.length) *
+        Math.PI*2;
+
+      /* low perturbation */
+
+      const radialWarp =
+        1 +
+        Math.sin(
+          theta*3 +
+          tick*0.002
+        ) * 0.01;
+
+      const x =
+        cx +
+        driftX +
+        a * R *
+        radialWarp *
+        0.88;
+
+      const y =
+        cy +
+        driftY +
+        b * R *
+        radialWarp *
+        0.82;
+
+      if(i===0)
+        g.moveTo(x,y);
+      else
+        g.lineTo(x,y);
+    }
+
+    g.strokeStyle =
+      `rgba(120,255,180,${
+        0.08 + energy*0.12
+      })`;
+
+    g.lineWidth = 5;
+
+    g.stroke();
+
+    /* bright trace */
+
+    g.beginPath();
+
+    for(let i=0;i<data.length;i++){
+
+      const a =
+        (data[i]-128)/128;
+
+      const b =
+        (data[
+          (i+lag)%data.length
+        ]-128)/128;
+
+      const theta =
+        (i/data.length) *
+        Math.PI*2;
+
+      const radialWarp =
+        1 +
+        Math.sin(
+          theta*3 +
+          tick*0.002
+        ) * 0.01;
+
+      const x =
+        cx +
+        driftX +
+        a * R *
+        radialWarp *
+        0.88;
+
+      const y =
+        cy +
+        driftY +
+        b * R *
+        radialWarp *
+        0.82;
+
+      if(i===0)
+        g.moveTo(x,y);
+      else
+        g.lineTo(x,y);
+    }
+
+    g.strokeStyle =
+      "#baffd7";
+
+    g.lineWidth =
+      1.4 + energy*1.2;
+
+    g.shadowBlur =
+      8 + energy*12;
+
+    g.shadowColor =
+      "#00ff88";
+
+    g.stroke();
+
+    g.shadowBlur = 0;
+  }
+
+  /* outer shell */
+
+  g.beginPath();
+
+  g.arc(
+    cx,
+    cy,
+    R,
+    0,
+    Math.PI*2
+  );
+
+  g.strokeStyle =
+    "rgba(120,255,180,0.22)";
+
+  g.lineWidth = 2;
+
+  g.stroke();
+
+  g.restore();
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+
+</script>
+
+</body>
+</html>

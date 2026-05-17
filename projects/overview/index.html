@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One Physics for Galaxies and Minds</title>
+
+<style>
+
+:root{
+  --green:#00ff88;
+  --soft:#d8ffe8;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  font-family:monospace;
+  color:var(--green);
+  touch-action:manipulation;
+}
+
+/* =========================================================
+   CRT
+========================================================= */
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:200;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.03) 0px,
+      rgba(255,255,255,.03) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+
+  opacity:.14;
+}
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+#bg{
+  position:fixed;
+  inset:0;
+  z-index:1;
+}
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.title{
+  position:fixed;
+
+  top:16px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:min(94vw,820px);
+
+  text-align:center;
+
+  color:#d8ffee;
+
+  font-size:clamp(12px,2vw,18px);
+
+  letter-spacing:.18em;
+
+  line-height:1.4;
+
+  text-transform:uppercase;
+
+  text-shadow:
+    0 0 14px var(--green);
+
+  z-index:40;
+}
+
+/* =========================================================
+   PORTAL
+========================================================= */
+
+.portal-wrap{
+  position:fixed;
+  inset:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+#viz{
+  width:min(78vw,78vh);
+  height:min(78vw,78vh);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle at center,
+      rgba(0,25,12,.95),
+      rgba(0,0,0,1));
+
+  display:block;
+
+  box-shadow:
+    inset 0 0 90px rgba(0,255,120,.08),
+    0 0 40px rgba(0,255,120,.12);
+}
+
+/* =========================================================
+   SUBTITLES
+========================================================= */
+
+.subs{
+  position:fixed;
+
+  bottom:56px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:min(92vw,760px);
+
+  text-align:center;
+
+  font-size:clamp(13px,2vw,17px);
+
+  line-height:1.5;
+
+  color:var(--soft);
+
+  text-shadow:
+    0 0 10px var(--green);
+
+  white-space:pre-wrap;
+
+  word-wrap:break-word;
+
+  padding:0 12px;
+
+  z-index:50;
+
+  pointer-events:none;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status{
+  position:fixed;
+
+  bottom:14px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  font-size:11px;
+
+  letter-spacing:.14em;
+
+  opacity:.55;
+
+  z-index:50;
+}
+
+/* =========================================================
+   GLITCH
+========================================================= */
+
+.glitch{
+  position:fixed;
+  inset:0;
+
+  pointer-events:none;
+
+  z-index:150;
+
+  opacity:0;
+}
+
+.glitch.active{
+
+  animation:glitch .22s linear;
+
+}
+
+@keyframes glitch{
+
+  0%{
+    opacity:0;
+
+    transform:translate(0,0);
+
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,.08) 0px,
+        transparent 2px,
+        transparent 5px
+      );
+  }
+
+  25%{
+    opacity:.24;
+    transform:translate(-8px,4px);
+  }
+
+  60%{
+    opacity:.14;
+    transform:translate(12px,-4px);
+  }
+
+  100%{
+    opacity:0;
+    transform:translate(0,0);
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+  #viz{
+    width:min(92vw,92vw);
+    height:min(92vw,92vw);
+  }
+
+  .subs{
+    bottom:64px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="bg"></canvas>
+
+<div class="title">
+  ONE PHYSICS FOR GALAXIES AND MINDS
+</div>
+
+<div class="portal-wrap">
+  <canvas id="viz"></canvas>
+</div>
+
+<div class="subs" id="subs"></div>
+
+<div class="status">
+  CLICK / TOUCH TO PLAY OR PAUSE
+</div>
+
+<div class="glitch" id="glitch"></div>
+
+<audio id="audio" preload="auto">
+  <source src="One_physics_for_galaxies_and_minds.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const audio =
+  document.getElementById("audio")
+
+const subsEl =
+  document.getElementById("subs")
+
+const glitch =
+  document.getElementById("glitch")
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+let ctxA
+let analyser
+let data
+
+let started = false
+
+function initAudio(){
+
+  if(ctxA) return
+
+  ctxA =
+    new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )()
+
+  analyser =
+    ctxA.createAnalyser()
+
+  analyser.fftSize = 2048
+  analyser.smoothingTimeConstant = .84
+
+  data =
+    new Uint8Array(
+      analyser.fftSize
+    )
+
+  const src =
+    ctxA.createMediaElementSource(audio)
+
+  src.connect(analyser)
+  analyser.connect(ctxA.destination)
+}
+
+/* =========================================================
+   SUBTITLES
+========================================================= */
+
+let cues = []
+
+async function loadVTT(){
+
+  try{
+
+    const r =
+      await fetch(
+        "One_physics_for_galaxies_and_minds.vtt"
+      )
+
+    if(!r.ok){
+
+      console.warn("Missing VTT")
+      return
+    }
+
+    const txt =
+      await r.text()
+
+    cues =
+      parseVTT(txt)
+
+  }catch(e){
+
+    console.warn(e)
+
+  }
+}
+
+function parseVTT(txt){
+
+  const lines =
+    txt.split('\n')
+
+  const out = []
+
+  let i = 0
+
+  while(i < lines.length){
+
+    const line =
+      lines[i].trim()
+
+    if(line.includes('-->')){
+
+      const [s,e] =
+        line.split('-->')
+            .map(v=>v.trim())
+
+      i++
+
+      const text = []
+
+      while(
+        i < lines.length &&
+        lines[i].trim()
+      ){
+
+        text.push(
+          lines[i].trim()
+        )
+
+        i++
+      }
+
+      out.push({
+
+        start:toSec(s),
+        end:toSec(e),
+        text:text.join('\n')
+
+      })
+
+    }else{
+
+      i++
+    }
+  }
+
+  return out
+}
+
+function toSec(t){
+
+  const p =
+    t.replace(',','.')
+     .split(':')
+
+  if(p.length===3){
+
+    return (
+      (+p[0])*3600 +
+      (+p[1])*60 +
+      (+p[2])
+    )
+  }
+
+  return (
+    (+p[0])*60 +
+    (+p[1])
+  )
+}
+
+audio.ontimeupdate = ()=>{
+
+  const t =
+    audio.currentTime
+
+  const cue =
+    cues.find(c=>
+      t >= c.start &&
+      t < c.end + .25
+    )
+
+  subsEl.textContent =
+    cue ? cue.text : ''
+}
+
+/* =========================================================
+   PLAY / PAUSE
+========================================================= */
+
+document.body.onclick =
+  async ()=>{
+
+    if(!started){
+
+      started = true
+
+      initAudio()
+
+      if(ctxA.state!=="running"){
+        await ctxA.resume()
+      }
+
+      await loadVTT()
+
+      try{
+        await audio.play()
+      }catch(e){}
+
+      return
+    }
+
+    if(ctxA.state!=="running"){
+      await ctxA.resume()
+    }
+
+    if(audio.paused){
+
+      await audio.play()
+
+    }else{
+
+      audio.pause()
+
+    }
+  }
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+const bg =
+  document.getElementById("bg")
+
+const bgc =
+  bg.getContext("2d")
+
+let SW,SH
+
+function resizeBG(){
+
+  SW =
+    bg.width =
+      innerWidth
+
+  SH =
+    bg.height =
+      innerHeight
+}
+
+resizeBG()
+
+addEventListener(
+  'resize',
+  resizeBG
+)
+
+const stars =
+  Array.from(
+    {length:220},
+    ()=>({
+
+      x:Math.random()*SW,
+      y:Math.random()*SH,
+      z:Math.random()*2
+
+    })
+  )
+
+function drawBG(){
+
+  bgc.clearRect(
+    0,0,SW,SH
+  )
+
+  const cx =
+    SW/2
+
+  const cy =
+    SH/2
+
+  for(const s of stars){
+
+    s.y += .25 + s.z*.6
+
+    if(s.y > SH){
+
+      s.y = -10
+      s.x = Math.random()*SW
+    }
+
+    const dx =
+      s.x - cx
+
+    const dy =
+      s.y - cy
+
+    const dist =
+      Math.sqrt(dx*dx + dy*dy)
+
+    const alpha =
+      Math.max(
+        0,
+        .22 - dist/SW
+      )
+
+    bgc.fillStyle =
+      `rgba(180,255,220,${alpha})`
+
+    bgc.fillRect(
+      s.x,
+      s.y,
+      s.z*1.5,
+      s.z*1.5
+    )
+  }
+}
+
+/* =========================================================
+   GLITCH
+========================================================= */
+
+setInterval(()=>{
+
+  glitch.classList.add(
+    'active'
+  )
+
+  setTimeout(()=>{
+
+    glitch.classList.remove(
+      'active'
+    )
+
+  },220)
+
+},45000 + Math.random()*18000)
+
+/* =========================================================
+   PORTAL
+========================================================= */
+
+const canvas =
+  document.getElementById("viz")
+
+const c =
+  canvas.getContext("2d")
+
+const DPR =
+  devicePixelRatio || 1
+
+let W,H,CX,CY,R
+
+function resize(){
+
+  const s =
+    Math.min(
+      innerWidth*.78,
+      innerHeight*.78
+    )
+
+  canvas.width  = s * DPR
+  canvas.height = s * DPR
+
+  canvas.style.width  = s+"px"
+  canvas.style.height = s+"px"
+
+  c.setTransform(
+    DPR,0,0,DPR,0,0
+  )
+
+  W = s
+  H = s
+
+  CX = W/2
+  CY = H/2
+  R  = Math.min(W,H)*0.38
+}
+
+resize()
+
+addEventListener(
+  'resize',
+  resize
+)
+
+/* =========================================================
+   TRACE
+========================================================= */
+
+let phase = 0
+
+let mouseX = 0
+let mouseY = 0
+
+addEventListener(
+  'mousemove',
+  e=>{
+
+    mouseX =
+      (e.clientX/innerWidth-.5)
+
+    mouseY =
+      (e.clientY/innerHeight-.5)
+
+  }
+)
+
+function draw(){
+
+  requestAnimationFrame(draw)
+
+  drawBG()
+
+  c.fillStyle =
+    "rgba(0,0,0,.10)"
+
+  c.fillRect(
+    0,0,W,H
+  )
+
+  let energy = 0
+
+  if(analyser){
+
+    analyser.getByteTimeDomainData(
+      data
+    )
+
+    for(
+      let i=0;
+      i<data.length;
+      i+=8
+    ){
+
+      energy +=
+        Math.abs(
+          (data[i]-128)/128
+        )
+    }
+
+    energy /=
+      data.length/8
+  }
+
+  phase +=
+    .012 + energy*.05
+
+  const driftX =
+    mouseX * 16
+
+  const driftY =
+    mouseY * 16
+
+  /* portal boundary */
+
+  c.beginPath()
+
+  c.arc(
+    CX,CY,R+8,
+    0,
+    Math.PI*2
+  )
+
+  c.strokeStyle =
+    `rgba(0,255,120,${
+      .12 + energy*.3
+    })`
+
+  c.lineWidth = 2
+
+  c.stroke()
+
+  c.save()
+
+  c.beginPath()
+
+  c.arc(
+    CX,CY,R,
+    0,
+    Math.PI*2
+  )
+
+  c.clip()
+
+  /* recursive rings */
+
+  for(
+    let i=1;
+    i<=5;
+    i++
+  ){
+
+    const rr =
+      R*(i/5)
+
+    c.beginPath()
+
+    c.arc(
+      CX,
+      CY,
+      rr + Math.sin(
+        phase + i
+      )*2,
+      0,
+      Math.PI*2
+    )
+
+    c.strokeStyle =
+      `rgba(120,255,180,${
+        .01 + i*.01
+      })`
+
+    c.lineWidth = 1
+
+    c.stroke()
+  }
+
+  /* lissajous */
+
+  if(analyser){
+
+    const lag =
+      90 +
+      Math.sin(phase*.3)*30
+
+    for(
+      let pass=0;
+      pass<3;
+      pass++
+    ){
+
+      const alpha =
+        pass===0 ? .08 :
+        pass===1 ? .22 :
+        .82
+
+      const spread =
+        pass===0 ? 1.14 :
+        pass===1 ? 1.05 :
+        1
+
+      c.beginPath()
+
+      for(
+        let i=0;
+        i<data.length;
+        i++
+      ){
+
+        const a =
+          (data[i]-128)/128
+
+        const b =
+          (data[
+            (i+lag)%data.length
+          ]-128)/128
+
+        const theta =
+          i/data.length *
+          Math.PI*2
+
+        const x =
+          CX + driftX +
+          Math.sin(
+            theta*2 + phase
+          ) *
+          a * R*.72*spread
+
+        const y =
+          CY + driftY +
+          Math.sin(
+            theta*3 + phase*.5
+          ) *
+          b * R*.72*spread
+
+        if(i===0)
+          c.moveTo(x,y)
+        else
+          c.lineTo(x,y)
+      }
+
+      c.strokeStyle =
+        `rgba(120,255,170,${alpha})`
+
+      c.lineWidth =
+        pass===2
+          ? 1.6 + energy*2
+          : .7
+
+      c.shadowBlur =
+        pass===2
+          ? 18 + energy*28
+          : 0
+
+      c.shadowColor =
+        "#00ff88"
+
+      c.stroke()
+    }
+  }
+
+  c.restore()
+}
+
+draw()
+
+</script>
+
+</body>
+</html>

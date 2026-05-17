@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hidden Constraints Audioscope</title>
+
+<style>
+
+:root{
+  --green:#00ff88;
+  --soft:#dcffee;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  font-family:monospace;
+  color:var(--green);
+  touch-action:manipulation;
+}
+
+/* CRT */
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:200;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.03) 0px,
+      rgba(255,255,255,.03) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+
+  opacity:.14;
+}
+
+/* background */
+
+#bg{
+  position:fixed;
+  inset:0;
+  z-index:1;
+}
+
+/* title */
+
+.title{
+  position:fixed;
+  top:14px;
+  left:50%;
+  transform:translateX(-50%);
+
+  width:min(94vw,920px);
+
+  text-align:center;
+
+  font-size:clamp(11px,1.8vw,17px);
+
+  line-height:1.5;
+
+  letter-spacing:.18em;
+
+  text-transform:uppercase;
+
+  color:#d9fff0;
+
+  text-shadow:
+    0 0 14px var(--green);
+
+  z-index:40;
+}
+
+/* track selector */
+
+.tracks{
+  position:fixed;
+
+  top:58px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  display:flex;
+  gap:10px;
+
+  justify-content:center;
+  align-items:center;
+
+  width:min(96vw,980px);
+
+  z-index:50;
+
+  flex-wrap:wrap;
+}
+
+.track-btn{
+
+  background:
+    rgba(0,20,0,.45);
+
+  border:
+    1px solid rgba(0,255,120,.28);
+
+  color:#baffdd;
+
+  padding:9px 12px;
+
+  font-size:10px;
+
+  letter-spacing:.10em;
+
+  text-transform:uppercase;
+
+  cursor:pointer;
+
+  transition:.25s;
+
+  min-width:160px;
+}
+
+.track-btn:hover{
+  background:
+    rgba(0,70,20,.55);
+}
+
+.track-btn.active{
+
+  border-color:
+    rgba(0,255,120,.75);
+
+  background:
+    rgba(0,255,120,.12);
+
+  box-shadow:
+    0 0 14px rgba(0,255,120,.22);
+
+  color:#fff;
+}
+
+/* status */
+
+.status{
+  position:fixed;
+
+  top:112px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  font-size:11px;
+
+  opacity:.5;
+
+  letter-spacing:.14em;
+
+  z-index:55;
+}
+
+/* portal */
+
+.portal-wrap{
+  position:fixed;
+  inset:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+#viz{
+  width:min(420px,82vw);
+  height:min(420px,82vw);
+
+  border-radius:50%;
+
+  background:#000;
+
+  border:2px solid rgba(0,255,0,0.5);
+
+  box-shadow:
+    0 0 30px rgba(0,255,120,0.25) inset,
+    0 0 12px rgba(0,255,0,0.6);
+
+  display:block;
+}
+
+/* subtitles */
+
+.subs{
+
+  position:fixed;
+
+  bottom:10px;
+
+  left:0;
+  right:0;
+
+  margin:auto;
+
+  width:min(520px,92vw);
+
+  padding:6px 12px;
+
+  min-height:2.6em;
+  max-height:4.5em;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
+
+  font-size:clamp(13px,3.8vw,16px);
+
+  line-height:1.35;
+
+  color:#aaffaa;
+
+  text-shadow:
+    0 0 6px #00ff66;
+
+  background:
+    rgba(0,20,0,0.35);
+
+  border:
+    1px solid rgba(0,255,0,0.2);
+
+  border-radius:6px;
+
+  pointer-events:none;
+
+  transform-origin:center;
+
+  transition:
+    transform 0.08s ease,
+    opacity 0.15s ease;
+
+  z-index:70;
+}
+
+/* glitch */
+
+.glitch{
+  position:fixed;
+  inset:0;
+
+  pointer-events:none;
+
+  z-index:160;
+
+  opacity:0;
+}
+
+.glitch.active{
+  animation:glitch .22s linear;
+}
+
+@keyframes glitch{
+
+  0%{
+    opacity:0;
+
+    transform:translate(0,0);
+
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,.08) 0px,
+        transparent 2px,
+        transparent 5px
+      );
+  }
+
+  30%{
+    opacity:.24;
+    transform:translate(-10px,4px);
+  }
+
+  65%{
+    opacity:.16;
+    transform:translate(12px,-5px);
+  }
+
+  100%{
+    opacity:0;
+    transform:translate(0,0);
+  }
+}
+
+/* mobile */
+
+@media(max-width:700px){
+
+  #viz{
+    width:min(92vw,92vw);
+    height:min(92vw,92vw);
+  }
+
+  .tracks{
+    gap:6px;
+    top:62px;
+  }
+
+  .track-btn{
+    min-width:0;
+    flex:1;
+    font-size:9px;
+    padding:8px 6px;
+  }
+
+  .status{
+    top:126px;
+    font-size:10px;
+  }
+
+  .subs{
+    bottom:12px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="bg"></canvas>
+
+<div class="title">
+  HIDDEN CONSTRAINTS / THE FATAL SHORTCUT / REALITY WITHOUT A BLUEPRINT
+</div>
+
+<div class="tracks">
+
+  <button class="track-btn active">
+    Hidden Constraints
+  </button>
+
+  <button class="track-btn">
+    The Fatal Shortcut
+  </button>
+
+  <button class="track-btn">
+    Reality Without Blueprint
+  </button>
+
+</div>
+
+<div class="status">
+  TOUCH / CLICK ANYWHERE TO PLAY OR PAUSE
+</div>
+
+<div class="portal-wrap">
+  <canvas id="viz"></canvas>
+</div>
+
+<div class="subs" id="subs"></div>
+
+<div class="glitch" id="glitch"></div>
+
+<audio id="audio" preload="auto"></audio>
+
+<script>
+
+/* =========================================================
+   TRACKS
+========================================================= */
+
+const TRACKS = [
+
+  "Hidden_Constraints_from_Anglerfish_to_AI.mp3",
+
+  "The_Fatal_Shortcut.mp3",
+
+  "Reality_builds_itself_without_a_blueprint.mp3"
+
+]
+
+let currentTrack = 0
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const audio =
+  document.getElementById("audio")
+
+const subs =
+  document.getElementById("subs")
+
+const glitch =
+  document.getElementById("glitch")
+
+const buttons =
+  [...document.querySelectorAll('.track-btn')]
+
+/* =========================================================
+   TRACK LOADING
+========================================================= */
+
+async function loadTrack(i, autoplay=true){
+
+  currentTrack =
+    ((i % TRACKS.length) + TRACKS.length)
+    % TRACKS.length
+
+  const file =
+    TRACKS[currentTrack]
+
+  audio.src = file
+  audio.load()
+
+  buttons.forEach(
+    b=>b.classList.remove('active')
+  )
+
+  buttons[currentTrack]
+    .classList.add('active')
+
+  await loadVTT(
+    file.replace('.mp3','.vtt')
+  )
+
+  if(autoplay){
+
+    try{
+      await audio.play()
+    }catch(e){}
+  }
+}
+
+buttons.forEach((btn,i)=>{
+
+  btn.onclick = async e=>{
+
+    e.stopPropagation()
+
+    await loadTrack(i,true)
+  }
+})
+
+audio.addEventListener('ended',()=>{
+
+  loadTrack(currentTrack+1,true)
+
+})
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+let audioCtx
+let analyser
+let data
+
+function initAudio(){
+
+  if(audioCtx) return
+
+  audioCtx =
+    new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )()
+
+  analyser =
+    audioCtx.createAnalyser()
+
+  analyser.fftSize = 2048
+
+  const src =
+    audioCtx.createMediaElementSource(audio)
+
+  src.connect(analyser)
+  analyser.connect(audioCtx.destination)
+
+  data =
+    new Uint8Array(
+      analyser.frequencyBinCount
+    )
+}
+
+/* =========================================================
+   SUBTITLES
+========================================================= */
+
+let cues = []
+
+async function loadVTT(file){
+
+  cues = []
+
+  try{
+
+    const r =
+      await fetch(file)
+
+    if(!r.ok){
+      console.warn("Missing VTT:",file)
+      return
+    }
+
+    const txt =
+      await r.text()
+
+    cues =
+      parseVTT(txt)
+
+  }catch(e){
+
+    console.warn(e)
+  }
+}
+
+function parseVTT(txt){
+
+  const lines =
+    txt.split('\n')
+
+  const out = []
+
+  let i = 0
+
+  while(i < lines.length){
+
+    const line =
+      lines[i].trim()
+
+    if(line.includes('-->')){
+
+      const [s,e] =
+        line.split('-->')
+            .map(v=>v.trim())
+
+      i++
+
+      const text = []
+
+      while(
+        i < lines.length &&
+        lines[i].trim()
+      ){
+
+        text.push(
+          lines[i].trim()
+        )
+
+        i++
+      }
+
+      out.push({
+
+        start:toSec(s),
+        end:toSec(e),
+        text:text.join('\n')
+
+      })
+
+    }else{
+
+      i++
+    }
+  }
+
+  return out
+}
+
+function toSec(t){
+
+  const p =
+    t.replace(',','.')
+     .split(':')
+
+  if(p.length===3){
+
+    return (
+      (+p[0])*3600 +
+      (+p[1])*60 +
+      (+p[2])
+    )
+  }
+
+  return (
+    (+p[0])*60 +
+    (+p[1])
+  )
+}
+
+audio.ontimeupdate = ()=>{
+
+  const t =
+    audio.currentTime
+
+  const cue =
+    cues.find(c=>
+      t >= c.start &&
+      t < c.end + .25
+    )
+
+  subs.textContent =
+    cue ? cue.text : ""
+}
+
+/* =========================================================
+   PLAY
+========================================================= */
+
+document.body.onclick =
+  async ()=>{
+
+    initAudio()
+
+    if(audioCtx.state === "suspended")
+      await audioCtx.resume()
+
+    if(!audio.src){
+
+      await loadTrack(0,true)
+      return
+    }
+
+    if(audio.paused){
+
+      audio.play()
+
+    }else{
+
+      audio.pause()
+    }
+  }
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+const bg =
+  document.getElementById("bg")
+
+const bgc =
+  bg.getContext("2d")
+
+let SW,SH
+
+function resizeBG(){
+
+  SW =
+    bg.width =
+      innerWidth
+
+  SH =
+    bg.height =
+      innerHeight
+}
+
+resizeBG()
+
+addEventListener(
+  'resize',
+  resizeBG
+)
+
+const particles = []
+
+for(
+  let i=0;
+  i<240;
+  i++
+){
+
+  particles.push({
+
+    x:Math.random()*SW,
+    y:Math.random()*SH,
+    z:Math.random()*2
+
+  })
+}
+
+function drawBG(){
+
+  bgc.clearRect(
+    0,0,SW,SH
+  )
+
+  for(const p of particles){
+
+    p.y += .2 + p.z*.5
+
+    if(p.y > SH){
+
+      p.y = -10
+      p.x = Math.random()*SW
+    }
+
+    bgc.fillStyle =
+      `rgba(180,255,220,${
+        .04 + p.z*.06
+      })`
+
+    bgc.fillRect(
+      p.x,
+      p.y,
+      p.z*1.4,
+      p.z*1.4
+    )
+  }
+}
+
+/* =========================================================
+   GLITCH
+========================================================= */
+
+setInterval(()=>{
+
+  glitch.classList.add(
+    'active'
+  )
+
+  setTimeout(()=>{
+
+    glitch.classList.remove(
+      'active'
+    )
+
+  },220)
+
+},38000 + Math.random()*14000)
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+const canvas =
+  document.getElementById("viz")
+
+const ctx =
+  canvas.getContext("2d")
+
+const size = 420
+
+canvas.width  = size
+canvas.height = size
+
+/* =========================================================
+   LISSAJOUS STATE
+========================================================= */
+
+let phaseCursor = 0
+
+let smoothBass = 0
+let smoothMid  = 0
+let smoothHigh = 0
+
+let frameT = 0
+
+/* =========================================================
+   DRAW
+========================================================= */
+
+function drawLissajous(){
+
+  const w = size
+  const h = size
+
+  if(analyser && data){
+
+    analyser.getByteFrequencyData(data)
+
+    let bass = 0
+    let mid  = 0
+    let high = 0
+
+    for(let i = 0;   i < 48;  i++)
+      bass += data[i]
+
+    for(let i = 48;  i < 220; i++)
+      mid  += data[i]
+
+    for(let i = 220; i < 640; i++)
+      high += data[i]
+
+    bass /= 48  * 255
+    mid  /= 172 * 255
+    high /= 420 * 255
+
+    smoothBass +=
+      (bass - smoothBass) * 0.08
+
+    smoothMid +=
+      (mid - smoothMid) * 0.06
+
+    smoothHigh +=
+      (high - smoothHigh) * 0.05
+  }
+
+  phaseCursor +=
+    0.018 + smoothBass * 0.035
+
+  const cx =
+    w / 2 +
+    Math.sin(frameT * 0.00021) * 18
+
+  const cy =
+    h / 2 +
+    Math.cos(frameT * 0.00017) * 14
+
+  const scale =
+    Math.min(w, h) *
+    (0.23 + smoothBass * 0.08)
+
+  const a =
+    3 + smoothMid * 1.2
+
+  const b =
+    2 + smoothHigh * 1.4
+
+  const phase =
+    phaseCursor +
+    smoothBass * Math.PI
+
+  ctx.save()
+
+  /* circular porthole clip */
+
+  ctx.beginPath()
+
+  ctx.arc(
+    size/2,
+    size/2,
+    size*0.48,
+    0,
+    Math.PI*2
+  )
+
+  ctx.clip()
+
+  ctx.translate(cx, cy)
+
+  ctx.rotate(
+    Math.sin(frameT * 0.00013) * 0.18
+  )
+
+  ctx.shadowBlur =
+    18 + smoothBass * 26
+
+  ctx.shadowColor =
+    "#00ff66"
+
+  ctx.lineWidth =
+    1.2 + smoothBass * 2.4
+
+  ctx.strokeStyle =
+    `rgba(120,255,145,${
+      0.55 + smoothBass * 0.38
+    })`
+
+  ctx.beginPath()
+
+  const points     = 1000
+  const windowSize = Math.PI * 2.2
+
+  for(let i = 0; i <= points; i++){
+
+    const p =
+      i / points
+
+    const theta =
+      phase + p * windowSize
+
+    const wobble =
+
+      Math.sin(
+        theta *
+        (17 + smoothHigh * 20) +
+
+        frameT * 0.002
+
+      ) *
+
+      smoothHigh * 10
+
+    const x =
+
+      Math.sin(
+        a * theta +
+        smoothBass * 1.5
+      ) *
+
+      scale +
+
+      wobble
+
+    const y =
+
+      Math.sin(
+        b * theta +
+        smoothMid * 1.2
+      ) *
+
+      scale *
+
+      (0.78 + smoothMid * 0.18)
+
+    if(i === 0)
+      ctx.moveTo(x, y)
+    else
+      ctx.lineTo(x, y)
+  }
+
+  ctx.stroke()
+
+  /* ghost overlay */
+
+  ctx.shadowBlur = 5
+
+  ctx.lineWidth = 0.7
+
+  ctx.strokeStyle =
+    "rgba(210,255,210,0.18)"
+
+  ctx.stroke()
+
+  ctx.restore()
+}
+
+function loop(){
+
+  frameT++
+
+  drawBG()
+
+  ctx.fillStyle =
+    "rgba(0,5,0,0.18)"
+
+  ctx.fillRect(
+    0,
+    0,
+    size,
+    size
+  )
+
+  drawLissajous()
+
+  subs.style.transform =
+    `scaleY(${1 + smoothBass * 0.05})`
+
+  subs.style.opacity =
+    `${0.7 + smoothBass * 0.3}`
+
+  requestAnimationFrame(loop)
+}
+
+loop()
+
+</script>
+
+</body>
+</html>

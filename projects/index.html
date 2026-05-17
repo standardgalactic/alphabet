@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RSVP Audioscope</title>
+
+<style>
+
+:root{
+  --green:#00ff88;
+  --soft:#b7ffe1;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  color:var(--green);
+  font-family:monospace;
+}
+
+/* =========================================================
+   CRT
+========================================================= */
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:200;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.03) 0px,
+      rgba(255,255,255,.03) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+
+  opacity:.14;
+}
+
+/* =========================================================
+   STARFIELD
+========================================================= */
+
+#stars{
+  position:fixed;
+  inset:0;
+  z-index:1;
+}
+
+/* =========================================================
+   LANDING SCREEN
+========================================================= */
+
+#landing{
+  position:fixed;
+  inset:0;
+  z-index:100;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  gap:18px;
+
+  background:
+    radial-gradient(circle at center,
+      rgba(0,255,120,.08),
+      rgba(0,0,0,.95));
+
+  transition:opacity .5s;
+}
+
+#landing.hidden{
+  opacity:0;
+  pointer-events:none;
+}
+
+.landing-title{
+  text-align:center;
+  width:min(92vw,900px);
+
+  color:#d6ffee;
+
+  font-size:clamp(18px,3vw,32px);
+
+  line-height:1.4;
+
+  letter-spacing:.14em;
+
+  text-transform:uppercase;
+
+  text-shadow:
+    0 0 18px var(--green);
+}
+
+.lang-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px;
+  justify-content:center;
+}
+
+.lang{
+  background:
+    rgba(0,30,0,.45);
+
+  border:
+    1px solid rgba(0,255,120,.35);
+
+  color:#cffff0;
+
+  padding:12px 22px;
+
+  cursor:pointer;
+
+  font-size:14px;
+
+  letter-spacing:.12em;
+
+  text-transform:uppercase;
+
+  transition:.25s;
+}
+
+.lang:hover{
+  background:
+    rgba(0,80,20,.55);
+
+  box-shadow:
+    0 0 20px rgba(0,255,120,.18);
+}
+
+/* =========================================================
+   UI
+========================================================= */
+
+.ui{
+  position:fixed;
+
+  top:12px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:min(94vw,920px);
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  gap:10px;
+
+  z-index:30;
+}
+
+.title{
+  text-align:center;
+
+  font-size:clamp(12px,2vw,18px);
+
+  color:#d6ffee;
+
+  letter-spacing:.18em;
+
+  text-transform:uppercase;
+
+  text-shadow:
+    0 0 12px var(--green);
+}
+
+/* =========================================================
+   TRACKS
+========================================================= */
+
+.tracks{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  justify-content:center;
+}
+
+.track{
+  background:
+    rgba(0,20,0,.45);
+
+  border:
+    1px solid rgba(0,255,120,.28);
+
+  color:#baffdd;
+
+  padding:8px 12px;
+
+  font-size:11px;
+
+  text-transform:uppercase;
+
+  letter-spacing:.08em;
+
+  cursor:pointer;
+
+  transition:.25s;
+}
+
+.track:hover{
+  background:
+    rgba(0,70,20,.55);
+}
+
+.track.active{
+  border-color:
+    rgba(0,255,120,.75);
+
+  background:
+    rgba(0,255,120,.12);
+
+  box-shadow:
+    0 0 14px rgba(0,255,120,.22);
+
+  color:#fff;
+}
+
+/* =========================================================
+   PORTAL
+========================================================= */
+
+.portal-wrap{
+  position:fixed;
+  inset:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+#viz{
+  width:min(78vw,78vh);
+  height:min(78vw,78vh);
+
+  border-radius:50%;
+
+  background:#000;
+
+  box-shadow:
+    0 0 40px rgba(0,255,120,.15),
+    inset 0 0 90px rgba(0,255,120,.08);
+
+  display:block;
+}
+
+/* =========================================================
+   SUBS
+========================================================= */
+
+.subs{
+  position:fixed;
+
+  bottom:58px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:min(92vw,760px);
+
+  text-align:center;
+
+  line-height:1.5;
+
+  font-size:clamp(13px,2vw,17px);
+
+  color:#e2fff0;
+
+  text-shadow:
+    0 0 10px var(--green);
+
+  padding:0 12px;
+
+  white-space:pre-wrap;
+
+  word-wrap:break-word;
+
+  z-index:40;
+
+  pointer-events:none;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status{
+  position:fixed;
+
+  bottom:16px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  font-size:11px;
+
+  opacity:.55;
+
+  letter-spacing:.14em;
+
+  z-index:40;
+}
+
+/* =========================================================
+   GLITCH
+========================================================= */
+
+.glitch{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:150;
+  opacity:0;
+}
+
+.glitch.active{
+
+  animation:glitch .22s linear;
+
+}
+
+@keyframes glitch{
+
+  0%{
+    opacity:0;
+    transform:translate(0,0);
+
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,.08) 0px,
+        transparent 2px,
+        transparent 5px
+      );
+  }
+
+  30%{
+    opacity:.24;
+    transform:translate(-10px,4px);
+  }
+
+  60%{
+    opacity:.18;
+    transform:translate(12px,-5px);
+  }
+
+  100%{
+    opacity:0;
+    transform:translate(0,0);
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+  #viz{
+    width:min(92vw,92vw);
+    height:min(92vw,92vw);
+  }
+
+  .track{
+    font-size:10px;
+    padding:7px 9px;
+  }
+
+  .subs{
+    bottom:64px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<div id="landing">
+
+  <div class="landing-title">
+    Relativistic Scalar Vector Plenum
+  </div>
+
+  <div class="lang-buttons">
+
+    <button class="lang" data-track="0">
+      English
+    </button>
+
+    <button class="lang" data-track="1">
+      Español
+    </button>
+
+    <button class="lang" data-track="2">
+      العربية
+    </button>
+
+  </div>
+
+</div>
+
+<div class="ui">
+
+  <div class="title" id="title">
+    RSVP AUDIOSCOPE
+  </div>
+
+  <div class="tracks" id="tracks"></div>
+
+</div>
+
+<div class="portal-wrap">
+  <canvas id="viz"></canvas>
+</div>
+
+<div class="subs" id="subs"></div>
+
+<div class="status">
+  CLICK / TOUCH TO PLAY OR PAUSE
+</div>
+
+<div class="glitch" id="glitch"></div>
+
+<audio id="audio" preload="auto"></audio>
+
+<script>
+
+/* =========================================================
+   TRACKS
+========================================================= */
+
+const TRACKS = [
+
+{
+  file:
+    "Unifying_Everything_Relativistic_Scalar_Vector_Plenum.mp3",
+
+  vtt:
+    "Unifying_Everything_Relativistic_Scalar_Vector_Plenum.vtt",
+
+  label:
+    "English",
+
+  mode:
+    "field"
+},
+
+{
+  file:
+    "RSVP_Unifica_Cosmos_Mente_y_Empresas_con_Analogías.mp3",
+
+  vtt:
+    "RSVP_Unifica_Cosmos_Mente_y_Empresas_con_Analogías.vtt",
+
+  label:
+    "Español",
+
+  mode:
+    "spiral"
+},
+
+{
+  file:
+    "نظرية_كل_شيء_الكون_وعي_الشركات_بالملأ.mp3",
+
+  vtt:
+    "نظرية_كل_شيء_الكون_وعي_الشركات_بالملأ.vtt",
+
+  label:
+    "العربية",
+
+  mode:
+    "wave"
+}
+
+]
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const audio =
+  document.getElementById("audio")
+
+const subsEl =
+  document.getElementById("subs")
+
+const titleEl =
+  document.getElementById("title")
+
+const tracksEl =
+  document.getElementById("tracks")
+
+const landing =
+  document.getElementById("landing")
+
+const glitch =
+  document.getElementById("glitch")
+
+/* =========================================================
+   TRACK BUTTONS
+========================================================= */
+
+TRACKS.forEach((t,i)=>{
+
+  const b =
+    document.createElement("button")
+
+  b.className =
+    "track"
+
+  b.textContent =
+    t.label
+
+  b.onclick =
+    async e=>{
+
+      e.stopPropagation()
+
+      await loadTrack(i,true)
+
+    }
+
+  tracksEl.appendChild(b)
+
+})
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+let ctxA
+let analyser
+let data
+
+let started = false
+
+function initAudio(){
+
+  if(ctxA) return
+
+  ctxA =
+    new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )()
+
+  analyser =
+    ctxA.createAnalyser()
+
+  analyser.fftSize = 2048
+  analyser.smoothingTimeConstant = .82
+
+  data =
+    new Uint8Array(
+      analyser.fftSize
+    )
+
+  const src =
+    ctxA.createMediaElementSource(audio)
+
+  src.connect(analyser)
+  analyser.connect(ctxA.destination)
+}
+
+/* =========================================================
+   SUBS
+========================================================= */
+
+let cues = []
+
+async function loadVTT(file){
+
+  cues = []
+
+  try{
+
+    const r =
+      await fetch(file)
+
+    if(!r.ok){
+
+      console.warn("Missing VTT:",file)
+      return
+    }
+
+    const txt =
+      await r.text()
+
+    cues =
+      parseVTT(txt)
+
+  }catch(e){
+
+    console.warn(e)
+
+  }
+}
+
+function parseVTT(txt){
+
+  const lines =
+    txt.split('\n')
+
+  const out = []
+
+  let i = 0
+
+  while(i < lines.length){
+
+    const line =
+      lines[i].trim()
+
+    if(line.includes('-->')){
+
+      const [s,e] =
+        line.split('-->')
+            .map(v=>v.trim())
+
+      i++
+
+      const text = []
+
+      while(
+        i < lines.length &&
+        lines[i].trim()
+      ){
+
+        text.push(
+          lines[i].trim()
+        )
+
+        i++
+      }
+
+      out.push({
+
+        start:toSec(s),
+        end:toSec(e),
+        text:text.join('\n')
+
+      })
+
+    }else{
+
+      i++
+    }
+  }
+
+  return out
+}
+
+function toSec(t){
+
+  const p =
+    t.replace(',','.')
+     .split(':')
+
+  if(p.length===3){
+
+    return (
+      (+p[0])*3600 +
+      (+p[1])*60 +
+      (+p[2])
+    )
+  }
+
+  return (
+    (+p[0])*60 +
+    (+p[1])
+  )
+}
+
+audio.ontimeupdate = ()=>{
+
+  const t =
+    audio.currentTime
+
+  const cue =
+    cues.find(c=>
+      t >= c.start &&
+      t < c.end + .25
+    )
+
+  subsEl.textContent =
+    cue ? cue.text : ''
+
+}
+
+/* =========================================================
+   TRACK LOADING
+========================================================= */
+
+let current = 0
+
+async function loadTrack(i,autoplay=false){
+
+  current =
+    ((i % TRACKS.length) +
+      TRACKS.length) %
+      TRACKS.length
+
+  const tr =
+    TRACKS[current]
+
+  document
+    .querySelectorAll('.track')
+    .forEach((b,idx)=>{
+
+      b.classList.toggle(
+        'active',
+        idx===current
+      )
+
+    })
+
+  audio.src =
+    tr.file
+
+  audio.load()
+
+  await loadVTT(tr.vtt)
+
+  titleEl.textContent =
+    tr.label.toUpperCase()
+
+  if(autoplay){
+
+    try{
+
+      await audio.play()
+
+    }catch(e){}
+  }
+}
+
+audio.onended = ()=>{
+
+  loadTrack(current+1,true)
+
+}
+
+/* =========================================================
+   LANDING
+========================================================= */
+
+document
+  .querySelectorAll('.lang')
+  .forEach(btn=>{
+
+    btn.onclick =
+      async ()=>{
+
+        const idx =
+          +btn.dataset.track
+
+        landing.classList.add(
+          'hidden'
+        )
+
+        if(!started){
+
+          started = true
+
+          initAudio()
+
+          if(ctxA.state!=="running"){
+            await ctxA.resume()
+          }
+        }
+
+        await loadTrack(idx,true)
+
+      }
+
+  })
+
+/* =========================================================
+   PLAY / PAUSE
+========================================================= */
+
+document.body.onclick =
+  async ()=>{
+
+    if(!started) return
+
+    if(ctxA.state!=="running"){
+      await ctxA.resume()
+    }
+
+    if(audio.paused){
+
+      await audio.play()
+
+    }else{
+
+      audio.pause()
+
+    }
+  }
+
+/* =========================================================
+   STARS
+========================================================= */
+
+const starCanvas =
+  document.getElementById("stars")
+
+const sg =
+  starCanvas.getContext("2d")
+
+let SW,SH
+
+function resizeStars(){
+
+  SW =
+    starCanvas.width =
+      innerWidth
+
+  SH =
+    starCanvas.height =
+      innerHeight
+}
+
+resizeStars()
+
+addEventListener(
+  'resize',
+  resizeStars
+)
+
+const stars =
+  Array.from(
+    {length:180},
+    ()=>({
+
+      x:Math.random()*SW,
+      y:Math.random()*SH,
+      z:Math.random()*2
+
+    })
+  )
+
+function drawStars(){
+
+  sg.clearRect(
+    0,0,SW,SH
+  )
+
+  for(const s of stars){
+
+    s.y += .25 + s.z
+
+    if(s.y > SH){
+
+      s.y = -10
+      s.x = Math.random()*SW
+
+    }
+
+    sg.fillStyle =
+      `rgba(180,255,220,${
+        0.08+s.z*0.08
+      })`
+
+    sg.fillRect(
+      s.x,
+      s.y,
+      s.z*1.4,
+      s.z*1.4
+    )
+  }
+}
+
+/* =========================================================
+   GLITCH
+========================================================= */
+
+setInterval(()=>{
+
+  glitch.classList.add(
+    'active'
+  )
+
+  setTimeout(()=>{
+
+    glitch.classList.remove(
+      'active'
+    )
+
+  },220)
+
+},45000 + Math.random()*20000)
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+const canvas =
+  document.getElementById("viz")
+
+const c =
+  canvas.getContext("2d")
+
+const DPR =
+  devicePixelRatio || 1
+
+let W,H,CX,CY,R
+
+function resize(){
+
+  const s =
+    Math.min(
+      innerWidth*.78,
+      innerHeight*.78
+    )
+
+  canvas.width  = s * DPR
+  canvas.height = s * DPR
+
+  canvas.style.width  = s+"px"
+  canvas.style.height = s+"px"
+
+  c.setTransform(
+    DPR,0,0,DPR,0,0
+  )
+
+  W = s
+  H = s
+
+  CX = W/2
+  CY = H/2
+  R  = Math.min(W,H)*0.38
+}
+
+resize()
+
+addEventListener(
+  'resize',
+  resize
+)
+
+/* =========================================================
+   TRACE
+========================================================= */
+
+let phase = 0
+
+let mouseX = 0
+let mouseY = 0
+
+addEventListener(
+  'mousemove',
+  e=>{
+
+    mouseX =
+      (e.clientX/innerWidth-.5)
+
+    mouseY =
+      (e.clientY/innerHeight-.5)
+
+  }
+)
+
+function draw(){
+
+  requestAnimationFrame(draw)
+
+  drawStars()
+
+  c.fillStyle =
+    "rgba(0,0,0,.12)"
+
+  c.fillRect(
+    0,0,W,H
+  )
+
+  let energy = 0
+
+  if(analyser){
+
+    analyser.getByteTimeDomainData(
+      data
+    )
+
+    for(
+      let i=0;
+      i<data.length;
+      i+=8
+    ){
+
+      energy +=
+        Math.abs(
+          (data[i]-128)/128
+        )
+    }
+
+    energy /=
+      data.length/8
+  }
+
+  phase +=
+    .01 + energy*.05
+
+  const driftX =
+    mouseX * 16
+
+  const driftY =
+    mouseY * 16
+
+  c.beginPath()
+
+  c.arc(
+    CX,CY,R+8,
+    0,
+    Math.PI*2
+  )
+
+  c.strokeStyle =
+    `rgba(0,255,120,${
+      .10 + energy*.3
+    })`
+
+  c.lineWidth = 2
+
+  c.stroke()
+
+  c.save()
+
+  c.beginPath()
+
+  c.arc(
+    CX,CY,R,
+    0,
+    Math.PI*2
+  )
+
+  c.clip()
+
+  const mode =
+    TRACKS[current].mode
+
+  if(analyser){
+
+    const lag =
+      mode==="field" ? 90 :
+      mode==="spiral" ? 140 :
+      50
+
+    for(
+      let pass=0;
+      pass<3;
+      pass++
+    ){
+
+      const alpha =
+        pass===0 ? .10 :
+        pass===1 ? .24 :
+        .82
+
+      const spread =
+        pass===0 ? 1.15 :
+        pass===1 ? 1.05 :
+        1
+
+      c.beginPath()
+
+      for(
+        let i=0;
+        i<data.length;
+        i++
+      ){
+
+        const a =
+          (data[i]-128)/128
+
+        const b =
+          (data[
+            (i+lag)%data.length
+          ]-128)/128
+
+        const theta =
+          i/data.length *
+          Math.PI*2
+
+        let x,y
+
+        if(mode==="field"){
+
+          x =
+            CX + driftX +
+            Math.sin(
+              theta*2 + phase
+            ) *
+            a * R*.72*spread
+
+          y =
+            CY + driftY +
+            Math.sin(
+              theta*3 + phase*.6
+            ) *
+            b * R*.72*spread
+
+        }else if(mode==="spiral"){
+
+          const rr =
+            R*.15 +
+            (i/data.length) *
+            R*.7
+
+          x =
+            CX + driftX +
+            Math.cos(
+              theta*3 + phase
+            ) *
+            rr * a * spread
+
+          y =
+            CY + driftY +
+            Math.sin(
+              theta*3 + phase
+            ) *
+            rr * b * spread
+
+        }else{
+
+          x =
+            CX + driftX +
+            Math.sin(
+              theta*6 + phase
+            ) *
+            a * R*.65*spread
+
+          y =
+            CY + driftY +
+            Math.cos(
+              theta*2 + phase*.5
+            ) *
+            b * R*.75*spread
+
+        }
+
+        if(i===0)
+          c.moveTo(x,y)
+        else
+          c.lineTo(x,y)
+      }
+
+      c.strokeStyle =
+        `rgba(120,255,170,${alpha})`
+
+      c.lineWidth =
+        pass===2
+          ? 1.6 + energy*2
+          : .7
+
+      c.shadowBlur =
+        pass===2
+          ? 16 + energy*26
+          : 0
+
+      c.shadowColor =
+        "#00ff88"
+
+      c.stroke()
+    }
+  }
+
+  c.restore()
+}
+
+draw()
+
+</script>
+
+</body>
+</html>

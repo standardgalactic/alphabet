@@ -1,8 +1,20 @@
 # The Selection Principle: A Unified Framework for Constraint Closure
 
+[Beyond Prediction Error](https://standardgalactic.github.io/alphabet/framework/beyond_prediction_error.pdf)
+
+* [Topological Persistence](https://standardgalactic.github.io/alphabet/framework/Topological_Persistence.pdf) — *Notes*
+
+* [Why Brains Navigate Instead of Predict](https://standardgalactic.github.io/alphabet/framework/audioscope.html) — *Audio Overview*
+
+[Everything is a Clipboard](https://standardgalactic.github.io/alphabet/framework/everything_is_a_clipboard.pdf)
+
+* [The Navigable Manifold](https://standardgalactic.github.io/alphabet/framework/The_Navigable_Manifold.pdf)
+
+* [Everything you Think is a Clipboard](https://standardgalactic.github.io/alphabet/framework/) — *Audio Overview*
+
 [Descent into Reality](https://standardgalactic.github.io/alphabet/framework/descent-into-reality.pdf)
 
-[Reality is what survives elimination](https://standardgalactic.github.io/alphabet/framework/) – *Audio Overview*
+* [Reality is what survives elimination](https://standardgalactic.github.io/alphabet/framework/descent-into-reality.html) – *Audio Overview*
 
 This collection develops a unified theory of selection in high-capacity systems, where correctness is no longer sufficient to determine reality. Across physics, cognition, and economics, systems operate in regimes where many configurations are admissible, yet only a small subset achieves persistence.
 

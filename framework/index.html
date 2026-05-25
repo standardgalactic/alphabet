@@ -3,12 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Descent Into Reality</title>
+<title>Navigation Engine</title>
 
 <style>
+
 :root{
-  --fg:#7cffc4;
-  --fg-dim:rgba(124,255,196,0.5);
+  --green:#00ff88;
+  --soft:#dcffee;
+}
+
+*{
+  box-sizing:border-box;
 }
 
 html,body{
@@ -17,264 +22,1150 @@ html,body{
   height:100%;
   overflow:hidden;
   background:#000;
-  color:var(--fg);
+  color:#00ff88;
   font-family:monospace;
+  touch-action:manipulation;
 }
 
-canvas{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-}
+/* =========================================================
+   CRT
+========================================================= */
 
-body::after{
+body::before{
   content:"";
   position:fixed;
   inset:0;
   pointer-events:none;
+  z-index:500;
+
   background:
     repeating-linear-gradient(
       to bottom,
-      rgba(255,255,255,0.05) 0px,
-      rgba(255,255,255,0.05) 1px,
+      rgba(255,255,255,.03) 0px,
+      rgba(255,255,255,.03) 1px,
       transparent 2px,
       transparent 4px
     );
-  opacity:0.15;
+
+  opacity:.12;
 }
 
-.title-top{
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+#bg{
   position:fixed;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:13px;
-  letter-spacing:0.2em;
-  text-transform:uppercase;
-  text-shadow:0 0 8px var(--fg);
-  text-align:center;
-  z-index:10;
+  inset:0;
+  z-index:1;
 }
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.title{
+
+  position:fixed;
+
+  top:14px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  width:min(96vw,1100px);
+
+  text-align:center;
+
+  font-size:clamp(11px,1.9vw,18px);
+
+  letter-spacing:.22em;
+
+  text-transform:uppercase;
+
+  color:#d7fff0;
+
+  text-shadow:
+    0 0 14px #00ff88;
+
+  z-index:100;
+}
+
+/* =========================================================
+   TRACKS
+========================================================= */
+
+.tracks{
+
+  position:fixed;
+
+  top:58px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  display:flex;
+  flex-wrap:wrap;
+
+  gap:8px;
+
+  width:min(96vw,900px);
+
+  justify-content:center;
+
+  z-index:110;
+}
+
+.track{
+
+  border:
+    1px solid rgba(0,255,120,.25);
+
+  background:
+    rgba(0,20,0,.4);
+
+  color:#baffdd;
+
+  padding:8px 10px;
+
+  font-size:10px;
+
+  letter-spacing:.12em;
+
+  cursor:pointer;
+
+  transition:.18s;
+
+  text-transform:uppercase;
+}
+
+.track:hover{
+  background:
+    rgba(0,80,30,.45);
+}
+
+.track.active{
+
+  background:
+    rgba(0,255,120,.14);
+
+  border-color:
+    rgba(0,255,120,.8);
+
+  color:#fff;
+
+  box-shadow:
+    0 0 14px rgba(0,255,120,.3);
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status{
+
+  position:fixed;
+
+  top:108px;
+  left:50%;
+
+  transform:translateX(-50%);
+
+  opacity:.5;
+
+  font-size:11px;
+
+  letter-spacing:.16em;
+
+  z-index:120;
+}
+
+/* =========================================================
+   PORTAL
+========================================================= */
+
+.portal{
+
+  position:fixed;
+
+  inset:0;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+#viz{
+
+  width:min(680px,96vw);
+  height:min(680px,96vw);
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle at center,
+      rgba(0,45,18,.96),
+      rgba(0,0,0,1));
+
+  border:
+    2px solid rgba(0,255,120,.38);
+
+  box-shadow:
+    inset 0 0 120px rgba(0,255,120,.06),
+    inset 0 0 40px rgba(0,255,120,.08),
+    0 0 40px rgba(0,255,120,.16);
+
+  z-index:40;
+}
+
+/* =========================================================
+   SUBS
+========================================================= */
+
+.subs{
+
+  position:fixed;
+
+  bottom:18px;
+
+  left:0;
+  right:0;
+
+  margin:auto;
+
+  width:min(860px,94vw);
+
+  padding:10px 16px;
+
+  min-height:3em;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  text-align:center;
+
+  font-size:clamp(13px,3.4vw,17px);
+
+  line-height:1.5;
+
+  color:#d9fff0;
+
+  text-shadow:
+    0 0 10px rgba(0,255,120,.8);
+
+  background:
+    rgba(0,16,0,.34);
+
+  border:
+    1px solid rgba(0,255,120,.18);
+
+  border-radius:8px;
+
+  pointer-events:none;
+
+  z-index:70;
+
+  transition:
+    opacity .15s ease,
+    transform .08s ease;
+}
+
+/* =========================================================
+   HUD
+========================================================= */
 
 .hud{
+
   position:fixed;
-  bottom:20px;
+
+  bottom:110px;
   left:50%;
+
   transform:translateX(-50%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:10px;
-  width:min(92vw,800px);
-  text-align:center;
-  z-index:10;
+
+  padding:8px 14px;
+
+  background:
+    rgba(0,20,0,.3);
+
+  border:
+    1px solid rgba(0,255,120,.15);
+
+  border-radius:6px;
+
+  font-size:10px;
+
+  letter-spacing:.16em;
+
+  color:#baffdd;
+
+  z-index:150;
 }
 
-#sub{
-  min-height:2.5em;
-  font-size:14px;
-  color:#baffea;
-  text-shadow:0 0 6px var(--fg);
+/* =========================================================
+   GLITCH
+========================================================= */
+
+.glitch{
+  position:fixed;
+  inset:0;
+
+  pointer-events:none;
+
+  z-index:300;
+
+  opacity:0;
 }
 
-.essay-link{
-  color:var(--fg);
-  text-decoration:none;
-  border-bottom:1px solid var(--fg-dim);
+.glitch.active{
+  animation:glitch .18s linear;
 }
 
-.essay-link:hover{
-  color:#fff;
-  border-bottom-color:#fff;
+@keyframes glitch{
+
+  0%{
+    opacity:0;
+    transform:translate(0,0);
+
+    background:
+      repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,.08) 0px,
+        transparent 2px,
+        transparent 5px
+      );
+  }
+
+  25%{
+    opacity:.26;
+    transform:translate(-14px,5px);
+  }
+
+  55%{
+    opacity:.18;
+    transform:translate(16px,-4px);
+  }
+
+  100%{
+    opacity:0;
+    transform:translate(0,0);
+  }
 }
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+  .tracks{
+    gap:5px;
+  }
+
+  .track{
+    font-size:8px;
+    padding:7px 6px;
+  }
+
+  .status{
+    top:132px;
+    font-size:9px;
+  }
+
+  .hud{
+    bottom:120px;
+    width:min(92vw,500px);
+    text-align:center;
+  }
+
+  .subs{
+    bottom:10px;
+  }
+}
+
 </style>
 </head>
 
 <body>
 
-<canvas id="view"></canvas>
+<canvas id="bg"></canvas>
 
-<div class="title-top">Reality Is What Survives Elimination</div>
-
-<div class="hud">
-  <div id="sub"></div>
-  <div>
-    <a class="essay-link" href="https://standardgalactic.github.io/alphabet/framework/descent-into-reality.pdf" target="_blank">
-      Descent into Reality
-    </a>
-  </div>
+<div class="title">
+  NAVIGATION ENGINE / BIOLOGICAL POSSIBILITY
 </div>
 
-<audio id="audio" preload="auto" playsinline>
-  <source src="Reality-is-what-survives-elimination.mp3" type="audio/mpeg">
-  <track src="Reality-is-what-survives-elimination.vtt" kind="subtitles" default>
-</audio>
+<div class="tracks">
+
+  <button class="track active">
+    Everything Is A Clipboard
+  </button>
+
+  <button class="track">
+    Geometry Of Biological Possibility
+  </button>
+
+</div>
+
+<div class="status">
+  TOUCH / CLICK ANYWHERE TO PLAY OR PAUSE
+</div>
+
+<div class="portal">
+  <canvas id="viz"></canvas>
+</div>
+
+<div class="hud" id="hud">
+  MEMORY STATE: STABLE
+</div>
+
+<div class="subs" id="subs"></div>
+
+<div class="glitch" id="glitch"></div>
+
+<audio id="audio" preload="auto"></audio>
 
 <script>
-const canvas = document.getElementById('view')
-const ctx = canvas.getContext('2d')
-const audio = document.getElementById('audio')
-const subEl = document.getElementById('sub')
 
-let w, h, cx, cy
-function resize(){
-  w = canvas.width = innerWidth
-  h = canvas.height = innerHeight
-  cx = w / 2
-  cy = h / 2
-}
-resize()
-addEventListener('resize', resize)
+/* =========================================================
+   TRACKS
+========================================================= */
 
-let audioCtx, analyser, buf, freq
+const TRACKS = [
+
+  "Everything_you_think_is_a_clipboard.mp3",
+
+  "The_Geometry_of_Biological_Possibility.mp3"
+
+]
+
+let currentTrack = 0
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const audio =
+  document.getElementById("audio")
+
+const subs =
+  document.getElementById("subs")
+
+const hud =
+  document.getElementById("hud")
+
+const glitch =
+  document.getElementById("glitch")
+
+const buttons =
+  [...document.querySelectorAll('.track')]
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+let audioCtx
+let analyser
+let data
 
 function initAudio(){
-  if(audioCtx) return
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)()
-  analyser = audioCtx.createAnalyser()
-  analyser.fftSize = 1024
-  buf = new Uint8Array(analyser.fftSize)
-  freq = new Uint8Array(analyser.frequencyBinCount)
 
-  const src = audioCtx.createMediaElementSource(audio)
+  if(audioCtx) return
+
+  audioCtx =
+    new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )()
+
+  analyser =
+    audioCtx.createAnalyser()
+
+  analyser.fftSize = 2048
+
+  const src =
+    audioCtx.createMediaElementSource(audio)
+
   src.connect(analyser)
   analyser.connect(audioCtx.destination)
+
+  data =
+    new Uint8Array(
+      analyser.frequencyBinCount
+    )
 }
 
-async function togglePlay(){
-  initAudio()
-  if(audioCtx.state === 'suspended') await audioCtx.resume()
+/* =========================================================
+   TRACK LOADING
+========================================================= */
 
-  if(audio.paused){
-    await audio.play()
-  }else{
-    audio.pause()
+async function loadTrack(i, autoplay=true){
+
+  currentTrack =
+    ((i % TRACKS.length) + TRACKS.length)
+    % TRACKS.length
+
+  const file =
+    TRACKS[currentTrack]
+
+  audio.src = file
+  audio.load()
+
+  buttons.forEach(
+    b=>b.classList.remove('active')
+  )
+
+  buttons[currentTrack]
+    .classList.add('active')
+
+  await loadVTT(
+    file.replace('.mp3','.vtt')
+  )
+
+  if(autoplay){
+
+    try{
+      await audio.play()
+    }catch(e){}
   }
 }
 
-canvas.addEventListener('click', togglePlay)
-canvas.addEventListener('touchstart', (e) => {
-  e.preventDefault()
-  togglePlay()
-}, { passive:false })
+buttons.forEach((btn,i)=>{
 
-function bindSubs(){
-  const tt = audio.textTracks[0]
-  if(!tt) return
-  tt.mode = 'hidden'
-  tt.oncuechange = () => {
-    const cue = tt.activeCues && tt.activeCues[0]
-    subEl.textContent = cue ? cue.text : ''
+  btn.onclick = async e=>{
+
+    e.stopPropagation()
+
+    await loadTrack(i,true)
   }
-}
-audio.addEventListener('loadedmetadata', bindSubs)
-audio.addEventListener('canplay', bindSubs)
+})
 
-function drawPlayIcon(R){
-  const size = R * 0.22
-  ctx.save()
-  ctx.beginPath()
-  ctx.moveTo(cx - size * 0.35, cy - size * 0.55)
-  ctx.lineTo(cx - size * 0.35, cy + size * 0.55)
-  ctx.lineTo(cx + size * 0.65, cy)
-  ctx.closePath()
-  ctx.fillStyle = 'rgba(124,255,196,0.85)'
-  ctx.shadowColor = '#7cffc4'
-  ctx.shadowBlur = 18
-  ctx.fill()
-  ctx.restore()
-}
+audio.addEventListener('ended',()=>{
 
-function draw(){
-  ctx.fillStyle = 'rgba(0,0,0,0.2)'
-  ctx.fillRect(0, 0, w, h)
+  loadTrack(currentTrack+1,true)
 
-  const R = Math.min(w, h) * 0.45
+})
 
-  let amp = 0
-  let treble = 0
+/* =========================================================
+   SUBTITLES
+========================================================= */
 
-  if(analyser){
-    analyser.getByteTimeDomainData(buf)
-    analyser.getByteFrequencyData(freq)
+let cues = []
 
-    for(let i = 0; i < buf.length; i += 8){
-      amp += Math.abs((buf[i] - 128) / 128)
+async function loadVTT(file){
+
+  cues = []
+
+  try{
+
+    const r =
+      await fetch(file)
+
+    if(!r.ok){
+      console.warn("Missing VTT:",file)
+      return
     }
-    amp /= (buf.length / 8)
 
-    const start = Math.floor(freq.length * 0.6)
-    for(let i = start; i < freq.length; i++){
-      treble += freq[i] / 255
+    const txt =
+      await r.text()
+
+    cues =
+      parseVTT(txt)
+
+  }catch(e){
+
+    console.warn(e)
+  }
+}
+
+function parseVTT(txt){
+
+  const lines =
+    txt.split('\n')
+
+  const out = []
+
+  let i = 0
+
+  while(i < lines.length){
+
+    const line =
+      lines[i].trim()
+
+    if(line.includes('-->')){
+
+      const [s,e] =
+        line.split('-->')
+            .map(v=>v.trim())
+
+      i++
+
+      const text = []
+
+      while(
+        i < lines.length &&
+        lines[i].trim()
+      ){
+
+        text.push(
+          lines[i].trim()
+        )
+
+        i++
+      }
+
+      out.push({
+
+        start:toSec(s),
+        end:toSec(e),
+        text:text.join('\n')
+
+      })
+
+    }else{
+
+      i++
     }
-    treble /= Math.max(1, freq.length - start)
   }
 
-  const jitterX = (Math.random() - 0.5) * treble * 20
-  const jitterY = (Math.random() - 0.5) * treble * 10
+  return out
+}
+
+function toSec(t){
+
+  const p =
+    t.replace(',','.')
+     .split(':')
+
+  if(p.length===3){
+
+    return (
+      (+p[0])*3600 +
+      (+p[1])*60 +
+      (+p[2])
+    )
+  }
+
+  return (
+    (+p[0])*60 +
+    (+p[1])
+  )
+}
+
+audio.ontimeupdate = ()=>{
+
+  const t =
+    audio.currentTime
+
+  const cue =
+    cues.find(c=>
+      t >= c.start &&
+      t < c.end + .25
+    )
+
+  subs.textContent =
+    cue ? cue.text : ""
+}
+
+/* =========================================================
+   PLAY
+========================================================= */
+
+document.body.onclick =
+  async ()=>{
+
+    initAudio()
+
+    if(audioCtx.state==="suspended")
+      await audioCtx.resume()
+
+    if(!audio.src){
+
+      await loadTrack(0,true)
+      return
+    }
+
+    if(audio.paused){
+
+      audio.play()
+
+    }else{
+
+      audio.pause()
+    }
+  }
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+const bg =
+  document.getElementById("bg")
+
+const bgc =
+  bg.getContext("2d")
+
+let SW,SH
+
+function resizeBG(){
+
+  SW =
+    bg.width =
+      innerWidth
+
+  SH =
+    bg.height =
+      innerHeight
+}
+
+resizeBG()
+
+addEventListener(
+  'resize',
+  resizeBG
+)
+
+const particles = []
+
+for(
+  let i=0;
+  i<480;
+  i++
+){
+
+  particles.push({
+
+    x:Math.random()*SW,
+    y:Math.random()*SH,
+
+    vx:
+      (Math.random()-.5)*0.7,
+
+    vy:
+      (Math.random()-.5)*0.7,
+
+    z:
+      Math.random()*2
+  })
+}
+
+function drawBG(){
+
+  bgc.clearRect(
+    0,0,SW,SH
+  )
+
+  for(const p of particles){
+
+    p.x += p.vx
+    p.y += p.vy
+
+    if(p.x < 0) p.x = SW
+    if(p.x > SW) p.x = 0
+
+    if(p.y < 0) p.y = SH
+    if(p.y > SH) p.y = 0
+
+    bgc.fillStyle =
+      `rgba(180,255,220,${
+        .02 + p.z*.08
+      })`
+
+    bgc.fillRect(
+      p.x,
+      p.y,
+      p.z*1.3,
+      p.z*1.3
+    )
+  }
+
+  for(let i=0; i<particles.length; i+=16){
+
+    const a = particles[i]
+    const b = particles[(i+37)%particles.length]
+
+    bgc.beginPath()
+
+    bgc.moveTo(a.x,a.y)
+    bgc.lineTo(b.x,b.y)
+
+    bgc.strokeStyle =
+      "rgba(120,255,180,0.015)"
+
+    bgc.stroke()
+  }
+}
+
+/* =========================================================
+   GLITCH
+========================================================= */
+
+setInterval(()=>{
+
+  glitch.classList.add(
+    'active'
+  )
+
+  setTimeout(()=>{
+
+    glitch.classList.remove(
+      'active'
+    )
+
+  },180)
+
+},24000 + Math.random()*12000)
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+const canvas =
+  document.getElementById("viz")
+
+const ctx =
+  canvas.getContext("2d")
+
+const size = 760
+
+canvas.width  = size
+canvas.height = size
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let phase = 0
+
+let bassSmooth = 0
+let midSmooth  = 0
+let highSmooth = 0
+
+let frame = 0
+
+/* =========================================================
+   DRAW
+========================================================= */
+
+function drawReactor(){
+
+  if(analyser && data){
+
+    analyser.getByteFrequencyData(data)
+
+    let bass = 0
+    let mid  = 0
+    let high = 0
+
+    for(let i=0;i<48;i++)
+      bass += data[i]
+
+    for(let i=48;i<220;i++)
+      mid += data[i]
+
+    for(let i=220;i<640;i++)
+      high += data[i]
+
+    bass /= 48 * 255
+    mid  /= 172 * 255
+    high /= 420 * 255
+
+    bassSmooth +=
+      (bass - bassSmooth) * 0.08
+
+    midSmooth +=
+      (mid - midSmooth) * 0.06
+
+    highSmooth +=
+      (high - highSmooth) * 0.05
+  }
+
+  phase +=
+    0.02 + bassSmooth * 0.05
+
+  const cx = size/2
+  const cy = size/2
 
   ctx.save()
+
   ctx.beginPath()
-  ctx.arc(cx, cy, R, 0, Math.PI * 2)
+
+  ctx.arc(
+    cx,
+    cy,
+    size*0.47,
+    0,
+    Math.PI*2
+  )
+
   ctx.clip()
 
-  const depth = 40
-  for(let i = depth; i >= 0; i--){
-    const z = (i / depth + performance.now() * 0.0003) % 1
-    const r = (1 - z) * R
+  ctx.fillStyle =
+    `rgba(0,5,0,${
+      0.08 + bassSmooth*0.06
+    })`
+
+  ctx.fillRect(
+    0,
+    0,
+    size,
+    size
+  )
+
+  /* nested clipboard structures */
+
+  for(let i=0;i<18;i++){
+
+    const r =
+      size *
+      (0.06 + i*0.022)
 
     ctx.beginPath()
-    ctx.arc(cx + jitterX, cy + jitterY, r, 0, Math.PI * 2)
-    ctx.strokeStyle = `rgba(124,255,196,${0.05 + amp * 0.2})`
-    ctx.lineWidth = 1.5
+
+    for(let a=0;a<=Math.PI*2+.02;a+=0.04){
+
+      const wave =
+
+        Math.sin(
+          a *
+          (3 + i*0.12) +
+          phase *
+          (0.5 + i*0.02)
+        ) *
+
+        (3 + midSmooth*18)
+
+      const x =
+        cx +
+        Math.cos(a) * (r + wave)
+
+      const y =
+        cy +
+        Math.sin(a) * (r + wave)
+
+      if(a===0)
+        ctx.moveTo(x,y)
+      else
+        ctx.lineTo(x,y)
+    }
+
+    ctx.strokeStyle =
+      `rgba(120,255,180,${
+        0.008 + i*0.008
+      })`
+
     ctx.stroke()
   }
 
-  if(analyser){
-    ctx.beginPath()
-    const width = R * 2
-    const x0 = cx - R
+  /* branching paths */
 
-    for(let i = 0; i < buf.length; i++){
-      const x = x0 + (i / buf.length) * width
-      const y = cy + (buf[i] - 128) * (R * 0.35 / 128)
-      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)
+  for(let i=0;i<64;i++){
+
+    const theta =
+      i/64 * Math.PI*2 +
+      phase*0.18
+
+    const inner =
+      size*0.05
+
+    const outer =
+      size*(
+        0.34 +
+        bassSmooth*0.12
+      )
+
+    ctx.beginPath()
+
+    ctx.moveTo(
+      cx + Math.cos(theta)*inner,
+      cy + Math.sin(theta)*inner
+    )
+
+    ctx.lineTo(
+      cx + Math.cos(theta)*outer,
+      cy + Math.sin(theta)*outer
+    )
+
+    ctx.strokeStyle =
+      `rgba(120,255,180,${
+        0.012 + highSmooth*0.03
+      })`
+
+    ctx.stroke()
+  }
+
+  /* main trace */
+
+  const scale =
+    size *
+    (0.13 + bassSmooth*0.10)
+
+  const A =
+    3 + midSmooth*1.8
+
+  const B =
+    2 + highSmooth*2
+
+  ctx.save()
+
+  ctx.translate(
+    cx +
+    Math.sin(frame*0.00022)*18,
+
+    cy +
+    Math.cos(frame*0.00017)*14
+  )
+
+  ctx.rotate(
+    Math.sin(frame*0.0001)*0.2
+  )
+
+  for(let pass=0; pass<4; pass++){
+
+    ctx.beginPath()
+
+    const alpha =
+      pass===0 ? 0.03 :
+      pass===1 ? 0.10 :
+      pass===2 ? 0.28 :
+      0.95
+
+    const spread =
+      1 + pass*0.05
+
+    for(let i=0;i<=2200;i++){
+
+      const p =
+        i / 2200
+
+      const theta =
+        phase +
+        p * Math.PI * 2.8
+
+      const distortion =
+
+        Math.sin(
+          theta *
+          (24 + highSmooth*30) +
+          frame * 0.003
+        ) *
+
+        highSmooth * 24
+
+      const x =
+
+        Math.sin(
+          A * theta +
+          bassSmooth*2
+        ) *
+
+        scale *
+        spread +
+
+        distortion
+
+      const y =
+
+        Math.sin(
+          B * theta +
+          midSmooth*1.5
+        ) *
+
+        scale *
+        0.84 *
+        spread
+
+      if(i===0)
+        ctx.moveTo(x,y)
+      else
+        ctx.lineTo(x,y)
     }
 
-    ctx.strokeStyle = '#7cffc4'
-    ctx.lineWidth = 1.5
-    ctx.shadowColor = '#7cffc4'
-    ctx.shadowBlur = 10
+    ctx.strokeStyle =
+      `rgba(120,255,180,${alpha})`
+
+    ctx.lineWidth =
+      pass===3
+        ? 2 + bassSmooth*4
+        : .8
+
+    ctx.shadowBlur =
+      pass===3
+        ? 20 + bassSmooth*36
+        : 0
+
+    ctx.shadowColor =
+      "#00ff88"
+
     ctx.stroke()
-    ctx.shadowBlur = 0
   }
 
   ctx.restore()
 
-  ctx.beginPath()
-  ctx.arc(cx, cy, R, 0, Math.PI * 2)
-  ctx.strokeStyle = 'rgba(124,255,196,0.6)'
-  ctx.lineWidth = 2
-  ctx.shadowColor = '#7cffc4'
-  ctx.shadowBlur = 20
-  ctx.stroke()
-  ctx.shadowBlur = 0
+  ctx.restore()
 
-  ctx.beginPath()
-  ctx.arc(cx, cy, R * 0.98, 0, Math.PI * 2)
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)'
-  ctx.lineWidth = 1
-  ctx.stroke()
+  /* HUD */
 
-  if(audio.paused){
-    drawPlayIcon(R)
+  const energy =
+    (
+      bassSmooth +
+      midSmooth +
+      highSmooth
+    ) / 3
+
+  if(energy > .72){
+
+    hud.textContent =
+      "MEMORY STATE: RECURSIVE"
+
+  }else if(energy > .45){
+
+    hud.textContent =
+      "MEMORY STATE: BRANCHING"
+
+  }else{
+
+    hud.textContent =
+      "MEMORY STATE: STABLE"
   }
-
-  requestAnimationFrame(draw)
 }
 
-draw()
+function loop(){
+
+  frame++
+
+  drawBG()
+
+  drawReactor()
+
+  if(bassSmooth > .72){
+
+    document.body.style.transform =
+
+      `translate(${
+        (Math.random()-.5)*4
+      }px,${
+        (Math.random()-.5)*4
+      }px)`
+
+  }else{
+
+    document.body.style.transform =
+      "translate(0,0)"
+  }
+
+  subs.style.transform =
+    `scaleY(${1 + bassSmooth*0.05})`
+
+  subs.style.opacity =
+    `${0.7 + bassSmooth*0.3}`
+
+  requestAnimationFrame(loop)
+}
+
+loop()
+
 </script>
 
 </body>

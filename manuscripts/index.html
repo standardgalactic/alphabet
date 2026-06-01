@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Hidden Geometry of Global Movement</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  color:#7cff7c;
+  font-family:monospace;
+  touch-action:manipulation;
+}
+
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  cursor:pointer;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:500;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.028) 0px,
+      rgba(255,255,255,.028) 1px,
+      transparent 2px,
+      transparent 5px
+    );
+  opacity:.14;
+}
+
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:501;
+  background:
+    radial-gradient(
+      circle at center,
+      transparent 0%,
+      rgba(0,0,0,.25) 72%,
+      rgba(0,0,0,.78) 100%
+    );
+}
+
+.title{
+  position:fixed;
+  top:18px;
+  width:94vw;
+  text-align:center;
+  font-size:14px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:#00ff88;
+  text-shadow:0 0 10px #00ff66;
+  z-index:100;
+}
+
+.status{
+  position:fixed;
+  top:50px;
+  opacity:.45;
+  font-size:10px;
+  letter-spacing:.14em;
+  z-index:120;
+}
+
+canvas{
+  width:min(430px,82vw);
+  height:min(430px,82vw);
+  border-radius:50%;
+  border:3px solid rgba(0,255,120,.42);
+  background:#000;
+  box-shadow:
+    0 0 60px rgba(0,255,120,.15) inset,
+    0 0 24px rgba(0,255,0,.55);
+  z-index:40;
+}
+
+.subs{
+  position:fixed;
+  bottom:48px;
+  width:min(660px,92vw);
+  min-height:2.5em;
+  padding:8px 12px;
+  text-align:center;
+  font-size:14px;
+  line-height:1.45;
+  color:#aaffaa;
+  text-shadow:0 0 6px #00ff66;
+  background:rgba(0,20,0,.36);
+  border:1px solid rgba(0,255,0,.22);
+  border-radius:6px;
+  pointer-events:none;
+  z-index:80;
+}
+
+.essay{
+  position:fixed;
+  bottom:12px;
+  width:min(660px,92vw);
+  text-align:center;
+  color:#7cffc4;
+  text-decoration:none;
+  font-size:12px;
+  letter-spacing:.08em;
+  opacity:.72;
+  z-index:90;
+}
+
+.essay:hover{
+  opacity:1;
+}
+
+@media(max-width:700px){
+  .title{top:14px;font-size:11px}
+  .status{top:44px;font-size:9px}
+  .subs{bottom:46px;font-size:13px}
+  .essay{font-size:10px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="title">The Hidden Geometry of Global Movement</div>
+<div class="status">TOUCH / CLICK ANYWHERE TO PLAY OR PAUSE</div>
+
+<canvas id="viz"></canvas>
+
+<div id="subs" class="subs"></div>
+
+<a class="essay"
+   href="https://standardgalactic.github.io/alphabet/manuscripts/hidden_manifolds.pdf"
+   target="_blank"
+   onclick="event.stopPropagation()">
+  Hidden Manifolds
+</a>
+
+<audio id="audio" preload="auto">
+  <source src="The_Hidden_Geometry_of_Global_Movement.mp3">
+</audio>
+
+<script>
+const audio = document.getElementById("audio");
+const subs = document.getElementById("subs");
+
+let audioCtx;
+let analyser;
+let freqData;
+let timeData;
+
+function initAudio(){
+  if(audioCtx) return;
+
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  analyser.smoothingTimeConstant = .88;
+
+  freqData = new Uint8Array(analyser.frequencyBinCount);
+  timeData = new Uint8Array(analyser.fftSize);
+
+  const source = audioCtx.createMediaElementSource(audio);
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
+}
+
+document.body.onclick = async ()=>{
+  initAudio();
+
+  if(audioCtx.state === "suspended")
+    await audioCtx.resume();
+
+  if(audio.paused)
+    await audio.play();
+  else
+    audio.pause();
+};
+
+/* subtitles */
+
+let cues = [];
+
+async function loadVTT(){
+  cues = [];
+  subs.textContent = "";
+
+  try{
+    const res = await fetch("The_Hidden_Geometry_of_Global_Movement.vtt");
+
+    if(!res.ok){
+      console.warn("Missing VTT");
+      return;
+    }
+
+    cues = parseVTT(await res.text());
+
+  }catch(e){
+    console.warn("VTT load failed:",e);
+  }
+}
+
+function parseVTT(text){
+  const blocks = text.replace(/\r/g,"").split(/\n{2,}/);
+  const out = [];
+
+  for(const block of blocks){
+    const lines = block.trim().split("\n");
+    const ts = lines.find(line=>line.includes("-->"));
+    if(!ts) continue;
+
+    const tsIndex = lines.indexOf(ts);
+    const [start,end] = ts.split("-->").map(x=>x.trim());
+
+    out.push({
+      start:parseTime(start),
+      end:parseTime(end),
+      text:lines.slice(tsIndex+1).join(" ")
+    });
+  }
+
+  return out;
+}
+
+function parseTime(t){
+  t = t.split(" ")[0].replace(",",".");
+  const p = t.split(":");
+
+  if(p.length === 3)
+    return (+p[0])*3600 + (+p[1])*60 + parseFloat(p[2]);
+
+  return (+p[0])*60 + parseFloat(p[1]);
+}
+
+audio.ontimeupdate = ()=>{
+  const t = audio.currentTime;
+  const cue = cues.find(c=>t>=c.start && t<c.end+.2);
+  subs.textContent = cue ? cue.text : "";
+};
+
+loadVTT();
+
+/* visualizer */
+
+const canvas = document.getElementById("viz");
+const ctx = canvas.getContext("2d");
+
+const W = 480;
+const H = 480;
+const cx = W/2;
+const cy = H/2;
+const R = W*.39;
+
+canvas.width = W;
+canvas.height = H;
+
+let frame = 0;
+let bass = 0;
+let mid = 0;
+let high = 0;
+
+function updateEnergy(){
+  if(!analyser) return;
+
+  analyser.getByteFrequencyData(freqData);
+
+  let b=0,m=0,h=0;
+
+  for(let i=0;i<40;i++) b += freqData[i];
+  for(let i=40;i<180;i++) m += freqData[i];
+  for(let i=180;i<freqData.length;i++) h += freqData[i];
+
+  bass += (b/(40*255)-bass)*.08;
+  mid += (m/(140*255)-mid)*.06;
+  high += (h/((freqData.length-180)*255)-high)*.05;
+}
+
+function clearPortal(){
+  ctx.fillStyle = "rgba(0,5,0,.095)";
+  ctx.fillRect(0,0,W,H);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.clip();
+
+  const g = ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+  g.addColorStop(0,"rgba(0,38,14,.24)");
+  g.addColorStop(.68,"rgba(0,10,0,.44)");
+  g.addColorStop(1,"rgba(0,0,0,.96)");
+
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,W,H);
+
+  drawSparseStars();
+
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.strokeStyle = "rgba(124,255,196,.32)";
+  ctx.lineWidth = 3;
+  ctx.shadowBlur = 14;
+  ctx.shadowColor = "#00ff66";
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function drawSparseStars(){
+  ctx.fillStyle = "rgba(180,255,210,.16)";
+
+  for(let i=0;i<44;i++){
+    const x = ((Math.sin(i*83.17)*43758.5453)%1+1)%1;
+    const y = ((Math.sin(i*41.93+2)*19341.13)%1+1)%1;
+
+    const px = x*W;
+    const py = y*H;
+
+    const dx = px-cx;
+    const dy = py-cy;
+
+    if(dx*dx+dy*dy < R*R)
+      ctx.fillRect(px,py,1.4,1.4);
+  }
+}
+
+function drawLatentManifold(){
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.clip();
+
+  ctx.translate(cx,cy);
+
+  const breathe =
+    1 + Math.sin(frame*.012)*.025 + bass*.06;
+
+  /* hidden contour field */
+  for(let k=0;k<9;k++){
+    const r = R*(.16+k*.075)*breathe;
+
+    ctx.beginPath();
+
+    for(let a=0;a<=Math.PI*2+.04;a+=.045){
+      const constraint =
+        Math.sin(a*3 + frame*.01 + k*.7)*
+        (4 + mid*14);
+
+      const hidden =
+        Math.cos(a*7 - frame*.014 + k)*
+        (2 + high*10);
+
+      const x = Math.cos(a)*(r+constraint+hidden);
+      const y = Math.sin(a)*(r+constraint-hidden*.35);
+
+      if(a===0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+
+    ctx.strokeStyle =
+      `rgba(124,255,196,${.035+k*.018})`;
+
+    ctx.lineWidth = 4;
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = "#00ff88";
+    ctx.stroke();
+  }
+
+  /* thick global movement routes */
+  const nodes = [
+    {x:-R*.58,y:-R*.22},
+    {x:-R*.22,y:R*.42},
+    {x:R*.10,y:-R*.48},
+    {x:R*.48,y:R*.18},
+    {x:R*.02,y:R*.04}
+  ];
+
+  const routes = [
+    [0,4,3],
+    [1,4,2],
+    [0,2,3],
+    [1,3],
+    [2,4,1]
+  ];
+
+  for(let i=0;i<routes.length;i++){
+    const route = routes[i];
+
+    ctx.beginPath();
+
+    const first = nodes[route[0]];
+    ctx.moveTo(first.x,first.y);
+
+    for(let j=1;j<route.length;j++){
+      const prev = nodes[route[j-1]];
+      const next = nodes[route[j]];
+
+      const mx =
+        (prev.x+next.x)/2 +
+        Math.sin(frame*.012+i+j)*R*.12;
+
+      const my =
+        (prev.y+next.y)/2 +
+        Math.cos(frame*.010+i-j)*R*.10;
+
+      ctx.quadraticCurveTo(mx,my,next.x,next.y);
+    }
+
+    ctx.strokeStyle =
+      `rgba(170,255,210,${.18+mid*.38})`;
+
+    ctx.lineWidth = 7;
+    ctx.lineCap = "round";
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = "#00ff88";
+    ctx.stroke();
+  }
+
+  /* projected nodes */
+  for(let i=0;i<nodes.length;i++){
+    const n = nodes[i];
+    const pulse =
+      1 + Math.sin(frame*.025+i)*.08 + bass*.45;
+
+    ctx.beginPath();
+    ctx.arc(n.x,n.y,9*pulse,0,Math.PI*2);
+    ctx.fillStyle = "rgba(190,255,220,.92)";
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = "#00ff88";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(n.x,n.y,22+mid*16,0,Math.PI*2);
+    ctx.strokeStyle = "rgba(124,255,196,.24)";
+    ctx.lineWidth = 4;
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawWaveTrace(){
+  if(!analyser) return;
+
+  analyser.getByteTimeDomainData(timeData);
+
+  const lag =
+    Math.floor(timeData.length*(.16+mid*.10));
+
+  ctx.beginPath();
+
+  for(let i=0;i<timeData.length;i+=3){
+    const a = (timeData[i]-128)/128;
+    const b = (timeData[(i+lag)%timeData.length]-128)/128;
+
+    const x =
+      cx + a*R*.54 +
+      Math.sin(frame*.008)*9;
+
+    const y =
+      cy + b*R*.44 +
+      Math.cos(frame*.006)*7;
+
+    if(i===0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  }
+
+  ctx.strokeStyle = "rgba(124,255,196,.78)";
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  ctx.shadowBlur = 18;
+  ctx.shadowColor = "#00ff66";
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function draw(){
+  frame++;
+  updateEnergy();
+
+  clearPortal();
+  drawLatentManifold();
+  drawWaveTrace();
+
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+
+</body>
+</html>

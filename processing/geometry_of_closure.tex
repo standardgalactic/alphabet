@@ -1,0 +1,1807 @@
+% ============================================================
+%  The Geometry of Closure
+%  Admissibility, Obstruction, and Ontological Enlargement
+%  Author: Flyxion / Independent Researcher
+%  Compiler: LuaLaTeX
+%  Bibliography: embedded via filecontents
+% ============================================================
+
+\documentclass[12pt,oneside]{book}
+
+% ── Fonts ────────────────────────────────────────────────────
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Pagella}
+\usepackage{microtype}
+
+% ── Mathematics ───────────────────────────────────────────────
+\usepackage{amsmath,amsthm,amssymb,mathtools}
+\usepackage{unicode-math}
+\setmathfont{TeX Gyre Pagella Math}
+
+% ── Page geometry ─────────────────────────────────────────────
+\usepackage[
+  paperwidth=6in,paperheight=9in,
+  top=1in,bottom=1in,inner=0.9in,outer=0.75in
+]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% ── Headers ───────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[LE]{\small\itshape The Geometry of Closure}
+\fancyhead[RO]{\small\itshape\leftmark}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Chapter titles ────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries}{\chaptertitlename\ \thechapter}{14pt}{\LARGE}
+\titlespacing*{\chapter}{0pt}{28pt}{18pt}
+
+% ── Theorem environments ──────────────────────────────────────
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{metatheorem}[theorem]{Meta-Theorem}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{construction}[theorem]{Construction}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{notation}[theorem]{Notation}
+
+% ── Hyperlinks ────────────────────────────────────────────────
+\usepackage[colorlinks,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+
+% ── Bibliography — embedded, no external .bib needed ─────────
+\usepackage{filecontents}
+\begin{filecontents*}{\jobname.bib}
+@book{federer1969,
+  author    = {Federer, Herbert},
+  title     = {Geometric Measure Theory},
+  publisher = {Springer},
+  address   = {New York},
+  year      = {1969}
+}
+@article{simons1968,
+  author  = {Simons, James},
+  title   = {Minimal varieties in {R}iemannian manifolds},
+  journal = {Annals of Mathematics},
+  volume  = {88},
+  number  = {1},
+  pages   = {62--105},
+  year    = {1968}
+}
+@article{bombieri1969,
+  author  = {Bombieri, Enrico and De~Giorgi, Ennio and Giusti, Enrico},
+  title   = {Minimal cones and the {B}ernstein problem},
+  journal = {Inventiones Mathematicae},
+  volume  = {7},
+  pages   = {243--268},
+  year    = {1969}
+}
+@article{bernstein1915,
+  author  = {Bernstein, Serge},
+  title   = {{Sur un th\'eor\`eme de g\'eom\'etrie et ses applications
+             aux \'equations aux d\'eriv\'ees partielles du type elliptique}},
+  journal = {Communications de la Soci\'et\'e Math\'ematique de Kharkov},
+  volume  = {15},
+  pages   = {38--45},
+  year    = {1915}
+}
+@article{degiorgi1965,
+  author  = {De~Giorgi, Ennio},
+  title   = {Una estensione del teorema di {B}ernstein},
+  journal = {Annali della Scuola Normale Superiore di Pisa},
+  volume  = {19},
+  pages   = {79--85},
+  year    = {1965}
+}
+@article{almgren1966,
+  author  = {Almgren, Frederick~J.},
+  title   = {Some interior regularity theorems for minimal surfaces and
+             an extension of {B}ernstein's theorem},
+  journal = {Annals of Mathematics},
+  volume  = {84},
+  pages   = {277--292},
+  year    = {1966}
+}
+@book{simon1983,
+  author    = {Simon, Leon},
+  title     = {Lectures on Geometric Measure Theory},
+  publisher = {Australian National University},
+  address   = {Canberra},
+  year      = {1983}
+}
+@book{morgan2016,
+  author    = {Morgan, Frank},
+  title     = {Geometric Measure Theory: {A} Beginner's Guide},
+  publisher = {Academic Press},
+  edition   = {5},
+  year      = {2016}
+}
+@article{petz1988,
+  author  = {Petz, D{\'e}nes},
+  title   = {Sufficiency of channels over von {N}eumann algebras},
+  journal = {Quarterly Journal of Mathematics},
+  volume  = {39},
+  number  = {1},
+  pages   = {97--108},
+  year    = {1988}
+}
+@article{petz1986,
+  author  = {Petz, D{\'e}nes},
+  title   = {Quasi-entropies for finite quantum systems},
+  journal = {Reports on Mathematical Physics},
+  volume  = {23},
+  number  = {1},
+  pages   = {57--65},
+  year    = {1986}
+}
+@book{amari2000,
+  author    = {Amari, Shun-ichi and Nagaoka, Hiroshi},
+  title     = {Methods of Information Geometry},
+  publisher = {American Mathematical Society},
+  address   = {Providence},
+  year      = {2000}
+}
+@book{villani2009,
+  author    = {Villani, C{\'e}dric},
+  title     = {Optimal Transport: Old and New},
+  publisher = {Springer},
+  address   = {Berlin},
+  year      = {2009}
+}
+@book{nielsen2010,
+  author    = {Nielsen, Michael~A. and Chuang, Isaac~L.},
+  title     = {Quantum Computation and Quantum Information},
+  publisher = {Cambridge University Press},
+  year      = {2010}
+}
+@book{maclane1998,
+  author    = {Mac~Lane, Saunders},
+  title     = {Categories for the Working Mathematician},
+  publisher = {Springer},
+  edition   = {2},
+  year      = {1998}
+}
+@book{awodey2010,
+  author    = {Awodey, Steve},
+  title     = {Category Theory},
+  publisher = {Oxford University Press},
+  edition   = {2},
+  year      = {2010}
+}
+@article{sinkhorn1967,
+  author  = {Sinkhorn, Richard},
+  title   = {Diagonal equivalence to matrices with prescribed row and
+             column sums},
+  journal = {American Mathematical Monthly},
+  volume  = {74},
+  number  = {4},
+  pages   = {402--405},
+  year    = {1967}
+}
+@article{wilde2015,
+  author  = {Wilde, Mark~M. and Winter, Andreas and Yang, Dong},
+  title   = {Strong converse for the classical capacity of
+             entanglement-breaking and {H}adamard channels via a
+             sandwiched {R}{\'e}nyi relative entropy},
+  journal = {Communications in Mathematical Physics},
+  volume  = {331},
+  pages   = {593--622},
+  year    = {2015}
+}
+@book{kuhn1962,
+  author    = {Kuhn, Thomas~S.},
+  title     = {The Structure of Scientific Revolutions},
+  publisher = {University of Chicago Press},
+  year      = {1962}
+}
+@book{lakatos1976,
+  author    = {Lakatos, Imre},
+  title     = {Proofs and Refutations},
+  publisher = {Cambridge University Press},
+  year      = {1976}
+}
+@article{chentsov1982,
+  author  = {Chentsov, Nikolai~N.},
+  title   = {Statistical Decision Rules and Optimal Inference},
+  journal = {Translations of Mathematical Monographs},
+  volume  = {53},
+  publisher = {American Mathematical Society},
+  year    = {1982}
+}
+@article{schrodinger1932,
+  author  = {Schr{\"o}dinger, Erwin},
+  title   = {{Sur la th\'eorie relativiste de l\'electron et
+             l\'interpr\'etation de la m\'ecanique quantique}},
+  journal = {Annales de l'Institut Henri Poincar\'e},
+  volume  = {2},
+  pages   = {269--310},
+  year    = {1932}
+}
+\end{filecontents*}
+
+\usepackage[backend=biber,style=alphabetic,sorting=nyt]{biblatex}
+\addbibresource{\jobname.bib}
+
+% ── Misc packages ─────────────────────────────────────────────
+\usepackage{graphicx,xcolor,epigraph,enumitem,booktabs,array}
+\setlength{\epigraphwidth}{0.64\textwidth}
+\setlist[itemize]{nosep,leftmargin=1.5em}
+\setlist[enumerate]{nosep,leftmargin=1.5em}
+
+% ── Notation macros ───────────────────────────────────────────
+\newcommand{\Oold}{\mathcal{O}}
+\newcommand{\Onew}{\mathcal{O}'}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\Admiss}{\mathcal{A}}
+\newcommand{\Inadmiss}{\mathcal{I}}
+\newcommand{\W}{\mathcal{W}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\KL}{D_{\mathrm{KL}}}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Hilb}{\mathcal{H}}
+\newcommand{\density}{\mathcal{D}}
+\newcommand{\bO}{\mathbf{O}}
+\newcommand{\bOn}{\mathbf{O}'}
+
+% ── Interlude environment ─────────────────────────────────────
+\newenvironment{interlude}[1]{%
+  \vspace{1.4em}
+  \begin{center}
+  \rule{0.38\textwidth}{0.4pt}\quad{\small\itshape #1}\quad\rule{0.38\textwidth}{0.4pt}
+  \end{center}
+  \vspace{0.4em}
+  \small\itshape
+}{%
+  \normalsize\normalfont
+  \vspace{1.4em}
+}
+
+% =============================================================
+\begin{document}
+\frontmatter
+
+% ── Title page ────────────────────────────────────────────────
+\begin{titlepage}
+\centering\vspace*{2.2cm}
+{\Huge\bfseries The Geometry of Closure}\\[1.1em]
+{\Large\itshape Admissibility, Obstruction,\\[0.3em]and Ontological Enlargement}\\[3.2em]
+{\large Flyxion}\\[0.5em]
+{\normalsize Independent Researcher}\\[4em]
+{\normalsize \today}
+\vfill
+{\small\itshape Working draft.}
+\end{titlepage}
+
+% ── Preface ───────────────────────────────────────────────────
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+This book did not begin with geometric measure theory or quantum Bayesian
+inference. It began with a pattern.
+
+Across a sequence of projects developed under the names RSVP, Spherepop,
+CLIO, TARTAN, Simulated Agency, and the Projection Crisis essays, the same
+structural failure kept appearing in different contexts and under different
+local names. A representation would prove locally adequate, generating reliable
+predictions and useful intuitions within a familiar regime. Then something
+would appear at the boundary of that regime which the representation could not
+absorb. The representation did not become false. It became insufficient.
+The map survived. Recovery failed.
+
+The framework developed in this book is an attempt to say precisely what
+that means. The central concepts are closure, recovery, obstruction, and
+ontological commitment. They crystallized from repeated independent encounters
+with the same failure mode across domains that have no obvious connection
+to one another. That genealogy matters: a framework designed to fit selected
+examples is always vulnerable to the charge of engineering. A framework that
+emerged elsewhere and was then found to apply has different evidential status.
+
+Two terminological notes. \emph{Collapse} is used throughout in a technical
+sense: the loss of recovery while embedding is retained. The old theory
+survives; it becomes a regime. \emph{Obstruction} is used in the sense
+already standard in topology, category theory, and PDE: an object that
+certifies, by its existence, that a certain recovery is impossible.
+
+Three philosophical themes recur across the technical chapters, and the
+reader may find it useful to name them at the outset.
+
+First: continuation is the primitive concept, not objects. The central
+question of the framework is never what a system \emph{is} but whether an
+admissible continuation of it \emph{exists}. Collapse is defined by the
+disappearance of admissible continuation; enlargement is defined by its
+restoration.
+
+Second: ontologies are residues, not foundations. The objects of a theory
+appear fundamental only because they survive the dynamics used to generate
+them. Space, probability distributions, semantic scopes, and mathematical
+objects themselves are persistence structures: what remains invariant under
+repeated application of governing operations.
+
+Third: structure without blueprint. Area-minimizing currents do not know
+the surface they are attempting to become. Bayesian posteriors do not know
+the parameter they will converge toward. Scope graphs do not contain their
+future resolutions. Global structure emerges from local admissibility
+conditions, not from pre-specified endpoints. Ontological enlargement is
+not the discovery of a hidden plan. It is the discovery that the admissibility
+conditions were richer than previously recognized.
+
+\vspace{1.2em}
+\noindent\textit{Flyxion} \hfill Independent Researcher
+
+\tableofcontents
+
+% =============================================================
+\mainmatter
+
+% =============================================================
+\part{Closure and Recovery: The Framework}
+
+% =============================================================
+\chapter{The Primitive Concept}
+
+\epigraph{A map may be accurate in every detail it shows and still fail to
+show the detail that matters most.}{}
+
+\section{What This Book Is About}
+
+Collapse preserves ontological embedding but not ontological recovery.
+
+That sentence is the thesis of this book. Everything that follows is an
+attempt to make it precise, to test it against the historical record, and to
+ask what it implies about mathematical knowledge more broadly.
+
+The sentence requires three concepts. \emph{Ontological embedding}: the old
+objects survive as a recognizable subclass of a larger framework.
+\emph{Ontological recovery}: the governing dynamics of the larger framework
+remain confined to that subclass. \emph{Collapse}: the event by which the
+invariant system of the old framework becomes globally unsatisfiable, forcing
+enlargement.
+
+None of these is standard terminology. They are introduced as names for a
+structural phenomenon that keeps appearing across mathematics under different
+local descriptions. The phenomenon is this. A theory develops an ontology,
+a preferred class of objects and a set of governing operations, and that
+ontology works reliably within a certain regime. Then the governing operations,
+applied without restriction, produce objects the ontology cannot contain.
+The ontology must be enlarged. But enlargement is not symmetric. The old
+objects embed into the new framework as a recognizable subclass. The new
+framework does not, in general, remain confined to the old subclass under
+its own dynamics. The old theory survives. It does not remain sufficient.
+
+\begin{remark}[On the word ``collapse'']
+Throughout this book, \emph{collapse} is a technical term. Collapse does not
+mean falsification, inconsistency, or catastrophic failure. It means precisely
+the loss of recovery while embedding is retained. The old theory does not
+become false. Its theorems remain valid within the embedded subclass. What
+fails is the assumption that the original object class is sufficient for all
+relevant purposes. Collapse is the formal event at which the old ontology
+becomes a regime rather than a universe.
+\end{remark}
+
+\section{Continuation as Primitive}
+
+Before introducing the formal apparatus, it is worth naming the conceptual
+reorientation that the framework requires.
+
+Traditional foundations of mathematics begin with objects: sets, points,
+functions, distributions. Objects are the primitive substrate; relations and
+operations are defined over them. The question is always: what are the things,
+and what can we say about them?
+
+The framework developed in this book begins differently. The primitive question
+is not what a system is but whether an admissible continuation of it exists.
+Given a state of a system, the primary datum is whether the governing operations
+can be applied to produce a valid successor state within the current ontology.
+
+Collapse is the event at which admissible continuation disappears.
+Enlargement is the event at which admissible continuation is restored through
+a larger ontology.
+
+This reorientation has a formal expression in the admissible successor space
+$\Admiss_B$ introduced below. It has a philosophical expression in the preface's
+observation that objects appear fundamental only because they survive the
+dynamics used to generate them. An ontology is not a collection of primitive
+things. It is a collection of states that admit continuation under the
+governing operations.
+
+\section{Closure Operators and Dynamic Closure}
+
+\begin{definition}[Dynamical Ontology]
+A \emph{dynamical ontology} is a pair $(\Oold, \F)$ where $\Oold$ is a
+class of objects and $\F = \{F_\alpha\}_{\alpha \in A}$ is a family of
+governing operations, each $F_\alpha : \Oold \rightharpoonup \Oold$
+(possibly partial).
+\end{definition}
+
+\begin{definition}[Dynamic Closure]
+The \emph{closure} of a class $S \subseteq \Oold$ under $\F$ is
+\[
+  \cl_\F(S) = \bigcup_{n=0}^{\infty} \F^{(n)}(S),
+\]
+where $\F^{(0)}(S) = S$ and
+$\F^{(n+1)}(S) = \bigcup_\alpha F_\alpha(\F^{(n)}(S))$. The class $S$ is
+\emph{dynamically closed} under $\F$ if $\cl_\F(S) = S$.
+\end{definition}
+
+\begin{proposition}
+$S$ is dynamically closed under $\F$ if and only if $F_\alpha(S) \subseteq S$
+for all $\alpha \in A$.
+\end{proposition}
+
+\begin{proof}
+If $F_\alpha(S) \subseteq S$ for all $\alpha$, then by induction
+$\F^{(n)}(S) \subseteq S$ for all $n$, so $\cl_\F(S) \subseteq S$.
+Since $S = \F^{(0)}(S) \subseteq \cl_\F(S)$, equality holds. Conversely,
+if $\cl_\F(S) = S$ then $\F^{(1)}(S) \subseteq S$.
+\end{proof}
+
+\begin{example}[Smooth surfaces under area minimization]
+Let $\Oold$ be smooth compact hypersurfaces with fixed boundary. In
+dimensions $n \leq 7$, area-minimizing competitors of smooth surfaces are
+smooth: $\Oold$ is dynamically closed. In dimension $n = 8$, the Simons
+cone is an area-minimizing object that is not smooth: the operation escapes
+$\Oold$. Dynamic closure fails.
+\end{example}
+
+\begin{example}[Real numbers under complex dynamics]
+\label{ex:complex}
+Let $\Oold = \Real \subset \mathbb{C} = \Onew$ and $F(z) = z^2 + i$.
+For any $x \in \Real$, $F(x) = x^2 + i \notin \Real$. Embedding holds;
+dynamic closure fails immediately.
+\end{example}
+
+\section{Embedding and Recovery}
+
+\begin{definition}[Ontological Embedding]
+\label{def:embedding}
+A \emph{ontological embedding} is a structure-preserving injection
+$\iota : \Oold \hookrightarrow \Onew$ between dynamical ontologies
+$(\Oold, \F)$ and $(\Onew, \F')$ with $\F \subseteq \F'$.
+\end{definition}
+
+\begin{definition}[Ontological Recovery]
+\label{def:recovery}
+Given $\iota : \Oold \hookrightarrow \Onew$, the original ontology is
+\emph{recoverable} within $(\Onew, \F')$ if
+\[
+  \F'(\Onew) \subseteq \iota(\Oold).
+\]
+\end{definition}
+
+\begin{lemma}
+Recovery implies that $\iota(\Oold)$ is dynamically closed under $\F'$.
+\end{lemma}
+
+\begin{proof}
+If $\F'(\Onew) \subseteq \iota(\Oold)$, then in particular
+$\F'(\iota(\Oold)) \subseteq \F'(\Onew) \subseteq \iota(\Oold)$.
+\end{proof}
+
+\begin{proposition}[Embedding Does Not Imply Recovery]
+\label{prop:embedding-not-recovery}
+There exist dynamical ontologies and embeddings for which $\iota(\Oold)$
+is not dynamically closed under $\F'$.
+\end{proposition}
+
+\begin{proof}
+Example~\ref{ex:complex}: $\Real \hookrightarrow \mathbb{C}$ under
+$F(z) = z^2 + i$. For $x \in \Real$, $F(x) = x^2 + i \notin \Real$.
+\end{proof}
+
+\section{Strong and Weak Survival}
+
+\begin{definition}[Weak and Strong Survival]
+After enlargement $\iota : \Oold \hookrightarrow \Onew$:
+\begin{itemize}
+\item \emph{Weak survival} holds if $\Oold \hookrightarrow \Onew$.
+\item \emph{Strong survival} holds if weak survival holds and every theorem
+      $T$ valid universally in $\Oold$ remains valid universally in $\Onew$:
+      $\Oold \models T \Rightarrow \Onew \models T$.
+\end{itemize}
+\end{definition}
+
+\begin{theorem}
+Strong survival implies weak survival. The converse fails.
+\end{theorem}
+
+\begin{proof}
+Forward: immediate. Converse: smooth area-minimizing hypersurfaces embed in
+rectifiable currents (weak survival), but the Simons cone is a current that
+is not smooth (strong survival fails for the theorem ``area-minimizing objects
+are smooth'').
+\end{proof}
+
+\begin{definition}[Regime Theorem]
+A theorem $T$ that holds universally in $\Oold$ but only under additional
+conditions in $\Onew$ is a \emph{regime theorem}. The conditions under which
+it holds form the \emph{recoverable regime} for $T$.
+\end{definition}
+
+\begin{interlude}{Ontologies as Residues}
+The objects of a theory appear fundamental only because they survive the
+dynamics used to generate them. Smooth surfaces appear to be the natural
+objects of variational geometry because they survive area minimization in
+low dimensions. Classical probability distributions appear to be the natural
+objects of inference because they survive Bayesian conditioning in commutative
+settings. Semantic scopes appear to be the natural objects of meaning because
+they survive admissible resolution in well-structured discourse.
+
+In each case, the apparent fundamentality of the object class is a feature
+of the recoverable regime, not of the world. The objects are what persist.
+They are residues of the dynamics, not its foundations.
+
+This observation inverts the usual direction of mathematical ontology.
+Traditionally, one begins with objects and derives dynamics. The framework
+developed here suggests the opposite order: dynamics come first, and objects
+are what they leave invariant.
+\end{interlude}
+
+\section{Invariant Systems and Collapse}
+
+\begin{definition}[Invariant System]
+An \emph{invariant system} $\mathcal{V} = \{V_1, \ldots, V_k\}$ for
+$(\Oold, \F)$ is a collection of properties jointly required of all
+admissible objects.
+\end{definition}
+
+\begin{definition}[Admissible Successor Space and Inadmissibility Pressure]
+\[
+  \Admiss_B = \{ B' \in \Oold \mid B' \text{ satisfies all }
+  V_i \in \mathcal{V} \}.
+\]
+\[
+  \Inadmiss(B, F) = \dist(F(B),\, \Admiss_B).
+\]
+The admissible successor space is defined by the invariant system, not by
+which operations succeed. This prevents circularity.
+\end{definition}
+
+\begin{definition}[Refuse and Collapse]
+\label{def:refuse-collapse}
+An operation $F$ is \emph{refused} at $B$ if $\Inadmiss(B,F) \geq \theta > 0$
+while $\Admiss_B \neq \varnothing$: local failure, global ontology intact.
+
+The ontology \emph{collapses} when $\Admiss_B = \varnothing$: no object in
+$\Oold$ satisfies the full invariant system. Admissible continuation has
+ceased to exist within the current ontology.
+\end{definition}
+
+\section{Obstruction Theory}
+
+\begin{definition}[Obstruction Set]
+\[
+  \W(\Oold, \Onew, \F') =
+  \{ w \in \Onew \setminus \iota(\Oold) \mid w \in \F'(\Onew) \}.
+\]
+An element $w \in \W$ is an \emph{obstruction}: an object produced by the
+governing operations that belongs to the enlarged ontology but not to the
+original one.
+\end{definition}
+
+\begin{theorem}[Obstruction Implies Non-Recovery]
+\label{thm:obstruction-nonrecovery}
+If $\W \neq \varnothing$ then recovery fails: $\F'(\Onew) \not\subseteq
+\iota(\Oold)$.
+\end{theorem}
+
+\begin{proof}
+Take $w \in \W$. Then $w \in \F'(\Onew)$ and $w \notin \iota(\Oold)$.
+\end{proof}
+
+\begin{remark}[Obstruction versus Collapse]
+Theorem~\ref{thm:obstruction-nonrecovery} establishes non-recovery from an
+obstruction. Non-recovery and collapse are related but distinct. Collapse
+($\Admiss_B = \varnothing$) concerns the original ontology's inability to
+provide admissible continuations. Non-recovery concerns the enlarged ontology's
+inability to remain confined to the original. In all three main case studies,
+the invariant system includes dynamic closure as a requirement, so the two
+conditions coincide. We will make this explicit in each case.
+\end{remark}
+
+\begin{theorem}[Irreversibility of Enlargement]
+\label{thm:irreversibility}
+Suppose $\iota : \Oold \hookrightarrow \Onew$, recovery fails, and
+$\cl_{\F'}(\iota(\Oold)) = \Onew$ (the enlarged ontology is reachable from
+the embedded subclass). Then $\iota(\Oold)$ is not dynamically closed under
+$\F'$.
+\end{theorem}
+
+\begin{proof}
+Since recovery fails, $\F'(\Onew) \not\subseteq \iota(\Oold)$. By
+reachability, $\Onew = \cl_{\F'}(\iota(\Oold))$, so there exists a finite
+chain $x_0 \in \iota(\Oold)$, $x_1 = F'_{\alpha_1}(x_0)$, \ldots,
+$x_n = F'_{\alpha_n}(x_{n-1})$ with $x_n \notin \iota(\Oold)$ for the
+first such $n$. Then $F'_{\alpha_n}(x_{n-1}) \notin \iota(\Oold)$ while
+$x_{n-1} \in \iota(\Oold)$: $\iota(\Oold)$ is not closed under
+$F'_{\alpha_n}$.
+\end{proof}
+
+\begin{definition}[Obstruction Accessibility]
+An obstruction $w \in \W$ is \emph{accessible} if there exists a feasible
+procedure $P$ such that $P$ produces $w$ or a witness to $w$'s existence.
+Accessibility is relative to available tools and changes as methods develop.
+\end{definition}
+
+\section{Closure as Reflection: A Categorical View}
+
+The framework has a natural expression in category theory.
+
+\begin{definition}[Reflective Subcategory]
+A subcategory $\bO \subset \bOn$ is \emph{reflective} if the inclusion
+functor $\iota : \bO \hookrightarrow \bOn$ has a left adjoint
+$R : \bOn \to \bO$, called the \emph{reflector}. The adjunction
+$R \dashv \iota$ gives natural isomorphisms
+$\mathrm{Hom}_{\bO}(R(X), A) \cong \mathrm{Hom}_{\bOn}(X, \iota(A))$
+for all $X \in \bOn$, $A \in \bO$.
+\end{definition}
+
+Reflective subcategories are precisely those that are ``closed under the
+operations of the larger category in a recoverable way.'' The reflector
+provides a canonical projection back into the small category.
+
+\begin{proposition}[Recovery as Reflection]
+Ontological recovery holds if and only if the inclusion
+$\iota : \bO \hookrightarrow \bOn$ participates in a reflective adjunction
+$R \dashv \iota$ such that $R$ commutes with the governing operations:
+$R \circ F' \cong F \circ R$.
+\end{proposition}
+
+\begin{corollary}[Collapse as Failure of Reflection]
+\label{cor:collapse-reflection}
+Ontological collapse occurs when no reflector $R : \bOn \to \bO$ compatible
+with the governing operations exists. There is no canonical way to project
+outputs of $\F'$ back into $\bO$.
+\end{corollary}
+
+\begin{example}[GMT in Categorical Terms]
+Let $\bO$ be smooth minimal hypersurfaces and $\bOn$ integer-multiplicity
+rectifiable currents. The inclusion does not have a reflector compatible with
+area minimization in dimension eight: there is no canonical way to smooth out
+the Simons cone while preserving its minimizing property. Reflection fails;
+collapse is confirmed.
+\end{example}
+
+\section{The Six-Stage Pattern}
+
+\begin{enumerate}[label=\textbf{Stage \arabic*.}, leftmargin=*, itemsep=5pt]
+
+\item \textbf{Operational Failure (Refuse).}
+$\Inadmiss(B, F) \geq \theta$ while $\Admiss_B \neq \varnothing$.
+Operation blocked locally; ontology intact globally.
+
+\item \textbf{Ontological Collapse.}
+$\Admiss_B = \varnothing$. Admissible continuation has ceased to exist
+within the current ontology. This is an objective mathematical fact,
+independent of recognition.
+
+\item \textbf{Enlargement Availability.}
+$\Onew \supset \iota(\Oold)$ is constructed with $\F'(\Onew) \subseteq \Onew$.
+May precede recognized collapse.
+
+\item \textbf{Obstruction Existence.}
+$\W \neq \varnothing$. A specific object certifies that recovery fails.
+
+\item \textbf{Obstruction Accessibility.}
+A feasible procedure produces a witness. The gap between Stages~4 and~5
+is the \emph{accessibility gap}, governed by the structure of the obstruction
+region relative to available tools --- not by the sociology of the field.
+
+\item \textbf{Ontological Commitment.}
+The field accepts the enlarged ontology as necessary. Universal claims of
+the old theory are reinterpreted as regime theorems.
+
+\end{enumerate}
+
+\begin{metatheorem}[Closure-Recovery Principle]
+\label{meta:CRP}
+Let $(\Oold, \F)$ be a dynamical ontology. If $\cl_\F(\Oold) \neq \Oold$,
+then either $\F$ must be restricted or $\Oold$ must be enlarged.
+Historically, enlargement is the repeated outcome.
+\end{metatheorem}
+
+% =============================================================
+\part{The Geometry Case: A Completed Collapse}
+
+% =============================================================
+\chapter{Functionals and the First Enlargement}
+
+\epigraph{Bernoulli asked for the fastest curve.\\
+Lagrange realized the question was about all curves at once.}{}
+
+\section{The Brachistochrone and the Birth of Functionals}
+
+In 1696 Johann Bernoulli posed a problem that looks, at first, like an
+exercise in mechanics. A bead slides without friction along a wire connecting
+two points in a vertical plane. What shape should the wire take so that the
+bead reaches the lower point in the shortest possible time?
+
+The answer is a cycloid. But Bernoulli understood that the significant
+achievement was not the answer but the method. To find the fastest wire,
+one does not examine a particular wire. One examines all wires simultaneously
+and asks which is stationary with respect to travel time. Travel time is not
+a function of a real variable; it is a function of an entire curve: a
+\emph{functional}. The problem of finding curves making a functional stationary
+is the subject of the calculus of variations.
+
+Let the wire be described by $y(x)$ with $y(x_0) = y_0$, $y(x_1) = y_1$.
+Conservation of energy gives speed $v = \sqrt{2g(y_0 - y)}$ at height $y$.
+The travel time is
+\[
+  T[y] = \int_{x_0}^{x_1}
+  \frac{\sqrt{1 + (y')^2}}{\sqrt{2g(y_0 - y)}}\, dx.
+\]
+This is a functional: a map from the space of curves to the real numbers.
+
+\section{The Euler-Lagrange Equation}
+
+\begin{theorem}[Euler-Lagrange]
+\label{thm:EL}
+If $y$ is $C^2$, satisfies fixed boundary conditions $y(a) = A$, $y(b) = B$,
+and $\delta J[y] = 0$ for all compactly supported smooth perturbations $\eta$
+vanishing at the endpoints, where $J[y] = \int_a^b L(x, y, y')\, dx$, then
+\[
+  \frac{\partial L}{\partial y}
+  - \frac{d}{dx}\frac{\partial L}{\partial y'} = 0.
+\]
+\end{theorem}
+
+\begin{proof}
+Set $y_\varepsilon = y + \varepsilon\eta$. Differentiating at $\varepsilon = 0$:
+\[
+  \frac{d}{d\varepsilon}\bigg|_0 J[y_\varepsilon]
+  = \int_a^b \Bigl(\frac{\partial L}{\partial y}\eta
+    + \frac{\partial L}{\partial y'}\eta'\Bigr) dx = 0.
+\]
+Integrating the second term by parts and using $\eta(a) = \eta(b) = 0$:
+\[
+  \int_a^b \Bigl(\frac{\partial L}{\partial y}
+  - \frac{d}{dx}\frac{\partial L}{\partial y'}\Bigr)\eta\, dx = 0.
+\]
+Since $\eta$ is arbitrary, the integrand vanishes everywhere.
+\end{proof}
+
+\begin{remark}[The first ontological enlargement]
+The passage from points to functionals is itself an ontological enlargement.
+The brachistochrone could not be stated without the concept of a functional.
+Functions on curves embed in the space of all functions on an interval,
+but the variational calculus operates on function spaces whose governing
+dynamics do not remain confined to finite-dimensional subspaces. Embedding
+holds; recovery fails immediately. The calculus of variations is the enlarged
+ontology that restored closure, at the cost of requiring the Euler-Lagrange
+equation rather than simple differentiation.
+\end{remark}
+
+\section{The Plateau Problem and Minimal Surfaces}
+
+For a surface expressed as a graph $z = f(x,y)$, the minimal surface equation
+(vanishing mean curvature $H = 0$) is
+\[
+  (1 + f_y^2)f_{xx} - 2f_x f_y f_{xy} + (1 + f_x^2)f_{yy} = 0.
+\]
+Physical soap films satisfy this equation: area minimization produces
+vanishing mean curvature. The Plateau problem asks whether, given any closed
+curve, a minimal surface spanning it exists.
+
+\section{Bernstein's Theorem and the Illusion of Universality}
+
+\begin{theorem}[Bernstein, 1915 \cite{bernstein1915}]
+Let $f : \Real^2 \to \Real$ be $C^2$ with minimal graph. Then $f$ is affine:
+the only complete minimal graphs in $\Real^3$ are planes.
+\end{theorem}
+
+This was extended through dimension seven by De~Giorgi \cite{degiorgi1965},
+Almgren \cite{almgren1966}, and Simons \cite{simons1968}:
+
+\begin{theorem}[Bernstein in Low Dimensions]
+The Bernstein theorem holds for entire minimal hypergraphs $f:\Real^{n-1}
+\to \Real$ for $n \leq 8$: any $C^2$ solution of the minimal surface equation
+defined on all of $\Real^{n-1}$ must be linear.
+\end{theorem}
+
+With each dimensional extension the expectation hardened: minimization
+enforces simplicity universally. The invariant system (smooth, minimizing,
+globally defined) appeared jointly satisfiable in all dimensions. The collapse
+was present in dimension eight long before it was recognized.
+
+% =============================================================
+\chapter{The Simons Cone and Obstruction}
+
+\epigraph{The cone is not important because it is singular.\\
+It is important because it is necessary.}{}
+
+\section{The Construction}
+
+In $\Real^8$ define
+\[
+  \mathcal{C} = \{ (x_1,\ldots,x_8) \in \Real^8 \mid
+  x_1^2 + x_2^2 + x_3^2 + x_4^2 = x_5^2 + x_6^2 + x_7^2 + x_8^2 \}.
+\]
+This is the \emph{Simons cone} \cite{simons1968}: a seven-dimensional cone
+with vertex at the origin, smooth everywhere except the origin.
+
+\begin{theorem}[Simons 1968; Bombieri-De~Giorgi-Giusti 1969
+  \cite{simons1968,bombieri1969}]
+\label{thm:simons}
+The Simons cone $\mathcal{C} \subset \Real^8$ is area-minimizing. Moreover,
+the Bernstein theorem fails for $n \geq 9$: there exist complete minimal
+hypergraphs in $\Real^n$ that are not affine hyperplanes.
+\end{theorem}
+
+Dimension eight is the sharp boundary.
+
+\section{Dimension as Control Parameter}
+
+The mechanism is competition between curvature cost and area gain. In low
+dimensions, singularities are energetically penalized: curvature concentrates
+at a singular point at greater cost than the area saved. Additional dimensions
+distribute curvature across more principal directions, weakening the penalty.
+At dimension eight, the balance tips.
+
+Stability is established by the second variation:
+
+\begin{definition}[Second Variation and Stability]
+For smooth minimal $\Sigma$ and compactly supported $\phi$:
+\[
+  \delta^2\mathcal{A}(\Sigma)[\phi,\phi]
+  = \int_\Sigma (|\nabla\phi|^2 - |A|^2\phi^2)\, d\mathcal{H}^{n-1}.
+\]
+$\Sigma$ is \emph{stable} if $\delta^2\mathcal{A}[\phi,\phi] \geq 0$ for
+all compactly supported $\phi$.
+\end{definition}
+
+Simons showed that $\mathcal{C}$ satisfies the estimates needed for stability
+in $\Real^8$ but not in lower-dimensional analogues. The balance between
+$|\nabla\phi|^2$ and $|A|^2\phi^2$ tips at precisely the ambient dimension
+where the cone lives.
+
+\section{The Cone as Obstruction}
+
+In the language of Chapter~1, identifying each component:
+
+\emph{Original ontology $\Oold$}: smooth minimal hypersurfaces.
+\emph{Governing operation}: area minimization.
+\emph{Invariant system}: $V_1$ smoothness, $V_2$ area-minimization,
+$V_3$ global existence for all boundary data.
+\emph{Enlarged ontology $\Onew$}: integer-multiplicity rectifiable currents.
+\emph{Obstruction}: the Simons cone $\mathcal{C} \in \Onew \setminus
+\iota(\Oold)$, produced by area minimization, certifying that recovery fails.
+
+By Theorem~\ref{thm:obstruction-nonrecovery}, the cone certifies non-recovery.
+Since the invariant system includes dynamic closure, non-recovery and collapse
+coincide: the smooth-surface ontology has no admissible continuation for the
+cone's boundary conditions.
+
+The cone does not create the failure. It certifies a collapse already present
+in the mathematics of $\Real^8$. The cone is what makes the collapse
+impossible to ignore.
+
+\section{Smoothness Becomes a Regime}
+
+After Theorem~\ref{thm:simons}, ``area-minimizing surfaces are smooth'' is
+reinterpreted as a regime theorem. It holds in dimensions $\leq 7$ and as
+a statement about the regular part of minimizing currents in higher dimensions.
+
+\begin{theorem}[Regularity, Sharp Form \cite{federer1969,simon1983}]
+For an area-minimizing integer-multiplicity rectifiable $n$-current in
+$\Real^{n+1}$:
+\begin{enumerate}[label=(\arabic*)]
+\item The regular set $\mathrm{Reg}(T)$ is open and dense in $\supp(T)$.
+\item $\dim_{\mathcal{H}}\mathrm{Sing}(T) \leq n - 7$.
+\item In dimensions $n \leq 6$: $\mathrm{Sing}(T) = \varnothing$.
+\item In dimension $n = 7$: $\mathrm{Sing}(T)$ consists of isolated points.
+\end{enumerate}
+\end{theorem}
+
+The number seven appears because it is the lowest dimension in which the
+Simons cone (a dimension-seven object) can be a stable minimizer. Below the
+threshold, singular minimizers cannot persist; above it, they can.
+
+% =============================================================
+\chapter{Geometric Measure Theory as Enlarged Ontology}
+
+\epigraph{Classical differential geometry assumes smooth surfaces.\\
+Geometric measure theory asks what minimization actually produces.}{}
+
+\section{The Closure Failure of Smooth Surfaces}
+
+Minimizing sequences of smooth surfaces need not have convergent subsequences
+in the smooth category. Curvatures can concentrate; singularities can develop;
+topological type can change. The class of smooth surfaces is not closed under
+sequential limits, which variational methods require.
+
+\section{Currents: Closure Restored}
+
+\begin{definition}[Current and Mass \cite{federer1969}]
+A \emph{$k$-dimensional current} in $\Real^n$ is a continuous linear
+functional $T : \Omega^k_c(\Real^n) \to \Real$, with boundary
+$\partial T(\omega) = T(d\omega)$ and mass
+$\mathbf{M}(T) = \sup\{T(\omega) : \sup|\omega| \leq 1\}$.
+
+An \emph{integer-multiplicity rectifiable $k$-current} is
+$T(\omega) = \int_M \langle\omega, \xi\rangle\theta\, d\mathcal{H}^k$
+where $M$ is $k$-rectifiable, $\xi$ is an orientation, and
+$\theta : M \to \mathbb{Z}_{>0}$.
+\end{definition}
+
+Smooth oriented surfaces are the special case $\theta \equiv 1$.
+The Simons cone is a rectifiable current with a singularity at the origin.
+Both live in the same enlarged ontology.
+
+\begin{theorem}[Federer-Fleming Compactness \cite{federer1969}]
+\label{thm:FF}
+A sequence of integer-multiplicity rectifiable $k$-currents with uniformly
+bounded mass and boundary mass has a weakly convergent subsequence to an
+integer-multiplicity rectifiable $k$-current.
+\end{theorem}
+
+\begin{remark}[Closure restored]
+Theorem~\ref{thm:FF} is precisely the statement that the enlarged ontology
+is dynamically closed under the sequential limits that variational methods
+require. Minimizing sequences that escape the smooth category are contained
+within the current category. The governing operation closes on the enlarged
+ontology.
+\end{remark}
+
+\begin{theorem}[Existence of Area-Minimizing Currents]
+For any rectifiable $(k-1)$-cycle $\Gamma$, there exists an integer-multiplicity
+rectifiable $k$-current $T$ with $\partial T = \Gamma$ achieving the minimum
+mass.
+\end{theorem}
+
+\section{Tangent Cones and Local Models}
+
+\begin{definition}[Tangent Cone]
+Let $T$ be a current, $x \in \mathrm{Sing}(T)$. The \emph{tangent cone} at $x$
+is the weak limit as $r \to 0$ of the rescaled currents
+$T_{x,r}(\omega) = r^{-n}T((\tau_x \circ \delta_{1/r})_\#\omega)$.
+\end{definition}
+
+Tangent cones are local models for singularities. The Simons cone appears
+as the tangent cone for a generic class of singularities in dimension eight.
+It is an attractor in the space of rescaled currents: a renormalization fixed
+point. This explains why it is not merely a counterexample but a structural
+object. Singularities, in the vicinity of this particular renormalization
+fixed point, look like cones.
+
+\begin{interlude}{Return and Recovery}
+The purpose of enlargement is not escape from the original ontology.
+It is the recovery of those conditions under which the original ontology
+remains valid.
+
+Regularity theory is a theory of return. Given a minimizing current in the
+enlarged ontology, regularity theory determines where and to what extent the
+original smooth description is recoverable. The regular set $\mathrm{Reg}(T)$
+is the region of return: where the object behaves as the old ontology
+predicted. The singular set $\mathrm{Sing}(T)$ is where return is impossible.
+
+This structure repeats across all the case studies in this book. Asymptotic
+frequentism in quantum inference is a theorem of return: the posterior
+eventually reaches the true state, even if the path is non-monotone.
+Scope completion in Spherepop is a theorem of return: the load eventually
+reaches zero, even if intermediate operations temporarily increase it.
+
+Return to the old ontology is possible in the generic case. The enlarged
+ontology does not eliminate the old one; it situates it. It explains when
+the old description holds and when it does not. The enlarged framework is
+valuable precisely because it provides a theory of return.
+\end{interlude}
+
+\section{The GMT Case: Five Claims}
+
+The GMT case establishes five claims that the subsequent case studies
+reproduce in modified form.
+
+Collapse is objective and precedes recognition. The invariant system was
+unsatisfiable in dimension eight before the Simons cone was constructed.
+
+The enlarged ontology must be available before an obstruction can be
+recognized. GMT existed before the cone.
+
+The accessibility gap is structural, not sociological. The cone was
+constructible with available tools within approximately a decade.
+
+Strong survival fails while weak survival holds. The universal smoothness
+theorem becomes a regime theorem.
+
+The enlarged ontology has its own structure, richer than the original.
+Regularity theory, tangent cones, mean curvature flow: these research programs
+do not exist within the smooth category. The enlargement opens new territory.
+
+% =============================================================
+\part{The Inference Case: An Ongoing Collapse}
+
+% =============================================================
+\chapter{Classical Bayesian Inference and Its Geometry}
+
+\epigraph{Probability is not a property of the world. It is a property of
+our relationship to the world. But that relationship has a geometry.}{}
+
+\section{Inference as Dynamical Process}
+
+The original ontology is the class of probability distributions $\Oold =
+\{\pi : \Theta \to \Real_{\geq 0} \mid \int\pi = 1\}$ over a hypothesis
+space $\Theta$. The governing operation is Bayesian conditioning:
+$F_e(\pi)(h) = \pi(h \mid e) = \pi(e \mid h)\pi(h)/\pi(e)$. The invariant
+system consists of $V_1$ (classical joint state existence), $V_2$ (unique
+conditioning), and $V_3$ (monotone improvement under repetition). All three
+are jointly satisfiable in the commutative setting.
+
+\section{Kullback-Leibler Divergence and the Fisher Metric}
+
+\begin{definition}[Kullback-Leibler Divergence]
+$\KL(p \| q) = \int p(x)\log(p(x)/q(x))\, dx \geq 0$, with equality iff
+$p = q$ almost everywhere.
+\end{definition}
+
+\begin{definition}[Fisher Information Metric]
+$g_{ij}(\theta) = \mathbb{E}_{p_\theta}
+[(\partial_i\log p_\theta)(\partial_j\log p_\theta)]$.
+\end{definition}
+
+The Fisher metric is, up to rescaling, the unique Riemannian metric on
+statistical manifolds invariant under sufficient statistics
+\cite{chentsov1982}. Bayesian conditioning is an information projection in
+this geometry: the posterior minimizes relative entropy to the prior subject
+to matching the expected sufficient statistics of the evidence.
+
+\section{The Data Processing Inequality and No Epistemic Harm}
+
+\begin{theorem}[Data Processing Inequality]
+For any measurable $\phi : \mathcal{X} \to \mathcal{Y}$ and distributions $p$, $q$:
+$\KL(\phi_* p \| \phi_* q) \leq \KL(p \| q)$.
+\end{theorem}
+
+\begin{proof}[Sketch]
+Chain rule: $\KL(p_{XY} \| q_{XY}) = \KL(p_X \| q_X) +
+\KL(p_{Y|X} \| q_{Y|X})$. Processing by $\phi$ marginalizes the
+non-negative second term.
+\end{proof}
+
+\begin{corollary}[No Epistemic Harm, Classical]
+\label{cor:NEH}
+Let $\pi^*$ be the true distribution, $\pi_n$ the posterior after $n$
+observations. Then $\KL(\pi^* \| \pi_{n+1}) \leq \KL(\pi^* \| \pi_n)$.
+Repeated Bayesian updating weakly decreases divergence from truth.
+\end{corollary}
+
+This is invariant $V_3$: monotone improvement under the governing operation.
+
+\section{Asymptotic Frequentism}
+
+\begin{theorem}[Bernstein-von Mises]
+Under mild regularity conditions, the posterior $\pi_n(\cdot \mid x_1,\ldots,
+x_n)$ converges in total variation to $\delta_{\theta^*}$ as $n \to \infty$,
+at a rate asymptotically independent of the prior $\pi_0$.
+\end{theorem}
+
+The true distribution is the attractor; the prior is the initial condition.
+In the classical case, no epistemic harm (local monotonicity) and asymptotic
+frequentism (global convergence) both hold. In the quantum case, they may
+come apart.
+
+\section{Schr\"{o}dinger Bridges and Process Updating}
+
+\begin{definition}[Schrödinger Bridge \cite{schrodinger1932}]
+Let $\mathbb{P}$ be Wiener measure and $\mu_0$, $\mu_1$ measures on $\Real^d$.
+The \emph{Schrödinger bridge} is
+\[
+  \mathbb{Q}^* = \operatorname{argmin}\{
+  \KL(\mathbb{Q}\|\mathbb{P}) \mid \mathbb{Q}_0 = \mu_0,\,
+  \mathbb{Q}_1 = \mu_1\}.
+\]
+\end{definition}
+
+The Sinkhorn algorithm \cite{sinkhorn1967} computes Schrödinger bridges by
+alternately projecting onto the marginal constraints. This is inference at
+the process level: instead of updating a belief state, one updates a coupling.
+The enlarged ontology of processes embeds the original ontology of states;
+whether recovery holds is the question the quantum case approaches.
+
+% =============================================================
+\chapter{Quantum Inference and the Prospective Collapse}
+
+\epigraph{Quantum mechanics is not probability theory with complex numbers.\\
+It is probability theory with a different geometry.}{}
+
+\section{Density Matrices and Noncommutativity}
+
+\begin{definition}[Density Matrix and Quantum Relative Entropy]
+A \emph{density matrix} on $\Hilb$ is $\rho \in \mathcal{L}(\Hilb)$ with
+$\rho \geq 0$ and $\tr(\rho) = 1$. For density matrices with
+$\supp(\rho) \subseteq \supp(\sigma)$:
+\[
+  D(\rho\|\sigma) = \tr(\rho\log\rho - \rho\log\sigma) \geq 0.
+\]
+\end{definition}
+
+The fundamental structural difference: density matrices generically fail
+to commute, $[\rho,\sigma] \neq 0$. This destroys the canonical joint-state
+structure classical inference requires.
+
+\begin{theorem}[Quantum Data Processing Inequality \cite{wilde2015}]
+For any CPTP map $\mathcal{E}$: $D(\mathcal{E}(\rho)\|\mathcal{E}(\sigma))
+\leq D(\rho\|\sigma)$.
+\end{theorem}
+
+\section{The Petz Recovery Map}
+
+\begin{definition}[Petz Recovery Map \cite{petz1988}]
+Let $\sigma \in \density(\Hilb_{AB})$ with marginal $\sigma_B = \tr_A(\sigma)$.
+The \emph{Petz recovery map} is
+\[
+  \mathcal{R}_{\sigma,\tr_A}(X)
+  = \sigma^{1/2}(\sigma_B^{-1/2} X \sigma_B^{-1/2} \otimes \mathbf{1}_A)
+    \sigma^{1/2}.
+\]
+\end{definition}
+
+\begin{proposition}[Properties of the Petz Map]
+\begin{enumerate}[label=(\arabic*)]
+\item $\mathcal{R}_{\sigma,\tr_A}$ is CPTP.
+\item Quantum detailed balance:
+      $D(\rho\|\sigma) = D(\tr_A(\rho)\|\sigma_B) +
+       D(\rho\|\mathcal{R}_{\sigma,\tr_A}(\tr_A(\rho)))$.
+\item In the commutative regime, it reduces to classical Bayesian conditioning.
+\end{enumerate}
+\end{proposition}
+
+Property~(3) confirms $\Oold \hookrightarrow \Onew$: classical inference
+embeds in quantum inference. Property~(2) is the quantum Bayes rule.
+The question is recovery.
+
+\section{A Worked Petz Recovery Example}
+
+Let
+\[
+  \rho = \begin{pmatrix} 0.7 & 0.25 \\ 0.25 & 0.3 \end{pmatrix},
+  \qquad
+  \sigma = \begin{pmatrix} 0.6 & 0 \\ 0 & 0.4 \end{pmatrix}.
+\]
+These matrices do not commute: $[\rho,\sigma] \neq 0$, placing the system
+outside the classical regime. Consider the dephasing channel
+$\mathcal{E}(X) = \mathrm{diag}(X_{11}, X_{22})$:
+\[
+  \mathcal{E}(\rho) = \begin{pmatrix}0.7 & 0 \\ 0 & 0.3\end{pmatrix},
+  \qquad \mathcal{E}(\sigma) = \sigma.
+\]
+The quantum data-processing inequality guarantees
+$D(\mathcal{E}(\rho)\|\mathcal{E}(\sigma)) \leq D(\rho\|\sigma)$.
+Information is lost under coarse-graining, as expected.
+
+The Petz recovery map produces a recovered state
+$\rho_1 = \mathcal{R}_{\sigma,\mathcal{E}}(\mathcal{E}(\rho))$.
+The diagnostic quantity is
+\[
+  \Delta_n = D(\rho^*\|\rho_{n+1}) - D(\rho^*\|\rho_n),
+\]
+where $\rho^*$ is the target state and $\rho_n$ the state after $n$ Petz
+recovery cycles.
+
+Classical Bayesian inference predicts $\Delta_n \leq 0$ for every $n$
+(Corollary~\ref{cor:NEH}). The conjectural obstruction regime predicts the
+existence of specific triples $(\rho, \sigma, \mathcal{E})$ and targets
+$\rho^*$ for which $\Delta_n > 0$ for some finite $n$, even though
+$D(\rho^*\|\rho_n) \to 0$ as $n \to \infty$.
+
+Such a trajectory temporarily moves away from the target before ultimately
+converging. This is not a failure of inference. It is a failure of monotonicity:
+the failure of $V_3$ while global convergence (the attractor structure) may
+survive. The obstruction is not non-convergence. The obstruction is the
+failure of monotonicity itself, which would certify that the classical
+invariant system is unsatisfiable in the noncommutative regime.
+
+The GMT parallel is exact. Minimizing currents exist and generically converge
+to area-minimizing limits (global existence survives); but not every
+minimizing current is smooth (local regularity fails). Quantum inference may
+generically converge to the true state (attractor structure survives); but
+not every inference trajectory is monotone (local monotonicity fails).
+
+\section{The Invariant System and What Collapses}
+
+The classical invariant system for quantum inference:
+
+$V_1$: a classical joint state encodes the prior-evidence relationship.\\
+$V_2$: conditioning is uniquely determined by the joint state.\\
+$V_3$: $D(\rho^*\|\rho_{n+1}) \leq D(\rho^*\|\rho_n)$ for all $n$.
+
+Under noncommutativity, $V_1$ and $V_2$ are structurally unsatisfiable:
+quantum systems generically lack classical joint states. Whether $V_3$
+fails is the open question that determines whether the prospective collapse
+is established.
+
+\begin{conjecture}[Noncommutativity Threshold]
+\label{conj:threshold}
+There exists a measure $\eta$ of effective noncommutativity and a critical
+value $\eta_c$ such that: for $\eta < \eta_c$, the Petz map satisfies $V_3$;
+for $\eta > \eta_c$, violations of $V_3$ are generic; the transition is sharp.
+\end{conjecture}
+
+This is a falsifiable prediction. Gradual degradation of monotonicity across
+all $\eta$ would weaken the Simons cone analogy considerably. Sharp threshold
+behavior would confirm the structural parallel quantitatively.
+
+\section{Established versus Prospective Collapse}
+
+\begin{definition}[Established and Prospective Collapse]
+A collapse is \emph{established} if there is a formal proof that
+$\Admiss_B = \varnothing$ in $\Oold$ for the relevant invariant system.
+A collapse is \emph{prospective} if strong structural and numerical evidence
+exists but formal proof is absent.
+\end{definition}
+
+The GMT case is established. The quantum Bayes case is prospective.
+This distinction does not weaken the framework; it makes it diagnostic
+rather than merely retrospective. A framework that only classifies completed
+revolutions is a catalogue.
+
+% =============================================================
+\part{The Formal Case: Spherepop as Abstract Model}
+
+% =============================================================
+\chapter{Scope Graphs and Semantic Topology}
+
+\epigraph{A bubble is not a thing. It is a commitment deferred.}{}
+
+\section{The Spherepop Calculus: Definitions}
+
+\begin{definition}[Semantic Bubble]
+A \emph{semantic bubble} is a triple $B = (C, E, U)$ where $C$ is a
+contextual binding set, $E$ is an expectation structure, and $U(B) \geq 0$
+is the unresolved semantic load. $B$ is \emph{open} if $U(B) > 0$,
+\emph{closed} if $U(B) = 0$.
+\end{definition}
+
+\begin{definition}[Containment Structure, Scope Stack, Load Functional]
+A \emph{containment structure} is $(\mathcal{B}, \prec)$ with $\prec$ a
+strict partial order. The \emph{scope stack} is $\Sigma = [B_1 \prec \cdots
+\prec B_n]$. The \emph{semantic load} is
+$L(\Sigma) = \sum_i w_i U(B_i)$ where $w_i = f(d_i, s_i, r_i, c_i)$
+weights depth, salience, recency, and causal centrality.
+\end{definition}
+
+\section{Scope Graphs}
+
+Containment trees are too restrictive for cross-cutting dependencies.
+Human reasoning, mathematical proof, software architecture, and scientific
+explanation frequently involve structures where a scope depends on another
+without being spatially contained within it.
+
+\begin{definition}[Scope Graph]
+A \emph{scope graph} is a finite directed graph $G = (V, E)$ with semantic
+load $U : V \to \Real_{\geq 0}$. Vertices are semantic bubbles; edge
+$B_i \to B_j$ means admissibility of $B_i$ depends on resolution of $B_j$.
+\end{definition}
+
+Containment trees appear as scope graphs with at most one outgoing dependency
+per vertex and no directed cycles. The scope graph separates logical dependence
+from spatial containment.
+
+\begin{definition}[Dependency Closure]
+The \emph{dependency closure} $\cl(G)$ is the smallest graph containing $G$
+and closed under transitivity: $(B_i, B_j) \in \cl(G)$ whenever there exists
+a directed path from $B_i$ to $B_j$.
+\end{definition}
+
+\begin{proposition}
+$\cl(\cl(G)) = \cl(G)$.
+\end{proposition}
+
+\begin{proof}
+The first closure adjoins every transitive dependency. A second application
+introduces no additional edges.
+\end{proof}
+
+Dependency closure is the Spherepop analogue of the topological closure
+operator: it closes a semantic structure under dependency implication rather
+than a set under limits.
+
+\section{Collapse Cycles as Obstructions}
+
+\begin{definition}[Collapse Cycle]
+A \emph{collapse cycle} is a directed cycle $B_1 \to B_2 \to \cdots \to
+B_n \to B_1$ in which every edge represents an unresolved dependency.
+\end{definition}
+
+\begin{theorem}[Collapse Cycle Theorem]
+\label{thm:collapse-cycle}
+If a scope graph contains a collapse cycle then $\Admiss = \varnothing$.
+\end{theorem}
+
+\begin{proof}
+Resolution of $B_1$ requires prior resolution of $B_2$. Resolution of $B_2$
+requires prior resolution of $B_3$. By induction, resolution of $B_n$
+requires prior resolution of $B_1$. No node may be resolved first.
+Therefore no admissible Pop sequence exists and $\Admiss = \varnothing$.
+\end{proof}
+
+The collapse cycle plays the role of the Simons cone in the graph formalism.
+It does not create the collapse; it certifies it. A collapse cycle is a stable
+dependency configuration that makes the collapse impossible to ignore,
+exactly as the Simons cone is a stable singular configuration certifying that
+smooth minimizers do not exist for the cone's boundary conditions.
+
+\section{Minimal Obstructions}
+
+\begin{definition}[Minimal Obstruction]
+A subgraph $H \subseteq G$ is a \emph{minimal obstruction} if $H$ satisfies
+Theorem~\ref{thm:collapse-cycle} (it contains a collapse cycle) but every
+proper subgraph of $H$ admits an admissible resolution sequence.
+\end{definition}
+
+\begin{theorem}[Existence of Minimal Obstructions]
+Every finite collapsed scope graph contains a minimal obstruction.
+\end{theorem}
+
+\begin{proof}
+Let $\mathcal{O} = \{H \subseteq G : H \text{ is collapsed}\}$. This is
+nonempty since $G \in \mathcal{O}$. Since $G$ is finite, $\mathcal{O}$
+has an element of minimal cardinality. Any such element is a minimal
+obstruction: removing any edge or vertex would restore admissibility.
+\end{proof}
+
+This establishes an obstruction theory for Spherepop analogous to
+forbidden-minor theory in graph topology. Minimal obstructions are the
+smallest witnesses to collapse: the Spherepop analogues of the Simons cone.
+
+\section{Semantic Entropy and the Obstruction Measure}
+
+\begin{definition}[Semantic Entropy]
+The \emph{semantic entropy} of a scope graph $G$ is
+\[
+  S(G) = \log|\Admiss(G)|,
+\]
+the log-cardinality of admissible resolution sequences ($-\infty$ when
+$\Admiss = \varnothing$, i.e., at collapse).
+\end{definition}
+
+High $S(G)$ means many admissible continuations: the system is far from
+collapse. Low $S(G)$ means few: collapse is imminent. $S(G) = -\infty$
+means collapse has occurred. Semantic entropy is the Spherepop analogue
+of $\dist(F(B), \Admiss_B)$.
+
+\begin{theorem}[Semantic Thermodynamics]
+Under pure Pop sequences, semantic entropy is non-decreasing. Under Meld
+and Reframe, semantic entropy may temporarily decrease before stabilizing.
+\end{theorem}
+
+\begin{proof}[Sketch]
+Each admissible Pop closes one scope, removing one constraint from the
+parent's admissibility condition, weakly increasing $|\Admiss|$. Meld and
+Reframe introduce new compatibility constraints that may temporarily
+reduce $|\Admiss|$ before they stabilize.
+\end{proof}
+
+\section{The Collapse Quotient and Irreversibility}
+
+\begin{definition}[Collapse Quotient]
+Let $\sim_\rho$ be the equivalence relation on bubble histories: two histories
+are equivalent when they produce the same admissible semantic representative
+under all available resolution sequences. The \emph{collapsed residue} of
+$B$ is $B/{\sim_\rho}$.
+\end{definition}
+
+\begin{construction}[Universal Property]
+The quotient map $q : B \to B/{\sim_\rho}$ satisfies: for any $f : B \to X$
+constant on $\sim_\rho$-classes, there exists unique $\bar{f} : B/{\sim_\rho}
+\to X$ with $f = \bar{f} \circ q$.
+\end{construction}
+
+\begin{proposition}[Irreversibility of Spherepop Collapse]
+\label{prop:spherepop-irrev}
+The quotient map $q : B \to B/{\sim_\rho}$ does not generally admit a section.
+Generative history is not recoverable from the collapsed residue.
+\end{proposition}
+
+\begin{proof}
+A section would assign to each equivalence class a canonical representative
+history. But multiple distinct histories may produce the same residue.
+No choice among them is canonical without information absent from the residue.
+\end{proof}
+
+\begin{example}[Arithmetic Irreversibility]
+$(2+3)$ and $(1+4)$ both produce residue $5$. From $5$ alone, neither history
+is recoverable. The history is lost; the result is authoritative. This is
+the Spherepop instance of the central thesis: collapse preserves embedding
+(both histories map to $5$) but not recovery (the residue does not retract
+onto either history).
+\end{example}
+
+\begin{theorem}[Monotonicity Under Pure Pop Sequences]
+\label{thm:pop-monotone}
+A sequence of admissible Pop operations with $w_i \geq 0$ satisfies
+$L(\Sigma_{k+1}) \leq L(\Sigma_k)$.
+\end{theorem}
+
+\begin{proof}
+Each admissible Pop removes bubble $B_i$ contributing $w_i U(B_i) > 0$.
+The admissibility condition ensures all descendants have $U = 0$, so no
+new load is introduced. Hence $L$ strictly decreases.
+\end{proof}
+
+\begin{remark}[Spherepop predicts its own epistemic harm failure]
+Theorem~\ref{thm:pop-monotone} holds for pure Pop sequences. Meld and
+Reframe may temporarily increase $L(\Sigma)$. This is the Spherepop instance
+of the quantum Bayes phenomenon: the simplest operations (Pop, classical
+conditioning) are monotone; richer operations (Meld, Reframe, quantum
+recovery) may violate monotonicity while preserving global convergence.
+The calculus predicts the pattern it is modeling.
+\end{remark}
+
+\begin{interlude}{Continuation Admissible}
+The fundamental question of the Spherepop calculus is not: what does this
+bubble mean? It is: does an admissible continuation exist?
+
+The six-stage pattern of this book is organized around the same question
+at every scale. The governing operations of a theory ask, at each step,
+whether the current state admits a valid successor. Refuse is the answer
+``yes, but not this operation.'' Collapse is the answer ``no, and none
+will do.''
+
+This is why the framework is fundamentally different from accounts that
+emphasize complexity or abstraction as drivers of ontological change.
+Complexity does not force enlargement. The absence of admissible continuation
+forces enlargement. The Simons cone does not make minimal surface theory more
+complex. It makes admissible continuation impossible within the smooth
+category. The collapse is not a failure of understanding. It is a failure
+of continuation.
+
+The new ontology is not a more complex version of the old one. It is the
+minimal structure in which admissible continuation is restored.
+\end{interlude}
+
+\section{Spherepop as Formal Model}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{lll}
+\toprule
+\textbf{Stage} & \textbf{Formal Condition} & \textbf{Spherepop Realization} \\
+\midrule
+Refuse & $\Inadmiss(B,F) \geq \theta$, $\Admiss \neq \varnothing$
+  & Pop with open descendants \\
+Collapse & $\Admiss = \varnothing$
+  & Collapse cycle exists \\
+Enlargement & $\Onew \supset \iota(\Oold)$
+  & Quotient category \\
+Obstruction & $w \in \Onew \setminus \iota(\Oold)$, $w \in \F'(\Onew)$
+  & Minimal obstruction subgraph \\
+Accessibility & Feasible $P \mapsto w$
+  & Cascade threshold $L > L_c$ \\
+Commitment & Enlarged ontology accepted
+  & Quotient semantics adopted \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The cascade threshold $L_c$ is the Spherepop control parameter: the analogue
+of dimension eight in GMT and $\eta_c$ in the quantum Bayes conjecture.
+
+% =============================================================
+\part{Diagnostic Application: Foundation Models}
+
+% =============================================================
+\chapter{The Token Ontology as an Invariant System}
+
+\epigraph{The history of artificial intelligence may be interpreted as a
+search for the minimal enlarged ontology required to restore closure
+under the dynamics of large-scale learning.}{}
+
+\section{The Token Ontology in the Framework}
+
+The token ontology expressed precisely:
+
+\emph{Original ontology $\Oold$}: finite token sequences over a fixed vocabulary.
+
+\emph{Governing operation $F$}: next-token prediction.
+The model learns $p_\theta(x_{n+1} \mid x_1, \ldots, x_n)$, and all
+capabilities are understood as consequences of this distribution.
+
+\emph{Invariant system $\mathcal{V}$}:
+
+$V_1$ (\emph{Representation Sufficiency}): all relevant structure can be
+represented as token statistics.
+
+$V_2$ (\emph{Predictive Sufficiency}): next-token prediction is sufficient
+to explain capability formation.
+
+$V_3$ (\emph{Behavioral Sufficiency}): deployment behavior is recoverable
+from training behavior within the token-distribution description.
+
+$V_4$ (\emph{Interpretive Sufficiency}): internal representations require
+no ontology beyond token relationships to characterize model behavior
+and failure modes.
+
+All four are jointly satisfiable for small models on narrow tasks. The
+question is whether they remain jointly satisfiable as models scale and
+tasks generalize.
+
+\section{Candidate Enlarged Ontologies}
+
+Large-scale models produce structures that behave as elements of
+$\Onew \setminus \iota(\Oold)$.
+
+The \emph{embedding ontology} takes vectors in representation space as
+fundamental. Geometry in that space, not token statistics, is the governing
+structure.
+
+The \emph{latent world-model ontology} takes the model's internal
+representations as encoding a compressed generative model of the world.
+The governing operation is inference within that world model.
+
+The \emph{mechanistic ontology} takes specific circuits, attention patterns,
+and feature directions as fundamental. These are identified by interpretability
+research and may have no natural description as token statistics.
+
+The \emph{agent ontology} takes goals and beliefs as fundamental, with the
+governing operation being action selection.
+
+Each embeds the token ontology: token prediction is a degenerate process in
+each enlarged framework. Whether any of the four invariants has become
+globally unsatisfiable is the open question.
+
+\section{Candidate Obstructions}
+
+A formal obstruction would be a capability or failure mode that cannot be
+expressed while preserving all four invariants simultaneously.
+
+\emph{Systematic out-of-distribution generalization} is a candidate
+obstruction to $V_1$ and $V_2$: behaviors on inputs outside the training
+distribution that the token ontology cannot predict or explain.
+
+\emph{Alignment failures} are candidate obstructions to $V_3$: systematic
+divergences between training and deployment behavior that require a different
+vocabulary to characterize.
+
+\emph{Mechanistic features with no token-level description} are candidate
+obstructions to $V_4$: circuits or feature directions that cannot be
+characterized as functions of token statistics.
+
+None is yet a formal obstruction in the sense of
+Theorem~\ref{thm:obstruction-nonrecovery}: no explicit construction has
+proven that preserving all four invariants simultaneously is impossible for
+any specific capability or failure mode.
+
+\section{Accessibility and Phenomenology}
+
+The accessibility structure differs qualitatively from the GMT and quantum
+Bayes cases. In GMT, the obstruction was mathematically constructible. In
+quantum Bayes, it may require computational exploration of large Hilbert
+spaces. In the foundation model case, the obstruction region may be
+\emph{empirically} inaccessible: the relevant phenomena occur in deployment
+contexts that are difficult to study systematically.
+
+This predicts a qualitatively different phenomenology: ontological commitment
+in this domain will be driven by high-profile deployment failures functioning
+as accessible obstructions, not by formal proofs. The engineering community
+will commit to an enlarged ontology before the mathematical community has
+established that collapse has occurred.
+
+\section{Framework Predictions}
+
+If the token ontology has collapsed, the framework predicts: the collapse is
+organized by a control parameter (scale, task complexity, or both); the
+transition exhibits regime structure rather than smooth degradation; the
+minimal enlarged ontology is whichever candidate framework is the smallest
+enlargement restoring closure; and the regularity theory of the enlarged
+ontology characterizes the conditions under which token-level descriptions
+remain adequate.
+
+These are empirical predictions with specific content. They are not
+predictions that the token ontology will fail, but predictions about
+\emph{how} a failure, if present, will be structured.
+
+% =============================================================
+\part{General Theory and Conclusions}
+
+% =============================================================
+\chapter{A General Theory of Ontological Enlargement}
+
+\epigraph{New objects matter because they reveal that old ontologies
+were not closed under their own governing dynamics.}{}
+
+\section{The Central Results}
+
+\begin{metatheorem}[Closure-Recovery Principle]
+\label{meta:CRP-final}
+Let $(\Oold, \F)$ be a dynamical ontology. If $\cl_\F(\Oold) \neq \Oold$,
+then either $\F$ must be restricted or $\Oold$ must be enlarged.
+Historically, enlargement is the repeated outcome.
+\end{metatheorem}
+
+\begin{theorem}[Irreversibility of Enlargement]
+\label{thm:irrev-final}
+Suppose $\iota : \Oold \hookrightarrow \Onew$, recovery fails, and
+$\cl_{\F'}(\iota(\Oold)) = \Onew$. Then $\iota(\Oold)$ is not dynamically
+closed under $\F'$.
+\end{theorem}
+
+\begin{theorem}[Collapse as Failure of Reflection]
+Ontological collapse occurs when no reflector $R : \bOn \to \bO$ compatible
+with the governing operations exists. There is no canonical way to project
+outputs of $\F'$ back into $\bO$.
+\end{theorem}
+
+\begin{theorem}[Regime Theorem]
+Let $T$ be a universal theorem in $(\Oold, \mathcal{V})$. After enlargement,
+$T$ becomes a regime theorem: valid within a recoverable subregime
+$\mathcal{R} \subseteq \Onew$ defined by additional conditions, and potentially
+failing outside $\mathcal{R}$. Characterizing $\mathcal{R}$ precisely is the
+primary task of post-collapse regularity theory.
+\end{theorem}
+
+\begin{theorem}[Delay is Structural]
+The gap between Stage~2 and Stage~6 is bounded below by the time required
+to identify an accessible obstruction. This bound is governed by the structure
+of the obstruction region relative to available tools, not by the sociology
+of the field.
+\end{theorem}
+
+\section{Comparative Table}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{1.6cm}p{2.6cm}p{2.6cm}p{2.6cm}p{2.6cm}}
+\toprule
+& \textbf{GMT} & \textbf{Quantum Bayes} & \textbf{Spherepop}
+  & \textbf{Foundation Models} \\
+\midrule
+$\Oold$ & Smooth minimal hypersurfaces & Classical prob.\ distrib.
+  & Well-nested stacks & Token sequences \\
+$\F$ & Area minimization & Bayesian conditioning
+  & Pop, Meld, Reframe & Next-token prediction \\
+$\mathcal{V}$ & Smooth $+$ min.\ $+$ global
+  & Joint $+$ unique $+$ monotone
+  & Well-nested $+$ resolution $+$ gluing
+  & $V_1$--$V_4$ \\
+Collapse & Dim.\ 8 (established)
+  & Noncomm.\ (prospective)
+  & Cycle (formal)
+  & Scale (diagnostic) \\
+$\Onew$ & Rectifiable currents
+  & Petz maps $+$ QIG
+  & Quotient category
+  & Embedding / world-model / agent \\
+Obstruction & Simons cone
+  & Petz violation (cand.)
+  & Minimal cycle
+  & Deployment failure (cand.) \\
+Control param. & Dim.\ $n$
+  & Noncomm.\ $\eta$
+  & Load $L_c$
+  & Model scale \\
+Regime theorem & Reg.\ (dim~$\leq 7$)
+  & Asympt.\ frequentism (conj.)
+  & Monotone Pop
+  & Token sufficiency \\
+Status & Completed & Prospective & Formal model & Diagnostic \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Open Problems}
+
+\emph{The quantum Bayes obstruction.} Does Conjecture~\ref{conj:threshold}
+hold? A simulation campaign varying Hilbert-space dimension, channel rank,
+and commutator norms, testing for sharp threshold behavior in the monotonicity
+violation rate, would directly address this. A positive result would establish
+quantum Bayes as a second completed instance of the six-stage pattern.
+
+\emph{Spherepop obstruction classification.} Classify all minimal obstructions
+for the standard Spherepop invariant system. Determine whether minimal
+obstructions have a forbidden-subgraph characterization. Develop regularity
+theory for the quotient category: under what conditions does the collapsed
+residue retain sufficient structure for subsequent operations?
+
+\emph{New domains.} Apply the diagnostic to: the passage from spaces to
+$\infty$-groupoids in homotopy theory; from effective field theories to UV
+completions in physics; from classical logic to realizability toposes in
+foundations. In each case, identify the invariant system, the governing
+operations, and the obstruction structure.
+
+\emph{Quantitative accessibility theory.} Develop a formal theory measuring
+the ``distance'' from the working regime to the obstruction region. Explain
+why the Simons cone was accessible within a decade while the Petz obstruction
+(if it exists) has not been formalized in decades. The answer presumably
+involves the difference between mathematical constructibility (GMT) and
+computational explorability (quantum Bayes).
+
+% =============================================================
+\chapter{Conclusions}
+
+\section{The Central Claim, Evaluated}
+
+The GMT case: all six stages are documented. The invariant system was
+unsatisfiable in dimension eight. GMT was available. The Simons cone was
+accessible and provided the witness. The field committed. Regularity theory
+characterized the recoverable regime. The pattern holds in full.
+
+The quantum Bayes case: Stages~1 through~4 are plausible. Stage~5 is absent.
+Stage~6 has not occurred. The framework correctly identifies what is missing
+and specifies what a definitive result would require.
+
+The Spherepop case: the pattern is formally instantiated in a calculus
+designed to exhibit all six stages explicitly. It provides a formal model
+for the structural claims, not empirical evidence but a proof of conceptual
+coherence.
+
+The foundation model case: the framework generates diagnostic questions
+with specific empirical content rather than resolved answers. This is the
+appropriate contribution.
+
+\section{Structure Without Blueprint}
+
+The framework developed here is fundamentally anti-teleological. Neither
+geometric measure theory nor Bayesian inference nor the Spherepop calculus
+requires a blueprint. Area-minimizing currents do not know the surface they
+are attempting to become. Bayesian posteriors do not know the parameter they
+will converge toward. Scope graphs do not contain their future resolutions.
+
+Global structure emerges from local admissibility conditions rather than from
+pre-specified endpoints. Ontological enlargement is not the discovery of a
+hidden plan. It is the discovery that the admissibility conditions were richer
+than previously recognized. The Simons cone does not reveal a deeper blueprint
+for eight-dimensional geometry. It reveals that the admissibility conditions
+of area minimization support more structures than the smooth category can
+contain.
+
+This is the mathematical content of the observation that the universe does
+not run on blueprints. Stable structure, wherever it appears, is the residue
+of local admissibility conditions operating without predetermined targets.
+
+\section{Obstructions Do Not Create Enlargement}
+
+Mathematical progress is often described as the discovery of new objects.
+The framework developed here suggests a different picture.
+
+New objects matter because they reveal that old ontologies were not closed
+under their own governing dynamics. The Simons cone did not discover a new
+kind of geometry. It revealed that smooth geometry was already insufficient
+for the questions area minimization had always been asking. The Petz map does
+not discover a new kind of probability. It reveals that classical probability
+was already insufficient for the inference problems that quantum mechanics
+poses. A collapse cycle in a scope graph does not create an irreducible
+dependency. It reveals that the dependency structure was already irresolvable
+within the current containment hierarchy.
+
+Obstructions do not create enlargement. They make enlargement unavoidable.
+
+This is why a single object can reorganize a field. Not because it is exotic
+or complicated, but because it certifies, by its existence, that the field
+was already living in a larger world than it knew.
+
+We do not fade away. We resonate, as stable configurations within dynamics
+that were always richer than our descriptions of them. The old ontologies
+do not disappear. They persist as regimes, embedded within the larger
+structures that contain them, resonating at the frequencies where the
+governing operations remain within the recoverable subclass.
+
+Return is possible. Not return to the old ontology as a universal. Return
+to the conditions under which it remains valid. That is what regularity
+theory is. That is what decoherence theory is. That is what scope completion
+is. The enlarged framework is valuable precisely because it tells us when
+we can go home.
+
+% =============================================================
+\backmatter
+
+\chapter*{References}
+\addcontentsline{toc}{chapter}{References}
+\printbibliography[heading=none]
+
+\end{document}

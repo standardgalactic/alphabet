@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Math Blinded Us to the Microbiome</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;
+  background:#000;color:#7cff7c;font-family:monospace;
+  touch-action:manipulation;
+}
+
+body{
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;cursor:pointer;
+}
+
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:500;
+  background:repeating-linear-gradient(to bottom,
+    rgba(255,255,255,.03) 0px,
+    rgba(255,255,255,.03) 1px,
+    transparent 2px,
+    transparent 5px);
+  opacity:.13;
+}
+
+.title{
+  position:fixed;top:18px;width:94vw;text-align:center;
+  font-size:14px;letter-spacing:.18em;text-transform:uppercase;
+  color:#00ff88;text-shadow:0 0 10px #00ff66;z-index:100;
+}
+
+.status{
+  position:fixed;top:52px;opacity:.45;font-size:10px;
+  letter-spacing:.14em;z-index:120;
+}
+
+canvas{
+  width:min(390px,78vw);height:min(390px,78vw);
+  border-radius:50%;border:3px solid rgba(0,255,120,.46);
+  background:#000;
+  box-shadow:0 0 55px rgba(0,255,120,.16) inset,
+             0 0 22px rgba(0,255,0,.55);
+  z-index:40;
+}
+
+.subs{
+  position:fixed;bottom:24px;width:min(650px,92vw);
+  min-height:2.5em;padding:8px 12px;text-align:center;
+  font-size:14px;line-height:1.45;color:#aaffaa;
+  text-shadow:0 0 6px #00ff66;background:rgba(0,20,0,.36);
+  border:1px solid rgba(0,255,0,.22);border-radius:6px;
+  pointer-events:none;z-index:80;
+}
+
+@media(max-width:700px){
+  .title{top:14px;font-size:11px}
+  .status{top:46px;font-size:9px}
+  .subs{bottom:18px;font-size:13px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="title">How Math Blinded Us to the Microbiome</div>
+<div class="status">TOUCH / CLICK ANYWHERE TO PLAY OR PAUSE</div>
+<canvas id="viz"></canvas>
+<div id="subs" class="subs"></div>
+
+<audio id="audio" preload="auto">
+  <source src="How_math_blinded_us_to_the_microbiome.mp3">
+</audio>
+
+<script>
+const audio = document.getElementById("audio");
+const subs = document.getElementById("subs");
+
+let audioCtx;
+let analyser;
+let freqData;
+let timeData;
+
+function initAudio(){
+  if(audioCtx) return;
+
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  analyser.smoothingTimeConstant = .88;
+
+  freqData = new Uint8Array(analyser.frequencyBinCount);
+  timeData = new Uint8Array(analyser.fftSize);
+
+  const source = audioCtx.createMediaElementSource(audio);
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
+}
+
+document.body.onclick = async ()=>{
+  initAudio();
+
+  if(audioCtx.state === "suspended")
+    await audioCtx.resume();
+
+  if(audio.paused)
+    await audio.play();
+  else
+    audio.pause();
+};
+
+/* subtitles */
+
+let cues = [];
+
+async function loadVTT(){
+  cues = [];
+  subs.textContent = "";
+
+  try{
+    const res = await fetch("How_math_blinded_us_to_the_microbiome.vtt");
+
+    if(!res.ok){
+      console.warn("Missing VTT");
+      return;
+    }
+
+    cues = parseVTT(await res.text());
+  }catch(e){
+    console.warn("VTT load failed:",e);
+  }
+}
+
+function parseVTT(text){
+  const blocks = text.replace(/\r/g,"").split(/\n{2,}/);
+  const out = [];
+
+  for(const block of blocks){
+    const lines = block.trim().split("\n");
+    const ts = lines.find(line=>line.includes("-->"));
+    if(!ts) continue;
+
+    const tsIndex = lines.indexOf(ts);
+    const [start,end] = ts.split("-->").map(x=>x.trim());
+
+    out.push({
+      start:parseTime(start),
+      end:parseTime(end),
+      text:lines.slice(tsIndex+1).join(" ")
+    });
+  }
+
+  return out;
+}
+
+function parseTime(t){
+  t = t.split(" ")[0].replace(",",".");
+  const p = t.split(":");
+
+  if(p.length === 3)
+    return (+p[0])*3600 + (+p[1])*60 + parseFloat(p[2]);
+
+  return (+p[0])*60 + parseFloat(p[1]);
+}
+
+audio.ontimeupdate = ()=>{
+  const t = audio.currentTime;
+  const cue = cues.find(c=>t>=c.start && t<c.end+.2);
+  subs.textContent = cue ? cue.text : "";
+};
+
+loadVTT();
+
+/* visualizer */
+
+const canvas = document.getElementById("viz");
+const ctx = canvas.getContext("2d");
+
+const W = 460;
+const H = 460;
+const cx = W/2;
+const cy = H/2;
+const R = W*.39;
+
+canvas.width = W;
+canvas.height = H;
+
+let frame = 0;
+let bass = 0;
+let mid = 0;
+let high = 0;
+
+function updateEnergy(){
+  if(!analyser) return;
+
+  analyser.getByteFrequencyData(freqData);
+
+  let b=0,m=0,h=0;
+
+  for(let i=0;i<38;i++) b += freqData[i];
+  for(let i=38;i<170;i++) m += freqData[i];
+  for(let i=170;i<freqData.length;i++) h += freqData[i];
+
+  bass += (b/(38*255)-bass)*.08;
+  mid += (m/(132*255)-mid)*.06;
+  high += (h/((freqData.length-170)*255)-high)*.05;
+}
+
+function clearPortal(){
+  ctx.fillStyle = "rgba(0,5,0,.10)";
+  ctx.fillRect(0,0,W,H);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.clip();
+
+  const g = ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+  g.addColorStop(0,"rgba(0,34,12,.25)");
+  g.addColorStop(.70,"rgba(0,10,0,.42)");
+  g.addColorStop(1,"rgba(0,0,0,.94)");
+
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,W,H);
+
+  drawSparseParticles();
+
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.strokeStyle = "rgba(124,255,196,.35)";
+  ctx.lineWidth = 3;
+  ctx.shadowBlur = 12;
+  ctx.shadowColor = "#00ff66";
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function drawSparseParticles(){
+  ctx.fillStyle = "rgba(180,255,210,.14)";
+
+  for(let i=0;i<42;i++){
+    const x = ((Math.sin(i*91.7)*43758.5453)%1+1)%1;
+    const y = ((Math.sin(i*47.3+2)*19341.13)%1+1)%1;
+    const px = x*W;
+    const py = y*H;
+    const dx = px-cx;
+    const dy = py-cy;
+
+    if(dx*dx+dy*dy < R*R)
+      ctx.fillRect(px,py,1.3,1.3);
+  }
+}
+
+function drawMicrobiomeField(){
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.clip();
+
+  drawRigidMathGrid();
+  drawResidualCloud();
+  drawHiddenEcology();
+  drawCouplingThreads();
+  drawWaveTrace();
+
+  ctx.restore();
+}
+
+function drawRigidMathGrid(){
+  ctx.save();
+
+  const spacing = 34;
+  const shear = Math.sin(frame*.004)*4;
+
+  ctx.strokeStyle = "rgba(124,255,196,.055)";
+  ctx.lineWidth = 2;
+
+  for(let x=cx-R;x<=cx+R;x+=spacing){
+    ctx.beginPath();
+    ctx.moveTo(x+shear,cy-R);
+    ctx.lineTo(x-shear,cy+R);
+    ctx.stroke();
+  }
+
+  for(let y=cy-R;y<=cy+R;y+=spacing){
+    ctx.beginPath();
+    ctx.moveTo(cx-R,y-shear);
+    ctx.lineTo(cx+R,y+shear);
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = "rgba(220,255,230,.16)";
+  ctx.lineWidth = 4;
+
+  ctx.beginPath();
+  ctx.rect(cx-R*.47,cy-R*.47,R*.94,R*.94);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawResidualCloud(){
+  for(let i=0;i<90;i++){
+    const t = frame*.003 + i*.071;
+
+    const x =
+      cx +
+      Math.sin(t*1.7+i)*R*(.18 + (i%7)*.055) +
+      Math.sin(frame*.007+i)*mid*12;
+
+    const y =
+      cy +
+      Math.cos(t*1.3+i*.4)*R*(.16 + (i%6)*.052) +
+      Math.cos(frame*.006+i)*high*10;
+
+    const dx = x-cx;
+    const dy = y-cy;
+
+    if(dx*dx+dy*dy > R*R) continue;
+
+    ctx.beginPath();
+    ctx.arc(x,y,2.2 + high*5,0,Math.PI*2);
+
+    ctx.fillStyle = "rgba(170,255,210,.42)";
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = "#00ff88";
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+}
+
+function drawHiddenEcology(){
+  const nodes = [];
+
+  for(let i=0;i<12;i++){
+    const a = i/12*Math.PI*2 + Math.sin(frame*.006+i)*.08;
+    const r = R*(.18 + (i%4)*.12 + bass*.04);
+
+    nodes.push({
+      x:cx + Math.cos(a)*r,
+      y:cy + Math.sin(a*1.22)*r
+    });
+  }
+
+  for(let i=0;i<nodes.length;i++){
+    for(let j=i+1;j<nodes.length;j++){
+      const p = nodes[i];
+      const q = nodes[j];
+      const dx = p.x-q.x;
+      const dy = p.y-q.y;
+      const d = Math.sqrt(dx*dx+dy*dy);
+
+      if(d < R*.55){
+        ctx.beginPath();
+        ctx.moveTo(p.x,p.y);
+        ctx.lineTo(q.x,q.y);
+
+        ctx.strokeStyle =
+          `rgba(124,255,196,${.03 + (1-d/(R*.55))*.18 + mid*.04})`;
+
+        ctx.lineWidth = 4;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "#00ff88";
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+      }
+    }
+  }
+
+  for(const n of nodes){
+    ctx.beginPath();
+    ctx.arc(n.x,n.y,7+bass*7,0,Math.PI*2);
+    ctx.fillStyle = "rgba(190,255,220,.76)";
+    ctx.shadowBlur = 14;
+    ctx.shadowColor = "#00ff88";
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+}
+
+function drawCouplingThreads(){
+  for(let i=0;i<18;i++){
+    const a = i/18*Math.PI*2 + frame*.002;
+    const startR = R*.22;
+    const endR = R*(.70 + Math.sin(frame*.01+i)*.04);
+
+    ctx.beginPath();
+
+    const sx = cx + Math.cos(a)*startR;
+    const sy = cy + Math.sin(a)*startR;
+
+    const ex = cx + Math.cos(a+Math.sin(frame*.01+i)*.25)*endR;
+    const ey = cy + Math.sin(a+Math.cos(frame*.012+i)*.20)*endR;
+
+    const mx =
+      (sx+ex)/2 +
+      Math.sin(frame*.012+i)*R*.12;
+
+    const my =
+      (sy+ey)/2 +
+      Math.cos(frame*.011+i)*R*.12;
+
+    ctx.moveTo(sx,sy);
+    ctx.quadraticCurveTo(mx,my,ex,ey);
+
+    ctx.strokeStyle = `rgba(190,255,220,${.06+mid*.10})`;
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#00ff88";
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+}
+
+function drawWaveTrace(){
+  if(!analyser) return;
+
+  analyser.getByteTimeDomainData(timeData);
+
+  const lag = Math.floor(timeData.length*(.16+mid*.08));
+
+  ctx.beginPath();
+
+  for(let i=0;i<timeData.length;i+=4){
+    const a = (timeData[i]-128)/128;
+    const b = (timeData[(i+lag)%timeData.length]-128)/128;
+
+    const x =
+      cx +
+      a*R*.50 +
+      Math.sin(frame*.008)*9;
+
+    const y =
+      cy +
+      b*R*.42 +
+      Math.cos(frame*.006)*7;
+
+    if(i===0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  }
+
+  ctx.strokeStyle = "rgba(124,255,196,.78)";
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  ctx.shadowBlur = 18;
+  ctx.shadowColor = "#00ff66";
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function draw(){
+  frame++;
+  updateEnergy();
+  clearPortal();
+  drawMicrobiomeField();
+  requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+
+</body>
+</html>

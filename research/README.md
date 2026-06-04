@@ -1,5 +1,19 @@
 # Research
 
+[When Noise Becomes Structure](https://standardgalactic.github.io/alphabet/research/noise-becomes-structure.pdf)
+
+* [Beyond the Bounded Organism](https://standardgalactic.github.io/alphabet/research/Beyond_the_Bounded_Organism.pdf) — *Notes*
+
+* [How Math Blinded Us to the Microbiome](https://standardgalactic.github.io/alphabet/research/microbiome.html) — *Audio Overview*
+
+[Repair as a Fundamental Category](https://standardgalactic.github.io/alphabet/research/repair_as_fundamental.pdf)
+
+[Semantic Stability as a Repair Equilibrium](https://standardgalactic.github.io/alphabet/research/semantic_stability.pdf)
+
+[Language as Constraint Field](https://standardgalactic.github.io/alphabet/research/language_as_constraint_field.pdf)
+
+[The Historical Screenplay as Spherepop Program](https://standardgalactic.github.io/alphabet/research/screenplay_as_program.pdf)
+
 [The Dynamics of Learning](https://standardgalactic.github.io/alphabet/research/dynamics-of-learning.pdf)
 
 [Beyond Simplicity](https://standardgalactic.github.io/alphabet/research/Beyond_Simplicity.pdf)

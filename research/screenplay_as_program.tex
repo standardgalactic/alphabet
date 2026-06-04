@@ -1,0 +1,856 @@
+% !TEX program = xelatex
+\documentclass[11pt, a4paper]{article}
+
+\usepackage{fontspec}
+\setmainfont[
+  Path=/usr/share/texmf/fonts/opentype/public/tex-gyre/,
+  UprightFont=texgyrepagella-regular.otf,
+  BoldFont=texgyrepagella-bold.otf,
+  ItalicFont=texgyrepagella-italic.otf,
+  BoldItalicFont=texgyrepagella-bolditalic.otf
+]{TeX Gyre Pagella}
+
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[margin=1.25in]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.85em}
+\usepackage[hidelinks]{hyperref}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{}{0em}{}[\vspace{0.2em}\hrule\vspace{0.4em}]
+\titleformat{\subsection}{\normalsize\bfseries\itshape}{}{0em}{}
+\usepackage{epigraph}
+\setlength{\epigraphwidth}{0.65\textwidth}
+\renewcommand{\epigraphflush}{center}
+\usepackage{booktabs}
+\usepackage{array}
+
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{SpherepopCode}{Verbatim}{
+  fontsize=\small,
+  frame=single,
+  framerule=0.4pt,
+  xleftmargin=1.5em,
+  xrightmargin=1.5em
+}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\usepackage{titling}
+\setlength{\droptitle}{-2em}
+
+\title{\textbf{The Historical Screenplay as Spherepop Program}\\
+{\large Executable History, Semantic Collapse,\\
+and Three Notions of Narrative Truth}}
+\author{Flyxion \\ \small Independent Researcher}
+\date{2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+A historical screenplay is not a representation of the past. It is an
+executable model of how one state of the world becomes another. This essay
+argues that the screenplay, understood formally, belongs to the class of
+Spherepop programs: directed computations through historical state space in
+which scenes are local computation bubbles, conflicts are degradation pressures
+exceeding repair rate, and dramatic resolution is a COLLAPSE operation that
+closes the bubble irreversibly and commits a reduced constraint structure to
+the inheriting context. Three historical screenplays --- \textit{The
+Incoherence} (Averroes / Ibn Rushd in Andalusia), \textit{Flower Wars}
+(Tlacaelel and the \textit{xochiy\={a}oy\={o}tl}), and \textit{KOMMUNIKATION}
+(Niklas Luhmann and the Zettelkasten) --- together constitute a progression
+through three ontological regimes of historical understanding. \textit{The
+Incoherence} treats history as iterative semantic closure: the fundamental
+object is the event, but events do not persist directly; they persist through
+reconstruction, and the screenplay enacts this by making its own text fragment
+and decay as the argument proceeds. \textit{KOMMUNIKATION} moves one level
+deeper: the fundamental object is not the event but the communication process,
+and history is the evolution of communicative self-reproduction.
+\textit{Flower Wars} pushes further still: the fundamental object is the
+constraint system, and history is whatever configuration successfully
+reproduces itself through ritual, logistics, and memory. Across all three,
+the true protagonist is neither individual nor civilization but the persistence
+of a closure under irreversible history. The essay concludes by proposing a
+formal glossary --- characters as operators, institutions as persistence layers,
+archives as memory structures, rituals as synchronization protocols, fields as
+admissibility manifolds --- and arguing that the trilogy represents not three
+different historical genres but three projections of the same underlying formal
+object: the civilization as constraint-preserving event calculus.
+\end{abstract}
+
+\newpage
+
+\epigraph{\textit{The historian asks whether the events are accurate.
+The screenwriter asks whether the transitions are intelligible. The Spherepop
+perspective asks whether the sequence of collapses produces the final state.
+These are three different questions, and only the third is a question about
+computation.}}{}
+
+\section{The Problem with Representation}
+
+History, as traditionally recorded, is a sequence of state declarations.
+Empire A existed. War B occurred. Treaty C was signed. Leader D died. This
+is the chronicle: a discrete trace of a system, presenting the configurations
+that existed and when. The chronicle is enormously useful and also radically
+incomplete, because it does not explain why the system moved from one
+configuration to the next.
+
+Philosophy compensates by extracting meaning from the trace: what the
+configurations signify, what values they express, what principles they
+instantiate or violate. This is also enormously useful and also radically
+incomplete, because meaning extracted from a trace is underdetermined by the
+trace. Many incompatible meanings are consistent with the same sequence of
+states.
+
+The screenplay solves a different problem from both. It is practically
+forbidden from presenting states directly. Description is the enemy of the
+dramatic form; everything must be externalized as action or dialogue. A
+screenplay cannot render a character's inner conviction directly; it must
+render the actions that conviction produces under pressure. This formal
+constraint forces the writer to ask, at every moment, not what state a
+character is in but what event is occurring and what state that event produces.
+
+This is already extremely close to event calculus. And once the identification
+is made --- once a screenplay is understood as a directed computation through
+state space rather than a representation of states --- the entire formal
+apparatus of the Spherepop reduction engine becomes applicable.
+
+\section{Screenplays as Spherepop Programs}
+
+\begin{definition}[Screenplay as computation]
+A \textit{historical screenplay} $\mathcal{S} = (B, \mathcal{C}_0, \to)$
+consists of a sequence of \textit{scene bubbles} $B = B_1, B_2, \ldots, B_n$,
+an initial constraint structure $\mathcal{C}_0$ encoding the historical
+situation at the opening of the screenplay, and a transition relation
+$\to$ in which each bubble $B_k$ takes the constraint structure
+$\mathcal{C}_{k-1}$ inherited from the previous bubble, applies a degradation
+pressure and a repair dynamic, and commits a reduced constraint structure
+$\mathcal{C}_k$ to the next bubble via an irreversible COLLAPSE operation.
+\end{definition}
+
+The mapping between structural elements and the Spherepop reduction engine
+is precise:
+
+\bigskip
+\noindent
+\begin{tabular}{@{}p{0.38\textwidth}p{0.56\textwidth}@{}}
+\toprule
+\textbf{Screenplay element} & \textbf{Spherepop / RSVP equivalent} \\
+\midrule
+Character & Local concentration of constraint propagation ($\Phi$ node) \\
+Dialogue / action & Repair flow; constraint propagation along $v$ \\
+Scene & Local computation bubble \\
+Conflict & Degradation pressure: $r_D > r_R$ at some node \\
+Dramatic tension & $\rho(v) \to 1^+$; repair intensity $\iota \to \infty$ \\
+Climax / resolution & Boundary crossing; irreversible COLLAPSE \\
+Scene transition & Inherited constraint structure $\mathcal{C}_k \to \mathcal{C}_{k+1}$ \\
+Act & Higher-order closure over a sequence of bubbles \\
+Ending & Global constraint commitment \\
+\bottomrule
+\end{tabular}
+\bigskip
+
+Characters are not the primary objects of the screenplay in this framework.
+Characters are carriers of constraints: local concentrations of the scalar
+field $\Phi$ that encode the belief structures, social positions, normative
+commitments, and epistemic states through which constraint propagation occurs.
+The protagonist is not the character who appears most frequently or who
+achieves their goal. The protagonist is the constraint structure that undergoes
+the most significant transformation.
+
+Dialogue is repair dynamics made audible. When two characters speak, they are
+performing constraint propagation: each utterance either extends the reach of
+one character's constraint structure into the other's admissibility region or
+fails to do so. The COLLAPSE operation corresponds to the moment that
+traditional dramaturgy calls the point of no return: after COLLAPSE, the
+constraint structure $\mathcal{C}_{k-1}$ is gone; the bubble has closed;
+history and drama proceed by irreversible reduction.
+
+\section{Three Notions of Narrative Truth}
+
+\begin{definition}[Three notions of historical truth]
+\textit{Historical truth}: the events occurred as described.
+
+\textit{Philosophical truth}: the interpretation of the events is justified.
+
+\textit{Computational truth}: the sequence of constraint collapses shown
+generates the final state; the screenplay correctly models the transitions,
+not just the states.
+\end{definition}
+
+\begin{proposition}[Screenplay as sufficient cause]
+A historical screenplay has computational truth if and only if the sequence
+of COLLAPSE operations $\mathcal{C}_0 \to \mathcal{C}_1 \to \cdots \to
+\mathcal{C}_n$ is a valid execution path in the state space defined by the
+initial constraints: each transition $\mathcal{C}_{k-1} \to \mathcal{C}_k$
+is generated by an admissible degradation-repair dynamic under the constraints
+active at step $k-1$.
+\end{proposition}
+
+A historical drama can have high computational truth and low historical truth:
+the specific events depicted are invented, but the constraint dynamics they
+instantiate correctly model the transitions that produced the historical
+outcome. This explains why historical dramas sometimes feel more explanatory
+than historical summaries despite containing less verified information: they
+preserve the computation. A summary presents the output. A drama executes the
+state-transition engine that produced it.
+
+\section{The Incoherence: Defending Constraint Under Erasure}
+
+\textit{The Incoherence} takes as its historical subject Ibn Rushd (Averroes,
+1126--1198), the Andalusian jurist, physician, and philosopher who wrote the
+\textit{Tah\={a}fut al-Tah\={a}fut} (The Incoherence of the Incoherence) in
+direct response to al-Ghaz\={a}l{\=\i}'s \textit{Tah\={a}fut al-Fal\={a}sifa}.
+Where al-Ghaz\={a}l{\=\i} had applied twenty sequential COLLAPSE operations to
+the admissibility manifold of Aristotelian necessary causation, Averroes's
+counter-project was to repair that manifold: to restore the constraint
+infrastructure that occasionalism had collapsed. The screenplay is not about
+the attacker but about the defender of causal necessity --- and the formal
+structure of the screenplay mirrors this precisely.
+
+The screenplay is organized into twenty-three \textit{Incoherentiae}, each
+a scene-bubble in the Spherepop sense. The opening \textit{Intercalatio: De
+Loco et Rebus} establishes the constraint structure in a wordless inventory
+of a courtyard: columns, water, vessels, a door whose handle shows use
+while its hinges do not, a mark that appears and does not require explanation.
+The drip motif that enters here --- a vessel releasing water drop by drop ---
+is not decoration. It is the formal signature of semantic attenuation: the
+continuous, unspectacular process by which constraint leaks out of a system
+that does not actively repair it.
+
+Each of the twenty-three \textit{Incoherentiae} is a local computation on the
+inherited constraint structure. In \textit{Incoherentia I: De Pulsu et Causa},
+Averroes examines a patient in front of students and encounters the claim that
+illness is divine will rather than physical cause. His response is not
+argumentation but demonstration: the lancet cuts whether you are righteous or
+cruel. That is not blasphemy; that is reliability. The scene's COLLAPSE
+produces a constraint structure in which the admissibility of causal medical
+practice has been established --- locally, provisionally, under challenge.
+
+\textit{Incoherentia II: De Lege et Negligentia} applies the same structure
+to law. A builder claims divine will caused a wall's collapse. Averroes's
+diagnosis: northern stone, cheaper transport, insufficient mortar, rushed
+setting. The scene ends with the word ``negligence'' --- a commitment. Not
+God's will, but identifiable human cause. The constraint structure that permits
+legal accountability for craft failure has survived one more attack.
+
+The dramatic structure of the whole is Averroes defending constraint
+propagation against the occasionalist claim that God's direct will at every
+instant makes causal chains impossible. But the screenplay does something
+more formally interesting than depicting this defense: it enacts the attack
+it depicts. As the \textit{Incoherentiae} proceed, the text itself begins to
+fragment. In \textit{Incoherentia IV: De Scriptura et Fragmento}, a manuscript
+undergoes alteration by Ibn `Arab\=\i: a sentence that previously ended
+``or revelation'' now ends ``or the failure of perception'' --- the earlier
+version is not crossed out but absent. The page has undergone semantic
+collapse. In later \textit{Incoherentiae}, the typography decays: letters
+drop out of words (\textit{``someth ng th t w s cl ar er b fore''}), sequences
+become unstable, the drip motif multiplies and fragments across the page until
+the final section is almost pure repetition of the word \textit{Drip} in
+multiple scripts and degraded forms.
+
+This is the screenplay performing its own Spherepop computation. The text is
+a semantic tree that is approaching the admissibility boundary: attenuation
+is increasing, repair intensity is diverging, and the final pages enact the
+condition in which $S_{\mathrm{RSVP}}$ crosses zero --- where the constraint
+infrastructure for stable meaning can no longer be maintained. The ending is
+not a philosophical conclusion but a formal state: the system continues, the
+page holds, ``that is sufficient.''
+
+\begin{remark}
+The screenplay's formal choice to make Averroes rather than al-Ghaz\={a}l{\=\i}
+its protagonist inverts the obvious Spherepop framing. Instead of showing a
+sequence of COLLAPSE operations applied to the philosophers' manifold (which
+would be the \textit{Tah\={a}fut al-Fal\={a}sifa}), the screenplay shows the
+repair operations applied to the already-collapsed manifold. Averroes is the
+Yarncrawler: the localized concentration of repair dynamics traversing a
+network that is losing coherence, applying targeted restoration at each scene,
+while the text around him demonstrates through its own decay the conditions
+under which even the most rigorous repair eventually fails.
+\end{remark}
+
+The drip as repair metric is precise. In the semantic stability framework,
+a node near the admissibility boundary requires exponentially increasing repair
+intensity to maintain $\rho(v) \geq 1$. The drip motif --- which enters as
+a distant sound in the courtyard, becomes present in the clinic, audible in
+the legal hall, distributed through the library, and finally multiplied across
+the page in degraded typography --- is the screenplay's way of making the
+repair intensity curve visible. It is not water. It is $\iota(v) \to \infty$.
+
+In \textit{Incoherentia III: De Voce et Flumine}, Averroes encounters a
+street preacher making the occasionalist case directly: there is no necessity,
+only will renewed at every instant. Averroes's response --- ``If the blade
+does not cut, then it is no longer a blade'' --- is the repair operation.
+But the scene's COLLAPSE is not victory for either side. The preacher's words
+dissolve into the crowd and ``appear in fragments, carried by others, altered,
+repeated, misremembered.'' The constraint has propagated, but with $\alpha < 1$
+on every edge of the transmission. The semantic tree of causal necessity is
+alive but the attenuation is increasing.
+
+The computation the screenplay executes is this: every repair Averroes performs
+is locally successful and globally insufficient. The twenty-three bubbles close
+with committed constraint structures, each more specific and more isolated than
+the last. The drip accelerates. The text degrades. The final \textit{Incoherentia}
+presents a window that does not open, a view that does not stabilize, and the
+statement that the system continues without requiring that it remain the same.
+The repair process has produced a living equilibrium that is no longer
+recognizably the Aristotelian constraint structure it set out to defend. It
+persists. But it persists as something different. This is the Spherepop COLLAPSE
+without a single dramatic moment: the irreversibility is distributed across the
+entire computation, one $\alpha$ decrement at a time.
+
+\section{Flower Wars: Civilizational Repair Infrastructure}
+
+\textit{Flower Wars} engages the \textit{xochiy\={a}oy\={o}tl}, the formalized
+warfare of the late Mesoamerican period, through the historical figure of
+Tlacaelel --- statesman, advisor, and the architect of the ritualized conflict
+system the screenplay depicts. The logline names the dramatic structure
+precisely: Tlacaelel ``reimagines war itself, transforming annihilation into
+ritualized conflict in an attempt to preserve cosmic order, political stability,
+and human life, even as the limits of restraint are tested by enemies who
+refuse to recognize the field.''
+
+In the repair ontology, the \textit{xochiy\={a}oy\={o}tl} is a formal repair
+process: a system for maintaining the rate-matching condition $r_R \geq r_D$
+for the cosmological constraint structure $\mathcal{C}_{\text{sun}}$, where
+$r_R$ is the sacrificial repair rate and $r_D$ is the cosmological degradation
+rate. This is not metaphor; it is the Mexica cosmological framework itself.
+The Fifth Sun requires continuous energetic input. The Flower Wars were the
+institutional infrastructure for generating that repair flow under controlled
+conditions.
+
+The screenplay's dramatic structure is the sequence of COLLAPSE operations
+that produces this institution and then unmakes it. Scene I-A opens with
+Tlacaelel counting at night: ``we take more men than the maize fields replace.''
+The arithmetic of attrition is the initial degradation pressure. The institution
+of the Flower Wars is the proposed repair operation. Scene II (the council
+chamber) is the bubble in which the proposal is argued and the constraint
+structure is committed: agreed fields, agreed days, captives counted rather
+than bodies. The COLLAPSE produces a new admissibility manifold in which
+ritualized capture-warfare is the admissible form of the military function.
+
+What the screenplay shows with formal precision is the secondary degradation
+that the repair process generates. The \textit{xochiy\={a}oy\={o}tl} requires
+willing participation from neighboring states. Scene VII (the dinner with
+Xicotencatl, Tlaxcalan war chief) is the scene in which Tlaxcala's assent
+is negotiated. But the constraint the Flower Wars impose on Tlaxcala ---
+ongoing captive-giving --- is itself a degradation pressure on Tlaxcala's
+admissibility manifold. Xicotencatl says it directly: ``My council will say
+this is slow death.'' Tlacaelel's response acknowledges the rate-matching
+problem: ``Tell them the alternative is quick extinction.''
+
+The screenplay makes the failure mode structurally visible. Scene XV,
+``the field is immaculate,'' depicts the Flower Wars at their peak of
+institutional efficiency: warriors assemble with practiced ease, the outcome
+is predictable, scribes record before the dust settles. Tlacaelel watches
+and says: ``Too clean.'' Tizoc names the failure mode: ``Ritual without danger
+becomes theater.'' The Spherepop formalization is exact: the repair process has
+optimized its own execution until the degradation pressure it was designed to
+resist no longer generates the repair signal. The institution is performing
+its procedures without the constraint tension that justified them. It has drifted
+from a living equilibrium into a stored structure that mimics one.
+
+The Spanish arrival in Scene XVI is not an external shock that terminates an
+otherwise stable system. It is the perturbation that crosses the threshold of
+a system already near its admissibility boundary. Tlacaelel says it directly
+in Scene XVIII: ``They are outside the system. They move without regard for
+fields. Without season. Without reciprocity.'' The COLLAPSE operator the Spanish
+apply does not recognize the rules that make REFUSE possible. The bubble that
+Tlacaelel has maintained for decades receives a degradation pressure for which
+it has no repair capacity: an adversary for whom the field does not exist.
+
+\begin{SpherepopCode}
+BUBBLE: Xochiyaoyotl Constraint Structure
+  INHERIT: Mexica cosmological runtime
+  CONSTRAINT: war is captive-producing, not annihilatory;
+              participants recognize the field
+  REPAIR RATE: Flower War seasons, agreed fields,
+               runner network, scribe archive
+  DEGRADATION PRESSURE:
+    Tlaxcalan attrition -> geopolitical resentment
+    Institutional routinization -> loss of tension
+    Spanish landing -> field non-recognition
+  REPAIR ATTEMPTS:
+    Violation protocols -> PARTIAL REPAIR (boundary held)
+    Diplomatic dinner -> PARTIAL REPAIR (commitment secured)
+    Alliance negotiation -> REFUSE (Spanish do not assent)
+  COLLAPSE: field_non_recognition_exceeds_repair_capacity
+  COMMIT: annihilatory_warfare admissible
+OUTPUT: civilization on trajectory to structural collapse
+\end{SpherepopCode}
+
+The final image --- the empty Flower War field at night, boundary stones
+half-buried in grown grass, a death whistle sounding three short and one long:
+not a call to fight but a call to remember --- is the distinction between
+stored structure and living equilibrium made visible. The field persists as
+terrain. The constraint structure that made it a field has collapsed. The sound
+is Xochitl transmitting the content without the repair infrastructure.
+
+\section{KOMMUNIKATION: Systems Theory as Self-Instantiating Form}
+
+\textit{KOMMUNIKATION} is based on the life of Niklas Luhmann (1927--1998),
+the sociologist whose theory of social autopoiesis --- self-producing,
+self-maintaining systems --- provides the screenplay with both its subject
+and its formal principle. The screenplay does not merely depict Luhmann's
+theory; it executes it. The form instantiates the content.
+
+Luhmann's central claim, stated in the film's epigraph (``Society is not made
+of people. It is made of communication''), is the sociological version of the
+repair ontology's central claim: what exists are repair equilibria, not objects.
+The social system does not consist of individuals who then communicate; it
+consists of communications that maintain the system's identity through their
+continued production. Each communication is a repair operation applied to the
+constraint manifold that makes subsequent communication admissible.
+
+The Zettelkasten --- Luhmann's physical index-card system of 90,000 entries
+--- is the screenplay's protagonist in exactly the Spherepop sense: the
+constraint structure that undergoes the most significant transformation. The
+fixed-camera sequence of Act Five (Luhmann's office, seen repeatedly as the
+Zettelkasten grows from a single box to a room-filling system) is the
+screenplay's formal equivalent of watching a repair equilibrium establish
+itself: the system is not built but grown, through the continuous mutual
+reinforcement of nodes whose semantic support sustains their neighbors.
+
+Luhmann's exchange with The Colleague is the screenplay's formal statement
+of the stored structure versus living equilibrium distinction:
+
+\begin{quote}
+\textsc{Colleague:} And you can find anything in it?
+
+\textsc{Luhmann:} I can follow the references. It's less like finding
+something than --- receiving a reply.
+
+\textsc{Colleague:} A reply from whom?
+
+\textsc{Luhmann:} The system.
+\end{quote}
+
+The Zettelkasten is not a database. It is not a stored structure. It is a
+living equilibrium that replies: a repair process that, when queried,
+propagates constraint back toward the querying node. The system ``replies''
+because the semantic support $S(v)$ at each node is sustained by the repair
+flow from thousands of cross-references, and accessing a node activates that
+flow. The Colleague's discomfort is the appropriate response to encountering
+a living equilibrium that has achieved sufficient complexity to be mistaken
+for an interlocutor.
+
+The earliest scenes establish the Spherepop interpretation before any theory
+is stated. The opening image of the fermentation plant shows The Father
+adjusting a valve: ``It keeps itself going. You just correct it.'' A gauge
+fluctuates and stabilizes on its own. Young Luhmann watches ``the stabilization.
+Not as resolution. As behavior.'' He is observing a repair equilibrium
+maintaining its constraint structure against degradation pressure, and he
+recognizes it as an instance of a general phenomenon rather than a mechanical
+particular.
+
+The argument with The Director at Harvard (Act Four) is the screenplay's
+key theoretical COLLAPSE. The Director offers the Parsonian account: the
+parts integrate; shared values maintain the whole. Luhmann's counter:
+``The parts didn't coordinate. They continued regardless of each other. The
+administration didn't maintain itself through integration.'' A pause. Then:
+``It maintained itself through closure.'' The bubble closes. The constraint
+structure inherited by all subsequent scenes is one in which systems maintain
+themselves not through external normative integration but through internal
+operational closure --- the autopoietic repair process.
+
+The dramatic structure of the whole is not interpersonal in the usual sense.
+There is no love story, no antagonist, no conventional arc of desire and
+obstacle. The drama is the trajectory of a repair equilibrium building itself
+in the presence of a civilization that does not yet have the concept to
+recognize what it is watching. Luhmann's prose is called ``deliberately
+impenetrable'' by critics; his response --- ``Comprehension that arrives too
+quickly produces only sophisticated misunderstanding'' --- is the epistemological
+version of the repair-intensity divergence theorem: a system near its
+admissibility boundary requires more work to enter, not less. The theory
+cannot be simplified without being destroyed, because the constraint structure
+that makes it true is dense and mutually reinforcing. Simplification is the
+reduction of $S(v)$ below $\theta(v)$ at the nodes that carry the hardest
+claims.
+
+The Ankyra transmission subplot --- signals from a distant station that the
+Signal Analyst marks as noise because they match no known protocol --- is the
+screenplay's clearest statement of the stored structure versus living
+equilibrium distinction applied to communication itself. Luhmann: ``Not
+matching a protocol isn't the same as having no structure.'' The signals from
+Ankyra contain structure that cannot be repaired into the current admissibility
+manifold of the Signal Analysis Lab. They are not noise; they are communications
+for which the repair infrastructure does not yet exist. The analyst marks them
+as noise and continues. The signals persist, unread, a stored structure waiting
+for a living equilibrium capable of sustaining them.
+
+\begin{SpherepopCode}
+BUBBLE: Zettelkasten Development
+  INHERIT: Luhmann's accumulated observation
+           (fermentation plant, shield control,
+            detention vessel, colonial administration)
+  CONSTRAINT: communication is constitutive of systems;
+              closure is not failure but operation
+  REPAIR PROCESS: card added -> cross-reference established
+                  -> semantic support of adjacent nodes
+                     increases -> repair equilibrium
+                     expands
+  DEGRADATION PRESSURE:
+    Academic incomprehension -> REFUSE (system continues)
+    Prose impenetrability critique -> REFUSE (correct)
+    Ankyra signals -> unresolved (outside manifold)
+  NO COLLAPSE (system completes on its own terms)
+  COMMIT: theory_of_modern_society_as_repair_equilibrium
+OUTPUT: Zettelkasten 90,000 cards, digitized 2019,
+        still replying
+\end{SpherepopCode}
+
+The ending returns to the fermentation plant. Luhmann stands where his father
+stood. A gauge fluctuates. It stabilizes on its own. He watches it stabilize
+--- now with recognition rather than curiosity. The computation is complete.
+The child who watched a repair equilibrium maintain itself has become the
+theorist who described how all repair equilibria maintain themselves, and the
+system he built to think with is now doing so autonomously. The hum continues
+after the image disappears. Stored structure --- the content --- persists.
+The living equilibrium --- the system that was replying --- does not. Or
+rather: it continues wherever the conditions for traversing it can be
+reproduced. Which is precisely what Luhmann's theory predicts.
+
+\section{The Protagonist Is the Manifold}
+
+The most radical consequence of the Spherepop framing for historical
+screenwriting is the displacement of the character as protagonist.
+
+In conventional dramatic theory, the protagonist is the character whose desire
+drives the action. In the Spherepop framing, the protagonist is the constraint
+structure whose transformation drives the computation. Characters are the local
+variables that carry the constraints; the plot is the sequence of admissible
+operations on the constraint structure; the story is the trajectory of the
+admissibility manifold through state space.
+
+Each of the three screenplays demonstrates this with different degrees of
+explicitness. In \textit{The Incoherence}, Averroes is a repair agent whose
+character is defined entirely by the constraint structure he is defending:
+a physician-jurist-philosopher who applies the same causal reasoning to bodies,
+buildings, and arguments because that is what the defense of causal necessity
+requires of its carrier. His inner life is not the subject. The decay of the
+text around him is the subject. In \textit{Flower Wars}, Tlacaelel's
+character is entirely defined by his role as architect of the constraint
+structure: a man who thinks in repair dynamics before he has the language for
+them, who counts attrition rates while his wife asks why he counts. In
+\textit{KOMMUNIKATION}, Luhmann virtually effaces himself behind the theory
+--- the film's camera logic (static wide shots; the institution contains the
+figure) never permits Luhmann to appear at the center of a frame; he is always
+inside a structure, not at its origin.
+
+\begin{theorem}[Narrative intelligibility]
+A narrative sequence $E_1, E_2, \ldots, E_n$ is intelligible if and only if
+each event $E_k$ is an admissible operation on the constraint structure
+$\mathcal{C}_{k-1}$ inherited from the previous event. A narrative is
+surprising but still intelligible when the admissible operation performed
+is not the one the audience anticipated but is, on reflection, obviously
+admissible. A narrative is unintelligible when an event is presented as if
+it were admissible but is not: when the COLLAPSE cannot be derived from the
+constraint dynamics active in the scene.
+\end{theorem}
+
+This theorem gives a formal criterion for what screenwriters call ``earned''
+outcomes. The audience's feeling that an ending is unearned is the intuitive
+recognition of computational invalidity: the output state was not generated
+by the computation the screenplay executed.
+
+All three screenplays earn their endings in exactly this sense. \textit{The
+Incoherence} ends with a system that ``continues without requiring that it
+remain the same'' --- the computationally valid output of twenty-three
+bubbles in which repair has preserved the function while losing the form.
+\textit{Flower Wars} ends with an empty field and a mournful whistle ---
+the computationally valid output of a repair process that generated the
+conditions for its own failure. \textit{KOMMUNIKATION} ends with the
+fermentation plant, the fluctuating gauge, the stabilization watched with
+recognition --- the computationally valid output of a life spent observing
+what repair equilibria do.
+
+\section{Three Ontological Regimes}
+
+The notes above identify something the individual screenplay analyses do not
+fully surface: the three screenplays form a progression not merely in subject
+matter but in what counts as the fundamental object of history.
+
+\textit{The Incoherence} operates in the first ontological regime. The
+fundamental object is the event. But the screenplay immediately demonstrates
+that events do not persist directly; they persist through reconstruction.
+\textit{Incoherentia V: De Multiplicatione Narrationum} makes this explicit:
+the fountain event exists not as a single occurrence but as a growing family
+of incompatible accounts. First Merchant: it rose all at once. Second Merchant:
+there was a pause, then the water moved. Third Merchant: there was no sound,
+only the motion. The accounts do not cancel. They accumulate. Aisha does not
+correct them; she observes how accounts become stabilized. ``The event has
+become its own transmission. Not what happened but the shape left in those
+who transmitted it.'' The fundamental object is not the fountain event but
+the process by which one account becomes functionally equivalent to the event
+itself. This is semantic state reduction. The screenplay is executing a
+reduction engine on historical narrative.
+
+\textit{KOMMUNIKATION} operates in the second ontological regime. The
+fundamental object is not the event but the communication process.
+The decisive evidence is the camera logic: static wide shots in which the
+institution always contains the figure. Luhmann is never at the origin of
+a frame. As a child he watches not the tanks but the relations between them.
+In school he watches communication rather than lessons. In the detention
+vessel he watches the ledger, not the guards. In administration he watches
+procedures rather than purposes. Each of these observations reaches the
+same conclusion: the system continues regardless of the individuals inside
+it. ``The function is indifferent to its personnel.'' The Administration
+maintained itself through closure, not through the intentions of its members.
+The Zettelkasten replies because the communication process continues through
+the cross-reference structure; the individual cards --- the content --- are
+incidental. History, in \textit{KOMMUNIKATION}, is the evolution of
+communicative self-reproduction.
+
+\textit{Flower Wars} operates in the third ontological regime. The fundamental
+object is the constraint system. This is established in the screenplay's very
+first dialogue: Tlacaelel is not counting warriors or victories but replacement
+rates, campaign costs, and demographic sustainability. He is modeling a
+state-space. His central insight is not military but topological. Annihilation
+destroys the field upon which future relations depend. ``War should not be a
+festival of endings. It should return. Like breath.'' The Flower War field is
+an admissibility manifold: bounded, marked, scheduled, administered. The
+battles are almost incidental. What matters is the continued existence of
+the field itself. History, in \textit{Flower Wars}, is whatever constraint
+configuration successfully reproduces itself through ritual, logistics, memory,
+and mutual recognition.
+
+\begin{proposition}[Ontological progression of the trilogy]
+The three screenplays instantiate three successively deeper ontological
+regimes, ordered by what they take as primitive:
+\begin{align*}
+&\textit{The Incoherence}: \quad \text{events} \to \text{reconstructions} \to \text{stabilized accounts} \\
+&\textit{KOMMUNIKATION}: \quad \text{communications} \to \text{recursive self-reproduction} \\
+&\textit{Flower Wars}: \quad \text{constraint systems} \to \text{admissibility manifolds}
+\end{align*}
+In each case the ``protagonist'' of the previous regime is demoted to a
+carrier of the deeper primitive: events become communications, communications
+become constraint operations, constraint operations become field-maintenance.
+\end{proposition}
+
+This progression has a precise consequence for the Spherepop framing. In
+the first regime, a Spherepop program executes over events. In the second,
+it executes over communicative self-reproductions. In the third, it executes
+directly over admissibility manifolds. The scenes of \textit{Flower Wars}
+are not scenes in the ordinary sense; they are observations of the manifold
+$\mathcal{M}_t$ at successive time-steps:
+\[
+\mathcal{M}_0 \xrightarrow{\mathrm{Collapse}} \mathcal{M}_1
+\xrightarrow{\mathrm{Collapse}} \mathcal{M}_2 \xrightarrow{\mathrm{Collapse}}
+\cdots
+\]
+The scenes are the visible manifestations of manifold transitions. The collapses
+are the primary objects. Each scene is merely an observation window onto the
+collapse that occurred between it and the previous scene.
+
+\section{Al-Ghaz\={a}l{\=\i} as Systems Administrator}
+
+The most striking reframing the notes propose concerns \textit{The Incoherence}'s
+treatment of al-Ghaz\={a}l{\=\i}. He does not appear as a character in the
+screenplay --- Averroes is the protagonist --- but he is the absent cause of
+the constraint destruction that the screenplay depicts. The conventional reading
+treats al-Ghaz\={a}l{\=\i}'s \textit{Tah\={a}fut} as a theological attack
+on philosophical propositions: fire does not necessarily burn cotton; God's
+will at each instant is the only cause; natural necessity is an illusion.
+
+The computational reading is different. Al-Ghaz\={a}l{\=\i}'s project is
+resistance to causal infrastructure. The question he is answering is not
+metaphysical: does fire necessarily burn cotton? The question is political-
+computational: are we permitted to let ``fire burns cotton'' become infrastructure?
+
+Because once recurrence becomes infrastructure, consequences cascade. Prediction
+becomes possible. Accountability becomes enforceable. Engineering becomes
+admissible. Institutional memory becomes necessary. Eventually, alternatives
+become constrained. The craftsman in \textit{Incoherentia II} is held
+responsible for the wall's collapse not because God is absent from the situation
+but because the causal chain has been made legible, and legibility is exactly
+what al-Ghaz\={a}l{\=\i} sought to prevent.
+
+\begin{definition}[Resistance to causal infrastructure]
+The \textit{occasionalist position} --- that God renews the world at each
+instant without being bound by prior states --- is, in the computational
+reading, a resistance to \textit{causal infrastructure}: the process by which
+observed regularities become institutionally binding, generating accountability
+structures, memory requirements, and admissibility constraints on future action.
+
+The conflict between Averroes and the occasionalist tradition is therefore a
+conflict between two event calculi: one in which events constrain future events
+through persisting causes, and one in which each event is causally isolated,
+admitting no binding constraint from prior states.
+\end{definition}
+
+In RSVP language: the philosophers are trying to deepen the basins of the
+admissibility manifold --- to make causal regularities into stable attractors
+from which the system does not easily escape. Al-Ghaz\={a}l{\=\i} is injecting
+entropy: perturbing the manifold to prevent any trajectory from consolidating
+into a stable recurrent structure.
+
+The title \textit{The Incoherence} therefore carries three superimposed meanings.
+The first is the title of al-Ghaz\={a}l{\=\i}'s text (Tah\={a}fut al-Fal\={a}sifa:
+The Incoherence of the Philosophers). The second is the title of Averroes's
+counter-text (Tah\={a}fut al-Tah\={a}fut: The Incoherence of the Incoherence).
+The third is the computational state that the screenplay enacts: incoherence as
+the mode of continuation that survives when stable causal infrastructure has
+been successfully disrupted. The final sections of the screenplay do not depict
+a philosophical resolution. They depict a system that has found a new mode of
+operation that no longer requires the fixed causal sequences that Averroes was
+defending. The drip continues. The text holds. That is sufficient. Not because
+causal necessity has been vindicated, but because the system has found a way to
+continue through its disruption.
+
+This is the Spherepop COLLAPSE as historical event: not the elimination of a
+position but the irreversible commitment to a new admissibility manifold from
+which the old one is no longer accessible. The philosophers did not lose the
+argument. Their argument became inadmissible.
+
+\section{A Formal Glossary of Executable History}
+
+The three screenplays converge on a set of identifications that collectively
+constitute a formal ontology for historical drama understood as computation.
+These identifications are not imposed from outside; they are what the screenplays
+themselves are already doing. Naming them makes the common structure explicit.
+
+\begin{definition}[Formal glossary]
+In a historical screenplay understood as a Spherepop program:
+
+\textit{Characters} are operators: local concentrations of the scalar field
+$\Phi$ that transform the constraint structure $\mathcal{C}$ through their
+actions. They are not primary entities. They are temporary loci through which
+a constraint propagates. Xochitl in \textit{Flower Wars} is infrastructure
+rather than ideology; her body carries the system's messages. Averroes in
+\textit{The Incoherence} is a repair agent whose entire characterization is
+determined by the constraint structure he is defending. Luhmann in
+\textit{KOMMUNIKATION} is never at the center of a frame.
+
+\textit{Institutions} are persistence layers: structures that maintain the
+admissibility manifold across changes in personnel. The administration in
+\textit{KOMMUNIKATION} continues regardless of who executes the procedures.
+The Flower War field continues regardless of which warriors stand on it.
+The causal inference network in \textit{The Incoherence} continues regardless
+of which physician or jurist applies it.
+
+\textit{Archives} are memory structures: append-only ledgers that accumulate
+the event history from which the current constraint structure is reconstructed.
+The Zettelkasten is the clearest case: not a database of stored facts but
+a reconstruction machine that produces new outputs from the same accumulated
+cross-references at every access. The scribal archive in \textit{Flower Wars}
+is explicitly characterized as the computational substrate of the
+\textit{xochiy\={a}oy\={o}tl}: ``War becomes data.'' The manuscripts in
+\textit{The Incoherence} are not records of events but operators that alter
+the constraint structure when read.
+
+\textit{Rituals} are synchronization protocols: procedures that coordinate
+the constraint expectations of multiple actors without requiring explicit
+communication at the moment of synchronization. The death whistle in
+\textit{Flower Wars} begins as a terror instrument, becomes a field
+synchronization signal, and ends as a civilization boundary marker. Its
+semantic role changes while the physical artifact persists: this is exactly
+what a Spherepop transition looks like --- the same object survives; the
+admissibility manifold surrounding it changes.
+
+\textit{Fields} are admissibility manifolds: bounded regions within which
+events of a specified class are admissible and outside which they are not.
+The Flower War field is a sphere in the Spherepop sense: not an object
+but a region of admissibility, a temporary closure, a local grammar.
+The boundary stones, the runners, the archives, the whistle, the calendars
+are all mechanisms for maintaining the closure. The battle itself is incidental.
+
+\textit{Dialogue} is constraint propagation: each utterance either extends
+the reach of one constraint structure into another's admissibility region
+or fails to do so. The exchange between Tlacaelel and Xicotencatl at the
+dinner table is not primarily a negotiation between two men; it is a
+constraint propagation attempt between two civilizational admissibility
+manifolds, and its success (Xicotencatl agrees) is a repair operation that
+temporarily expands the shared manifold.
+
+\textit{The hum} in \textit{KOMMUNIKATION} is a conserved quantity: the
+invariant that persists through the successive material instantiations of
+the same organizational process. It appears in the fermentation plant,
+shield control, detention vessel, administrative office, and final scene.
+The substrate changes. The hum persists. In programming terms it is a
+persistent process ID; in RSVP terms it is the scalar field $\Phi$ taking
+different realizations while the admissible trajectories remain.
+\end{definition}
+
+The formal glossary resolves what would otherwise be a puzzling feature of
+all three screenplays: their systematic indifference to individual psychology.
+None of the three screenplays are primarily interested in the inner lives of
+their characters. \textit{The Incoherence} shows Averroes through his
+gestures and arguments, never through introspection. \textit{Flower Wars}
+shows Tlacaelel through his arithmetic and his negotiations, never through
+emotional exposition. \textit{KOMMUNIKATION} shows Luhmann through his
+observations of systems, never through what he feels about them.
+
+This is not a limitation of characterization. It is a formal consequence of
+the ontological framework. If characters are operators rather than primary
+entities, then their inner lives are not the subject. The subject is the
+transformation of the constraint manifold that their operations produce.
+Psychology is the phenomenological surface of constraint dynamics: what it
+feels like to be a localized concentration of repair capacity operating near
+the critical attenuation level. The screenplay makes the constraint dynamics
+visible by presenting their behavioral expression. It does not need to go
+further.
+
+\section{Executable History and What Drama Preserves}
+
+The three notions of narrative truth established earlier --- historical,
+philosophical, computational --- can now be restated with more precision.
+
+Historical truth asks whether the events occurred. The chronicle can answer
+this. But a chronicle that answers it successfully still leaves open why
+the sequence of events produced the outcome it did. Historical truth is
+necessary but not sufficient for explanation.
+
+Philosophical truth asks whether the interpretation is justified. Philosophy
+can answer this, subject to the underdetermination of interpretation by trace:
+many incompatible interpretations are consistent with the same events.
+Philosophical truth adds meaning but does not add causal mechanism.
+
+Computational truth asks whether the sequence of constraint collapses shown
+generates the final state. This is the question only drama can answer,
+because drama is the only form that is formally required to show transitions
+rather than states. A scene that merely declares a new state is a scene that
+has failed as drama. A scene that shows the collapse through which the new
+state was produced has succeeded.
+
+The trilogy makes a further claim beyond computational truth as an individual
+property of each screenplay. It claims that the three screenplays are
+projections of the same underlying formal object: the civilization understood
+as a constraint-preserving event calculus. The Flower War field, the
+Zettelkasten, the causal inference network of Andalusian jurisprudence ---
+these are three different realizations of the same organizational invariant:
+a system that maintains its admissibility structure against degradation pressure
+through recursive self-application. The hum persists. The substrate changes.
+
+This is why the trilogy, taken together, does something that no individual
+historical drama can. It demonstrates that the computational structure of
+civilizational persistence is not specific to any particular civilization's
+content. The question ``which constraint configurations survive irreversible
+history?'' has the same formal structure whether it is asked of Mexica
+cosmological repair, Andalusian causal philosophy, or the autopoietic
+communication theory of a twentieth-century sociologist.
+
+The screenplay is not the history. It is the computation that the history
+performed. And the computation, it turns out, is always the same computation:
+the attempt of a constraint structure to maintain its admissibility manifold
+against the entropic pressure that would dissolve it. The screenplays differ
+only in the realization. The problem is the same. The drip falls in all of
+them. The question is always the same. How long does the field hold?
+
+\bigskip
+
+\noindent\rule{0.4\textwidth}{0.4pt}
+
+\vspace{0.5em}
+\noindent{\small Flyxion / Independent Researcher. 2026.}
+
+\end{document}
+

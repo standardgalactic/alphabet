@@ -1,0 +1,119 @@
+% ============================================================
+%  part4/ch19-sobolev.tex  —  Chapter 19: Sobolev Spaces
+% ============================================================
+
+\chapter{Sobolev Spaces and Function-Space Regularity}
+\label{ch:sobolev}
+
+\epigraph{%
+  The geometry does not determine the analysis.\\
+  The analysis determines which geometry is legitimate.%
+}{---}
+
+\begin{WhyMatters}
+  This chapter establishes the methodological chain that
+  governs everything from here forward:
+  \[
+    \text{Field Equations}
+    \Rightarrow \text{Regularity}
+    \Rightarrow \text{Sobolev Category}
+    \Rightarrow \text{Admissibility Sheaf}
+    \Rightarrow \text{Cohomology.}
+  \]
+  The admissibility sheaf is not chosen because sheaves are
+  elegant.
+  It is derived because the PDE theory demands a specific
+  function space.
+\end{WhyMatters}
+
+\section{Sobolev spaces}
+
+\begin{definition}[Sobolev space $H^k$]
+  \label{def:sobolev}
+  Let $\Omega \subset \mathbb{R}^n$.
+  The \emph{Sobolev space} $H^k(\Omega)$ is
+  \[
+    H^k(\Omega)
+    = \{u \in L^2(\Omega) : D^\alpha u \in L^2(\Omega),\;
+      |\alpha| \leq k\},
+  \]
+  with norm
+  \[
+    \|u\|_{H^k}^2 = \sum_{|\alpha|\leq k} \|D^\alpha u\|_{L^2}^2.
+  \]
+\end{definition}
+
+\begin{definition}[RSVP Sobolev state space]
+  \label{def:rsvp-sobolev}
+  For an open set $U \subseteq X$, define
+  \[
+    \mathcal{H}^k_{\mathrm{RSVP}}(U)
+    = H^k(U) \times H^k(U; TU) \times H^k(U) \times H^k(U).
+  \]
+  An element is $s_U = (\Phi_U, \mathbf{v}_U, S_U, \ell_U)$.
+  The physical lamphron density is $L_U = \ell_U^2$.
+\end{definition}
+
+\begin{proposition}[Positivity of lamphron density]
+  \label{prop:lamphron-positive}
+  \statusproven{}
+  For every $\ell_U \in H^k(U)$, the physical lamphron field
+  $L_U = \ell_U^2$ satisfies $L_U(x) \geq 0$ a.e.
+\end{proposition}
+
+\begin{proof}
+  For any real $a \in \mathbb{R}$, $a^2 \geq 0$.
+  Since $\ell_U$ is real-valued a.e., $L_U(x) = \ell_U(x)^2 \geq 0$ a.e.
+\end{proof}
+
+\section{Regularity requirements from the field equations}
+
+\begin{proposition}[Allen--Cahn regularity]
+  \label{prop:ac-regularity}
+  \statusproven{}
+  For the Allen--Cahn equation $\partial_t\Phi = \Delta\Phi + f(\Phi)$:
+  weak solutions require $\Phi \in H^1$;
+  classical solutions require $\Phi \in H^2$.
+\end{proposition}
+
+\begin{proof}
+  The weak formulation pairs $\partial_t\Phi = \Delta\Phi + f(\Phi)$
+  against test functions $\psi$:
+  $\int_U \Delta\Phi\,\psi\,dx = -\int_U \nabla\Phi\cdot\nabla\psi\,dx$.
+  This requires $\nabla\Phi \in L^2$, i.e., $\Phi \in H^1$.
+  For $\Delta\Phi \in L^2$, one needs $\Phi \in H^2$.
+\end{proof}
+
+\begin{proposition}[Cahn--Hilliard regularity]
+  \label{prop:ch-regularity}
+  \statusproven{}
+  For the Cahn--Hilliard equation $\partial_t L = -\Delta^2 L + \Delta f(L)$:
+  weak energy solutions require $L \in H^2$;
+  classical solutions require $L \in H^4$.
+\end{proposition}
+
+\begin{proof}
+  The free energy $\int|\nabla L|^2 dx$ controls $\|\nabla L\|_{L^2}$,
+  requiring $L \in H^1$.
+  The chemical potential $\mu = -\Delta L + f(L)$ requires $\Delta L \in L^2$,
+  i.e., $L \in H^2$ for weak solutions.
+  Classical pointwise interpretation of $\Delta^2 L$ requires $L \in H^4$.
+\end{proof}
+
+\begin{StatusBox}{Proven Framework}
+  The Sobolev index $k$ for the full coupled RSVP system is
+  \statusopen{}.
+  It is determined by the highest-order term in the equations,
+  which depends on whether the lamphron evolution is
+  Allen--Cahn-type ($k=1$ sufficient) or Cahn--Hilliard-type
+  ($k=2$ minimum).
+  The well-posedness chapter settles this.
+\end{StatusBox}
+
+\begin{MathEcho}
+  This chapter introduced:
+  $H^k(\Omega)$, $\mathcal{H}^k_{\mathrm{RSVP}}(U)$,
+  $L_U = \ell_U^2 \geq 0$.
+  The Sobolev index $k$ will determine the target category
+  of the admissibility sheaf in Chapter~\ref{ch:sheaf}.
+\end{MathEcho}

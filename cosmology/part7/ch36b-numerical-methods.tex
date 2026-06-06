@@ -1,0 +1,243 @@
+% ============================================================
+%  part7/ch36b-numerical-methods.tex
+%  Chapter: Numerical Methods and Simulation
+%  (inserted between ch36 and ch37 in Part VII)
+% ============================================================
+
+\chapter{Numerical Methods and Simulation}
+\label{ch:numerical-methods}
+
+\begin{WhyChapter}
+  The mathematical results of Parts~III--V establish what the
+  RSVP framework predicts.
+  This chapter establishes how to compute those predictions.
+  A field theory monograph that cannot be simulated cannot be
+  tested.
+  The chapter covers the minimum necessary machinery: spatial
+  discretisation, time integration, stability conditions,
+  spectral methods, defect tracking, and measurement of
+  coarsening exponents.
+  Readers who implement the methods here will reproduce the
+  scaling predictions that Part~VII describes.
+\end{WhyChapter}
+
+\section{Spatial discretisation}
+
+\subsection*{Finite differences}
+
+Discretise $\Omega = [0,L]^d$ with grid spacing $h = L/N$.
+Let $\Phi_{i_1,\ldots,i_d}^n$ denote the field value at
+grid point $(i_1 h,\ldots,i_d h)$ and time $t^n = n\Delta t$.
+
+The standard second-order finite-difference Laplacian in 2D:
+\[
+  (\Delta\Phi)_{i,j}
+  = \frac{\Phi_{i+1,j} + \Phi_{i-1,j} + \Phi_{i,j+1}
+    + \Phi_{i,j-1} - 4\Phi_{i,j}}{h^2}.
+\]
+
+\begin{proposition}[Consistency and order]
+  \label{prop:fd-consistency}
+  \statusproven{}
+  The finite-difference Laplacian is consistent with
+  $O(h^2)$ truncation error.
+\end{proposition}
+
+\begin{proof}
+  Taylor expand $\Phi_{i\pm 1,j}$ around $(ih,jh)$:
+  $\Phi_{i\pm 1,j} = \Phi_{i,j} \pm h\partial_x\Phi
+  + \frac{h^2}{2}\partial_{xx}\Phi + O(h^3)$.
+  Summing gives $(\Delta\Phi)_{i,j} = \partial_{xx}\Phi
+  + \partial_{yy}\Phi + O(h^2)$.
+\end{proof}
+
+\subsection*{Periodic boundary conditions}
+
+Use index arithmetic modulo $N$:
+$\Phi_{N+k,j} = \Phi_{k,j}$ for all $k$.
+This avoids boundary effects and enables FFT-based methods.
+
+\section{Time integration}
+
+\subsection*{Allen--Cahn: explicit Euler}
+
+\[
+  \Phi^{n+1}_{i,j}
+  = \Phi^n_{i,j}
+  + \Delta t\,M_\Phi\!\left[
+    \alpha(\Delta\Phi)^n_{i,j}
+    - W'(\Phi^n_{i,j})
+    - \lambda W'(\Phi^n_{i,j})(\ell^n_{i,j})^2
+  \right].
+\]
+
+\begin{theorem}[CFL stability condition for Allen--Cahn]
+  \label{thm:cfl-ac}
+  \statusproven{}
+  Explicit Euler integration of Allen--Cahn is stable if
+  \[
+    \Delta t \leq \frac{h^2}{2d\alpha M_\Phi}.
+  \]
+\end{theorem}
+
+\begin{proof}
+  Von Neumann stability analysis: substitute
+  $\Phi^n_{i,j} = \hat\Phi^n e^{ik\cdot x}$ and find
+  the amplification factor $g(k)$.
+  Stability requires $|g(k)| \leq 1$ for all $k$.
+  The linearised operator has largest eigenvalue
+  $\lambda_{\max} = 4\alpha M_\Phi\sin^2(\pi/(2N)) / h^2
+  \leq 4d\alpha M_\Phi/h^2$.
+  Stability then requires $\Delta t \leq h^2/(2d\alpha M_\Phi)$.
+\end{proof}
+
+\subsection*{Cahn--Hilliard: semi-implicit scheme}
+
+The Cahn--Hilliard equation $\partial_t L = M_L\Delta\mu$
+with $\mu = -\beta\Delta L + f(L)$ contains $\Delta^2 L$,
+which is stiff.
+Use a semi-implicit scheme:
+\[
+  \frac{L^{n+1} - L^n}{\Delta t}
+  = M_L\Delta\!\left(-\beta\Delta L^{n+1} + f(L^n)\right).
+\]
+The linear part is treated implicitly; the nonlinear part
+explicitly.
+
+\begin{proposition}[Semi-implicit CFL for Cahn--Hilliard]
+  \label{prop:si-ch}
+  The semi-implicit Cahn--Hilliard scheme is unconditionally
+  stable with respect to the linear stiff term and requires
+  only $\Delta t \leq C h^2$ for the nonlinear part.
+\end{proposition}
+
+\section{Spectral (FFT) methods}
+
+For periodic domains, spectral methods are more efficient.
+
+\subsection*{Allen--Cahn in Fourier space}
+
+Write $\hat\Phi_k = \mathcal{F}[\Phi]$ (discrete Fourier transform).
+The gradient-flow equation becomes:
+\[
+  \partial_t\hat\Phi_k
+  = -M_\Phi\!\left(\alpha|k|^2 + \hat{W'(\Phi)}_k
+    + \lambda\widehat{W'(\Phi)\ell^2}_k\right).
+\]
+Linear terms are diagonal in Fourier space.
+Nonlinear terms require back-and-forth transforms.
+
+\begin{proposition}[Spectral accuracy]
+  Spectral methods achieve $O(e^{-cN})$ convergence for smooth
+  solutions, exponentially faster than $O(h^2)$ finite differences.
+\end{proposition}
+
+\section{Defect tracking}
+
+\begin{definition}[Winding number in discrete field]
+  For a 2D scalar field $\Phi_{i,j}$, the winding number
+  around a plaquette $(i,j),(i+1,j),(i+1,j+1),(i,j+1)$ is
+  \[
+    n_{i,j}
+    = \frac{1}{2\pi}\left[
+      \Delta\theta_{i,j\to i+1,j}
+      + \Delta\theta_{i+1,j\to i+1,j+1}
+      + \Delta\theta_{i+1,j+1\to i,j+1}
+      + \Delta\theta_{i,j+1\to i,j}
+    \right],
+  \]
+  where $\Delta\theta$ is the phase difference, wrapped to $[-\pi,\pi)$.
+\end{definition}
+
+\begin{proposition}[Defect detection]
+  \label{prop:defect-detect}
+  A plaquette contains a defect iff $|n_{i,j}| = 1/2$ or $1$.
+  The total defect count $N_d = \sum_{i,j}|n_{i,j}|$ decreases
+  monotonically under Allen--Cahn dynamics.
+\end{proposition}
+
+\section{Measuring coarsening exponents}
+
+\subsection*{Correlation function method}
+
+Compute the two-point correlation:
+\[
+  C(r, t) = \frac{1}{N^d}\sum_{i}
+  \Phi_i(t)\Phi_{i+r}(t) - \langle\Phi\rangle^2.
+\]
+Find $\ell(t)$ from $C(\ell(t),t) = \frac{1}{2}C(0,t)$.
+Plot $\log\ell$ vs $\log t$; the slope is $1/z$.
+
+\subsection*{Structure factor method}
+
+Alternatively, use the structure factor
+$S(k,t) = |\hat\Phi_k(t)|^2$.
+Under dynamic scaling: $S(k,t) = \ell(t)^d\,\tilde{S}(k\ell(t))$.
+The peak of $S$ at $k = k_\star(t)$ satisfies $k_\star \sim \ell^{-1}$.
+
+\begin{WorkedExample}[Measuring $z$ from simulation]
+  Run Allen--Cahn from random initial data on a $512^2$ grid.
+  Compute $\ell(t)$ at $t = 100, 200, 400, 800, 1600$ steps.
+  Expected values: $\ell \approx 5, 7, 10, 14, 20$ (arbitrary units).
+  Log-log fit: slope $\approx 0.50 \pm 0.02$, confirming $z = 2$.
+  For Cahn--Hilliard, the slope would be $\approx 0.33$, confirming $z = 3$.
+  For RSVP with advection, the slope determines $z_{\rm RSVP}$.
+\end{WorkedExample}
+
+\section{RSVP simulator architecture}
+
+A minimal RSVP simulator requires:
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{State arrays:} $\Phi$, $\ell$, $S$, $\mathbf{v}$
+    on a periodic grid.
+  \item \textbf{Functional derivatives:} computed via FFT or
+    finite differences.
+  \item \textbf{Time stepper:} semi-implicit for stiff terms
+    ($\Delta^2\ell$), explicit for others.
+  \item \textbf{Incompressibility projection:} project
+    $\mathbf{v}$ onto divergence-free fields at each step
+    using Hodge decomposition.
+  \item \textbf{Diagnostics:} $\mathcal{F}(t)$, $\ell(t)$,
+    $N_d(t)$, $C(r,t)$, $S(k,t)$.
+\end{enumerate}
+
+\begin{StatusBox}{Proven Framework}
+  The numerical methods in this chapter are standard and
+  their convergence properties are established in the literature
+  (Evans~\cite{evans2010}, Temam~\cite{temam2001}).
+  The specific RSVP simulator has been implemented as a
+  proof-of-concept; the stability properties of the fully
+  coupled system remain \statusconjectured{} pending
+  resolution of Conjecture~\ref{conj:rsvp-existence}.
+\end{StatusBox}
+
+\begin{ProblemSet}
+\problem{
+  Implement a $128^2$ grid Allen--Cahn simulation with
+  $h = 1$, $\Delta t = 0.1$, $\alpha = 1$, $M_\Phi = 1$.
+  Verify the CFL condition (Theorem~\ref{thm:cfl-ac}).
+  Measure $\ell(t)$ at five time points and estimate $z$.
+}
+\problem{
+  Derive the von Neumann stability condition for the
+  semi-implicit Cahn--Hilliard scheme.
+  What is the maximum stable $\Delta t$ as a function of $h$?
+}
+\problem{
+  For a 2D XY model (order parameter on $S^1$), implement
+  defect tracking using the winding number formula.
+  Verify that defect count decreases monotonically during
+  coarsening from a random initial configuration.
+}
+\problem{
+  \textbf{RSVP simulation design.}
+  Describe a numerical experiment that would allow you to
+  distinguish between three hypotheses:
+  (a) $z_{\rm RSVP} = 2$ (Allen--Cahn dominated),
+  (b) $z_{\rm RSVP} = 3$ (Cahn--Hilliard dominated),
+  (c) $z_{\rm RSVP} = 1.5$ (advection-accelerated).
+  Specify: initial conditions, grid size, time range,
+  and measurement protocol.
+}
+\end{ProblemSet}

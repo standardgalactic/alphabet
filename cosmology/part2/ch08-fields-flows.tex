@@ -1,0 +1,128 @@
+% ============================================================
+%  part2/ch08-fields-flows.tex
+%  Chapter 8: Fields, Flows, and Conservation Laws
+% ============================================================
+
+\chapter{Fields, Flows, and Conservation Laws}
+\label{ch:fields-flows}
+
+\epigraph{%
+  Nature does not make jumps.%
+}{Gottfried Wilhelm Leibniz}
+
+\begin{WhyMatters}
+  Part~I showed that observation is projection.
+  Part~II asks: what mathematical structure governs the
+  object being projected?
+  This chapter introduces the language of fields and flows
+  that will carry through the rest of the book.
+  Every RSVP field, every admissibility sheaf section, and
+  every reconstruction operator will be a field in this sense.
+\end{WhyMatters}
+
+\section{From states to fields}
+
+A state assigns a value to a system at a moment.
+A field assigns a value to every point of a domain at every
+moment.
+
+\begin{definition}[Scalar field]
+  A \emph{scalar field} on a domain $\Omega \subseteq \mathbb{R}^d$
+  is a function $\phi : \Omega \times \mathbb{R} \to \mathbb{R}$.
+\end{definition}
+
+\begin{definition}[Vector field]
+  A \emph{vector field} on $\Omega$ is a function
+  $\mathbf{v} : \Omega \times \mathbb{R} \to \mathbb{R}^d$.
+\end{definition}
+
+\section{Conservation laws}
+
+\begin{definition}[Continuity equation]
+  A scalar field $\phi$ satisfies a \emph{conservation law} when
+  \[
+    \partial_t \phi + \nabla \cdot \mathbf{J} = \sigma,
+  \]
+  where $\mathbf{J}$ is the flux of $\phi$ and $\sigma$ is a
+  source or sink term.
+  When $\sigma = 0$, $\phi$ is \emph{strictly conserved}.
+\end{definition}
+
+\begin{proposition}[Global conservation]
+  If $\phi$ satisfies the continuity equation with $\sigma = 0$
+  and $\mathbf{J} \cdot \hat{n} = 0$ on $\partial\Omega$, then
+  \[
+    \frac{d}{dt} \int_\Omega \phi \, dx = 0.
+  \]
+\end{proposition}
+
+\begin{proof}
+  Integrate the continuity equation over $\Omega$ and apply the
+  divergence theorem.
+\end{proof}
+
+\begin{ForwardRef}
+  The RSVP entropy field $S(x,t)$ satisfies a modified
+  continuity equation with a source term $\sigma(\Phi,\mathbf{v},L,D)$
+  that is nonnegative when $S = 0$, ensuring $S \geq 0$ is
+  preserved.
+  The lamphron field $L = \ell^2$ satisfies a conservation
+  law modified by advection.
+  Both enter the free-energy functional in Part~V\@.
+\end{ForwardRef}
+
+\section{Gradient flows}
+
+The most important class of evolution equations for this book
+are gradient flows: dynamics that descend a functional.
+
+\begin{definition}[Gradient flow]
+  Given a functional $\mathcal{F}[\phi]$, the
+  \emph{gradient flow} is
+  \[
+    \partial_t \phi = -M \frac{\delta \mathcal{F}}{\delta \phi},
+  \]
+  where $M > 0$ is a mobility coefficient.
+\end{definition}
+
+\begin{proposition}[Gradient flow dissipation]
+  \label{prop:gf-dissipation}
+  Along gradient flow solutions,
+  \[
+    \frac{d\mathcal{F}}{dt}
+    = -M \int \left(\frac{\delta\mathcal{F}}{\delta\phi}\right)^2 dx
+    \leq 0.
+  \]
+\end{proposition}
+
+\begin{proof}
+  $\frac{d\mathcal{F}}{dt}
+  = \int \frac{\delta\mathcal{F}}{\delta\phi} \partial_t\phi\, dx
+  = -M \int \left(\frac{\delta\mathcal{F}}{\delta\phi}\right)^2 dx
+  \leq 0$.
+\end{proof}
+
+\begin{StatusBox}{Proven Framework}
+  Proposition~\ref{prop:gf-dissipation} holds for any smooth
+  functional $\mathcal{F}$ and any positive mobility $M$.
+  It is the template for all energy-dissipation results in
+  this book, including the RSVP free-energy dissipation
+  theorem in Chapter~\ref{ch:energy-dissipation}.
+\end{StatusBox}
+
+\WhatSurvived{Field projection $\phi \mapsto \phi|_U$}{%
+  Field values on $U$\\
+  Local gradient information\\
+  Conservation on $U$%
+}{%
+  Field values outside $U$\\
+  Long-range correlations\\
+  Boundary fluxes%
+}{%
+  Partial; requires boundary\\
+  data and field equations.%
+}{%
+  $\ker(\cdot|_U)$: all field\\
+  configurations supported\\
+  outside $U$.%
+}

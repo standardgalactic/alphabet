@@ -1,0 +1,211 @@
+% ============================================================
+%  part1/ch06-embeddings.tex  —  Chapter 6: Embeddings
+% ============================================================
+
+\chapter{Machine Learning Embeddings}
+\label{ch:embeddings}
+
+\epigraph{%
+  The purpose of compression is not to reduce\\
+  but to reveal.%
+}{---}
+
+\begin{WhyMatters}
+  Embeddings are the contemporary form of a very old problem:
+  how to represent a complex object in a simpler space while
+  preserving what matters.
+  This chapter bridges the human examples of earlier chapters
+  and the cosmological example of Chapter~\ref{ch:horizons}.
+  It also introduces, informally, the adjunction $F \dashv G$
+  that will be made precise in Chapter~\ref{ch:analysis-synthesis}.
+\end{WhyMatters}
+
+\section{Embeddings as controlled compression}
+
+Let $X$ be a space of objects: texts, images, sounds, documents,
+observations, or states.
+A machine learning embedding is a map
+\[
+  E : X \to \mathbb{R}^n.
+\]
+It replaces an object $x \in X$ with a vector $E(x)$.
+
+The embedding is useful when relevant structure in $X$ is
+approximately preserved by distances in $\mathbb{R}^n$.
+If $d_X$ is a task-relevant distance on $X$, define the
+embedded distance
+\[
+  d_E(x, y) = \|E(x) - E(y)\|.
+\]
+A good embedding satisfies, approximately,
+\[
+  d_X(x, y) \approx d_E(x, y)
+\]
+for the distinctions relevant to the task.
+
+\begin{definition}[Embedding equivalence]
+  Two objects $x, y \in X$ are \emph{embedding-equivalent}
+  when $E(x) = E(y)$.
+  We write $x \sim_E y$.
+\end{definition}
+
+\begin{proposition}
+  The embedding map $E : X \to \mathbb{R}^n$ induces a quotient
+  space $X / {\sim_E}$.
+\end{proposition}
+
+\begin{proof}
+  Equality of images is an equivalence relation.
+  The quotient exists as the set of equivalence classes.
+\end{proof}
+
+\begin{Misconception}
+  Higher-dimensional embeddings do not necessarily preserve more
+  meaning.
+  An embedding into $\mathbb{R}^{10000}$ may discard more
+  task-relevant structure than an embedding into $\mathbb{R}^{32}$
+  if the higher-dimensional space encodes irrelevant variation.
+  Admissibility of an embedding depends on the task, not on
+  the dimension of the target space.
+\end{Misconception}
+
+\section{The inverse image and reconstruction}
+
+Given an embedded vector $v \in \mathbb{R}^n$, the compatible
+original objects are
+\[
+  E^{-1}(v) = \{x \in X : E(x) = v\}.
+\]
+
+\begin{proposition}
+  If there exists $v \in \mathbb{R}^n$ with $|E^{-1}(v)| > 1$,
+  then no reconstruction map $G : \mathbb{R}^n \to X$ can
+  recover every $x \in X$ exactly.
+\end{proposition}
+
+\begin{proof}
+  If $x_1 \neq x_2$ with $E(x_1) = E(x_2) = v$, then any
+  $G$ satisfying $G(E(x_i)) = x_i$ must satisfy both
+  $G(v) = x_1$ and $G(v) = x_2$, forcing $x_1 = x_2$.
+  Contradiction.
+\end{proof}
+
+The reconstruction problem is therefore not $E^{-1}$
+(which usually does not exist as a function) but
+\[
+  G : \mathbb{R}^n \to \hat{X},
+\]
+where $G(v)$ selects an admissible reconstruction from
+$E^{-1}(v)$.
+
+\section{Task-relevance and admissible compression}
+
+\begin{definition}[Admissible embedding]
+  An embedding $E : X \to \mathbb{R}^n$ is
+  \emph{admissible for a task} $R$ when the reconstruction
+  error remains below a task threshold:
+  \[
+    d_R(x, G(E(x))) < \varepsilon_R
+  \]
+  for all task-relevant $x \in X$.
+\end{definition}
+
+The best embedding is not necessarily the one that preserves
+the most information:
+\[
+  \arg\max_E A_R(E)
+  \neq
+  \arg\max_E |I(E)|.
+\]
+This is the microscope principle applied to representation
+design.
+
+\begin{example}[Word embeddings]
+  A word embedding $E : \mathrm{Vocabulary} \to \mathbb{R}^{300}$
+  maps words to vectors so that semantically similar words
+  map to nearby vectors.
+  The embedding discards spelling, etymology, and phonetic
+  structure while preserving distributional meaning.
+  This is admissible for tasks requiring semantic similarity
+  and inadmissible for tasks requiring morphological analysis.
+\end{example}
+
+\section{The adjunction, informally}
+
+The pair $(E, G)$ is the first informal appearance of an
+adjunction $F \dashv G$.
+
+Encoding $E$ decomposes objects into vectors.
+Reconstruction $G$ reassembles vectors into objects.
+They are not inverses: $G \circ E \neq \mathrm{id}_X$ in
+general.
+Instead, there is a systematic relationship: maps from encodings
+to targets correspond to maps from reconstructions to originals.
+
+\begin{ForwardRef}
+  The informal adjunction $(E, G)$ introduced here will be
+  made precise in Chapter~\ref{ch:analysis-synthesis} as
+  $F \dashv G : \mathbf{Loc} \to \mathbf{Glob}$.
+  The unit $\eta : \mathrm{id} \to G \circ F$ measures
+  how faithfully the Monoturn is recovered after decomposition
+  and reconstruction.
+  The counit $\varepsilon : F \circ G \to \mathrm{id}$
+  measures how well a proposed local dataset is explained by
+  a reconstructed whole.
+\end{ForwardRef}
+
+\section{From embeddings to horizons}
+
+Some projections are chosen. Others are unavoidable.
+
+A cartographer chooses a map projection.
+An engineer chooses an embedding space.
+An observer does not choose a horizon.
+Yet mathematically all three confront the same problem:
+reconstruction from incomplete access.
+
+The embedding map $E : X \to \mathbb{R}^n$ is designed.
+The horizon restriction
+$F_O : \mathcal{M} \to \mathcal{A}(H_O)$
+is imposed by physical accessibility.
+
+Both create the same formal question:
+\[
+  \text{Given non-injective access, what can be reconstructed?}
+\]
+
+\begin{MathEcho}
+  This chapter introduced:
+  \[
+    E : X \to \mathbb{R}^n,
+    \quad
+    x \sim_E y,
+    \quad
+    E^{-1}(v),
+    \quad
+    G : \mathbb{R}^n \to \hat{X},
+    \quad
+    d_R(x, G(E(x))) < \varepsilon_R.
+  \]
+  The informal adjunction $(E, G)$ anticipates
+  $F \dashv G$ in Chapter~\ref{ch:analysis-synthesis}.
+  The admissible embedding definition anticipates the
+  admissibility sheaf in Chapter~\ref{ch:sheaf}.
+\end{MathEcho}
+
+\WhatSurvived{Embedding $E : X \to \mathbb{R}^n$}{%
+  Task-relevant similarity\\
+  Approximate metric structure\\
+  Linear combinations of features%
+}{%
+  Exact identity of objects\\
+  Task-irrelevant variation\\
+  Objects outside training distribution%
+}{%
+  Partial; $G(E(x))$ is admissible\\
+  but not exact in general.%
+}{%
+  $\ker(E)$: all pairs $(x_1,x_2)$\\
+  with $E(x_1)=E(x_2)$;\\
+  typically dense in $X$.%
+}

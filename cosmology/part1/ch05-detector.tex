@@ -1,0 +1,255 @@
+% ============================================================
+%  part1/ch05-detector.tex  —  Chapter 5: The Detector
+% ============================================================
+
+\chapter{The Detector}
+\label{ch:detector}
+
+\epigraph{%
+  Every instrument is a theory made solid.%
+}{Gaston Bachelard}
+
+\begin{WhyMatters}
+  The detector chapter marks the transition from human examples
+  (maps, photographs, memory) to physical measurement.
+  The key move is recognising that a detector is not a
+  transparent window onto a system.
+  It is an interface: a two-stage projection through which
+  physical states become numerical outputs.
+  The kernel of this projection is not a limitation to be
+  overcome but the primary object of study.
+\end{WhyMatters}
+
+\section{Measurement as two-stage projection}
+
+Let $X$ denote a space of underlying physical states.
+A detector does not usually map $X$ directly into an observed
+value.
+Instead, it first interacts with the system, producing an
+intermediate signal space $S$, and then converts that signal
+into a finite readout space $D$.
+Thus measurement has the form
+\[
+  X \xrightarrow{F} S \xrightarrow{\pi} D.
+\]
+The actual observable is not $x \in X$, but
+\[
+  d = (\pi \circ F)(x).
+\]
+
+\begin{TechNote}[Detector signal vs.\ readout]
+  The two-stage structure $X \xrightarrow{F} S \xrightarrow{\pi}
+  D$ is not merely formal.
+  $F$ represents physical interaction: a photon excites an
+  electron, a particle ionises a gas, a gravitational wave
+  stretches spacetime.
+  $\pi$ represents transduction: the analogue signal is
+  digitised, thresholded, or otherwise converted to a readout.
+  Each stage discards different information.
+  $F$ loses information about undetected degrees of freedom.
+  $\pi$ loses information below the noise floor or outside the
+  bandwidth.
+\end{TechNote}
+
+\begin{definition}[Detector equivalence]
+  Two physical states $x_1, x_2 \in X$ are
+  \emph{detector-equivalent} when
+  \[
+    (\pi \circ F)(x_1) = (\pi \circ F)(x_2).
+  \]
+  We write $x_1 \sim_D x_2$.
+\end{definition}
+
+\begin{proposition}
+  Detector equivalence is an equivalence relation on $X$.
+\end{proposition}
+
+\begin{proof}
+  Reflexivity: $(\pi\circ F)(x) = (\pi\circ F)(x)$.
+  Symmetry: equality is symmetric.
+  Transitivity: if $(\pi\circ F)(x_1) = (\pi\circ F)(x_2)$
+  and $(\pi\circ F)(x_2) = (\pi\circ F)(x_3)$, then
+  $(\pi\circ F)(x_1) = (\pi\circ F)(x_3)$.
+\end{proof}
+
+The detector therefore does not observe $X$.
+It observes the quotient
+\[
+  X / {\sim_D}.
+\]
+
+\begin{ForwardRef}
+  The detector equivalence class $[x]_D = (\pi\circ F)^{-1}(d)$
+  is the physical version of the admissibility class introduced
+  in Chapter~\ref{ch:photograph}.
+  In Chapter~\ref{ch:sheaf} this becomes the fibre of the
+  admissibility sheaf over an observational domain.
+\end{ForwardRef}
+
+\section{Detector bandwidth and admissible signals}
+
+A detector is physically limited.
+It has a bandwidth, a sensitivity threshold, a spatial
+aperture, a response time, and a noise floor.
+These limitations define an admissible signal region
+\[
+  S_{\mathrm{adm}} \subseteq S.
+\]
+Only signals satisfying $F(x) \in S_{\mathrm{adm}}$ can be
+registered.
+
+\begin{definition}[Detector-admissible state]
+  A state $x \in X$ is \emph{detector-admissible} when
+  $F(x) \in S_{\mathrm{adm}}$.
+  The detector-admissible subset of $X$ is
+  \[
+    X_{\mathrm{adm}} = F^{-1}(S_{\mathrm{adm}}).
+  \]
+\end{definition}
+
+\begin{proposition}
+  If $S_{\mathrm{adm}} \subsetneq S$, then the detector
+  ignores all states in $X \setminus X_{\mathrm{adm}}$.
+\end{proposition}
+
+\begin{proof}
+  $x \notin X_{\mathrm{adm}}$ iff $F(x) \notin S_{\mathrm{adm}}$,
+  i.e., the interaction signal lies outside the physically
+  readable region.
+  Such a state produces no detector output.
+\end{proof}
+
+The detector therefore performs two kinds of forgetting.
+First, it excludes states outside its admissible domain.
+Second, it identifies distinct admissible states that yield the
+same output.
+
+\principle{
+  Measurement is not access.\\[4pt]
+  Measurement is admissible projection.
+}
+
+\section{Reconstruction from detector output}
+
+Given a detector output $d \in D$, the compatible physical
+states are
+\[
+  (\pi \circ F)^{-1}(d)
+  = \{x \in X : (\pi \circ F)(x) = d\}.
+\]
+This set is usually not a singleton.
+
+\begin{definition}[Detector reconstruction problem]
+  Given $d \in D$, find an admissible estimate
+  $\hat{x} = G(d)$ such that $(\pi\circ F)(\hat{x}) = d$
+  whenever possible.
+  The \emph{detector reconstruction error} is
+  \[
+    E_D(x) = d_X\!\left(x,\, G((\pi\circ F)(x))\right).
+  \]
+\end{definition}
+
+\begin{proposition}
+  Exact detector reconstruction for all $x \in X$ requires
+  $\pi \circ F$ to be injective.
+\end{proposition}
+
+\begin{proof}
+  If $G((\pi\circ F)(x)) = x$ for all $x$, and
+  $(\pi\circ F)(x_1) = (\pi\circ F)(x_2)$, then applying $G$
+  gives $x_1 = x_2$.
+  Contrapositive: non-injectivity implies inexact
+  reconstruction.
+\end{proof}
+
+\begin{example}[Axion detector as admissibility projection]
+  An axion detector searches for a dark-sector particle field
+  $\Phi_{\mathrm{axion}}$ through its interaction with an
+  electromagnetic field $F$.
+  The interaction produces a signal $s \in S$ (a photon, a
+  phonon, or a mechanical oscillation) which is then amplified
+  and digitised.
+  The detector cannot observe $\Phi_{\mathrm{axion}}$ directly.
+  It observes $(\pi \circ F)(\Phi_{\mathrm{axion}})$.
+  Observable Gaussianity of the detector output is a property
+  of the projection $\pi \circ F$, not of the underlying
+  axion field.
+  The axion field may be non-Gaussian while the detector output
+  appears Gaussian, because $\pi \circ F$ averages over many
+  field degrees of freedom.
+\end{example}
+
+\begin{AdmPreview}
+  The distinction between the axion field and its detector
+  output is the first physical example of the principle:
+  \[
+    \text{observable simplicity}
+    \neq
+    \text{ontological simplicity.}
+  \]
+  This will be formalised in Chapter~\ref{ch:sheaf} using the
+  admissibility sheaf, and will reappear in the cosmological
+  redshift discussion in Chapter~\ref{ch:redshift}.
+\end{AdmPreview}
+
+\section{The hidden kernel}
+
+The hidden degrees of freedom of the detector are
+\[
+  \ker(\pi \circ F).
+\]
+Two field states are observationally equivalent when
+\[
+  (\pi \circ F)(x_1) = (\pi \circ F)(x_2).
+\]
+
+\begin{ReconExercise}[Detector non-injectivity]
+  Construct two physically distinct states $x_1 \neq x_2$
+  that produce the same detector output $d$.
+  \begin{enumerate}[leftmargin=2em]
+    \item In a spectrometer: which aspects of a light source
+      are preserved in a spectrum, and which are lost?
+    \item In a thermometer: which aspects of a gas are
+      preserved in a temperature reading, and which are not?
+    \item In an MRI scanner: which aspects of tissue are
+      preserved in the image, and which are not?
+  \end{enumerate}
+  For each case, identify the kernel of the measurement map
+  and describe what reconstruction would require.
+\end{ReconExercise}
+
+\begin{MathEcho}
+  This chapter introduced:
+  \[
+    X \xrightarrow{F} S \xrightarrow{\pi} D,
+    \qquad
+    x_1 \sim_D x_2,
+    \qquad
+    X_{\mathrm{adm}} = F^{-1}(S_{\mathrm{adm}}),
+    \qquad
+    E_D(x).
+  \]
+  The detector equivalence relation $\sim_D$ is the physical
+  version of the projection equivalence from
+  Chapter~\ref{ch:map}.
+  It will appear as the fibre relation of the admissibility
+  sheaf in Chapter~\ref{ch:sheaf}.
+\end{MathEcho}
+
+\WhatSurvived{Detector $X \xrightarrow{F} S \xrightarrow{\pi} D$}{%
+  Detector-admissible signal\\
+  Equivalence class $[x]_D$\\
+  Readout $d \in D$%
+}{%
+  States outside $X_{\mathrm{adm}}$\\
+  Sub-noise-floor variations\\
+  Out-of-bandwidth modes\\
+  Non-commuting observables%
+}{%
+  Partial; requires knowledge of $F$\\
+  and additional physical constraints.%
+}{%
+  $\ker(\pi\circ F)$: all pairs\\
+  $(x_1,x_2)$ with identical\\
+  detector output.%
+}

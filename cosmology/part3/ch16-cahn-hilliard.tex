@@ -1,0 +1,121 @@
+% ============================================================
+%  part3/ch16-cahn-hilliard.tex  —  Chapter 16: Cahn-Hilliard
+% ============================================================
+
+\chapter{Cahn--Hilliard Dynamics}
+\label{ch:cahn-hilliard}
+
+\epigraph{%
+  Conservation is the source of complication.%
+}{---}
+
+\section{Conservation changes everything}
+
+Allen--Cahn allows $\int\phi\,dx$ to change freely.
+Many physical quantities must satisfy
+$\frac{d}{dt}\int\phi\,dx = 0$:
+mass, charge, lamphron density.
+
+\begin{definition}[Cahn--Hilliard equation]
+  For conserved $\phi$ with chemical potential
+  $\mu = \delta\mathcal{F}/\delta\phi$ and flux
+  $\mathbf{J} = -M\nabla\mu$:
+  \[
+    \boxed{\partial_t\phi
+    = M\Delta\mu
+    = -M\epsilon^2\Delta^2\phi + M\Delta W'(\phi).}
+  \]
+\end{definition}
+
+\begin{theorem}[Mass conservation]
+  \label{thm:ch-mass}
+  \statusproven{}
+  \[
+    \frac{d}{dt}\int\phi\,dx = 0.
+  \]
+\end{theorem}
+
+\begin{proof}
+  $\frac{d}{dt}\int\phi\,dx = M\int\Delta\mu\,dx = 0$
+  by the divergence theorem and Neumann boundary conditions.
+\end{proof}
+
+\begin{theorem}[Free-energy dissipation]
+  \label{thm:ch-dissipation}
+  \statusproven{}
+  \[
+    \frac{d\mathcal{F}}{dt}
+    = -M\int|\nabla\mu|^2\,dx \leq 0.
+  \]
+\end{theorem}
+
+\begin{proof}
+  $\frac{d\mathcal{F}}{dt}
+  = \int\mu\,\partial_t\phi\,dx
+  = M\int\mu\,\Delta\mu\,dx
+  = -M\int|\nabla\mu|^2\,dx \leq 0$.
+\end{proof}
+
+\section{Lifshitz--Slyozov scaling}
+
+\begin{theorem}[Lifshitz--Slyozov scaling]
+  \label{thm:ls-scaling}
+  Conserved phase separation obeys $\ell(t) \sim t^{1/3}$,
+  so $z = 3$.
+\end{theorem}
+
+\begin{proof}
+  Chemical potential scales as $\mu \sim 1/\ell$ (curvature).
+  Flux $J \sim |\nabla\mu| \sim 1/\ell^2$.
+  Mass transport rate: $d\ell/dt \sim J/\ell \sim 1/\ell^2$.
+  Integrating: $\ell^3 \sim t$, so $\ell(t) \sim t^{1/3}$.
+\end{proof}
+
+\begin{TechNote}[Conservation changes universality class]
+  The conservation law changes $z$ from 2 to 3.
+  In RSVP, the lamphron density $L = \ell^2$ satisfies a
+  modified conservation equation with advection and source
+  terms.
+  This is why $z_{\mathrm{RSVP}}$ is expected to differ from
+  both pure Allen--Cahn ($z=2$) and pure Cahn--Hilliard ($z=3$).
+\end{TechNote}
+
+\section{RSVP corrections to the scaling exponent}
+
+\begin{conjecture}[RSVP coarsening correction]
+  \label{conj:rsvp-scaling}
+  \statusconjectured{}
+  Assume RSVP dynamics modify the coarsening law to
+  \[
+    \frac{d\ell}{dt} = A\ell^{-1} + B\ell^{-m}.
+  \]
+  Then:
+  \begin{itemize}[leftmargin=2em]
+    \item If $m > 1$: Allen--Cahn dominates, $z_{\mathrm{RSVP}} = 2$.
+    \item If $m < 1$: RSVP correction dominates,
+      $z_{\mathrm{RSVP}} = m+1$.
+    \item If $m = 1$: logarithmic correction.
+  \end{itemize}
+\end{conjecture}
+
+The precise value of $m$ depends on the dimensionless
+parameters $Pe$, $\Gamma$, and $\Omega$ and requires
+simulation or further analysis.
+
+\WhatSurvived{Cahn--Hilliard coarsening}{%
+  Total mass $\int\phi\,dx$\\
+  Phase identity at late times\\
+  Energy (decreasing)%
+}{%
+  Mass distribution history\\
+  Interface trajectories\\
+  Short-scale fluctuations%
+}{%
+  Total mass exactly.\\
+  Late-time phase pattern\\
+  partially.%
+}{%
+  $\ker$: all initial conditions\\
+  with same total mass and\\
+  same final phase pattern.%
+}

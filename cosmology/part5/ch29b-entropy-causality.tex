@@ -1,0 +1,446 @@
+% ============================================================
+%  part5/ch29b-entropy-causality.tex
+%  Chapter 29b: Entropy Descent and Causality
+%  (inserted between ch29-analysis-synthesis and ch30-observer-horizons)
+% ============================================================
+
+\chapter{Entropy Descent and Causality}
+\label{ch:entropy-causality}
+
+\epigraph{%
+  The arrow of time is not a postulate.\\
+  It is a theorem about gradient flows.%
+}{---}
+
+\begin{WhyChapter}
+  The inequality $\frac{d\mathcal{F}}{dt} \leq 0$ has appeared
+  in every part of this book.
+  It appeared first for Allen--Cahn coarsening
+  (Theorem~\ref{thm:ac-dissipation}), then for Cahn--Hilliard
+  (Theorem~\ref{thm:ch-dissipation}), then for the full RSVP
+  system (Theorem~\ref{thm:rsvp-dissipation-full}), and again
+  for entropy smoothing (Proposition~\ref{prop:entropy-smooth})
+  and agent conflict resolution.
+  What has not yet been developed is the consequence of this
+  inequality for the \emph{direction of time}.
+  This chapter develops that argument.
+  It shows that free-energy descent does not merely describe
+  dynamics: it generates an effective temporal orientation
+  that is the same across coarsening, cosmology, reconstruction,
+  and agency.
+  This is the unique chapter where $\frac{d\mathcal{F}}{dt} \leq 0$
+  is elevated from a technical result into the unifying principle
+  of the entire framework.
+\end{WhyChapter}
+
+
+\begin{ChapterIntro}
+Most discussions of time begin with clocks.
+
+This chapter begins somewhere else.
+
+Imagine watching a drop of ink disperse through water. The process has a direction. We do not need a clock to recognise it. We know which configuration came first and which came later because one state appears more relaxed than the other.
+
+Many physical systems possess this property. They move toward configurations that reduce tension, imbalance, or stored free energy. The resulting directionality is often more fundamental than any particular measure of time.
+
+The mathematics developed here investigates whether causality itself can be understood as a consequence of structured descent through an admissible landscape, rather than as an independent primitive of the theory.
+\end{ChapterIntro}
+
+\section{Lyapunov functions and gradient flows}
+
+\begin{definition}[Lyapunov function]
+  \label{def:lyapunov}
+  A \emph{Lyapunov function} for a dynamical system
+  $\partial_t u = \mathcal{G}[u]$ on a state space $\mathcal{X}$
+  is a functional $V : \mathcal{X} \to \mathbb{R}$ satisfying:
+  \begin{enumerate}[leftmargin=2em]
+    \item $V(u) \geq 0$ for all $u \in \mathcal{X}$,
+    \item $V(u^*) = 0$ for equilibria $u^*$,
+    \item $\frac{dV}{dt} \leq 0$ along solutions.
+  \end{enumerate}
+\end{definition}
+
+\begin{theorem}[RSVP free energy is a Lyapunov function]
+  \label{thm:lyapunov}
+  \statusproven{}
+  Under the RSVP gradient-flow equations with admissible
+  entropy production, $\mathcal{F}$ is a Lyapunov function:
+  \[
+    \mathcal{F} \geq 0,
+    \qquad
+    \frac{d\mathcal{F}}{dt} \leq 0.
+  \]
+\end{theorem}
+
+\begin{proof}
+  Boundedness below: Theorem~\ref{thm:bounded-below}.
+  Dissipation: Theorem~\ref{thm:rsvp-dissipation-full}.
+\end{proof}
+
+\begin{corollary}[Convergence to attractor]
+  \label{cor:attractor}
+  \statusproven{}
+  If $\mathcal{F}$ is coercive (i.e., $\mathcal{F}(u) \to \infty$
+  as $\|u\| \to \infty$), then every bounded trajectory
+  converges to the set of equilibria
+  $\mathcal{E} = \{\delta\mathcal{F}/\delta u = 0\}$.
+\end{corollary}
+
+\begin{proof}
+  Since $\mathcal{F}$ is bounded below and decreasing,
+  $\lim_{t\to\infty}\mathcal{F}(u(t)) = \mathcal{F}_\infty$
+  exists.
+  The $\omega$-limit set of any bounded trajectory lies in
+  $\mathcal{E}$ by the LaSalle invariance principle.
+\end{proof}
+
+\section{Irreversibility and the arrow of time}
+
+\begin{definition}[Time-reversibility]
+  A dynamical system $\partial_t u = \mathcal{G}[u]$ is
+  \emph{time-reversible} if the substitution $t \mapsto -t$
+  gives a valid trajectory of the same system.
+\end{definition}
+
+\begin{theorem}[Gradient flows are irreversible]
+  \label{thm:irreversible}
+  \statusproven{}
+  Any gradient flow with a nonconstant Lyapunov function
+  is time-irreversible.
+\end{theorem}
+
+\begin{proof}
+  Suppose $u(t)$ is a solution with $\mathcal{F}(u(t))$
+  strictly decreasing on some interval.
+  The time-reversed trajectory $\tilde{u}(t) = u(-t)$ satisfies
+  $\frac{d\mathcal{F}(\tilde{u})}{dt}
+  = -\frac{d\mathcal{F}(u)}{dt}\big|_{-t} \geq 0$.
+  But $\mathcal{F}$ must decrease along all solutions of the
+  gradient flow.
+  Contradiction: $\tilde{u}$ is not a solution of the same
+  gradient flow.
+\end{proof}
+
+\begin{TechNote}[What generates the arrow of time]
+  Theorem~\ref{thm:irreversible} shows that the arrow of time
+  in RSVP cosmology is not postulated.
+  It is a consequence of the gradient-flow structure:
+  $\partial_t u = -M\,\delta\mathcal{F}/\delta u$ has an
+  intrinsic direction because $\mathcal{F}$ decreases.
+  The past is the direction of higher $\mathcal{F}$.
+  The future is the direction of lower $\mathcal{F}$.
+  This is a precise, mathematical version of the thermodynamic
+  arrow of time, derived from the RSVP variational structure
+  rather than imposed as an axiom.
+\end{TechNote}
+
+\section{The descent principle as unifying structure}
+
+The same inequality $\frac{d\mathcal{F}}{dt} \leq 0$ governs
+every major process in this book.
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{System} & \textbf{Functional $\mathcal{F}$} &
+\textbf{What descends} \\
+\midrule
+Allen--Cahn coarsening & Ginzburg--Landau energy &
+Interface area \\
+Cahn--Hilliard coarsening & Chemical free energy &
+Domain boundary energy \\
+Defect networks & Topological energy &
+Defect density \\
+RSVP field system & Full RSVP functional &
+All field gradients \\
+Entropy smoothing & Entropy gradient energy &
+$|\nabla S|^2$ \\
+Agent conflict & Gluing penalty + $\mathcal{F}$ &
+Overlap mismatch \\
+CLIO reconstruction & Reconstruction error &
+$E(x) = d(x,G(F(x)))$ \\
+Cosmological structure & RSVP free energy &
+Field gradients, defects \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{theorem}[Descent principle]
+  \label{thm:descent-principle}
+  \statusproven{}
+  All gradient-flow systems in this book share the structure:
+  \[
+    \frac{d\mathcal{F}}{dt} \leq 0,
+    \qquad
+    \mathcal{F} \text{ bounded below},
+    \qquad
+    \lim_{t\to\infty}\mathcal{F}(u(t)) = \mathcal{F}_\infty.
+  \]
+  This structure generates an intrinsic temporal orientation
+  (past = higher $\mathcal{F}$, future = lower $\mathcal{F}$)
+  that is consistent across all subsystems.
+\end{theorem}
+
+\begin{proof}
+  Each system has a Lyapunov function by its respective
+  dissipation theorem.
+  Since $\mathcal{F}$ is bounded below and decreasing,
+  $\mathcal{F}_\infty$ exists by the monotone convergence theorem.
+  The temporal orientation follows from Theorem~\ref{thm:irreversible}.
+  Consistency: all RSVP subsystems share the same $\mathcal{F}$,
+  so they agree on the direction of descent.
+\end{proof}
+
+\section{Attractors and the Monoturn}
+
+\begin{definition}[Global attractor]
+  The \emph{global attractor} $\mathcal{A}_\infty$ of the RSVP
+  system is the minimal closed set that attracts all bounded
+  trajectories:
+  \[
+    \mathcal{A}_\infty
+    = \overline{\{u^* : \delta\mathcal{F}/\delta u = 0\}}.
+  \]
+\end{definition}
+
+\begin{proposition}[Attractor characterises late-time structure]
+  \label{prop:attractor-cosmic}
+  In the cosmological RSVP interpretation, the global attractor
+  $\mathcal{A}_\infty$ represents the asymptotic large-scale
+  structure: the configuration toward which the cosmic plenum
+  tends as $t \to \infty$.
+\end{proposition}
+
+\begin{InterpBox}[The Monoturn as an attractor statement]
+  The Monoturn $\mathcal{M}$ is not static.
+  It is the global object that \emph{contains} the full
+  trajectory of descent, not just the endpoint.
+  An observer at time $t$ sees $\widehat{\mathcal{M}}_O$:
+  a section of the descent trajectory, horizon-limited.
+  The Monoturn is the descent trajectory itself, from
+  $\mathcal{F}(0)$ to $\mathcal{F}_\infty$, viewed as a
+  whole object.
+  This gives the Monoturn a temporal interpretation that was
+  implicit in Chapter~\ref{ch:monoturn} but not developed there.
+\end{InterpBox}
+
+\section{Entropy descent and causality}
+
+\begin{definition}[Causal precedence via $\mathcal{F}$]
+  \label{def:causal-precedence}
+  State $u_1$ causally \emph{precedes} state $u_2$ if
+  $u_2$ lies on a gradient-flow trajectory starting from $u_1$,
+  i.e., there exists $T > 0$ such that $u(0) = u_1$ and
+  $u(T) = u_2$ is a solution of $\partial_t u = -M\,\delta\mathcal{F}/\delta u$.
+\end{definition}
+
+\begin{proposition}[Causal precedence implies $\mathcal{F}$ decrease]
+  \label{prop:causal-F}
+  \statusproven{}
+  If $u_1$ causally precedes $u_2$, then
+  $\mathcal{F}(u_1) \geq \mathcal{F}(u_2)$.
+\end{proposition}
+
+\begin{proof}
+  Along the trajectory, $\frac{d\mathcal{F}}{dt} \leq 0$,
+  so $\mathcal{F}$ is nonincreasing.
+  Hence $\mathcal{F}(u(T)) \leq \mathcal{F}(u(0))$.
+\end{proof}
+
+\begin{theorem}[Entropy descent generates a partial order]
+  \label{thm:partial-order}
+  \statusproven{}
+  Causal precedence defined via Definition~\ref{def:causal-precedence}
+  is a partial order on the state space $\mathcal{X}$:
+  reflexive, antisymmetric (up to attractor equivalence),
+  and transitive.
+\end{theorem}
+
+\begin{proof}
+  \emph{Reflexive:} $u$ precedes itself (zero-time trajectory).
+  \emph{Transitive:} if $u_1 \to u_2 \to u_3$, concatenate
+  the trajectories.
+  \emph{Antisymmetric:} if $u_1 \to u_2$ and $u_2 \to u_1$,
+  then $\mathcal{F}(u_1) = \mathcal{F}(u_2)$ (by
+  Proposition~\ref{prop:causal-F}), so both lie on the same
+  level set of $\mathcal{F}$; if $\mathcal{F}$ is strictly
+  decreasing off the attractor, $u_1 = u_2$ on the attractor.
+\end{proof}
+
+\begin{ChapterConnection}
+  The partial order defined here gives $\mathcal{M}$ a temporal
+  structure derived from $\mathcal{F}$ rather than assumed from
+  Minkowski geometry.
+  Chapter~\ref{ch:monoturn} defined the Monoturn as the object
+  reconstructed from observer horizons.
+  This chapter adds: the Monoturn is also the object equipped
+  with the causal partial order generated by entropy descent.
+  The two definitions are compatible: horizon structure and
+  causal structure both emerge from the same RSVP functional.
+\end{ChapterConnection}
+
+\begin{WorkedExample}[Two-domain system]
+  Consider two coexisting Ising domains separated by a wall.
+  State $u_1$: two small domains, wall length $\ell_1$.
+  State $u_2$: one large domain, wall length $\ell_2 < \ell_1$.
+  Since $\mathcal{F}(u_2) < \mathcal{F}(u_1)$,
+  $u_1$ causally precedes $u_2$.
+  The wall shrinkage is the causal direction.
+  A reversed movie (wall growing) corresponds to a state where
+  $\mathcal{F}$ increases, which violates the gradient-flow
+  equations.
+  An observer who only sees snapshots can determine causal
+  direction from $\mathcal{F}$ values alone.
+\end{WorkedExample}
+
+\begin{Falsifiability}
+  If future cosmological observations reveal a large-scale
+  process where $\mathcal{F}_{\rm RSVP}$ increases over time
+  (e.g., void boundaries sharpening spontaneously, filaments
+  growing more complex without energy input), the gradient-flow
+  interpretation of RSVP would require revision.
+  The descent principle is testable if $\mathcal{F}_{\rm RSVP}$
+  can be estimated from large-scale structure surveys.
+\end{Falsifiability}
+
+\begin{ProblemSet}
+\problem{
+  Verify that the Allen--Cahn free energy $\mathcal{F}[\phi]
+  = \int[\frac{1}{4}(\phi^2-1)^2 + \frac{1}{2}|\nabla\phi|^2]\,dx$
+  satisfies the Lyapunov conditions: nonnegativity and
+  $d\mathcal{F}/dt \leq 0$ along solutions.
+}
+\problem{
+  Show that causal precedence (Definition~\ref{def:causal-precedence})
+  is not a total order in general.
+  Give an explicit example of two RSVP states $u_1$ and $u_2$
+  where neither precedes the other.
+  What does this mean physically?
+}
+\problem{
+  For the CLIO reconstruction error $E(x) = d(x,G(F(x)))$,
+  define an analogue of causal precedence: $x$ ``informationally
+  precedes'' $y$ if $y$ is a CLIO reconstruction of some
+  observation of $x$.
+  Show this is also a partial order.
+  How does it relate to the entropy-descent order?
+}
+\problem{
+  \textbf{Open problem.}
+  Define a ``free-energy distance'' between two states:
+  $d_{\mathcal{F}}(u_1,u_2) = |\mathcal{F}(u_1) - \mathcal{F}(u_2)|$.
+  Is this a metric?
+  If not, what property fails?
+  Propose a modification that makes it a metric or pseudometric,
+  and interpret the result physically.
+}
+\end{ProblemSet}
+
+\section{Lyapunov ordering: the intrinsic descent parameter}
+
+\begin{definition}[Intrinsic descent parameter]
+  \label{def:descent-param}
+  For initial state $u_0$, define
+  \[
+    \tau(u) = \mathcal{F}(u_0) - \mathcal{F}(u) \geq 0.
+  \]
+  This is the accumulated free-energy descent from $u_0$ to $u$.
+\end{definition}
+
+\begin{theorem}[Descent parameter as arrow of time]
+  \label{thm:descent-arrow}
+  \statusproven{}
+  Along any gradient-flow trajectory,
+  $\tau(u(t))$ is monotonically increasing.
+  In particular, $\tau$ provides an intrinsic, clock-independent
+  measure of temporal progression.
+\end{theorem}
+
+\begin{proof}
+  $\frac{d\tau}{dt} = -\frac{d\mathcal{F}}{dt}
+  = M\int|\delta\mathcal{F}/\delta u|^2\,dx \geq 0$.
+  Strict increase occurs whenever the system is not at equilibrium.
+\end{proof}
+
+\begin{InterpBox}[Time without clocks]
+  The descent parameter $\tau(u)$ defines a direction without
+  requiring an external clock.
+  States with larger $\tau$ are causally later than states with
+  smaller $\tau$.
+  This is a mathematically precise version of the thermodynamic
+  arrow of time, derived from the RSVP variational structure.
+  Clocks measure change; relaxation gives change a preferred
+  orientation.
+\end{InterpBox}
+
+\begin{proposition}[Monotonicity of entropy production rate]
+  \label{prop:entropy-monotone}
+  \statusproven{}
+  For $\partial_t u = -M\,\delta\mathcal{F}/\delta u$ with $M > 0$:
+  \[
+    \frac{d\mathcal{F}}{dt}
+    = -M\!\int\!\left|\frac{\delta\mathcal{F}}{\delta u}\right|^2 dx
+    \leq 0.
+  \]
+  Hence $\mathcal{F}(t_2) \leq \mathcal{F}(t_1)$ for $t_2 > t_1$.
+\end{proposition}
+
+\begin{proof}
+  $\frac{d\mathcal{F}}{dt}
+  = \int\frac{\delta\mathcal{F}}{\delta u}\partial_t u\,dx
+  = -M\int|\delta\mathcal{F}/\delta u|^2\,dx \leq 0$.
+  Integrate from $t_1$ to $t_2$.
+\end{proof}
+
+% ---- Figures and citations ----------------------------------
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+  \draw[->] (-3.2,0)--(3.2,0) node[right] {state space};
+  \draw[->] (0,-0.3)--(0,3.5) node[above] {$\mathcal{F}$};
+  \draw[domain=-2.8:2.8,smooth,thick,blue]
+    plot(\x,{0.12*(\x)^2});
+  % Descent trajectories
+  \foreach \x in {-2.5,-1.8,1.8,2.5} {
+    \draw[->,thick,red]
+      (\x,{0.12*(\x)^2}) --
+      ({0.5*\x},{0.12*(0.5*\x)^2});
+  }
+  \node at (2.8,1.2) [red] {$\frac{d\mathcal{F}}{dt}\leq 0$};
+  % Time label
+  \node at (-2.5,-0.3) {$t_1$};
+  \node at (-1.0,-0.3) {$t_2$};
+  \node at (0,-0.3) {$t_\infty$};
+\end{tikzpicture}
+\caption{Free-energy descent generates temporal orientation.
+         States at higher $\mathcal{F}$ are causally earlier
+         (Definition~\ref{def:causal-precedence}).
+         The descent parameter $\tau(u) = \mathcal{F}(u_0)-\mathcal{F}(u)$
+         provides an intrinsic, clock-independent arrow of time.}
+\label{fig:lyapunov-descent}
+\end{figure}
+
+\begin{CitationAnchor}
+  The Lyapunov-function framework for characterising temporal
+  ordering in dissipative systems has roots in Boltzmann's
+  $H$-theorem and Onsager's reciprocal relations.
+  The gradient-flow perspective is developed systematically in
+  Jordan, Kinderlehrer \& Otto (1998), who showed that diffusion
+  equations are Wasserstein gradient flows.
+  Prigogine's work on irreversibility and entropy production
+  provides physical motivation; see \textit{Introduction to
+  Thermodynamics of Irreversible Processes} (1967).
+  The LaSalle invariance principle used in
+  Corollary~\ref{cor:attractor} is standard; see Khalil (2002).
+\end{CitationAnchor}
+
+\begin{FurtherReading}
+  The mathematical theory connecting gradient flows and entropy
+  is developed in Ambrosio, Gigli \& Savaré (2005).
+  For the physical interpretation of entropy as a generator
+  of irreversibility, see Jaynes~\cite{jaynes2003}.
+  The connection between free-energy descent and temporal
+  asymmetry in statistical mechanics is surveyed in
+  Lebowitz (1993) and Zeh (2007).
+\end{FurtherReading}

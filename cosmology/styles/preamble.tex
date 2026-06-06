@@ -1,0 +1,564 @@
+% ============================================================
+%  styles/preamble.tex
+%  Shared preamble for Holonomic Space
+% ============================================================
+
+% ---- encoding and fonts -------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ---- mathematics --------------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{bm}           % bold math
+\usepackage{bbm}          % blackboard bold
+
+% ---- diagrams and commutative diagrams ----------------------
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{arrows,positioning,calc}
+
+% ---- layout -------------------------------------------------
+\usepackage[
+  top=1in, bottom=1in,
+  inner=1.25in, outer=1in,
+  headheight=14pt
+]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\leftmark}
+\fancyhead[RO]{\small\rightmark}
+\fancyfoot[C]{\thepage}
+
+% ---- hyperlinks (load near last) ----------------------------
+\usepackage[
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue
+]{hyperref}
+
+% ---- bibliography -------------------------------------------
+\usepackage[
+  backend=biber,
+  style=alphabetic,
+  sorting=nyt
+]{biblatex}
+\addbibresource{back/references.bib}
+
+% ---- graphics -----------------------------------------------
+\usepackage{graphicx}
+\usepackage{float}
+
+% ---- tables -------------------------------------------------
+\usepackage{booktabs}
+\usepackage{array}
+
+% ---- enumeration --------------------------------------------
+\usepackage{enumitem}
+
+% ============================================================
+%  Theorem environments
+% ============================================================
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{construction}[theorem]{Construction}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{note}[theorem]{Note}
+
+% ============================================================
+%  Custom commands
+% ============================================================
+
+% Fields
+\newcommand{\vv}{\mathbf{v}}
+\newcommand{\Ss}{S}
+\newcommand{\Ll}{L}
+\newcommand{\Dd}{D}
+
+% Spaces
+\newcommand{\Monoturn}{\mathcal{M}}
+\newcommand{\Ocularum}{\mathcal{O}}
+\newcommand{\Adm}{\mathcal{A}}
+\newcommand{\Glob}{\mathbf{Glob}}
+\newcommand{\Loc}{\mathbf{Loc}}
+\newcommand{\Sob}[1]{H^{#1}}
+\newcommand{\SobN}[2]{H^{#1}(#2)}
+
+% Free energy
+\newcommand{\FE}{\mathcal{F}}
+
+% Functors
+\newcommand{\Fdecomp}{F}
+\newcommand{\Grecon}{G}
+
+% Reconstruction error
+\newcommand{\RecErr}[1]{E(#1)}
+
+% Kernel notation
+\newcommand{\kernel}{\ker}
+
+% Cohomology
+\newcommand{\Hone}{H^1}
+\newcommand{\Hzero}{H^0}
+
+% Coarsening length
+\newcommand{\coarseningL}{\ell(t)}
+
+% RSVP relaxation rate
+\newcommand{\Rrsvp}{\mathcal{R}_{\mathrm{RSVP}}}
+
+% Effective Hubble
+\newcommand{\Heff}{H_{\mathrm{eff}}}
+
+% Variational derivative shorthand
+\newcommand{\varder}[2]{\frac{\delta #1}{\delta #2}}
+
+% Norm shorthand
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\normHk}[2]{\left\|#1\right\|_{H^{#2}}}
+
+% Part-whole notation
+\newcommand{\mso}{\mathrm{MSO}}
+
+% Boxed principle (used for preface theorems and key results)
+\newcommand{\principle}[1]{%
+  \begin{center}
+  \fbox{\parbox{0.85\textwidth}{\centering #1}}
+  \end{center}
+}
+
+% Chapter epigraph (optional)
+\newcommand{\epigraph}[2]{%
+  \begin{flushright}
+  \itshape #1\\[2pt]
+  \upshape\small --- #2
+  \end{flushright}
+  \vspace{1em}
+}
+
+% Status labels for theorems
+\newcommand{\statusproven}{\textbf{[Proven]}}
+\newcommand{\statusconjectured}{\textbf{[Conjectured]}}
+\newcommand{\statusopen}{\textbf{[Open Problem]}}
+
+% ============================================================
+%  Navigation box system
+%  Requires tcolorbox
+% ============================================================
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable,skins}
+
+% Colour palette
+\definecolor{boxblue}{RGB}{220,232,245}
+\definecolor{boxgreen}{RGB}{220,242,220}
+\definecolor{boxorange}{RGB}{255,237,210}
+\definecolor{boxred}{RGB}{250,220,220}
+\definecolor{boxgray}{RGB}{235,235,235}
+\definecolor{boxpurple}{RGB}{235,220,245}
+\definecolor{boxyellow}{RGB}{255,248,210}
+\definecolor{boxteal}{RGB}{210,240,238}
+
+% ------ Why This Matters ------------------------------------
+\newenvironment{WhyMatters}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Why This Matters}\ifx&#1&\else: #1\fi},
+    colback=boxblue,colframe=blue!40!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Technical Note --------------------------------------
+\newcounter{technote}[chapter]
+\renewcommand{\thetechnote}{\thechapter.\arabic{technote}}
+\newenvironment{TechNote}[1][]{%
+  \refstepcounter{technote}%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Technical Note~\thetechnote}\ifx&#1&\else: #1\fi},
+    colback=boxgray,colframe=gray!60!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Reconstruction Exercise -----------------------------
+\newcounter{rcexercise}[chapter]
+\renewcommand{\thercexercise}{\thechapter.\arabic{rcexercise}}
+\newenvironment{ReconExercise}[1][]{%
+  \refstepcounter{rcexercise}%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Reconstruction Exercise~\thercexercise}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxgreen,colframe=green!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Forward Reference -----------------------------------
+\newenvironment{ForwardRef}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Forward Reference}\ifx&#1&\else: #1\fi},
+    colback=boxyellow,colframe=orange!70!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Status Box ------------------------------------------
+\newenvironment{StatusBox}[1]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Status:} #1},
+    colback=boxorange,colframe=orange!60!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Common Misconception --------------------------------
+\newenvironment{Misconception}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Common Misconception}\ifx&#1&\else: #1\fi},
+    colback=boxred,colframe=red!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Admissibility Preview -------------------------------
+\newenvironment{AdmPreview}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Admissibility Preview}\ifx&#1&\else: #1\fi},
+    colback=boxpurple,colframe=purple!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Mathematical Echo -----------------------------------
+\newenvironment{MathEcho}{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Mathematical Echo}},
+    colback=boxgray,colframe=gray!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Open Question ---------------------------------------
+\newcounter{openq}[chapter]
+\renewcommand{\theopenq}{\thechapter.\arabic{openq}}
+\newenvironment{OpenQuestion}[1][]{%
+  \refstepcounter{openq}%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Open Question~\theopenq}\ifx&#1&\else: #1\fi},
+    colback=boxteal,colframe=teal!60!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Derivation Roadmap ----------------------------------
+\newenvironment{DerivRoadmap}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Derivation Roadmap}\ifx&#1&\else: #1\fi},
+    colback=boxyellow,colframe=yellow!60!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Obstruction Box -------------------------------------
+\newenvironment{ObstructionBox}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Obstruction}\ifx&#1&\else: #1\fi},
+    colback=boxred,colframe=red!60!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Interpretation Box ----------------------------------
+\newenvironment{InterpBox}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Interpretation}\ifx&#1&\else: #1\fi},
+    colback=boxblue,colframe=blue!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Local-to-Global Insight -----------------------------
+\newenvironment{LocalGlobal}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Local-to-Global Insight}\ifx&#1&\else: #1\fi},
+    colback=boxgreen,colframe=green!60!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Holonomy Note (end of each Part) --------------------
+\newenvironment{HolonomyNote}{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Holonomy Note}},
+    colback=boxpurple,colframe=purple!60!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Observable Consequences (Part VII) ------------------
+\newenvironment{ObsConseq}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Observable Consequences}\ifx&#1&\else: #1\fi},
+    colback=boxteal,colframe=teal!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ What Survived the Projection? -----------------------
+%  Used as final section of every chapter.
+%  Arg 1: Projection name
+%  Arg 2: Preserved (tabular rows: Item & description \\)
+%  Arg 3: Lost (tabular rows)
+%  Arg 4: Reconstruction status
+%  Arg 5: Kernel description
+\newcommand{\WhatSurvived}[5]{%
+  \section*{What Survived the Projection?}
+  \addcontentsline{toc}{section}{What Survived the Projection?}
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{What Survived the Projection?}
+           \quad\textit{Projection:} #1},
+    colback=boxgray,colframe=gray!60!black,
+    fonttitle=\small\sffamily
+  ]
+  \begin{minipage}[t]{0.48\linewidth}
+    \textbf{Preserved}\\[2pt]
+    \begin{tabular}{@{}l}
+      #2
+    \end{tabular}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.48\linewidth}
+    \textbf{Lost}\\[2pt]
+    \begin{tabular}{@{}l}
+      #3
+    \end{tabular}
+  \end{minipage}
+
+  \medskip
+  \textbf{Reconstruction possible:} #4
+
+  \textbf{Kernel:} #5
+  \end{tcolorbox}
+}
+
+% ------ Cross-Domain Example table --------------------------
+\newenvironment{CrossDomain}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Same Mathematics, Different Systems}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxblue,colframe=blue!40!black,
+    fonttitle=\small\sffamily
+  ]
+}{\end{tcolorbox}}
+
+% ============================================================
+%  Extended navigation boxes (added in v6)
+% ============================================================
+
+% ------ Why This Chapter Exists ----------------------------
+\newenvironment{WhyChapter}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Why This Chapter Exists}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxblue,colframe=blue!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ What Has Been Assumed -------------------------------
+\newenvironment{Assumptions}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Assumptions Behind This Derivation}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxorange,colframe=orange!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Connection to Earlier Chapters ----------------------
+\newenvironment{ChapterConnection}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Connection to Earlier Chapters}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxteal,colframe=teal!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Not Unique to Cosmology ----------------------------
+\newenvironment{NotUnique}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Why This Is Not Unique to Cosmology}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxgreen,colframe=green!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ What Could Falsify This? ---------------------------
+\newenvironment{Falsifiability}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{What Could Falsify This?}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxred,colframe=red!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Reconstruction View --------------------------------
+\newenvironment{ReconView}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Reconstruction View}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxpurple,colframe=purple!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Worked Example -------------------------------------
+\newcounter{workedex}[chapter]
+\renewcommand{\theworkedex}{\thechapter.\arabic{workedex}}
+\newenvironment{WorkedExample}[1][]{%
+  \refstepcounter{workedex}%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Worked Example~\theworkedex}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxyellow,colframe=yellow!60!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Problem Set (end of chapter) -----------------------
+%  Usage: \begin{ProblemSet} \problem{...} \problem{...} \end{ProblemSet}
+\newcounter{problem}[chapter]
+\renewcommand{\theproblem}{\thechapter.\arabic{problem}}
+\newcommand{\problem}[1]{%
+  \refstepcounter{problem}%
+  \medskip\noindent\textbf{Problem~\theproblem.}\quad #1\par
+}
+\newenvironment{ProblemSet}{%
+  \section*{Problems}
+  \addcontentsline{toc}{section}{Problems}
+}{\medskip}
+
+% ------ Visual Note (diagram reference) --------------------
+\newenvironment{VisualNote}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Visual Guide}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxgray,colframe=gray!40!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ------ Observable Box (Chapter 63 final form) -------------
+\newenvironment{ObservableBox}[1][]{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Observable vs.\ Reconstructible}%
+           \ifx&#1&\else: #1\fi},
+    colback=boxblue,colframe=blue!60!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% ============================================================
+%  Chapter opening prose interlude
+%  Appears after epigraph, before first section
+% ============================================================
+\newenvironment{ChapterIntro}{%
+  \medskip
+  \begin{quote}\itshape
+}{\end{quote}\medskip}
+
+% ============================================================
+%  Further Reading box and citation integration
+% ============================================================
+\newenvironment{FurtherReading}{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Further Reading}},
+    colback=boxgray,colframe=gray!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% Citation anchor note (appears after a theorem to place it in literature)
+\newenvironment{CitationAnchor}{%
+  \begin{tcolorbox}[
+    breakable,
+    title={\textbf{Mathematical Ancestry}},
+    colback=boxyellow,colframe=yellow!50!black,
+    fonttitle=\small\sffamily,
+    left=4pt,right=4pt,top=4pt,bottom=4pt
+  ]
+}{\end{tcolorbox}}
+
+% usetikzlibrary additions needed for diagrams
+\usetikzlibrary{decorations.pathmorphing,patterns}

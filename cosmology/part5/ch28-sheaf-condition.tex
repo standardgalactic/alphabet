@@ -1,0 +1,210 @@
+% ============================================================
+%  part5/ch28-sheaf-condition.tex
+%  Chapter 28: Admissibility as a Sheaf Condition
+% ============================================================
+
+\chapter{Admissibility as a Sheaf Condition}
+\label{ch:sheaf}
+
+\epigraph{%
+  A whole is reconstructible from local observations\\
+  if and only if admissible local data form a sheaf.%
+}{---}
+
+\begin{LocalGlobal}
+  The sheaf does not describe observations.
+  It describes \emph{when observations can be combined}.
+  The failure of combination is the primary object of study.
+\end{LocalGlobal}
+
+\section{The sheaf condition}
+
+\begin{definition}[Sheaf condition]
+  \label{def:sheaf-condition}
+  The presheaf $\mathcal{A}$ is a \emph{sheaf} if for every
+  open cover $U = \bigcup_i U_i$ and local sections
+  $s_i \in \mathcal{A}(U_i)$ satisfying the compatibility
+  condition
+  \[
+    s_i|_{U_i \cap U_j} = s_j|_{U_i \cap U_j}
+    \quad\text{for all } i,j,
+  \]
+  there exists a \emph{unique} $s \in \mathcal{A}(U)$ with
+  $s|_{U_i} = s_i$ for all $i$.
+\end{definition}
+
+\begin{theorem}[Unique gluing]
+  \label{thm:unique-gluing}
+  \statusproven{}
+  If $\mathcal{A}$ is a sheaf and $\{U_i\}$ covers $U$,
+  then compatible local RSVP sections glue uniquely.
+\end{theorem}
+
+\begin{proof}
+  Existence and uniqueness are exactly the sheaf axiom.
+  If $s, t \in \mathcal{A}(U)$ both restrict to all $s_i$,
+  then $s|_{U_i} = t|_{U_i}$ for every $i$.
+  Since $\{U_i\}$ covers $U$: $s = t$.
+\end{proof}
+
+\principle{
+  A whole is reconstructible from local observations\\[4pt]
+  if and only if admissible local data form a sheaf.
+}
+
+\section{Gluing, mismatches, and the Čech coboundary}
+
+\begin{definition}[Čech coboundary]
+  \label{def:cech}
+  For a cover $\mathcal{U} = \{U_i\}$, a $0$-cochain is
+  $(s_i)$ with $s_i \in \mathcal{A}(U_i)$.
+  The \emph{Čech coboundary} is
+  \[
+    (\check{\delta}s)_{ij}
+    = s_j|_{U_i \cap U_j} - s_i|_{U_i \cap U_j}.
+  \]
+\end{definition}
+
+\begin{proposition}[Vanishing coboundary $=$ compatibility]
+  \statusproven{}
+  $(s_i)$ is compatible on overlaps iff $\check{\delta}s = 0$.
+\end{proposition}
+
+\begin{definition}[Gluing penalty]
+  \label{def:gluing-penalty}
+  \[
+    \mathcal{O}_{\mathrm{glue}}(s)
+    = \|\check{\delta}s\|_{H^k}^2
+    = \sum_{i,j}
+    \|s_j|_{U_i\cap U_j} - s_i|_{U_i\cap U_j}\|_{H^k(U_i\cap U_j)}^2.
+  \]
+\end{definition}
+
+\begin{proposition}
+  \statusproven{}
+  $\mathcal{O}_{\mathrm{glue}}(s) = 0$ iff local sections
+  agree on all overlaps.
+\end{proposition}
+
+\section{Cohomological obstructions}
+
+\begin{definition}[First cohomology group]
+  \[
+    H^1(X, \mathcal{A})
+    = Z^1(X,\mathcal{A}) / B^1(X,\mathcal{A}),
+  \]
+  where $Z^1$ are $1$-cocycles and $B^1$ are $1$-coboundaries.
+\end{definition}
+
+\begin{ObstructionBox}
+  A nonzero class $[g] \in H^1(X, \mathcal{A})$ means local
+  reconstructions agree pairwise but cannot be assembled into
+  a global reconstruction.
+  The obstruction is not an error.
+  It is measurable structure.
+\end{ObstructionBox}
+
+\begin{proposition}[Nontrivial $H^1$ implies obstructed reconstruction]
+  \label{prop:h1-obstruction}
+  \statusproven{}
+  If $[g] \in H^1(X, \mathcal{A})$ is nonzero, the
+  corresponding local transition data cannot be globally
+  trivialised.
+\end{proposition}
+
+\begin{proof}
+  If $g$ could be trivialised, there exist local sections $s_i$
+  with $g_{ij} = s_j - s_i$, making $g$ a coboundary and
+  $[g] = 0$.
+  Contradiction.
+\end{proof}
+
+\begin{conjecture}[Cosmological obstruction]
+  \label{conj:cosmic-obstruction}
+  \statusconjectured{}
+  For finite causal horizons and entropy-limited overlaps:
+  \[
+    H^1(\mathcal{M}, \mathcal{A}^{(k)}_{\mathrm{RSVP}}) \neq 0.
+  \]
+\end{conjecture}
+
+\begin{OpenQuestion}
+  Compute $H^1(\mathcal{M}, \mathcal{A}^{(k)}_{\mathrm{RSVP}})$
+  for explicit cosmological covers (particle horizons, CMB
+  surfaces, void boundaries, filament complexes).
+\end{OpenQuestion}
+
+\section{Constrained reconstruction}
+
+\begin{definition}[Constrained reconstruction functional]
+  \label{def:recon-functional}
+  Given local data $(s_i)$:
+  \[
+    s^* = \operatorname*{argmin}_{r \in \mathcal{A}(U)}
+    \left[
+      \sum_i \|r|_{U_i} - s_i\|_{H^k(U_i)}^2
+      + \gamma\,\mathcal{F}_U[r]
+    \right].
+  \]
+\end{definition}
+
+\begin{proposition}[Compatible data are fixed points]
+  \statusproven{}
+  If $(s_i)$ glues exactly to $s \in \mathcal{A}(U)$,
+  and $s$ minimises energy among compatible sections,
+  then $s^* = s$.
+\end{proposition}
+
+\begin{MathEcho}
+  This chapter introduced:
+  $\mathcal{A}^{(k)}_{\mathrm{RSVP}}$,
+  $\check{\delta}s$,
+  $\mathcal{O}_{\mathrm{glue}}$,
+  $H^1(X,\mathcal{A})$,
+  and the constrained reconstruction functional.
+  These will appear in Chapter~\ref{ch:monoturn} (Monoturn
+  as the object with nontrivial $H^1$),
+  Chapter~\ref{ch:agency} (agent actions in $H^0(U,\mathcal{E})$),
+  and Chapter~\ref{ch:observer-horizons} (cosmological
+  reconstruction).
+\end{MathEcho}
+
+\begin{WorkedExample}[$H^1(S^1, \mathbb{Z})$]
+  Cover $S^1$ with two open sets $U_1$, $U_2$ overlapping in
+  two disjoint intervals $I_+$ and $I_-$.
+  A $0$-cochain is a pair of integers $(n_1, n_2) \in \mathbb{Z}^2$.
+  The coboundary on each overlap is $n_2 - n_1$.
+  A $1$-cocycle $(g_{12})$ assigns an integer to each overlap.
+  Consistency requires $g_{12}(I_+) - g_{12}(I_-) = 0$.
+  But a nontrivial assignment $g_{12}(I_+) = 1$,
+  $g_{12}(I_-) = 0$ satisfies local consistency while failing
+  to be a global coboundary.
+  This contributes a class in $H^1(S^1, \mathbb{Z}) \cong \mathbb{Z}$,
+  the winding number.
+  \textbf{Interpretation:} The integer winding number is precisely
+  the obstruction to global trivialisation of the transition data.
+\end{WorkedExample}
+
+\begin{ProblemSet}
+\problem{
+  Let $U_1 = (0, 2\pi)$ and $U_2 = (\pi, 3\pi)$ cover $S^1$.
+  Write the Čech coboundary for a $0$-cochain $(f_1, f_2)$
+  on each piece.
+  Show that the coboundary vanishes iff $f_1 = f_2$ on the overlap.
+}
+\problem{
+  Suppose two RSVP observers have horizons $H_1$ and $H_2$
+  with overlap $H_{12}$.
+  Their admissible sections satisfy
+  $s_1|_{H_{12}} = s_2|_{H_{12}} + \delta$ for some $\delta \neq 0$.
+  Compute $\|\check{\delta}(s_1, s_2)\|_{H^1}^2$ in terms of $\delta$.
+  What does this measure physically?
+}
+\problem{
+  \textbf{Inverse problem.}
+  Given that $H^1(X, \mathcal{A}) \cong \mathbb{Z}^3$,
+  how many inequivalent global reconstruction obstructions exist?
+  Give one physical scenario (from cosmology, memory, or detector
+  theory) that could generate each independent obstruction class.
+}
+\end{ProblemSet}

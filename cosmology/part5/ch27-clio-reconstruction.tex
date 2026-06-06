@@ -1,0 +1,78 @@
+% ============================================================
+%  part5/ch27-clio-reconstruction.tex
+%  Chapter 27: CLIO Reconstruction
+% ============================================================
+
+\chapter{CLIO: Constraint-Leveraged Inference and Optimisation}
+\label{ch:clio}
+
+\begin{WhyChapter}
+  Part~I established that observation is projection and
+  reconstruction is imperfect.
+  Part~II derived the reconstruction error $E(x) = d(x,G(F(x)))$
+  and showed it is zero only when $F$ is injective.
+  This chapter formalises the machinery for minimising
+  reconstruction error under admissibility constraints.
+  CLIO is the name for that minimisation framework.
+\end{WhyChapter}
+
+% Input the core reconstruction propositions from Part II
+\input{part2/proofs-part2}
+
+\section{CLIO as constrained optimisation}
+
+\begin{definition}[CLIO problem]
+  Given a decomposition $F : \mathcal{M} \to L$ and
+  observations $\{m_i\}$, find
+  \[
+    x^* = \operatorname*{argmin}_{x \in \mathcal{A}}
+    \left[\sum_i d(F(x), m_i)^2 + \lambda\,\mathcal{F}[x]\right],
+  \]
+  where $\mathcal{A}$ is the admissibility class and
+  $\mathcal{F}$ is the RSVP free-energy functional.
+\end{definition}
+
+The CLIO problem is the variational version of the Minimum
+Reconstruction Principle (Theorem~\ref{thm:min-recon}),
+extended to include the physical admissibility constraint
+$\mathcal{F}[x] < \infty$.
+
+\begin{ChapterConnection}
+  The CLIO error functional $\mathcal{E}[F,G]$ introduced
+  in the reconstruction propositions of Part~II is the
+  objective being minimised here.
+  The admissibility constraint $x \in \mathcal{A}$ is the
+  sheaf condition from Chapter~\ref{ch:sheaf}.
+  CLIO is therefore the intersection of reconstruction theory
+  (Part~II) and field theory (Part~IV) mediated by the
+  admissibility sheaf (Chapter~\ref{ch:sheaf}).
+\end{ChapterConnection}
+
+\begin{ReconView}
+  \textbf{Observable:} $m_i = F(x)$ (projected field values).
+  \textbf{Hidden:} $x \in \mathcal{A}$ (admissible field state).
+  \textbf{CLIO:} Select the admissible $x^*$ that minimises
+  mismatch with observations while respecting the energy structure.
+  \textbf{Error:} $E(x^*) = d(x^*, G(F(x^*)))$ measures
+  how far the optimal reconstruction departs from the truth.
+\end{ReconView}
+
+\begin{ProblemSet}
+\problem{
+  Show that if $F$ is injective and $\mathcal{A}$ contains the
+  true state, the CLIO problem has a unique solution with
+  $E = 0$.
+}
+\problem{
+  Suppose $\mathcal{A}$ is a closed convex set in $H^k$.
+  Show that the CLIO objective $\sum_i d(F(x), m_i)^2
+  + \lambda\mathcal{F}[x]$ has at least one minimiser.
+}
+\problem{
+  \textbf{Inverse problem.}
+  Given CLIO output $x^*$ and observations $\{m_i\}$,
+  compute the residual $\sum_i d(F(x^*), m_i)^2$.
+  If this is nonzero, what does it imply about the
+  admissibility class $\mathcal{A}$?
+}
+\end{ProblemSet}

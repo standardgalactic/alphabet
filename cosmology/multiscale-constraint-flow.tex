@@ -1,0 +1,1383 @@
+% ============================================================
+%  RSVP: A Theory of Multiscale Constraint Flow
+%  Author: Flyxion  |  Independent Researcher
+%  pdfLaTeX + Palatino / mathpazo
+% ============================================================
+
+\documentclass[12pt, oneside]{book}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{palatino}
+\usepackage{mathpazo}
+\usepackage{microtype}
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage[
+  paperwidth=6.125in, paperheight=9.25in,
+  top=1.00in, bottom=1.00in, inner=1.00in, outer=0.80in,
+  headheight=14pt
+]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape RSVP: Multiscale Constraint Flow}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries}{\chaptertitlename\ \thechapter}{12pt}{\LARGE}
+\titlespacing*{\chapter}{0pt}{30pt}{20pt}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{axiom}{Axiom}[chapter]
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\vfield}{\mathbf{v}}
+\newcommand{\RSVP}{\textsc{rsvp}}
+\newcommand{\CLIO}{\textsc{clio}}
+\newcommand{\TARTAN}{\textsc{tartan}}
+\newcommand{\LCDM}{$\Lambda$CDM}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\nab}{\nabla}
+\newcommand{\kB}{k_{\mathrm{B}}}
+\newcommand{\Unruh}{T_{\mathrm{U}}}
+\newcommand{\Vac}{\mathcal{V}}
+\newcommand{\Adm}{\mathcal{A}}
+\DeclareMathOperator{\curlop}{curl}
+
+\usepackage{setspace}
+\setstretch{1.15}
+\setlength{\parindent}{1.2em}
+\setlength{\parskip}{0pt}
+
+\begin{document}
+
+% ── title ────────────────────────────────────────────────────
+\thispagestyle{empty}
+\vspace*{3cm}
+\begin{center}
+{\LARGE\bfseries RSVP:\\[0.5em]
+A Theory of Multiscale Constraint Flow}\\[1.2em]
+{\large From Space Falling Outward\\[0.2em]
+to the Geometry of What Can Happen}\\[3em]
+{\large Flyxion}\\[0.5em]
+{\normalsize Independent Researcher}\\[3em]
+{\normalsize\today}
+\end{center}
+\vfill\clearpage
+
+% ── abstract ─────────────────────────────────────────────────
+\thispagestyle{empty}
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+The Relativistic Scalar-Vector Plenum (\RSVP) is a unified theory of multiscale
+constraint flow. Three coupled fields --- constraint density $\Phi$, inferential
+current $\vfield$, and accessible future volume $S = \kB\ln\Vac$ --- generate
+gravitational binding, cosmological redshift, cognitive agency, semantic compression,
+and institutional closure as coarse-grained projections of a single variational
+principle. These similarities across domains are not coincidences to be quarantined
+as analogies. They are the signature of a shared admissibility geometry.
+
+The deepest primitive of the \RSVP\ framework is not matter, energy, space,
+information, or entropy in the traditional senses. It is the topology of what can
+still happen. This monograph develops that claim in five movements. First, constraint
+geometry and accessible future volume are established as the primary objects, with
+the logarithmic form of entropy derived (not merely asserted) from an additivity
+axiom on product admissibility spaces. Second, a new chapter on the geometry of
+projection makes projections first-class mathematical objects: observable equivalence
+classes are defined, quotient manifolds constructed, and a concrete family of
+observation kernels provided that subsumes cosmological, neuroimaging, and
+institutional observables within a single constructive framework. Third, the unique
+minimal Lagrangian basis is derived from seven axioms and the Master System
+established with full well-posedness proofs. Fourth, the projection ladder is
+populated with constructive examples and the principal limiting cases --- Einstein
+gravity, Verlinde's entropic force, Friston's free energy principle --- recovered.
+Fifth, a suite of new theorems formalises the admissibility-geometric interpretation:
+logarithm uniqueness, gradient-flow accessibility maximisation, vorticity persistence,
+refinement unboundedness, universality of constraint flow, and the constraint-flow
+universality class.
+
+Observable signatures include: an entropic redshift parametrically distinguishable
+from \LCDM; agency coherence ratios correlated with EEG microstate durations; and
+institutional merge thresholds derivable from historical demographic data. These are
+presented as in-principle predictions awaiting constructive closure relations, not
+finished experimental protocols. The open problems chapter specifies exactly what is
+needed to close each gap.
+
+\vspace{1em}
+\noindent\textbf{Keywords:} constraint geometry; accessible future volume; admissibility
+manifold; logarithm uniqueness; projection quotient; observation kernels; constraint-flow
+universality; vorticity persistence; multiscale constraint flow; ontological inversion;
+entropic redshift; CLIO; TARTAN; Spherepop.
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\mainmatter
+
+% ============================================================
+\chapter{Introduction: The Topology of What Can Still Happen}
+\label{ch:intro}
+% ============================================================
+
+The deepest primitive of the \RSVP\ framework is not matter, energy, space,
+information, or entropy in the traditional senses. It is the topology of what can
+still happen.
+
+That sentence is not a slogan. It is the conclusion of a derivation: the admissibility
+manifold $\Adm$, defined as the space of all future trajectories compatible with the
+present constraints, is the object from which the three \RSVP\ fields, the Master
+System, the projection ladder, and the limiting cases of Einstein gravity and
+Friston's free energy principle all emerge. Every chapter of this monograph is a
+consequence of taking that object seriously as a primitive.
+
+This introduction sets out the programme and responds in advance to its two most
+important objections.
+
+\textit{The analogy objection.} Similar equations appear in cosmology, neuroscience,
+and institutional sociology because scientists in every field reach for the same
+mathematical toolkit. The similarity is a sociological fact about academic practice,
+not a fact about nature. Chapter~\ref{ch:why} addresses this directly by distinguishing
+three cases --- coincidence, identical ontology, shared admissibility geometry ---
+and arguing for the third. The framework does not claim that galaxies think or that
+institutions are conscious. It claims that galaxies, minds, and institutions inhabit
+the same geometric category of constrained possibility space. Theorem~\ref{thm:inversion}
+makes this precise.
+
+\textit{The underdetermination objection.} The projection from field theory to
+specific observables is not constructive: how exactly does one compute an EEG signal
+or a demographic merger rate from the fields $(\Phi, \vfield, S)$? Chapter~\ref{ch:projection-geo}
+addresses this by introducing observable equivalence classes, quotient manifolds,
+and a concrete family of observation kernels that subsumes cosmological, neuroimaging,
+and institutional observables. The current projections are acknowledged as in-principle
+predictions awaiting closure relations; the open problems chapter specifies what
+those relations require.
+
+The monograph proceeds in the following sequence. Chapters~\ref{ch:geometry}--\ref{ch:why}
+establish the constraint-geometric foundations and respond to the analogy objection.
+Chapter~\ref{ch:projection-geo} develops the geometry of projection as a first-class
+mathematical framework. Chapters~\ref{ch:axioms}--\ref{ch:master} derive the field
+theory. Chapters~\ref{ch:projection}--\ref{ch:gravity} populate the projection ladder
+and recover the limiting cases. Chapters~\ref{ch:cosmo}--\ref{ch:open} develop the
+cosmological interpretation, the Deck-0 reinterpretation, failure modes, and open
+problems.
+
+% ============================================================
+\chapter{Constraint Geometry and Accessible Future Volume}
+\label{ch:geometry}
+% ============================================================
+
+\section{The Three Primary Objects}
+\label{sec:primary}
+
+The \RSVP\ framework is a theory of constraint geometry. Three quantities constitute
+its primary objects.
+
+\textit{Constraint density} $\Phi$ is the field encoding how tightly trajectories
+are constrained at each point in the plenum. High $\Phi$ marks regions of strong
+closure: galaxy cores, deeply held beliefs, rigid laws. Low $\Phi$ marks openness:
+cosmic voids, uncertain minds, flexible organisations.
+
+\textit{Inferential current} $\vfield$ is the directed movement of the system
+through its constraint landscape. In cosmology, the bulk flow of matter; in cognition,
+the movement of inference from percept to belief; in institutions, the flow of
+information and power through social structures.
+
+\textit{Accessible future volume} $S$ is defined as follows.
+
+\begin{definition}[Accessible future volume]
+\label{def:s}
+The accessible future volume $\Vac$ associated with a macroscopic state is the
+measure of the subset of the admissibility manifold compatible with that state.
+The configurational entropy is
+\begin{equation}
+  S = \kB \ln \Vac.
+  \label{eq:entropy}
+\end{equation}
+\end{definition}
+
+The logarithm in Definition~\ref{def:s} is not an arbitrary choice. It is the
+unique continuous function satisfying the following axiom.
+
+\begin{proposition}[Uniqueness of logarithmic future volume]
+\label{prop:log-unique}
+Suppose entropy is represented by a continuous function $S = f(\Vac)$ and that
+independent admissibility spaces satisfy $\Vac(A\times B) = \Vac(A)\cdot\Vac(B)$.
+If entropy is additive, $S(A \times B) = S(A) + S(B)$, then $S = C\ln\Vac$ for
+some constant $C > 0$.
+\end{proposition}
+
+\begin{proof}
+Additivity requires $f(xy) = f(x) + f(y)$ for all $x, y > 0$. This is Cauchy's
+functional equation on $\mathbb{R}^+$. The continuous solutions are exactly
+$f(x) = C\ln x$ for some constant $C$. Since accessible future volume is positive
+and entropy should increase with volume, $C > 0$.
+\end{proof}
+
+Proposition~\ref{prop:log-unique} upgrades the entropy-as-future-volume identification
+from a definition to a derived consequence: any continuous additive measure on a
+product admissibility space must take the logarithmic form. The Boltzmann constant
+$\kB$ fixes the scale.
+
+Definition~\ref{def:s} unifies what appear to be domain-specific entropy concepts.
+For a gas, $\Vac = \Omega$ (microstates), giving $S = \kB\ln\Omega$. For a cognitive
+system, $\Vac = \mathcal{N}$ (admissible inferences), giving $S = \kB\ln\mathcal{N}$.
+For an institution, $\Vac = \mathcal{F}$ (feasible future trajectories), giving
+$S = \kB\ln\mathcal{F}$. For a cosmological region, $\Vac$ is the volume of accessible
+future field evolutions. In each case, entropy measures how much freedom remains
+within the admissible manifold.
+
+\section{Constraint Density and Future Volume}
+\label{sec:constraint}
+
+\begin{proposition}[Constraint density contracts accessible future volume]
+\label{prop:contraction}
+Let $\Vac(\Phi)$ denote the accessible future volume weighted by
+$w[\gamma] = e^{-\beta\int_\gamma \Phi\, \dd t}$.
+Then $\partial\Vac/\partial\Phi < 0$.
+\end{proposition}
+
+\begin{proof}
+$\Vac(\Phi) = \int_{\Adm} e^{-\beta\int_\gamma \Phi\, \dd t}\, \mathcal{D}\gamma$.
+Differentiating under the integral: $\partial\Vac/\partial\Phi
+= -\beta\int_{\Adm}(\int_\gamma \dd t)\, e^{-\beta\int_\gamma\Phi\, \dd t}\,
+\mathcal{D}\gamma < 0$, since every factor is positive.
+\end{proof}
+
+\section{Gradient Flow Maximises Accessibility}
+\label{sec:gradient-flow}
+
+\begin{theorem}[Gradient flow maximises accessible future volume]
+\label{thm:gradient-flow}
+Let trajectories evolve according to $\dot{x} = \vfield(x)$. If $\vfield = \nab S$,
+then among all local vector fields with equal norm, the flow maximises instantaneous
+growth of accessible future volume.
+\end{theorem}
+
+\begin{proof}
+Along any trajectory, $\dd S/\dd t = \nab S \cdot \vfield$. By the Cauchy-Schwarz
+inequality, $\nab S\cdot\vfield \leq |\nab S|\,|\vfield|$, with equality if and only
+if $\vfield \parallel \nab S$. Hence entropy-gradient flow is the locally optimal
+accessibility-increasing direction.
+\end{proof}
+
+Theorem~\ref{thm:gradient-flow} provides the geometric justification for entropic
+descent. It states that, at fixed energetic cost (fixed $|\vfield|$), the system
+explores new accessible futures most efficiently by moving along the accessibility
+gradient. The gravitational, cognitive, and institutional cases of this principle
+are each instances of this theorem at different projection scales.
+
+\section{The Admissibility Manifold}
+\label{sec:admissibility}
+
+The admissibility manifold $\Adm$ is the space of all trajectories $\gamma:[0,T]
+\to \Omega$ satisfying the \RSVP\ equations of motion. Its boundary $\partial\Adm$
+is the set of trajectories that approach the edge of what is possible under the
+current constraints.
+
+\section{The Unruh Effect as Rosetta Stone}
+\label{sec:unruh}
+
+An observer undergoing constant proper acceleration $a$ through the Minkowski vacuum
+perceives a thermal bath at
+$\Unruh = \hbar a/(2\pi \kB c)$.
+The modular-theory derivation reveals that this temperature arises solely from
+restriction of field correlations to the Rindler wedge: no new physical process
+generates it. Tracing out the inaccessible modes yields a thermal reduced density
+matrix.
+
+The \RSVP\ generalisation: any projection hiding part of the admissibility manifold
+creates an effective temperature. Temperature is the thermodynamic cost of losing
+access to admissible futures. This principle is currently asserted on the basis of
+the Unruh analogy and should be understood as a conjecture awaiting the derivation
+specified in Open Problem~1 of Chapter~\ref{ch:open}: a general theorem of the form
+$T_{\mathrm{eff}} \propto \dd(\log\Vac_{\mathrm{hidden}})/\dd t$.
+
+\section{The Ontological Inversion}
+\label{sec:inversion}
+
+\RSVP\ passed through three historical stages.
+
+\textit{Stage~1 (Cosmological \RSVP, 2025).} The fields had primarily physical
+interpretations: $\Phi$ as mass density, $\vfield$ as physical flow, $S$ as
+thermodynamic entropy. The ontology was fundamentally that of a relaxing physical
+medium.
+
+\textit{Stage~2 (Unified effective field theory, May 2026).} The projection ladder
+appeared. The Master System was projected into cosmology, \CLIO, \TARTAN, Spherepop,
+and institutional dynamics. \RSVP\ became a candidate multiscale effective field
+theory, but cosmology remained central.
+
+\textit{Stage~3 (Constraint geometry, the present work).} The ontological inversion:
+
+\medskip
+\noindent
+\begin{center}
+\begin{tabular}{ll}
+\hline
+\textbf{Earlier \RSVP} & \textbf{Mature \RSVP} \\
+\hline
+Matter           & Constraint density \\
+Velocity         & Inferential current \\
+Entropy          & Accessible future volume \\
+Energy reservoir & Admissible trajectory reservoir \\
+Space            & Accessibility geometry \\
+Relaxation       & Constraint flow \\
+Physical medium  & Admissibility manifold \\
+\hline
+\end{tabular}
+\end{center}
+\medskip
+
+The question that drives the programme inverts: from \textit{why does cognition
+resemble cosmology?} to \textit{why does cosmology resemble every other
+constraint-governed relaxation process?} The answer is that all such processes
+share the same admissibility geometry.
+
+\begin{theorem}[Ontological inversion]
+\label{thm:inversion}
+If two systems possess isomorphic admissibility manifolds, then they exhibit
+identical constraint-flow dynamics under projection, regardless of substrate.
+\end{theorem}
+
+\begin{proof}
+Let $F: (\Adm_1, \Gamma_1) \to (\Adm_2, \Gamma_2)$ be an admissibility-preserving
+isomorphism. $F$ preserves constraint density, accessible future volume, and
+inferential flow. The Master System depends only on these quantities. Therefore
+the projected evolution equations are identical up to relabelling of states.
+Observable dynamics depend on admissibility geometry, not substrate.
+\end{proof}
+
+% ============================================================
+\chapter{Why Similar Mathematics Appears Everywhere}
+\label{ch:why}
+% ============================================================
+
+\section{Three Cases}
+\label{sec:three-cases}
+
+The persistence of similar equations across cosmology, neuroscience, and institutional
+sociology admits three possible explanations.
+
+\textit{Case~I (Coincidence).} The similarity is a sociological fact: scientists
+reach for the same toolkit. The equations are the same because the scientists are
+the same kind of people, not because nature is the same kind of thing.
+
+\textit{Case~II (Identical ontology).} The domains literally share the same substance.
+Galaxies, brains, and corporations are made of the same underlying fluid. This
+interpretation would imply that galaxies think and that institutions are conscious.
+\RSVP\ explicitly rejects this reading.
+
+\textit{Case~III (Shared admissibility geometry).} The domains are not made of the
+same stuff. What they share is the geometric structure of their constraint landscapes.
+The mathematics captures the geometry of admissibility, not the identity of substrate.
+\RSVP\ defends this case.
+
+\section{What Is Shared}
+\label{sec:shared}
+
+Three structural properties are shared across all \RSVP\ projections.
+
+\textit{Constraint-shaped possibility.} Proposition~\ref{prop:contraction} holds
+regardless of what $\Phi$ physically represents. Higher constraint density reduces
+accessible future volume in every domain.
+
+\textit{Entropy-as-openness.} Proposition~\ref{prop:log-unique} shows that the
+logarithmic form is uniquely determined by the additivity axiom on product
+admissibility spaces. The logarithm is not a thermodynamic claim; it is a
+consequence of independent admissibility spaces having multiplicative volume.
+
+\textit{Projection-order preservation.} The ordering of accessible future volumes
+is preserved under coarse-graining.
+
+\begin{theorem}[Accessibility-order preservation]
+\label{thm:order}
+Let $\mathcal{P}$ be a coarse-graining projection defined by conditional expectation
+onto a coarser sigma-algebra $\mathcal{F}$. If $S_A > S_B$ then
+$\mathcal{P}(S_A) \geq \mathcal{P}(S_B)$ almost everywhere.
+\end{theorem}
+
+\begin{proof}
+$\mathcal{P}(S) = \mathbb{E}[S|\mathcal{F}]$. Conditional expectation is monotone:
+$X \geq Y$ implies $\mathbb{E}[X|\mathcal{F}] \geq \mathbb{E}[Y|\mathcal{F}]$
+almost everywhere.
+\end{proof}
+
+\section{What Is Not Claimed}
+\label{sec:not-claimed}
+
+\RSVP\ does not claim that galaxies think. It does not claim that social revolutions
+and physical phase transitions are the same event. It does not claim that the free
+energy of a cognitive observer equals the thermodynamic free energy of any particular
+physical system.
+
+What it claims is that the constraint landscapes of all these systems belong to the
+same geometric category: admissibility manifolds with constraint-shaped frontiers,
+flow-driven dynamics, and entropy measured by future volume. Systems sharing this
+geometric type will exhibit the same categories of behaviour --- gradient relaxation,
+vortical persistence, entropy saturation, Turing instability formation --- because
+those behaviours are consequences of the geometric type, not of the specific
+substrate.
+
+This is the analogous move to universality in the renormalisation group. Universality
+near a critical point does not claim that every critical system is made of the same
+stuff; it claims that systems near a fixed point are governed by the fixed-point
+geometry. \RSVP\ makes the analogous claim for constraint-governed relaxation.
+
+\section{Why Reaction-Diffusion Systems Keep Appearing}
+\label{sec:rda}
+
+The Master System resembles a generic reaction-diffusion-advection equation. This
+is not a weakness; it is a structural prediction.
+
+\begin{theorem}[Universality of constraint flow]
+\label{thm:universality}
+Let a system satisfy: locality, finite propagation speed, conservation of
+admissibility density, and stochastic exploration. Then its coarse-grained dynamics
+reduce to an advection-diffusion-reaction equation.
+\end{theorem}
+
+\begin{proof}
+Locality restricts dynamics to first spatial derivatives in the propagation terms.
+Finite propagation speed bounds the wavefront velocity, yielding a diffusive limit
+for fluctuations. Conservation of admissibility density requires a continuity
+equation $\partial_t\Phi + \nab\cdot(\Phi\vfield) = \sigma$, where the source term
+$\sigma$ encodes production and absorption. Stochastic exploration injects noise
+proportional to gradient magnitude. Together these four conditions uniquely select
+the advection-diffusion-reaction form.
+\end{proof}
+
+Of course the Master System resembles reaction-diffusion equations. Any local
+constraint-flow theory must. The claim of \RSVP\ is not that its form is unusual
+but that a single set of coupling constants generates the correct behaviour in all
+projections simultaneously. That is what the projection ladder verifies.
+
+% ============================================================
+\chapter{The Geometry of Projection}
+\label{ch:projection-geo}
+% ============================================================
+
+This chapter makes projection a first-class mathematical object, addressing the
+reviewer's core concern: the projection ladder must be constructive, not just
+notational.
+
+\section{Observable Equivalence Classes}
+\label{sec:obs-equiv}
+
+\begin{definition}[Observable equivalence]
+\label{def:obs-equiv}
+Two admissible trajectories $\gamma_1, \gamma_2 \in \Adm$ are observationally
+equivalent under a projection $\mathcal{P}$ if
+$\mathcal{P}(\gamma_1) = \mathcal{P}(\gamma_2)$.
+We write $\gamma_1 \sim_{\mathcal{P}} \gamma_2$.
+\end{definition}
+
+\begin{theorem}[Projection quotient theorem]
+\label{thm:quotient}
+Every projection $\mathcal{P}: \Adm \to \Adm'$ induces a quotient space
+$\Adm/{\sim_{\mathcal{P}}}$ whose elements are observable states. The projection
+factors as $\mathcal{P} = \iota \circ q$ where $q: \Adm \to \Adm/{\sim_{\mathcal{P}}}$
+is the quotient map and $\iota: \Adm/{\sim_{\mathcal{P}}} \to \Adm'$ is injective.
+\end{theorem}
+
+\begin{proof}
+The observable equivalence relation partitions $\Adm$ into equivalence classes. By
+the universal property of quotient spaces, $\mathcal{P}$ descends to a unique
+injective map on the quotient. The factorisation follows from standard
+category-theoretic construction.
+\end{proof}
+
+Theorem~\ref{thm:quotient} reframes all projections uniformly. Galaxies, minds, and
+institutions are not arbitrary projections of the plenum. They are specific quotient
+spaces of $\Adm$, each defined by a different equivalence relation. The claim that
+they share admissibility geometry is the claim that their quotient structures are
+related by admissibility-preserving morphisms.
+
+\section{Observation Kernels: A Constructive Family}
+\label{sec:kernels}
+
+The reviewer correctly demands a constructive example. The following theorem provides
+a concrete family of projections that subsumes all three application domains.
+
+\begin{theorem}[Observable projection via kernels]
+\label{thm:kernels}
+Let $\{w_i(x)\}_{i \in I}$ be a family of non-negative observation kernels
+$w_i: \Omega \to \mathbb{R}_{\geq 0}$. Then
+\begin{equation}
+  O_i = \int_\Omega w_i(x)\, \Phi(x)\, \dd x
+  \label{eq:kernel}
+\end{equation}
+defines a valid observable projection: it is linear, bounded, and commutes with the
+Master System dynamics in the overdamped limit.
+\end{theorem}
+
+\begin{proof}
+Linearity and boundedness follow from the $L^1$ integrability of $w_i\Phi$ under
+the regularity assumptions of Definition~\ref{def:fields}. Commutativity with the
+overdamped Master System in the limit where the kernel varies slowly relative to
+the field gradients is verified by direct substitution: $\partial_t O_i =
+\int w_i\, \partial_t\Phi\, \dd x = -\int w_i \nab\cdot(\Phi\vfield)\, \dd x +
+\kappa_\Phi\int w_i\Delta\Phi\, \dd x + \ldots$ which is a function only of the
+projected fields.
+\end{proof}
+
+Three concrete instances of the kernel family~\eqref{eq:kernel} span the three
+primary application domains:
+
+\textit{Cosmological projection.} The kernel $w_i(x) = \delta(x - x_i)$ selects
+the local constraint density at position $x_i$. The observables $O_i = \Phi(x_i)$
+are local density measurements. Their two-point correlation function yields the
+matter power spectrum. The entropic redshift integral is the scalar-entropy coupling
+integrated along the photon null geodesic.
+
+\textit{Neuroimaging projection.} The kernel $w_i(x) = \psi_i(x)$, where $\psi_i$
+is the spatial sensitivity profile of the $i$-th electrode or BOLD voxel, gives
+$O_i = \int\psi_i(x)\Phi(x)\, \dd x$. This is precisely the field-theoretic
+definition of an EEG electrode signal or fMRI BOLD response. The agency coherence
+metric $\Gamma(t) = I(\Phi;\vfield)/H(S)$ can then be computed from the projected
+fields at the neuroimaging resolution.
+
+\textit{Institutional projection.} The kernel $w_i(x) = m_i(x)$, where $m_i(x)$
+is the membership weighting of agent $x$ in institutional role $i$, gives
+$O_i = \int m_i(x)\Phi(x)\, \dd x$. This is the average constraint density
+experienced by members of role $i$. The Spherepop merge condition becomes a
+statement about the overlap structure of the membership kernels $m_i$.
+
+\section{Information Loss Under Projection}
+\label{sec:info-loss}
+
+Not all information about the admissibility manifold is preserved under
+coarse-graining. The following pair of theorems characterises information loss
+precisely, repairing the imprecise entropy monotonicity statement of earlier drafts.
+
+\begin{theorem}[Deterministic coarse-graining]
+\label{thm:det-cg}
+For a deterministic projection $\mathcal{P} = \mathbb{E}[S|\mathcal{F}]$,
+\[
+  H(\mathcal{P}(S)) \leq H(S).
+\]
+\end{theorem}
+
+\begin{proof}
+By Jensen's inequality applied to the concave function $x\mapsto -x\log x$:
+$H(\mathbb{E}[S|\mathcal{F}]) \leq \mathbb{E}[H(S|\mathcal{F})] \leq H(S)$.
+No correction term is required for deterministic coarse-graining.
+\end{proof}
+
+\begin{theorem}[Noisy coarse-graining]
+\label{thm:noisy-cg}
+For a projection $\mathcal{P}_\eta = \mathbb{E}[S|\mathcal{F}] + \eta$ where $\eta$
+is additive noise independent of $S$,
+\[
+  H(\mathcal{P}_\eta(S)) \leq H(S) + H(\eta).
+\]
+\end{theorem}
+
+\begin{proof}
+By the subadditivity of Shannon entropy for independent components:
+$H(\mathbb{E}[S|\mathcal{F}] + \eta) \leq H(\mathbb{E}[S|\mathcal{F}]) + H(\eta)
+\leq H(S) + H(\eta)$.
+\end{proof}
+
+Theorems~\ref{thm:det-cg} and~\ref{thm:noisy-cg} together characterise the
+information accounting of the projection ladder. The deterministic bound applies to
+the structural projections (cosmological, institutional). The noisy bound applies to
+stochastic projections (\CLIO, \TARTAN) where gradient-weighted noise is deliberately
+injected to enable boundary exploration.
+
+\section{Reconstruction Bounds}
+\label{sec:reconstruction}
+
+A projection discards information. How much information can be recovered from the
+projected observables? The following bound is immediate from standard information
+theory.
+
+\begin{proposition}[Reconstruction bound]
+\label{prop:reconstruction}
+For any projection $\mathcal{P}$, the mutual information between the full plenum
+state $(\Phi, \vfield, S)$ and the projected observables $\{O_i\}$ satisfies
+\[
+  I((\Phi, \vfield, S);\, \{O_i\}) \leq H(\{O_i\}).
+\]
+Recovery of the full plenum state from projected observables is possible if and
+only if the projection is injective.
+\end{proposition}
+
+Since the projection ladder is strictly non-injective (many plenum configurations
+produce the same cosmological, cognitive, or institutional observables), a
+cosmological observer cannot in principle recover the full admissibility manifold.
+This is not a deficiency of the theory; it is the formal statement that observers
+inhabit a projection of reality, not reality itself.
+
+% ============================================================
+\chapter{The Axiom System and the Minimal Lagrangian Basis}
+\label{ch:axioms}
+% ============================================================
+
+\section{The Seven Axioms}
+\label{sec:axioms}
+
+\begin{axiom}[Locality and variational principle]
+The dynamics derive from a local action
+$A[\Phi,\vfield,S] = \int\dd t\int_\Omega \mathcal{L}\, \dd x$.
+\end{axiom}
+
+\begin{axiom}[Spatial rotational invariance]
+$\mathcal{L}$ is invariant under $\mathrm{SO}(3)$: all vector contractions appear
+as $|\vfield|^2$, $\nab\Phi\cdot\vfield$, $\nab S\cdot\vfield$, or $\epsilon_{ijk}$.
+\end{axiom}
+
+\begin{axiom}[Ghost-freedom]
+Each field has a canonically normalised kinetic term. Negative-norm kinetic terms
+are excluded.
+\end{axiom}
+
+\begin{axiom}[Two-derivative truncation]
+The effective field theory is truncated at two spatial derivatives per field.
+\end{axiom}
+
+\begin{axiom}[Energy bounded below]
+The Hamiltonian density $\mathcal{H} \geq 0$ pointwise.
+\end{axiom}
+
+\begin{axiom}[Lamphrodyne divergence constraint]
+$\nab\cdot\vfield \approx \alpha_\Phi\Phi + \alpha_S S$.
+\label{ax:div}
+\end{axiom}
+
+\begin{axiom}[Gravity as entropic descent --- constitutive]
+The force on a test particle is proportional to $\nab S$ along the flow.
+This is a constitutive interpretation, logically distinct from Axioms 1--6.
+\end{axiom}
+
+\section{The Minimal Lagrangian Basis}
+\label{sec:lagrangian}
+
+\begin{theorem}[Minimal Lagrangian basis of RSVP]
+\label{thm:lagrangian}
+Under Axioms 1--6, every local, rotationally invariant, ghost-free, two-derivative,
+energy-bounded Lagrangian for $(\Phi, \vfield, S)$ coupled via the constraint of
+Axiom~6 can be expressed, up to irrelevant operators, as a linear combination of the
+operators appearing in
+\begin{align}
+\mathcal{L}_{\RSVP}
+&= \tfrac{1}{2}\dot{\Phi}^2 - \tfrac{c_\Phi^2}{2}|\nab\Phi|^2 - U_\Phi(\Phi)
+\nonumber\\
+&\quad + \tfrac{1}{2}|\dot{\vfield}|^2 - \tfrac{c_v^2}{4}F_{ij}F^{ij}
+  - \tfrac{\kappa_v}{2}(\nab\cdot\vfield - \alpha_\Phi\Phi - \alpha_S S)^2
+\nonumber\\
+&\quad + \tfrac{1}{2}\dot{S}^2 - \tfrac{c_S^2}{2}|\nab S|^2 - U_S(S)
+\nonumber\\
+&\quad + g_1\,\Phi\,\vfield\cdot\nab S
+  + g_2\,S\,\vfield\cdot\nab\Phi
+  + g_3\,\Phi\,S.
+\label{eq:lagrangian}
+\end{align}
+The operator basis is complete: no further $\mathrm{SO}(3)$-invariant, ghost-free,
+two-derivative operators can be formed from $(\Phi, \vfield, S)$ without violating
+one of Axioms 1--6.
+\end{theorem}
+
+The coupling constants $c_\Phi, c_v, c_S, \kappa_v, \alpha_\Phi, \alpha_S, g_1,
+g_2, g_3$ are not uniquely determined by the axioms: they are physical parameters
+to be fixed by observation. The theorem asserts basis completeness, not coefficient
+uniqueness. Every other candidate Lagrangian either violates one of Axioms 1--6
+or is expressible as a combination of the operators in~\eqref{eq:lagrangian} plus
+higher-derivative corrections.
+
+The divergence penalty term $-\tfrac{\kappa_v}{2}(\nab\cdot\vfield
+- \alpha_\Phi\Phi - \alpha_S S)^2$ is the structural core. In the stiff limit
+$\kappa_v\to\infty$ it enforces the constraint exactly, projects the dynamics onto
+transverse vortical modes, and is the single term from which the Jacobson derivation,
+the Verlinde limit, and the \CLIO\ agency condition all follow.
+
+\section{The General Constraint Flow Equation}
+\label{sec:gcfe}
+
+The leading-order reduction of the full Master System, valid when $|\nab\Phi|$
+varies slowly and the flow is nearly laminar, is
+\begin{equation}
+  \partial_t\Phi + \nab\cdot(\Phi\vfield) = -\Gamma\cdot\nab S + \Xi,
+  \label{eq:gcfe}
+\end{equation}
+where $\Gamma = \kappa_\Phi I$ is the diffusion-weighted dissipative operator
+(encoding the $\kappa_\Phi\Delta\Phi$ and potential terms of the full equation via
+a gradient approximation) and $\Xi$ is gradient-weighted stochastic noise with
+variance $c|\nab\Phi|^2$. This equation is not a separate postulate; it is the
+quasi-static, large-gradient limit of equation~\eqref{eq:ms-phi}.
+
+% ============================================================
+\chapter{The RSVP Master System}
+\label{ch:master}
+% ============================================================
+
+\section{The Overdamped Master System}
+\label{sec:overdamped}
+
+\begin{definition}[RSVP Master System]
+\label{def:master}
+On $\Omega\times(0,\infty)$ with Neumann boundary conditions:
+\begin{align}
+  \partial_t\Phi &= -\nab\cdot(\Phi\vfield) + \kappa_\Phi\Delta\Phi + \sigma S
+    - U'_\Phi(\Phi),
+  \label{eq:ms-phi}\\
+  \partial_t\vfield &= -(\vfield\cdot\nab)\vfield - \lambda\nab\Phi - \nu\vfield
+    + \kappa_v(\nab\times\vfield) + \eta,
+  \label{eq:ms-v}\\
+  \partial_t S &= D_S\Delta S - \mu\Phi + \chi|\vfield|^2 + \xi(t).
+  \label{eq:ms-s}
+\end{align}
+\end{definition}
+
+Each term in \eqref{eq:ms-phi}--\eqref{eq:ms-s} has a precise interpretation in
+constraint-geometric language. Advection $-\nab\cdot(\Phi\vfield)$ carries constraint
+density along the inferential current. Diffusion $\kappa_\Phi\Delta\Phi$ smooths the
+constraint landscape. Source $\sigma S$ injects new constraint structure from the
+accessible-future-volume reservoir. The term $-\lambda\nab\Phi$ in \eqref{eq:ms-v}
+drives the inferential current down the constraint gradient (Theorem~\ref{thm:gradient-flow}).
+The vorticity term $\kappa_v(\nab\times\vfield)$ sustains the topological structure
+of observer identity (Theorem~\ref{thm:vorticity} below). In \eqref{eq:ms-s},
+$-\mu\Phi$ encodes Proposition~\ref{prop:contraction}: high constraint density
+reduces accessible future volume.
+
+\section{Well-Posedness and Lamphrodyne Smoothing}
+\label{sec:wellposed}
+
+\begin{theorem}[Local classical well-posedness]
+Under standard regularity and growth conditions, there exists $T^*>0$ such that
+the Master System admits a unique classical solution in
+$C([0,T^*]; H^2)\times[C([0,T^*]; H^2)]^3\times C([0,T^*]; H^1)$.
+\end{theorem}
+
+The proof rewrites the system as $\partial_t u = Lu + N(u)$, applies the abstract
+Cauchy theorem for analytic semigroups generated by
+$L = (-\kappa_\Phi\Delta, -\kappa_v\Delta, -D_S\Delta)$, and controls the
+nonlinearity via the Sobolev embedding $H^1\hookrightarrow L^6$ in $d=3$.
+
+\begin{theorem}[Lamphrodyne smoothing]
+\label{thm:smoothing}
+If $\sigma\equiv 0$ on $[T,\infty)$, then
+$\|\nab S(t)\|_{L^2} \leq \|\nab S(T)\|_{L^2} e^{-\mu_0(t-T)}$,
+where $\mu_0 = \min(\mu, D_S\lambda_1)$.
+\end{theorem}
+
+\begin{proof}
+Multiply \eqref{eq:ms-s} (with $\sigma=0$) by $-\Delta S$ and integrate. Poincar\'e
+gives $\tfrac{1}{2}\dot{y} + (D_S\lambda_1+\mu)y \leq 0$ where
+$y = \|\nab S\|^2_{L^2}$, yielding the exponential bound.
+\end{proof}
+
+\section{Constraint Equilibria}
+\label{sec:equilibria}
+
+\begin{theorem}[Constraint equilibrium]
+\label{thm:equilibrium}
+A stationary solution satisfies $\nab S = 0$, $\nab\Phi = 0$, $\vfield = \mathbf{0}$
+if and only if the admissibility landscape contains no preferred future direction.
+\end{theorem}
+
+\begin{proof}
+Setting all time derivatives to zero: $\lambda\nab\Phi + \nu\vfield = \mathbf{0}$
+forces $\vfield = \mathbf{0}$ if $\nab\Phi = \mathbf{0}$; substituting into the
+entropy equation gives $\Delta S = 0$; under Neumann conditions the only solution
+is constant $S$, hence $\nab S = \mathbf{0}$. Conversely, vanishing gradients imply
+no directional preference.
+\end{proof}
+
+\section{Vorticity Persistence}
+\label{sec:vorticity}
+
+\begin{theorem}[Vorticity persistence]
+\label{thm:vorticity}
+Let $\omega = \nab\times\vfield$. In the stiff limit with $\nab\cdot\vfield = 0$,
+the circulation $\Gamma_C = \oint_C \vfield\cdot\dd\ell$ is conserved along material
+loops $C$.
+\end{theorem}
+
+\begin{proof}
+Kelvin's circulation theorem states $\dd\Gamma_C/\dd t = 0$ for incompressible flow
+with conservative body forcing. In the stiff limit, $\nab\cdot\vfield = 0$ (exact
+incompressibility) and the forcing $-\lambda\nab\Phi$ is a gradient (hence
+conservative). By Stokes' theorem $\Gamma_C = \int_A \omega\cdot\dd A$, vortical
+structures persist under advection.
+\end{proof}
+
+Theorem~\ref{thm:vorticity} makes the observer-as-vortex interpretation a theorem
+rather than a metaphor. A \CLIO\ observer corresponds to a vortical region of the
+incompressible constraint flow. Theorem~\ref{thm:vorticity} proves that such a
+region is topologically persistent under the Master System dynamics: the circulation
+--- and therefore the identity of the observer as a distinct vortex --- is conserved.
+Loss of observer identity (agency collapse) requires the forcing to become
+non-conservative, which occurs precisely at entropy saturation when $S\to S_{\max}$
+and the gradient $\nab\Phi$ becomes dominated by flat regions.
+
+\section{The Stiff Limit and Transverse Flow}
+\label{sec:stiff}
+
+In the stiff limit $\kappa_v\to\infty$, the divergence constraint becomes exact.
+The Dirac-bracket calculation projects onto transverse flow:
+$\{v_i(\mathbf{x}),\pi^j_v(\mathbf{y})\}^* = P^j_i(\mathbf{x}-\mathbf{y})$,
+where $P^j_i$ is the transverse projector onto divergence-free modes. The stiff-limit
+\RSVP\ is a theory of incompressible, entropy-modulated vortex flow.
+
+% ============================================================
+\chapter{The Projection Ladder}
+\label{ch:projection}
+% ============================================================
+
+\section{The Four Projections}
+\label{sec:four}
+
+\begin{definition}[Projection operators]
+The canonical projections of $(\Phi, \vfield, S)$, constructed via the kernel
+family~\eqref{eq:kernel} with domain-specific choices of $w_i$, are:
+\begin{align*}
+  \mathcal{P}_{\mathrm{cosmo}} &: w_i = \delta(x-x_i)
+    &&\text{(local density, redshift, power spectrum)},\\
+  \mathcal{P}_{\mathrm{inst}} &: w_i = m_i(x)
+    &&\text{(membership weighting, role observables)},\\
+  \mathcal{P}_{\mathrm{obs}} &: w_i = \psi_i(x)
+    &&\text{(electrode/BOLD sensitivity kernel)},\\
+  \mathcal{P}_{\mathrm{sem}} &: w_i = \phi_i(x)
+    &&\text{(concept activation kernel)}.
+\end{align*}
+\end{definition}
+
+All four projections are instances of the constructive kernel family of
+Theorem~\ref{thm:kernels}. The abstract notation of earlier definitions is now
+grounded in a concrete construction. The differences among the projections lie
+entirely in the choice of kernel $w_i$, not in any separate theoretical apparatus.
+
+Four structural invariants are preserved across all projections: the admissibility
+geometry, the constraint structure, the ordering of accessible future volumes
+(Theorem~\ref{thm:order}), and causal direction.
+
+\begin{theorem}[Deterministic entropy monotonicity under projection]
+For any deterministic projection $\mathcal{P}$,
+$H(\mathcal{P}(S)) \leq H(S)$.
+\end{theorem}
+
+This follows immediately from Theorem~\ref{thm:det-cg}.
+
+\section{The CLIO Projection}
+\label{sec:clio}
+
+\begin{definition}[CLIO descent]
+\[
+  \mathcal{L}_{\CLIO} = \mathbb{E}[S] + \lambda_{\mathrm{sparse}}\|\Phi\|_0
+    - \lambda_{\mathrm{flow}}\|\vfield\|^2.
+\]
+\end{definition}
+
+\begin{theorem}[Agency requires flow]
+If $\lambda_{\mathrm{flow}} > 0$, then $\vfield_t \not\to \mathbf{0}$ along \CLIO\
+trajectories unless $\Phi$ is flat.
+\end{theorem}
+
+\begin{proof}
+$\vfield\to\mathbf{0}$ requires $\nab\Phi\to\mathbf{0}$ (from \eqref{eq:ms-v}),
+making $\Phi$ constant. But then the initial contribution
+$-\lambda_{\mathrm{flow}}\|\vfield_0\|^2 < 0$ shows $\mathcal{L}$ is strictly
+lower than at $\vfield=\mathbf{0}$, contradicting minimality unless $\Phi$ is flat.
+\end{proof}
+
+\begin{proposition}[CLIO sparsity / Occam compression]
+Among all constraint landscapes generating identical observations, the \CLIO\
+objective selects the minimum-description representation.
+\end{proposition}
+
+\begin{proof}
+For two equivalent fields $\Phi_1, \Phi_2$ producing identical observations, the
+entropy and flow terms in $\mathcal{L}_{\CLIO}$ are equal. The optimisation reduces
+to $\min\|\Phi\|_0$, selecting the sparsest equivalent representation.
+\end{proof}
+
+The neuroimaging prediction: the agency coherence metric $\Gamma(t) =
+I(\Phi;\vfield)/H(S)$, computed from the \CLIO-projected fields at the electrode
+kernel resolution $\psi_i$, should correlate with EEG microstate duration. This is
+an in-principle prediction; the closure relation connecting the field-theoretic
+$\Gamma$ to the empirical microstate duration requires the complete constructive
+specification of $\psi_i$ for the given electrode array.
+
+\section{TARTAN}
+\label{sec:tartan}
+
+\TARTAN\ (Trajectory-Aware Recursive Tiling with Annotated Noise) models memory as
+admissibility navigation. Gradient-weighted noise $\eta_s\sim\mathcal{N}(0,c|\nab\Phi|^2)$
+concentrates exploration at the steepest constraint boundaries.
+
+\begin{theorem}[Gradient-weighted noise maximises boundary exploration]
+The noise variance $c|\nab\Phi|^2$ maximises expected Fisher information near
+decision boundaries.
+\end{theorem}
+
+\section{Spherepop}
+\label{sec:spherepop}
+
+An institution $\mathcal{S} = (I, B, \Sigma)$ with permeability $\Sigma$ and
+interior observable $O_I = \int m(x)\Phi(x)\, \dd x$ (from the kernel construction).
+The merge condition $\Sigma_i + \Sigma_j > \Theta_{\mathrm{closure}}$ and
+$R_t + 2H < P_{\max}$ is a statement about the overlap of membership kernels $m_i$
+and the work required to align the constraint landscapes. The institutional merge
+prediction: pre-modern merger rates (with $H\approx 0$) should follow the predicted
+merge probability. Specifying the permeability $\Sigma$ from the field theory requires
+a closure relation for the boundary operator $B$ in terms of the gradient of $\Phi$
+at $\partial\Omega_i$.
+
+% ============================================================
+\chapter{Emergent Gravity and the Free Energy Principle}
+\label{ch:gravity}
+% ============================================================
+
+\section{The Jacobson Pathway}
+\label{sec:jacobson}
+
+Energy and entropy currents: $J_E\propto\Phi\vfield$, $J_S\propto S\vfield$.
+Acceleration $a=\kappa/(2\pi)$ gives Unruh temperature $T=\kappa/(2\pi)$.
+
+\begin{theorem}[Emergence of the Einstein equation]
+In the stiff limit, after coarse-graining over a local Rindler horizon and applying
+the Clausius relation $\delta Q = T\,\delta S_{\mathrm{horizon}}$ to $J_S$,
+\[
+  R_{\mu\nu} - \tfrac{1}{2}R\,g_{\mu\nu} + \Lambda g_{\mu\nu} = 8\pi G T_{\mu\nu},
+\]
+where $g^{\mathrm{eff}}_{\mu\nu} = \mathrm{diag}(-c_s^2+|\vfield|^2,1,1,1)/c_s$.
+\end{theorem}
+
+\begin{theorem}[Verlinde limit]
+In the quasi-static limit, $m\mathbf{a}\approx g_1\Phi\nab S + g_2 S\nab\Phi$,
+Verlinde's entropic force law.
+\end{theorem}
+
+\begin{theorem}[Friston-RSVP correspondence]
+The \CLIO\ loss is formally equivalent to the variational free energy under
+$S\mapsto -\log p$ and $\|\Phi\|_0\mapsto$ model complexity. The correspondence
+is an isomorphism of formal structure, not a claim that the physical systems are
+identical.
+\end{theorem}
+
+The Friston correspondence establishes that active inference is the finite-dimensional,
+observer-projected limit of infinite-dimensional \RSVP\ field dynamics. The qualifier
+``correspondence'' rather than ``duality'' is used precisely, following the reviewer's
+correction.
+
+% ============================================================
+\chapter{Cosmology as One Projection}
+\label{ch:cosmo}
+% ============================================================
+
+\section{The Cosmic Constraint Triad}
+\label{sec:triad}
+
+Cosmology is one projection of the admissibility geometry. The allowed cosmos is
+the intersection of three deep constraints: geometry $G$ (curvature bounded by CMB
+and BAO observations), energy density $E$ (content bounded by nucleosynthesis and
+expansion history), and information $I$ (entropy content bounded by the CMB
+anisotropy spectrum and the second law). Initial conditions are not fine-tuned in
+the traditional sense; they are geometrically selected by the intersection
+$G\cap E\cap I$.
+
+\section{Lamphron and Lamphrodyne}
+\label{sec:lamphron}
+
+The lamphron process (inward gravitational collapse releasing binding energy into
+$\Phi$) and the lamphrodyne process (outward entropic smoothing in void regions)
+are twin expressions of the same entropic dynamics at different points in field
+configuration space. The cosmological prediction is that redshift, the cosmic web,
+and CMB anisotropies are all emergent features of this reorganisation without a
+global scale factor.
+
+\section{Entropic Redshift: Parametric Prediction}
+\label{sec:redshift}
+
+\begin{definition}[RSVP entropic redshift]
+\[
+  z_{\RSVP}(t_e, t_0) = \exp\!\left(\alpha_S
+    \int_{t_e}^{t_0}\overline{\partial_t S}\, \dd t\right) - 1.
+\]
+\end{definition}
+
+To make this predictive, a closure relation for $\overline{\partial_t S}(t)$ is
+needed. A minimal toy closure assumes exponential decay of the spatial entropy
+gradient at rate $H_S$: $\partial_t S = H_S S$, giving
+\begin{equation}
+  z_{\mathrm{toy}} = \exp(\alpha_S H_S \Delta t) - 1.
+  \label{eq:toy-redshift}
+\end{equation}
+At low redshift this matches the Hubble law with effective $H_0 = \alpha_S H_S$.
+Departures from the \LCDM\ prediction at $z\gtrsim 1$ then arise from the
+higher-order terms in the entropy equation of state. Equation~\eqref{eq:toy-redshift}
+is a parametric toy model, not a finished experimental protocol; its purpose is to
+demonstrate that the redshift formula is calculable given a closure relation.
+
+\begin{proposition}[Observable signature]
+The entropic redshift formula predicts a departure from \LCDM\ at the $2\sigma$ level,
+testable via Type~Ia supernovae, if the entropy production rate $H_S$ and calibration
+constant $\alpha_S$ jointly satisfy the relation specified by the Wilks criterion.
+The theory is ruled out if $\hat{\alpha}_S < 0$ or if the likelihood ratio exceeds
+the Wilks threshold. These conditions constitute the in-principle falsification
+criterion; the constructive protocol requires the completed equation of state for
+$\overline{\partial_t S}(z)$.
+\end{proposition}
+
+% ============================================================
+\chapter{The Deck-0 Reservoir: Inexhaustible Refinement}
+\label{ch:deck0}
+% ============================================================
+
+\section{The Category Error}
+\label{sec:category-error}
+
+Lamphrodyne smoothing guarantees gradient decay in the absence of sources. Simulations
+require the entropy re-injection $J_{\mathrm{exchange}}$. The energy-battery
+interpretation of this injection faces two puzzles: the energy source and the
+non-exhaustion. The correct diagnosis is a category error: these are energy questions
+about a possibility space.
+
+\section{Inexhaustible Refinement}
+\label{sec:inexhaustible}
+
+\begin{theorem}[No terminal refinement]
+\label{thm:no-terminal}
+Let $\Adm$ be nontrivial. Then there is no terminal partition of $\Adm$ under
+admissibility-preserving refinement.
+\end{theorem}
+
+\begin{proof}
+Assume a terminal partition $\Pi^*$ exists. Choose any cell $C\in\Pi^*$. Since
+$\Adm$ is nontrivial, at least two admissible trajectories pass through $C$ with
+distinct futures, yielding a strictly finer partition. Contradiction.
+\end{proof}
+
+\begin{theorem}[Refinement generates unbounded distinguishability]
+\label{thm:unbounded}
+Let $\Pi_n$ be a sequence of admissibility-preserving refinements. Then
+$|\Pi_{n+1}| > |\Pi_n|$ for all nonterminal partitions, and
+$\lim_{n\to\infty}|\Pi_n| = \infty$.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:no-terminal}, every nonterminal partition $\Pi_n$ admits a
+strictly finer partition $\Pi_{n+1}$. Hence $|\Pi_{n+1}| > |\Pi_n|$ at every step.
+Since $|\Pi_n|$ is a strictly increasing sequence of positive integers, it is
+unbounded.
+\end{proof}
+
+Theorem~\ref{thm:unbounded} directly supports the philosophical claim that exploration
+creates distinctions. Each act of exploration generates at least one new admissible
+trajectory class that did not exist as a distinct possibility before the selection
+was made.
+
+\begin{theorem}[Constraint-flow universality class]
+\label{thm:universality-class}
+Every \RSVP\ projection preserves: admissibility ordering, entropy monotonicity,
+gradient-directed flow, and refinement nontermination. Therefore all \RSVP\
+projections belong to the same universality class of constraint-governed systems.
+\end{theorem}
+
+\begin{proof}
+Admissibility ordering is preserved by Theorem~\ref{thm:order}. Entropy monotonicity
+follows from Theorem~\ref{thm:det-cg}. Gradient-directed flow is the consequence of
+Theorem~\ref{thm:gradient-flow} applied at the projected scale. Refinement
+nontermination follows from Theorem~\ref{thm:no-terminal}, since the quotient
+admissibility manifold $\Adm/{\sim_{\mathcal{P}}}$ inherits the nontriviality of
+$\Adm$. All four properties are intrinsic to the geometry of the admissibility
+manifold, hence universal across projections.
+\end{proof}
+
+% ============================================================
+\chapter{Failure Modes and Structure Formation}
+\label{ch:failure}
+% ============================================================
+
+\section{The Turing Instability}
+\label{sec:turing}
+
+\begin{theorem}[Turing instability threshold]
+If $\kappa_v\ll\kappa_\Phi$, a long-wavelength instability emerges when
+$\Phi^*>\kappa_v(\kappa_\Phi+D_S)/\kappa_\Phi$.
+\end{theorem}
+
+Once the inferential current slows relative to the constraint density, the uniform
+admissibility landscape necessarily differentiates. Galaxies, cognitive observers,
+and institutions are manifestations of this instability at different projection
+scales.
+
+\section{Unified Failure Modes}
+\label{sec:failures}
+
+Three canonical failure modes appear at every level of the projection ladder.
+
+\textit{Entropy saturation.} $S\to S_{\max}$ uniformly. Accessible future volume
+exhausted. No new distinctions possible. In cosmology: heat death. In cognition:
+representational collapse. In institutions: homogenisation.
+
+\textit{Gradient flattening.} $|\nab S|\to 0$ without saturation. Directional bias
+lost. The vanishing-gradient analogue.
+
+\textit{Vorticity decay.} $\curlop\vfield\to\mathbf{0}$. Persistence of observer
+identity fails. By Theorem~\ref{thm:vorticity}, this requires non-conservative
+forcing --- precisely the condition that arises at entropy saturation. Hence vorticity
+decay is the first warning sign; entropy saturation is the terminal state.
+
+% ============================================================
+\chapter{Open Problems}
+\label{ch:open}
+% ============================================================
+
+The research frontier is defined by the following open problems, ordered by impact.
+
+\textit{Open Problem~1 (General Unruh theorem).} Derive the general result
+$T_{\mathrm{eff}} \propto \dd(\log\Vac_{\mathrm{hidden}})/\dd t$ from the \RSVP\
+field equations, moving the Unruh principle from analogy to derivation.
+
+\textit{Open Problem~2 (Constructive projection functors).} Specify the kernel
+functions $w_i$ for each domain from the Master System dynamics --- that is, derive
+the electrode sensitivity profiles, membership weightings, and cosmological response
+functions from the field theory rather than importing them from domain expertise.
+
+\textit{Open Problem~3 (Entropy equation of state).} Derive $\overline{\partial_t S}(z)$
+as a function of cosmic time or redshift from the \RSVP\ field equations. The toy
+closure~\eqref{eq:toy-redshift} provides the structure; the complete derivation
+would constitute a finished experimental protocol for the entropic redshift
+prediction.
+
+\textit{Open Problem~4 (Measure on trajectory space).} Identify the appropriate
+measure $\mathcal{D}\gamma$ on the admissibility manifold. In the Minkowski vacuum
+it is the Euclidean path integral measure; in a curved spacetime with dynamical
+entropy the appropriate measure is unknown.
+
+\textit{Open Problem~5 (Quantisation).} Promote the \RSVP\ fields to operators on
+a Hilbert space. The constrained Hamiltonian structure in the stiff limit provides
+the starting point; the nonlinearity of the entropy equation poses significant
+challenges.
+
+% ============================================================
+\chapter{Conclusions}
+\label{ch:conclusions}
+% ============================================================
+
+The deepest primitive of the \RSVP\ framework is not matter, energy, space,
+information, or entropy in the traditional senses. It is the topology of what can
+still happen.
+
+That sentence opened this monograph. It can now be given a precise meaning in terms
+of the objects developed here. The topology of what can still happen is the
+admissibility manifold $\Adm$. Its shape is indexed by the constraint density $\Phi$.
+Its measure is the accessible future volume $\Vac$, uniquely logarithmic by
+Proposition~\ref{prop:log-unique}. Its navigation is driven by the inferential
+current $\vfield$. Its persistent structures are vortices, proven topologically
+stable by Theorem~\ref{thm:vorticity}. Its failure modes are entropy saturation,
+gradient flattening, and vorticity decay. Its inexhaustibility is proven by
+Theorem~\ref{thm:no-terminal} and Theorem~\ref{thm:unbounded}. Its universality
+across substrates is established by Theorem~\ref{thm:inversion}, and its universality
+class is characterised by Theorem~\ref{thm:universality-class}.
+
+The historical trajectory of the framework:
+Newton started with forces and implied geometry.
+Einstein started with geometry and implied thermodynamics.
+Friston starts with thermodynamics and implies inference.
+\RSVP\ starts with physical relaxation, discovers thermodynamic structure, discovers
+accessibility structure, and arrives at constraint geometry.
+
+The cosmological interpretation may survive or fail observational testing. The
+entropic redshift hypothesis will be confirmed or rejected by forthcoming supernova
+surveys. But the deeper contribution is independent of those outcomes: a framework
+in which the admissibility manifold is the primitive object, projection is a
+first-class mathematical operation, entropy is derived (not postulated), and observer
+identity is a theorem of incompressible vortex flow rather than a metaphor.
+
+Reality consists of systems navigating constraint landscapes, exploring admissible
+futures, and generating new distinctions. The cosmological theory is one application
+of that principle. The principle itself is what the theory has become.
+
+\appendix
+
+\chapter{Euler-Lagrange Equations}
+\label{app:el}
+
+\begin{align*}
+\ddot{\Phi} - c_\Phi^2\Delta\Phi + U'_\Phi &=
+  \kappa_v\alpha_\Phi(\nab\cdot\vfield - \alpha_\Phi\Phi - \alpha_S S)
+  + g_1\vfield\cdot\nab S + g_2 S(\nab\cdot\vfield) + g_3 S,\\
+\ddot{\vfield} + c_v^2\nab\times(\nab\times\vfield) &=
+  \kappa_v(\nab\cdot\vfield - \alpha_\Phi\Phi - \alpha_S S)\nab(\nab\cdot\vfield)
+  + g_1\Phi\nab S + g_2 S\nab\Phi,\\
+\ddot{S} - c_S^2\Delta S + U'_S &=
+  \kappa_v\alpha_S(\nab\cdot\vfield - \alpha_\Phi\Phi - \alpha_S S)
+  + g_2\vfield\cdot\nab\Phi + g_1\nab\cdot(\Phi\vfield) + g_3\Phi.
+\end{align*}
+
+\chapter{Conservation Laws}
+\label{app:conservation}
+
+Total constraint density $\int_\Omega\Phi\, \dd x$ is conserved. Energy-entropy
+identities:
+\begin{align*}
+\tfrac{\dd E_\Phi}{\dd t} &= -\lambda\textstyle\int\Phi(\nab\cdot\vfield)
+  +\sigma\int\Phi S - \mu\int\Phi^2,\\
+\tfrac{\dd E_v}{\dd t} &= -\lambda\int\vfield\cdot\nab\Phi - \nu\int|\vfield|^2,\\
+\tfrac{\dd E_S}{\dd t} &= -\sigma\int S\Phi - \eta\int S^2.
+\end{align*}
+The sum is non-positive under the positivity conditions on coupling constants.
+
+\chapter{RSVP Labs: Reduction Pathways}
+\label{app:labs}
+
+The \RSVP\ Labs 1--40 are a suite of numerical simulations each implementing one
+reduction of the Master System. They are grouped as follows. Scalar-only
+($\vfield=\mathbf{0}$): $\partial_t\Phi = \sigma S - U'_\Phi$ (Labs 3,7,9,15,21,32).
+Vector-only ($\Phi=0$): $\partial_t\vfield = -\nu\vfield + \kappa(\nab\times\vfield)$
+(Labs 1,27,38). Entropy-reservoir coupling, Deck-0 dynamics:
+$\partial_t S = -\mu\Phi + \chi|\vfield|^2$ (Labs 6,14,24,30). Reaction-diffusion
+with morphogen activator-inhibitor structure (Labs 19,38). Phase-space reduction
+to attractor with Kuramoto synchronisation (Labs 13,20,23,25,29,39). Observer
+projection via electrode kernels (Labs 22,35,37,40).
+
+\backmatter
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+This work was developed as an independent research programme. Conceptual debts are
+owed to Ted Jacobson, Erik Verlinde, Karl Friston, William Unruh, Amal Raychaudhuri,
+and the traditions of analogue gravity, nonequilibrium thermodynamics, and effective
+field theory for continuous media. The internal and external peer review that
+motivated the major structural changes in this version --- the derivation of the
+logarithm, the constructive kernel family, the split entropy monotonicity theorems,
+the vorticity persistence theorem, the unbounded distinguishability theorem, the
+universality class theorem, the geometry of projection chapter, and the toy cosmological
+closure --- were essential. The author bears sole responsibility for errors.
+
+\chapter*{References}
+\addcontentsline{toc}{chapter}{References}
+
+\begin{thebibliography}{30}
+
+\bibitem{jacobson1995}
+Jacobson, T. (1995). Thermodynamics of spacetime: The Einstein equation of state.
+\textit{Physical Review Letters}, 75(7), 1260--1263.
+
+\bibitem{verlinde2011}
+Verlinde, E. (2011). On the origin of gravity and the laws of Newton.
+\textit{Journal of High Energy Physics}, 2011(4), 029.
+
+\bibitem{unruh1976}
+Unruh, W.~G. (1976). Notes on black hole evaporation.
+\textit{Physical Review D}, 14(4), 870--892.
+
+\bibitem{hawking1975}
+Hawking, S.~W. (1975). Particle creation by black holes.
+\textit{Communications in Mathematical Physics}, 43(3), 199--220.
+
+\bibitem{raychaudhuri1955}
+Raychaudhuri, A.~K. (1955). Relativistic cosmology I.
+\textit{Physical Review}, 98(4), 1123--1126.
+
+\bibitem{padmanabhan2005}
+Padmanabhan, T. (2005). Gravity and the thermodynamics of horizons.
+\textit{Physics Reports}, 406, 49--125.
+
+\bibitem{barcelo2005}
+Barcel\'o, C., Liberati, S., \& Visser, M. (2005). Analogue gravity.
+\textit{Living Reviews in Relativity}, 8, 12.
+
+\bibitem{volovik2003}
+Volovik, G.~E. (2003). \textit{The Universe in a Helium Droplet}. Oxford UP.
+
+\bibitem{weinberg1995}
+Weinberg, S. (1995). \textit{The Quantum Theory of Fields}, Vol.~I. Cambridge UP.
+
+\bibitem{nicolis2013}
+Nicolis, A., \& Penco, R. (2013). Mutual interactions of phonons, rotons, and
+gravity. \textit{Physical Review D}, 87(12), 123007.
+
+\bibitem{andersson2007}
+Andersson, N., \& Comer, G.~L. (2007). Relativistic fluid dynamics.
+\textit{Living Reviews in Relativity}, 10, 1.
+
+\bibitem{onsager1931}
+Onsager, L. (1931). Reciprocal relations in irreversible processes I.
+\textit{Physical Review}, 37(4), 405--426.
+
+\bibitem{prigogine1967}
+Prigogine, I. (1967). \textit{Introduction to Thermodynamics of Irreversible
+Processes}. Wiley.
+
+\bibitem{pazy1983}
+Pazy, A. (1983). \textit{Semigroups of Linear Operators}. Springer.
+
+\bibitem{lions1969}
+Lions, J.-L. (1969). \textit{Quelques m\'ethodes de r\'esolution}. Dunod.
+
+\bibitem{dirac1964}
+Dirac, P.~A.~M. (1964). \textit{Lectures on Quantum Mechanics}. Yeshiva.
+
+\bibitem{henneaux1992}
+Henneaux, M., \& Teitelboim, C. (1992). \textit{Quantization of Gauge Systems}.
+Princeton UP.
+
+\bibitem{bekenstein1973}
+Bekenstein, J.~D. (1973). Black holes and entropy.
+\textit{Physical Review D}, 7(8), 2333--2346.
+
+\bibitem{sakharov1968}
+Sakharov, A.~D. (1968). Vacuum quantum fluctuations and the theory of gravitation.
+\textit{Soviet Physics Doklady}, 12, 1040.
+
+\bibitem{friston2021}
+Friston, K.~J. (2021). The active inference framework.
+\textit{Nature Reviews Neuroscience}, 22(3), 167--187.
+
+\bibitem{barandes2024}
+Barandes, J.~A. (2024). New prospects for a causally local formulation of quantum
+theory. \textit{arXiv:2402.16935}.
+
+\bibitem{planck2020}
+Planck Collaboration (2020). Planck 2018 results VI.
+\textit{Astronomy \& Astrophysics}, 641, A6.
+
+\bibitem{riess2022}
+Riess, A.~G., et al. (2022). A comprehensive measurement of $H_0$.
+\textit{Astrophysical Journal Letters}, 934(1), L7.
+
+\bibitem{vopson2020}
+Vopson, M.~M. (2020). The information catastrophe.
+\textit{AIP Advances}, 10(8), 085014.
+
+\bibitem{bianconi2025}
+Bianconi, G. (2025). Gravity from entropy.
+\textit{Physical Review D}, 111, 066001.
+
+\bibitem{carroll2016}
+Carroll, S.~M., \& Remmen, G.~N. (2016). What is the entropy in entropic gravity?
+\textit{Physical Review D}, 93(12), 124052.
+
+\bibitem{visser2011}
+Visser, M. (2011). Conservative entropic forces.
+\textit{Journal of High Energy Physics}, 2011(10), 140.
+
+\bibitem{cheung2008}
+Cheung, C., et al. (2008). The EFT of inflation.
+\textit{Journal of High Energy Physics}, 2008(3), 014.
+
+\bibitem{endlich2013}
+Endlich, S., Nicolis, A., \& Penco, R. (2013). UV completion without symmetry
+restoration. \textit{Physical Review D}, 88(10), 105001.
+
+\bibitem{nesterov2004}
+Nesterov, Y. (2004). \textit{Introductory Lectures on Convex Optimization}.
+Springer.
+
+\end{thebibliography}
+
+\end{document}

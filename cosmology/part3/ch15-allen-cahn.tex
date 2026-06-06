@@ -1,0 +1,150 @@
+% ============================================================
+%  part3/ch15-allen-cahn.tex  —  Chapter 15: Allen-Cahn Dynamics
+% ============================================================
+
+\chapter{Allen--Cahn Dynamics}
+\label{ch:allen-cahn}
+
+\epigraph{%
+  Everything descends.%
+}{---}
+
+\section{From discrete to continuum}
+
+The Ising model is discrete.
+Allen--Cahn is its continuum counterpart.
+Replace spins by a scalar field $\phi(x,t) \in \mathbb{R}$.
+
+\begin{definition}[Ginzburg--Landau free energy]
+  \[
+    \mathcal{F}[\phi]
+    = \int \left[\frac{\epsilon^2}{2}|\nabla\phi|^2 + W(\phi)\right]dx,
+    \quad W(\phi) = \frac{1}{4}(\phi^2-1)^2.
+  \]
+\end{definition}
+
+The gradient term penalises interfaces.
+The potential $W$ favours $\phi = \pm 1$ (the two phases).
+
+\begin{proposition}[Euler--Lagrange equation]
+  Critical points of $\mathcal{F}$ satisfy
+  \[
+    -\epsilon^2\Delta\phi + W'(\phi) = 0.
+  \]
+\end{proposition}
+
+\begin{proof}
+  Take variation $\phi \mapsto \phi + \varepsilon\psi$:
+  \[
+    \frac{d}{d\varepsilon}\mathcal{F}
+    = \int\left[\epsilon^2\nabla\phi\cdot\nabla\psi
+      + W'(\phi)\psi\right]dx
+    = \int\left[-\epsilon^2\Delta\phi + W'(\phi)\right]\psi\,dx.
+  \]
+  Since $\psi$ is arbitrary, the bracket vanishes.
+\end{proof}
+
+\section{The Allen--Cahn equation}
+
+\begin{definition}[Allen--Cahn equation]
+  \[
+    \boxed{\partial_t\phi = M(\epsilon^2\Delta\phi - W'(\phi)).}
+  \]
+\end{definition}
+
+\begin{theorem}[Energy dissipation]
+  \label{thm:ac-dissipation}
+  \statusproven{}
+  Solutions of Allen--Cahn satisfy
+  \[
+    \frac{d\mathcal{F}}{dt}
+    = -M\int\left(\frac{\delta\mathcal{F}}{\delta\phi}\right)^2 dx
+    \leq 0.
+  \]
+\end{theorem}
+
+\begin{proof}
+  $\frac{d\mathcal{F}}{dt}
+  = \int\frac{\delta\mathcal{F}}{\delta\phi}\partial_t\phi\,dx
+  = -M\int\left(\frac{\delta\mathcal{F}}{\delta\phi}\right)^2 dx
+  \leq 0$.
+\end{proof}
+
+\begin{StatusBox}{Proven Framework}
+  Theorem~\ref{thm:ac-dissipation} is the template for all
+  free-energy dissipation results in this book.
+  The RSVP dissipation theorem in
+  Chapter~\ref{ch:energy-dissipation} is its direct descendant.
+\end{StatusBox}
+
+\section{Interface limit and coarsening}
+
+In the limit $\epsilon \to 0$, interfaces become thin.
+Matched asymptotic analysis shows Allen--Cahn reduces to
+curvature flow: $V_n = -M\kappa$.
+
+\begin{corollary}
+  Allen--Cahn domains obey $\ell(t) \sim t^{1/2}$, $z = 2$.
+\end{corollary}
+
+\section{Dynamic scaling}
+
+\begin{definition}[Two-point correlation function]
+  \[
+    C(r,t) = \langle\phi(x,t)\phi(x+r,t)\rangle.
+  \]
+\end{definition}
+
+\begin{definition}[Dynamic scaling hypothesis]
+  \[
+    C(r,t) = f\!\left(\frac{r}{\ell(t)}\right).
+  \]
+\end{definition}
+
+Under dynamic scaling the coarsening system is characterised
+by a single growing length scale $\ell(t)$.
+Data from different times collapse onto one curve when plotted
+against $r/\ell(t)$.
+
+\begin{ForwardRef}
+  The correlation function $C(r,t)$ defined here will become
+  the primary observable for testing RSVP predictions in
+  Chapter~\ref{ch:correlation-functions}.
+  The coarsening exponent $z = 2$ will be compared to
+  $z_{\mathrm{RSVP}} = z(Pe, \Gamma, \Omega)$ conjectured in
+  Chapter~\ref{ch:open-problems}.
+\end{ForwardRef}
+
+\begin{CrossDomain}[Allen--Cahn as template for RSVP]
+  \begin{center}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    \textbf{Allen--Cahn} & \textbf{RSVP} \\
+    \midrule
+    Scalar field $\phi$ & Plenum field $\Phi$ \\
+    Double-well $W(\phi)$ & Lamphron potential $U(\ell)$ \\
+    Interface energy $|\nabla\phi|^2$ & Admissibility energy \\
+    Curvature flow & Entropy descent \\
+    Domain walls & Filaments and void boundaries \\
+    $d\mathcal{F}/dt \leq 0$ & $d\mathcal{F}_{\mathrm{RSVP}}/dt \leq 0$ \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+\end{CrossDomain}
+
+\WhatSurvived{Allen--Cahn coarsening}{%
+  Phase assignment ($\pm 1$)\\
+  Domain topology\\
+  Energy (decreasing)%
+}{%
+  Interface positions\\
+  Sub-domain fluctuations\\
+  Initial field values%
+}{%
+  Phase identity recoverable.\\
+  Interface history lost.%
+}{%
+  $\ker$: all initial conditions\\
+  with the same asymptotic\\
+  phase assignment.%
+}

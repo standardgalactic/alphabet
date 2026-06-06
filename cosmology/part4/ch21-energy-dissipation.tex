@@ -1,0 +1,98 @@
+% ============================================================
+%  part4/ch21-energy-dissipation.tex
+%  Chapter 21: Energy Dissipation Theorems
+% ============================================================
+
+\chapter{Energy Dissipation Theorems}
+\label{ch:energy-dissipation}
+
+\section{Advective RSVP and transport conservation}
+
+The more physical RSVP system includes transport by $\mathbf{v}$:
+\begin{align*}
+  \partial_t\Phi + \mathbf{v}\cdot\nabla\Phi
+  &= -M_\Phi\frac{\delta\mathcal{F}}{\delta\Phi},\\
+  \partial_t S + \mathbf{v}\cdot\nabla S
+  &= -M_S\frac{\delta\mathcal{F}}{\delta S} + \sigma,\\
+  \partial_t L + \nabla\cdot(L\mathbf{v})
+  &= \nabla\cdot(M_L\nabla\mu_L).
+\end{align*}
+
+\begin{proposition}[Advection is energy-neutral]
+  \label{prop:adv-neutral}
+  \statusproven{}
+  For incompressible flow $\nabla\cdot\mathbf{v} = 0$ and
+  periodic or no-flux boundaries,
+  pure advection $\partial_t\Phi = -\mathbf{v}\cdot\nabla\Phi$
+  satisfies $\frac{d}{dt}\int\frac{1}{2}\Phi^2\,dx = 0$.
+\end{proposition}
+
+\begin{proof}
+  $\frac{d}{dt}\int\frac{1}{2}\Phi^2\,dx
+  = \int\Phi\partial_t\Phi\,dx
+  = -\int\Phi\mathbf{v}\cdot\nabla\Phi\,dx
+  = -\int\mathbf{v}\cdot\nabla(\frac{1}{2}\Phi^2)\,dx$.
+  By the divergence theorem and $\nabla\cdot\mathbf{v}=0$:
+  $= \int\frac{1}{2}\Phi^2\nabla\cdot\mathbf{v}\,dx = 0$.
+\end{proof}
+
+\begin{theorem}[Energy dissipation with incompressible transport]
+  \label{thm:rsvp-adv-dissipation}
+  \statusproven{}
+  Assume periodic or no-flux boundaries and $\nabla\cdot\mathbf{v}=0$.
+  If advective terms are skew-adjoint with respect to the
+  energy pairing and the entropy source satisfies
+  $\int\frac{\delta\mathcal{F}}{\delta S}\sigma\,dx \leq 0$,
+  then $\frac{d\mathcal{F}}{dt} \leq 0$.
+\end{theorem}
+
+\begin{proof}
+  Decompose $\frac{d\mathcal{F}}{dt} = I_{\mathrm{adv}} + I_{\mathrm{diss}}$.
+  By Proposition~\ref{prop:adv-neutral} and skew-adjointness,
+  $I_{\mathrm{adv}} = 0$.
+  The dissipative part satisfies
+  $I_{\mathrm{diss}} \leq 0$ by the gradient-flow structure
+  and the entropy-source condition.
+\end{proof}
+
+\section{Entropy smoothing}
+
+\begin{proposition}[Entropy gradient decay]
+  \label{prop:entropy-smooth}
+  \statusproven{}
+  If $\partial_t S = \kappa\Delta S$ with $\kappa > 0$, then
+  \[
+    \frac{d}{dt}\int_\Omega \tfrac{1}{2}|\nabla S|^2\,dx
+    = -\kappa\int_\Omega(\Delta S)^2\,dx \leq 0.
+  \]
+\end{proposition}
+
+\begin{proof}
+  $\frac{d}{dt}\int\frac{1}{2}|\nabla S|^2\,dx
+  = \int\nabla S\cdot\nabla(\partial_t S)\,dx
+  = \kappa\int\nabla S\cdot\nabla\Delta S\,dx
+  = -\kappa\int(\Delta S)^2\,dx \leq 0$.
+\end{proof}
+
+\section{Lamphrodyne as entropy relaxation pressure}
+
+\begin{definition}[Lamphrodyne]
+  \label{def:lamphrodyne}
+  \[
+    D = -\frac{\delta\mathcal{F}}{\delta S}
+    = \chi\Delta S - Q'(S) + T.
+  \]
+\end{definition}
+
+Entropy relaxation takes the Cahn--Hilliard-like form:
+$\partial_t S = \nabla\cdot(M_S\nabla D) + \sigma$.
+
+\begin{StatusBox}{Proven Framework}
+  Lamphrodyne $D$ is not an independent field.
+  It is the negative variational derivative of $\mathcal{F}$
+  with respect to $S$.
+  Its derivation from $\mathcal{F}$ is proven.
+  Its cosmological interpretation as void-expansion pressure
+  is motivated (Chapter~\ref{ch:void-formation}) but requires
+  eikonal derivation (Chapter~\ref{ch:redshift}).
+\end{StatusBox}

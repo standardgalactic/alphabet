@@ -1,0 +1,1544 @@
+% Three Smoothing Mechanisms in Early Cosmology
+% LuaLaTeX / XeLaTeX with TeX Gyre Pagella
+% Author: Flyxion (Independent Researcher)
+
+\documentclass[12pt, a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+
+
+\usepackage{microtype}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{mathtools}
+\usepackage{geometry}
+\geometry{margin=1.25in}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black}
+\usepackage{natbib}
+\bibpunct{[}{]}{,}{n}{}{;}
+\usepackage{booktabs}
+\usepackage{array}
+
+% Theorem environments
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+
+% Custom commands
+\newcommand{\vphi}{\phi}
+\newcommand{\vv}{\mathbf{v}}
+\newcommand{\calA}{\mathcal{A}}
+\newcommand{\calF}{\mathcal{F}}
+\newcommand{\etalamph}{\eta_{\rm lamph}}
+\newcommand{\epslamph}{\epsilon_{\rm lamph}}
+\newcommand{\Heff}{H_{\rm eff}}
+\newcommand{\rRSVP}{r_{\rm RSVP}}
+\newcommand{\rQQG}{r_{\rm QQG}}
+\newcommand{\Ph}{P_h}
+\newcommand{\Vol}{\operatorname{Vol}}
+\newcommand{\ddt}{\frac{d}{dt}}
+\newcommand{\Teff}{T^{\rm eff}_{ij}}
+
+\title{\textbf{Three Smoothing Mechanisms in Early Cosmology:\\
+Inflaton, Geometric, and Lamphrodyne Relaxation}}
+
+\author{Flyxion\\[4pt]
+\small Independent Researcher}
+
+\date{June 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We propose a classification of early-universe smoothing mechanisms into three
+structurally distinct classes: inflaton smoothing, in which an auxiliary scalar
+field with tuned potential drives metric expansion; geometric smoothing, in which
+quantum-corrected gravitational dynamics generate an expansion phase without a
+separate inflaton; and lamphrodyne relaxation, in which cosmological homogenization
+arises from admissibility-reducing dynamics in a scalar-vector-entropy plenum,
+without global metric expansion. The recent result of Liu, Quintin, and Afshordi---
+quantum quadratic gravity (QQG) inflation published in \textit{Physical Review
+Letters} 136, 111501 (2026)---establishes geometric smoothing as a theoretically
+coherent alternative to the inflaton paradigm. We treat QQG as a rigorous benchmark
+and ask the next question: if smoothing can emerge from quantum gravity alone, can
+it emerge from relaxation dynamics alone? We formalize the Relativistic
+Scalar-Vector Plenum (RSVP) framework as a candidate Class~3 mechanism, define the
+lamphrodyne background state, introduce the field-space admissibility metric, and
+derive the lamphrodyne relaxation parameter $\etalamph$ from admissibility geometry.
+We construct the effective anisotropic stress tensor of the relaxing plenum and
+define the formal structure of the tensor power spectrum $\Ph(k)$ and
+tensor-to-scalar ratio $\rRSVP$; their explicit evaluation requires the plenum
+field correlators, which the prototype action makes calculable in principle but
+which are not derived here. We provide a phenomenological estimate of the scalar
+spectral index using a multifield GR analogy, and introduce admissibility crossing
+as the RSVP-native freeze-out condition that a complete perturbation theory must
+employ. We identify an empirical fork: a detection of $r > 10^{-2}$ constrains
+RSVP to explain any tensor residue from plenum anisotropic stress, while a robust
+upper bound below this floor would strongly challenge the simplest QQG realization.
+The paper's primary contribution is not adjudicating between frameworks but
+establishing that Class~3 smoothing is formally tractable as an effective field
+theory program with defined observational targets and explicit falsification
+conditions.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+%------------------------------------------------------------
+
+\subsection{The Inflationary Paradigm}
+
+The standard cosmological model inherits three observational requirements that are
+not explained by the hot big bang alone. The horizon problem asks why causally
+disconnected regions of the cosmic microwave background (CMB) share a temperature
+to one part in $10^5$. The flatness problem asks why the spatial curvature of the
+universe is tuned to within observational bounds across many orders of magnitude in
+scale factor. The structure problem asks why primordial density perturbations exhibit
+a nearly scale-invariant power spectrum. Inflation---a phase of accelerated expansion
+in the very early universe---was introduced to resolve all three simultaneously
+\citep{Guth1981, Linde1982, Albrecht1982}.
+
+In its standard formulation, inflation is driven by a scalar field $\phi$, the
+inflaton, rolling slowly down a potential $V(\phi)$. The slow-roll conditions
+$\epsilon \ll 1$ and $|\eta| \ll 1$, where
+\begin{equation}
+\epsilon = \frac{M_{\rm Pl}^2}{2}\left(\frac{V'}{V}\right)^2, \qquad
+\eta = M_{\rm Pl}^2 \frac{V''}{V},
+\end{equation}
+ensure that the potential energy dominates over kinetic energy, sustaining a
+quasi-de Sitter expansion phase. The inflationary paradigm is empirically powerful:
+it predicts a nearly scale-invariant scalar spectral index $n_s \approx 1 - 2/N$
+and a tensor-to-scalar ratio $r \approx 16\epsilon$, both in agreement with CMB
+observations at leading order \citep{Planck2020}.
+
+\subsection{The Inflaton Problem}
+
+Despite its empirical success, the inflaton paradigm carries well-known theoretical
+liabilities. The shape of $V(\phi)$ must be specified by hand; no derivation from a
+UV-complete theory of gravity selects a unique potential. The inflationary
+literature contains hundreds of viable potential forms, most differing only in their
+predictions for $r$ and $n_s$ at sub-percent precision. This proliferation---the
+landscape of inflationary models---is not a scientific failure so much as a symptom
+of under-determination: the paradigm is consistent with almost any slow-roll
+potential that fits a plateau \citep{Martin2014}.
+
+Reheating presents a second ambiguity. Inflation must end, and the universe must
+transition from a cold, potential-energy-dominated state to the hot radiation-
+dominated era of standard big-bang nucleosynthesis. The mechanism of this
+transition---perturbative decay of the inflaton, parametric resonance, instant
+preheating---is not predicted by the inflationary framework itself but must be
+appended \citep{Kofman1997}. The reheating temperature $T_{\rm reh}$ is largely
+unconstrained, introducing a significant uncertainty in the mapping between
+inflationary observables and CMB scales.
+
+\subsection{The QQG Development}
+
+The recent result of \citet{Liu2026} represents a qualitatively different approach.
+Rather than introducing an inflaton field, they begin with the action of quadratic
+gravity,
+\begin{equation}
+S_{\rm QQG} = -\int d^4x\,\sqrt{-g}\left(\frac{R^2}{\xi} + \frac{C^2}{2\lambda}\right),
+\end{equation}
+where $R$ is the Ricci scalar, $C^2 \equiv C_{\mu\nu\rho\sigma}C^{\mu\nu\rho\sigma}$
+is the Weyl tensor contraction, and $\xi$, $\lambda$ are dimensionless coupling
+constants. This theory is renormalizable---in contrast to general relativity---and
+is asymptotically free in the ultraviolet (UV), meaning the couplings vanish as
+energy $\mu \to \infty$ \citep{Fradkin1982, Avramidi1985}.
+
+The inflationary phase in QQG does not arise from a classical potential but from
+one-loop renormalization group (RG) running of the coupling $\xi(\mu)$. Pure $R^2$
+gravity is exactly scale-invariant; any constant-curvature spacetime---including de
+Sitter---extremizes the action. The running breaks this exact invariance through a
+quantum conformal anomaly \citep{Capper1974}, generating a logarithmic correction
+that stabilizes a quasi-de Sitter attractor. In the large-$N$ limit, with $N \sim
+\mathcal{O}(10^5$--$10^6)$ matter fields contributing to the beta functions, the
+spectral index and tensor-to-scalar ratio are predicted to lie in the region
+preferred by current CMB data, including the ACT results that place Starobinsky
+inflation under mild tension \citep{Louis2025}.
+
+A structural prediction of the QQG scenario is a minimum tensor-to-scalar ratio
+\begin{equation}
+\rQQG \gtrsim 10^{-2},
+\end{equation}
+arising from the requirement that the theory avoid its strong-coupling regime before
+reheating is complete. This bound is not a free parameter but a consequence of the
+theory's internal consistency conditions.
+
+\subsection{A Different Question}
+
+The significance of QQG for the present paper is not its viability as an
+inflationary model. Its significance is structural: QQG demonstrates that
+cosmological smoothing can emerge from the intrinsic dynamics of a fundamental
+theory, without an auxiliary inflaton field. Once this possibility is admitted,
+inflationary expansion becomes one member of a broader class of smoothing
+mechanisms rather than the unique solution to the horizon and flatness problems.
+
+This paper asks whether a third class of smoothing mechanism is formally tractable:
+relaxation without expansion. The RSVP framework---based on a coupled
+scalar-vector-entropy plenum---proposes that early-universe homogenization arises
+from the directional reduction of admissible unresolved field configurations, driven
+by entropy production in the plenum rather than by metric expansion. We formalize
+this proposal, derive its analogue of slow-roll parameters, and identify the
+observational signatures that distinguish it from both Class~1 (inflaton) and
+Class~2 (geometric) smoothing.
+
+%------------------------------------------------------------
+\section{A Taxonomy of Smoothing Mechanisms}
+\label{sec:taxonomy}
+%------------------------------------------------------------
+
+\subsection{What Requires Explanation}
+
+The observational targets that any smoothing mechanism must address are the
+following. First, CMB isotropy: the temperature anisotropy $\Delta T / T \sim
+10^{-5}$ across the last scattering surface, including regions that were not in
+causal contact under standard big-bang evolution. Second, large-scale homogeneity:
+the matter distribution is statistically isotropic and homogeneous on scales above
+approximately $100\,h^{-1}$~Mpc. Third, the primordial power spectrum: scalar
+perturbations are nearly scale-invariant with spectral index $n_s \approx 0.965$
+and amplitude $A_s \approx 2.1 \times 10^{-9}$ \citep{Planck2020}. Fourth,
+primordial tensor modes: no detection as of 2026, with current upper bounds
+$r < 0.036$ at 95\% confidence \citep{BICEPKeck2021}.
+
+\subsection{Three Classes of Solution}
+
+\textit{Class 1: Inflaton smoothing.} An auxiliary scalar field $\phi$ with
+potential $V(\phi)$ drives a phase of accelerated metric expansion. The expansion
+causally connects regions that would otherwise be disconnected. Smoothing is
+achieved by dilution: any initial anisotropy or curvature is stretched to scales
+far beyond the Hubble horizon. The slow-roll parameters $\epsilon$ and $\eta$
+control the duration and observables of the inflationary phase.
+
+\textit{Class 2: Geometric smoothing.} No auxiliary scalar is introduced. An
+inflationary phase emerges from quantum corrections to the gravitational action
+itself. In QQG, the one-loop RG running of the coupling $\xi(\mu)$ breaks the
+exact scale invariance of $R^2$ gravity, generating a quasi-de Sitter attractor.
+The mechanism is geometrical in the sense that no matter field carries the
+inflationary energy; the gravitational sector alone generates the expansion.
+Nevertheless, the output is still a period of accelerated metric expansion, and
+the observational predictions---scalar spectrum, tensor spectrum, spectral
+tilt---are structurally similar to Class~1, differing in their specific values of
+$n_s$ and $r$.
+
+\textit{Class 3: Lamphrodyne relaxation.} No metric expansion is invoked.
+Cosmological smoothing arises from the directional relaxation of a coupled
+scalar-vector-entropy plenum toward states of lower admissibility complexity. The
+apparent homogeneity of the CMB is not the result of causal contact established
+during an expansion phase but the thermodynamic equilibrium texture of a plenum
+that has undergone irreversible entropy-producing relaxation. Cosmological redshift
+is reinterpreted as an entropy-gradient effect in the scalar field $S$ rather than
+a consequence of metric expansion.
+
+\subsection{Why Three Classes?}
+
+Any smoothing mechanism must answer two fundamental questions: what drives
+homogenization, and is metric expansion required to achieve it? These two questions
+generate the classification naturally. If homogenization requires expansion, the
+question becomes whether the expansion is driven by an auxiliary matter field
+(Class~1) or by the gravitational sector itself (Class~2). If homogenization does
+not require expansion, a third possibility opens (Class~3), in which field-space
+relaxation produces the same observational regularities without a de Sitter phase.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Class} & \textbf{Driver} & \textbf{Expansion required?} \\
+\midrule
+1 (Inflaton) & Auxiliary scalar $\phi$ & Yes \\
+2 (Geometric) & Quantum-corrected gravity & Yes \\
+3 (Lamphrodyne) & Admissibility relaxation & No \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The classification is not ad hoc. It follows from asking which of the two questions
+is answered differently. Class~1 and Class~2 share the same answer to the expansion
+question and differ only in the source of the driving energy. Class~3 gives a
+different answer to both questions. It is therefore a genuinely distinct mechanism,
+not a variant of inflation with a non-standard energy source.
+
+\subsection{Ontology Versus Mechanism}
+
+The distinction between Class~2 and Class~3 is not merely technical. Both replace
+the inflaton with something more fundamental; they disagree about whether
+``fundamental'' means a quantum-corrected metric or a relaxing plenum. Class~2
+retains metric expansion as the physical mechanism of smoothing, deriving the
+driving force from geometry rather than matter. Class~3 rejects the necessity of
+expansion altogether, proposing that the observational signatures attributed to
+inflation---isotropy, homogeneity, scale-invariant perturbations---can be generated
+by admissibility-reducing dynamics in field space without the universe ever
+undergoing a de Sitter phase.
+
+This distinction carries empirical content. If the early universe underwent a
+de Sitter phase, whether driven by an inflaton (Class~1) or by quantum gravity
+(Class~2), primordial tensor modes are generated by quantum fluctuations of the
+metric during that phase. If the early universe instead underwent lamphrodyne
+relaxation (Class~3), tensor modes arise from a different source---anisotropic
+stress in the relaxing plenum---and their amplitude, tilt, and spectral shape may
+differ from the inflationary prediction.
+
+%------------------------------------------------------------
+\section{Quadratic Quantum Gravity as Benchmark}
+\label{sec:qqg}
+%------------------------------------------------------------
+
+Class~2 geometric smoothing encompasses any framework in which an inflationary
+phase emerges from the quantum-corrected gravitational sector without an auxiliary
+inflaton. Several such proposals exist, including Starobinsky $R + R^2$ inflation
+\citep{Starobinsky1980}, asymptotic safety scenarios, induced gravity models, and
+higher-curvature extensions of GR. We use the specific QQG scenario of
+\citet{Liu2026} as our primary benchmark because it is the most recent Class~2
+model to make a structural falsification prediction---the tensor floor $r \gtrsim
+10^{-2}$---and because it has been tested against the most current CMB data
+including ACT DR6. The classification of smoothing mechanisms developed here is
+independent of the fate of this particular model; if the Liu--Quintin--Afshordi
+scenario were falsified, the Class~2 category would remain and would be occupied
+by other geometric smoothing proposals. The empirical fork described in
+Section~\ref{sec:fork} should therefore be read as a comparison between Class~2
+and Class~3 smoothing in general, with QQG serving as the sharpest available
+Class~2 representative.
+
+\subsection{Action and Scale Invariance}
+
+The QQG action of \citet{Liu2026} is equation~(1) above. In homogeneous and
+isotropic backgrounds, the Weyl tensor $C_{\mu\nu\rho\sigma}$ vanishes identically,
+so the background dynamics are controlled entirely by the $R^2/\xi$ term. Without
+RG running, pure $R^2$ gravity is exactly scale invariant: both Minkowski and
+(anti-)de Sitter spacetimes are solutions. This scale invariance is analogous to
+the classical conformal invariance of Yang-Mills theory before the introduction of
+a mass scale through dimensional transmutation.
+
+\subsection{RG Flow and Dimensional Transmutation}
+
+The one-loop beta functions derived by \citet{Buccio2024} are
+\begin{align}
+\beta_\xi &= \frac{d\xi}{d\ln\mu} = -\frac{1}{(4\pi)^2}\frac{\xi^2 - 36\lambda\xi - 2520\lambda^2}{36}, \\
+\beta_\lambda &= \frac{d\lambda}{d\ln\mu} = -\frac{1}{(4\pi)^2}\frac{(1617 + 90N)\lambda - 20\xi\lambda}{90},
+\end{align}
+where $N$ encodes the matter field content through $N = \frac{1}{60}N_{\rm scalar} +
+\frac{1}{5}N_{\rm vector} + \frac{1}{20}N_{\rm fermion}$. The running coupling
+$\xi(\mu)$ exhibits a maximum at some scale $\mu_{\rm max}$ and subsequently
+decreases, crossing zero at the tachyon divide $\mu_0$. \citet{Liu2026} identify
+the inflationary epoch with the regime of decreasing $\xi$ above the tachyon divide.
+
+In the large-$N$ limit, the solution is approximately
+\begin{equation}
+\xi(\mu) \simeq \frac{35\lambda_0^2\ln(\mu/\mu_0)}{8\pi^2[1 + \lambda_{tH}\ln(\mu/\mu_0)]},
+\end{equation}
+where $\lambda_{tH} \equiv \lambda_0 N/(4\pi)^2$ is a `t~Hooft-like coupling. The
+inflation potential in the Einstein frame takes the approximate form
+\begin{equation}
+V(\varphi) \simeq \frac{35\lambda_0^2\mu_0^4}{128\pi^2\lambda_{tH}}
+\left(1 - \frac{\sqrt{6}\,\mu_0}{\lambda_{tH}\varphi}\right),
+\end{equation}
+a slowly varying plateau that supports slow-roll inflation without a separately
+introduced inflaton field.
+
+\subsection{Strong Coupling and Ghost Confinement}
+
+The Weyl term $C^2$ introduces a massive spin-2 ghost: a field carrying negative
+kinetic energy. In perturbative QQG this field generates an unbounded Hamiltonian
+if treated in isolation. \citet{Liu2026} adopt the proposal of \citet{Holdom2016}
+that, analogously to quarks in QCD, ghost degrees of freedom are confined once QQG
+reaches its strong-coupling scale. The end of inflation, the tachyon divide, and
+the onset of strong coupling are argued to be nearly coincident---a result that is
+empirically suggested by the parameter analysis but remains a conjecture awaiting
+nonperturbative verification.
+
+\subsection{Emergence of General Relativity}
+
+Perhaps the most radical claim in \citet{Liu2026} is not that inflation can be
+derived from quantum gravity. It is that general relativity itself is not
+fundamental. The QQG framework proposes that Einstein's theory emerges as an
+infrared effective field theory from the strong-coupling limit of a UV-complete
+renormalizable theory. The logical chain is:
+\begin{equation}
+\text{UV Fixed Point} \;\rightarrow\; \text{RG Running} \;\rightarrow\;
+\text{Quasi-de Sitter Inflation} \;\rightarrow\; \text{Strong Coupling} \;\rightarrow\;
+\text{Emergent GR}.
+\end{equation}
+This is conceptually analogous to the emergence of nuclear physics from QCD: the
+low-energy effective description (GR, nuclear physics) is not a fundamental theory
+but a phase of a deeper one. In QQG, the Planck mass $M_{\rm Pl}$ is not a
+fundamental input but an emergent scale arising when the 't~Hooft-like coupling
+$\lambda_{tH}$ surpasses unity and the perturbative QQG description breaks down.
+An Einstein-Hilbert term with effective $M_{\rm Pl}$ then appears as the leading
+term of the low-energy effective action, and the universe enters its familiar
+radiation-dominated era.
+
+The title of \citet{Liu2026}---``Ultraviolet Completion of the Big Bang''---reflects
+this ambition. The paper is not primarily proposing a new inflation model; it is
+proposing a new origin for the entire gravitational framework within which inflation
+operates. This framing is directly relevant to RSVP, which shares the structural
+intuition that the familiar low-energy description is not fundamental: in QQG,
+spacetime geometry is emergent from a UV gravitational phase; in RSVP, spacetime
+geometry is an effective description of plenum dynamics. The disagreement between
+the frameworks is over what lies beneath, not over whether the familiar description
+is fundamental.
+
+\subsection{Observable Predictions}
+
+The scalar spectral index and tensor-to-scalar ratio predicted by QQG are
+\begin{equation}
+n_s \sim 1 - \frac{4}{3N_e}, \qquad r \sim 8\left(\frac{2\lambda_{tH}^2}{N_e^4}\right)^{1/3},
+\end{equation}
+where $N_e \sim 50$--$60$ is the number of inflationary e-folds. The viable
+parameter space requires $N \sim 10^5$--$10^6$ matter fields and
+$\lambda_{tH} \in [0.1, 1]$. The structural lower bound on the tensor-to-scalar
+ratio,
+\begin{equation}
+\rQQG \gtrsim 10^{-2},
+\label{eq:qqg_floor}
+\end{equation}
+follows from $r \sim \lambda_{tH}^{-2/3}$ and the perturbativity bound
+$\lambda_{tH} \lesssim 1$. This bound is falsifiable by next-generation B-mode
+experiments including LiteBIRD and CMB-S4.
+
+%------------------------------------------------------------
+\section{RSVP Cosmology}
+\label{sec:rsvp}
+%------------------------------------------------------------
+
+\subsection{The Scalar-Vector Plenum}
+
+The Relativistic Scalar-Vector Plenum (RSVP) describes the early universe through
+three coupled fields defined on a four-dimensional spacetime manifold $\mathcal{M}$:
+a scalar field $\Phi$ encoding local energy density and constraint-satisfaction; a
+vector field $\vv$ encoding directed entropy flux and local flow; and a scalar
+entropy field $S$ encoding thermodynamic irreversibility and admissibility state.
+The field equations governing their joint evolution are derived from an action
+principle supplemented by admissibility constraints, the latter encoding the
+requirement that the plenum remain in a physically accessible region of field space.
+
+The RSVP framework does not begin with a metric ansatz. Rather, the effective
+metric perceived by observers arises from the gradient structure of $S$: regions
+in which $\nabla S$ is large correspond to what standard observers would interpret
+as high-redshift regions, since photon traversal across an entropy gradient
+accumulates a frequency shift without metric expansion. The effective Hubble law in
+RSVP is therefore a statement about entropy-gradient accumulation rather than
+recession velocity.
+
+\subsection{Redshift Without Expansion}
+
+In standard cosmology, the cosmological redshift of a photon traveling from emission
+redshift $z_e$ to an observer is attributed to the stretching of its wavelength by
+metric expansion: $1 + z = a(t_{\rm obs})/a(t_{\rm em})$. In RSVP, no global scale
+factor $a(t)$ is introduced. Instead, a photon traversing a region of entropy
+gradient $\nabla S$ accumulates a phase shift proportional to the integrated entropy
+contrast along its path. The effective redshift is
+\begin{equation}
+1 + z_{\rm RSVP} = \exp\left(\int_{\rm path} \kappa\,|\nabla S|\,d\ell\right),
+\end{equation}
+where $\kappa$ is a coupling constant between the photon propagator and the entropy
+field, and $d\ell$ is the proper path element. At leading order in a slowly varying
+$S$, this reproduces a Hubble-like distance-redshift relation with effective Hubble
+parameter $\Heff \sim \kappa\langle|\nabla S|\rangle$.
+
+This reinterpretation is not merely definitional. It predicts that the
+distance-redshift relation will exhibit small deviations from the standard
+$\Lambda$CDM prediction at high redshift, where the entropy gradient structure of
+the plenum departs from homogeneity. These deviations are in principle observable
+with future spectroscopic surveys, though their amplitude depends on the specific
+background solution $S_0(t)$ derived in Section~\ref{sec:background}.
+
+%------------------------------------------------------------
+\section{Lamphrodyne Background Dynamics}
+\label{sec:background}
+%------------------------------------------------------------
+
+\subsection{The Homogeneous Relaxation State}
+
+We define the lamphrodyne epoch as the cosmological phase during which the RSVP
+plenum undergoes homogeneous, isotropic, irreversible relaxation from an initial
+state of high admissibility complexity toward a state of low admissibility
+complexity. The background is characterized by spatially homogeneous field
+configurations
+\begin{equation}
+\Phi = \Phi_0(t), \qquad \vv = \vv_0(t) = \mathbf{0}, \qquad S = S_0(t),
+\end{equation}
+where the vanishing of $\vv_0$ follows from the isotropy of the background: a
+nonzero background vector field would select a preferred spatial direction,
+violating statistical isotropy. The vector field $\vv$ therefore contributes to the
+background only through its fluctuations, which are treated in
+Section~\ref{sec:perturbations}.
+
+The background evolution equations for $\Phi_0(t)$ and $S_0(t)$ follow from the
+RSVP field equations in the homogeneous limit. Their specific form depends on the
+choice of kinetic terms and coupling functions in the RSVP action, which we leave
+partially general here while imposing the constraints required by admissibility
+geometry.
+
+\subsection{The Irreversibility Condition}
+
+The defining property of the lamphrodyne epoch is that the volume of the
+unresolved admissible configuration space $\calA_{\rm unresolved}$ decreases
+monotonically in time:
+\begin{equation}
+\frac{d}{dt}\Vol(\calA_{\rm unresolved}) < 0.
+\label{eq:irreversibility}
+\end{equation}
+This is the plenum-theoretic statement of the second law of thermodynamics during
+the relaxation epoch. It rules out background solutions along which admissibility
+volume increases---which would correspond to a physical unsmoothing of the
+plenum---and selects the thermodynamically privileged direction of evolution.
+
+Equation~\eqref{eq:irreversibility} provides a natural arrow of time for the
+lamphrodyne epoch that is absent from inflationary frameworks. In Class~1 and
+Class~2 smoothing, the thermodynamic arrow of time must be imposed separately from
+the dynamical equations; inflation itself is time-reversible at the level of the
+field equations. In RSVP, the arrow of time is primitive: relaxation is
+admissibility loss, and admissibility loss is by definition irreversible.
+
+\subsection{Admissibility Volume and Field-Space Geometry}
+\label{sec:fieldspace}
+
+Let $\calF = \{(\Phi, \vv, S)\}$ denote the field-space manifold of the RSVP
+plenum. We equip $\calF$ with a Riemannian metric $G_{AB}$ derived from the kinetic
+terms of the RSVP action, so that the kinetic energy of the plenum fields takes the
+form
+\begin{equation}
+\mathcal{T} = \frac{1}{2}G_{AB}\dot{\phi}^A\dot{\phi}^B,
+\end{equation}
+where $\phi^A = (\Phi, v^i, S)$ collectively denotes the plenum field components.
+The metric $G_{AB}$ is positive definite when the kinetic terms are non-degenerate,
+which we assume throughout.
+
+The admissibility volume functional $\Vol(\calA)$ assigns to each point
+$\phi^A \in \calF$ a real number measuring the volume of the set of configurations
+consistent with the admissibility constraints at that point. The gradient
+\begin{equation}
+\nabla_{\calF}\log\Vol(\calA)
+\end{equation}
+is a vector field on $\calF$ pointing in the direction of steepest increase of log-
+admissibility-volume. During lamphrodyne relaxation, the plenum evolves in the
+direction of decreasing $\Vol(\calA)$, which is opposite to this gradient.
+
+Concretely, the admissibility volume at a point $\phi^A \in \calF$ is defined by
+\begin{equation}
+\Vol(\calA) = \int_{\calA} \sqrt{\det G}\; d\Phi\, dS\, d^3v,
+\end{equation}
+where $\sqrt{\det G}$ is the Riemannian volume element of the field-space metric
+$G_{AB}$. This expression is manifestly geometric: it measures the metric volume of
+the admissible region in $\calF$, making $\Vol(\calA)$ a coordinate-invariant
+quantity rather than a metaphorical one. As the plenum relaxes and constraints are
+resolved, the set $\calA$ shrinks and $\Vol(\calA)$ decreases, in accordance with
+the irreversibility condition~\eqref{eq:irreversibility}.
+
+To make the geometry concrete, consider the simplest non-degenerate field-space
+metric consistent with the RSVP field content:
+\begin{equation}
+ds^2_{\calF} = d\Phi^2 + \alpha_v\,|d\vv|^2 + \alpha_S\,dS^2,
+\label{eq:toy_metric}
+\end{equation}
+where $\alpha_v > 0$ and $\alpha_S > 0$ are positive coupling constants encoding
+the relative contributions of the vector and entropy fields to the field-space
+geometry. In this metric, $\det G = \alpha_v^3\,\alpha_S$ (with three spatial
+components of $\vv$), and the admissibility volume element is
+$\sqrt{\det G}\,d\Phi\,dS\,d^3v = \alpha_v^{3/2}\alpha_S^{1/2}\,d\Phi\,dS\,d^3v$.
+The physical RSVP metric $G_{AB}$ will in general depend on the fields themselves
+and on the admissibility constraints; equation~\eqref{eq:toy_metric} is a
+linearized approximation valid near a background point in $\calF$.
+
+\subsection{Irreversibility and Admissibility Loss}
+\label{sec:irreversibility}
+
+In the Spherepop formalization of irreversible event calculus, the collapse operator
+$\mathsf{Pop}$ and the refusal operator $\mathsf{Refuse}$ describe the asymmetric
+resolution of unresolved configurations: a configuration either collapses to a
+resolved state (Pop) or is refused (Refuse), but neither operation is reversible.
+At the level of the lamphrodyne background, this structure is captured by the
+single condition~\eqref{eq:irreversibility}: the set of unresolved admissible
+configurations shrinks. We do not require the full Spherepop apparatus for the
+present calculation; we require only that the background evolution satisfies the
+irreversibility condition.
+
+The irreversibility condition also implies that the background trajectory in $\calF$
+is not time-reversible. This is in contrast to the de Sitter solution in QQG, which
+is an exact solution of the classical equations and is time-symmetric. The
+lamphrodyne background is thermodynamically directed from the outset, which is the
+formal ground for the claim that Class~3 smoothing provides an arrow of time
+without additional postulation.
+
+\begin{proposition}[Monotonic Admissibility Loss]
+Suppose that $\Vol(\calA_{\rm unresolved})$ is bounded below by zero and that the
+irreversibility condition $d\Vol(\calA_{\rm unresolved})/dt < 0$ holds throughout
+the lamphrodyne epoch. Then $\Vol(\calA_{\rm unresolved})$ converges to a finite
+non-negative limit as $t \to \infty$.
+\end{proposition}
+
+\begin{proof}
+The function $t \mapsto \Vol(\calA_{\rm unresolved}(t))$ is strictly decreasing by
+the irreversibility condition and bounded below by zero by assumption. A monotone
+decreasing function bounded below converges. \qed
+\end{proof}
+
+\begin{remark}
+The limiting value $\Vol(\calA_{\rm unresolved}) \to V_\infty \geq 0$ represents
+the irreducible residual admissibility volume: the set of configurations that cannot
+be resolved by the lamphrodyne dynamics alone. If $V_\infty = 0$, the relaxation is
+complete and the plenum reaches a fully resolved state. If $V_\infty > 0$, a
+permanently unresolved residue persists, which may correspond to the observed
+large-scale structure of the universe---the non-trivial texture that survives after
+smoothing is complete.
+\end{remark}
+
+%------------------------------------------------------------
+\section{The Lamphrodyne Relaxation Parameter}
+\label{sec:etalamph}
+%------------------------------------------------------------
+
+\subsection{Motivation by Analogy}
+
+In slow-roll inflation, the parameters $\epsilon$ and $\eta$ measure, respectively,
+the steepness and curvature of the inflaton potential. Their smallness is the
+condition under which the inflationary background is approximately de Sitter and
+perturbation theory is under control. The spectral observables $n_s$ and $r$ are
+directly expressed in terms of $\epsilon$ and $\eta$ through the consistency
+relations of inflationary perturbation theory.
+
+For RSVP, the analogous role is played by a parameter measuring the rate at which
+the admissibility relaxation gradient changes during the lamphrodyne epoch. We
+define this parameter from admissibility geometry rather than by importing the
+slow-roll definition.
+
+\subsection{Definition}
+
+\begin{definition}[Lamphrodyne Gradient Parameter]
+Let $\calF$ be the field-space manifold of the RSVP plenum with metric $G_{AB}$,
+and let $\Vol(\calA)$ be the admissibility volume functional. Define the
+\emph{lamphrodyne gradient parameter} as
+\begin{equation}
+\epslamph = \frac{\left\|\nabla_{\calF}\log\Vol(\calA)\right\|}{\Heff},
+\label{eq:epslamph}
+\end{equation}
+where $\Heff \sim \kappa\langle|\nabla S|\rangle$ is the effective Hubble parameter
+from entropy-gradient traversal, and the norm is taken with respect to the
+field-space metric $G_{AB}$. The parameter $\epslamph$ measures the magnitude of
+the admissibility gradient in units of $\Heff$: it is the lamphrodyne analogue of
+the slow-roll parameter $\epsilon_{\rm infl}$, measuring the steepness of the
+admissibility descent.
+\end{definition}
+
+\begin{definition}[Lamphrodyne Relaxation Parameter]
+Define the \emph{lamphrodyne relaxation parameter} as
+\begin{equation}
+\etalamph = -\frac{1}{\Heff}\frac{d}{dt}\log\epslamph,
+\label{eq:etalamph}
+\end{equation}
+measuring the fractional rate of change of $\epslamph$, normalized by $\Heff$.
+Small $|\etalamph|$ implies that the admissibility gradient is nearly constant in
+time---the lamphrodyne analogue of the slow-roll condition $|\eta_{\rm infl}| \ll 1$.
+\end{definition}
+
+\subsection{Physical Interpretation}
+
+The primary new object introduced in this framework is $\epslamph$. It measures the
+magnitude of the admissibility gradient in field space, normalized by the effective
+Hubble parameter: it is the generalized descent rate of the relaxation trajectory on
+$\calF$. In this respect $\epslamph$ plays exactly the role that $\epsilon_{\rm infl}$
+plays in slow-roll inflation: it quantifies how steeply the system is descending its
+governing landscape, whether that landscape is a scalar potential (inflation) or an
+admissibility volume functional (lamphrodyne relaxation).
+
+The parameter $\etalamph$ is then a derived curvature measure: it quantifies how
+rapidly $\epslamph$ itself is changing. Small $|\etalamph|$ means that the descent
+rate is nearly constant---the relaxation is in a controlled, nearly uniform regime.
+This is the lamphrodyne analogue of the slow-roll condition $|\eta_{\rm infl}| \ll 1$,
+which ensures that $\epsilon_{\rm infl}$ varies slowly enough for inflationary
+perturbation theory to be valid.
+
+The hierarchy is therefore:
+\begin{align}
+\epsilon_{\rm infl} &\leftrightarrow \epslamph \quad
+  (\text{primary: rate of landscape descent}), \\
+\eta_{\rm infl} &\leftrightarrow \etalamph \quad
+  (\text{derived: rate of change of descent rate}).
+\end{align}
+In inflation, $\epsilon$ determines the tensor-to-scalar ratio at leading order via
+$r = 16\epsilon$, while $\eta$ controls the tilt via $n_s - 1 \approx -2\epsilon -
+\eta$. In RSVP, the conjecture~\eqref{eq:conjecture} assigns to $\epslamph$ the
+analogous primary role in determining $\rRSVP$, with $\etalamph$ entering as a
+correction. The key difference from inflation is that $\epslamph$ and $\etalamph$
+are defined on the field-space manifold $\calF$ via the admissibility volume
+functional, without reference to any potential. They characterize the geometry of
+the admissibility landscape rather than the curvature of an inflaton potential.
+
+\subsection{Slow Relaxation Condition}
+
+We say that the plenum is in a \emph{slow relaxation} regime when
+$|\etalamph| \ll 1$. In this regime, the admissibility gradient is nearly constant,
+and the background trajectory in $\calF$ is approximately a geodesic of the
+field-space metric $G_{AB}$ deformed by the admissibility gradient. This condition
+is the prerequisite for perturbation theory around the lamphrodyne background to be
+controlled, in the same way that slow roll is the prerequisite for inflationary
+perturbation theory.
+
+
+%------------------------------------------------------------
+\subsection{A Prototype RSVP Action}
+\label{sec:action}
+%------------------------------------------------------------
+
+A complete cosmological theory requires a dynamical principle from which both the
+background evolution and the perturbation equations can be derived. The present
+paper does not claim that the final RSVP action has been uniquely identified.
+Nevertheless, it is useful to exhibit a minimal prototype action capturing the
+essential field content and demonstrating that the formal program is well posed as
+an effective field theory.
+
+We consider the provisional action
+\begin{equation}
+S_{\rm RSVP} = \int d^4x\,\sqrt{-g}\left[
+\frac{M_{\rm Pl}^2}{2}R
+- \frac{1}{2}\nabla_\mu\Phi\,\nabla^\mu\Phi - V(\Phi)
+- \frac{1}{2}\nabla_\mu S\,\nabla^\mu S - W(S)
+- \frac{1}{4}F_{\mu\nu}F^{\mu\nu}
++ \xi_1 S\,F_{\mu\nu}F^{\mu\nu}
++ \xi_2\,\nabla_\mu\Phi\,\nabla^\mu S
+\right],
+\label{eq:action}
+\end{equation}
+where $F_{\mu\nu} = \nabla_\mu v_\nu - \nabla_\nu v_\mu$ is the field-strength
+tensor of the vector field $v_\mu$. The scalar $\Phi$ represents constraint
+density, $v_\mu$ represents directed entropy flow, and $S$ represents admissibility
+entropy. The interaction terms proportional to $\xi_1$ and $\xi_2$ provide the
+lowest-order couplings between the sectors while preserving locality and general
+covariance. The Einstein-Hilbert term is included to establish the connection
+between RSVP dynamics and the emergent spacetime metric; in the deep lamphrodyne
+epoch, the curvature terms are subdominant and the dynamics are dominated by the
+plenum sector.
+
+The purpose of this action is not to establish a unique realization of RSVP but to
+demonstrate that the framework admits a conventional effective field theory
+representation from which perturbative calculations can in principle proceed. We
+note a conceptual tension that this prototype does not fully resolve: the paper
+claims that global metric expansion is not the smoothing mechanism, yet the action
+includes a standard Einstein-Hilbert term $\frac{M_{\rm Pl}^2}{2}R$. Two
+resolutions are possible. In the phenomenological embedding (Option B), the metric
+is present and dynamical, but the inflationary phase is replaced by lamphrodyne
+relaxation as the source of primordial perturbations---the redshift mechanism
+is then a subdominant correction from the entropy gradient coupling, not a
+replacement for expansion. In the full emergent-metric program (Option A), the
+Einstein-Hilbert term is absent and the effective metric is derived from plenum
+correlators; this is technically demanding and left for future work. The present
+paper adopts the phenomenological embedding for all perturbative calculations,
+and all such calculations should be read as estimates within that embedding
+rather than consequences of the full emergent-metric claim. The
+field-space metric $G_{AB}$ introduced in Section~\ref{sec:fieldspace} is derived
+from the kinetic matrix of action~\eqref{eq:action}: at quadratic order in the
+fields, $G_{AB}$ takes the diagonal form consistent with the toy metric
+\eqref{eq:toy_metric} with $\alpha_S = 1$ and $\alpha_v$ determined by the vector
+kinetic term.
+
+%------------------------------------------------------------
+\subsection{Euler--Lagrange Equations}
+\label{sec:EL}
+%------------------------------------------------------------
+
+Variation of the prototype action~\eqref{eq:action} with respect to $\Phi$, $S$,
+and $v_\nu$ yields the field equations
+\begin{align}
+\Box\Phi - V'(\Phi) + \xi_2\,\Box S &= 0, \label{eq:EL_Phi} \\
+\Box S - W'(S) + \xi_2\,\Box\Phi + \xi_1\,F_{\mu\nu}F^{\mu\nu} &= 0,
+\label{eq:EL_S} \\
+\nabla_\mu\!\left[(1 - 4\xi_1 S)\,F^{\mu\nu}\right] &= 0. \label{eq:EL_v}
+\end{align}
+These equations describe the coupled evolution of the scalar constraint field,
+the entropy field, and the directed entropy-flow sector. The coupling $\xi_2$
+mixes the $\Phi$ and $S$ equations; the coupling $\xi_1$ introduces a
+curvature-like backreaction of the entropy field on the vector sector.
+
+The homogeneous lamphrodyne background corresponds to $\Phi = \Phi_0(t)$,
+$S = S_0(t)$, $v_\mu = 0$, for which $F_{\mu\nu} = 0$ identically and the field
+equations reduce to the coupled ordinary differential equations
+\begin{align}
+\ddot\Phi_0 + 3\Heff\dot\Phi_0 + V'(\Phi_0) - \xi_2(\ddot S_0 + 3\Heff\dot S_0)
+&= 0, \\
+\ddot S_0 + 3\Heff\dot S_0 + W'(S_0) - \xi_2(\ddot\Phi_0 + 3\Heff\dot\Phi_0)
+&= 0,
+\end{align}
+where we have included a friction term proportional to $\Heff$ as the leading-order
+coupling of the plenum dynamics to the background rate of entropy-gradient
+traversal. These equations are the starting point for the explicit derivation of
+the lamphrodyne background trajectory $(\Phi_0(t), S_0(t))$ that the perturbation
+calculation requires.
+
+%------------------------------------------------------------
+\subsection{Operational Definition of Admissibility}
+\label{sec:admissibility_operational}
+%------------------------------------------------------------
+
+The admissibility volume $\Vol(\calA)$ introduced in
+Section~\ref{sec:fieldspace} becomes physically meaningful only once membership in
+$\calA$ is specified by a constitutive condition. For the prototype
+theory~\eqref{eq:action}, we define admissible configurations as those satisfying
+\begin{equation}
+C[\Phi, v, S] \leq 0, \qquad C \equiv \omega^2 - \omega_c^2,
+\end{equation}
+where $\omega = |\nabla \times \mathbf{v}|$ is the local vorticity magnitude of the
+vector field and $\omega_c > 0$ is a critical vorticity threshold. The admissible
+region is therefore
+\begin{equation}
+\calA = \bigl\{(\Phi, \mathbf{v}, S) : |\nabla \times \mathbf{v}| \leq \omega_c
+\bigr\}.
+\label{eq:admissible_set}
+\end{equation}
+Configurations with vorticity exceeding $\omega_c$ are interpreted as
+thermodynamically unresolved: they carry unresolved rotational structure that the
+lamphrodyne dynamics have not yet dissipated. The admissibility volume is then
+\begin{equation}
+\Vol(\calA) = \int_{C \leq 0} \sqrt{\det G}\; d\Phi\, dS\, d^3v,
+\end{equation}
+and its decrease in time is controlled by the dissipation of vorticity through the
+vector field equation~\eqref{eq:EL_v}. The irreversibility condition
+$d\Vol(\calA_{\rm unresolved})/dt < 0$ is therefore not imposed externally but
+follows dynamically from equation~\eqref{eq:EL_v}: as vorticity is dissipated, the
+admissible region expands and the unresolved complement shrinks.
+
+%------------------------------------------------------------
+\subsection{Admissibility Dissipation and Total Loss Budget}
+\label{sec:dissipation}
+%------------------------------------------------------------
+
+Define the admissibility dissipation rate
+\begin{equation}
+\Gamma_A = -\frac{d}{dt}\Vol(\calA_{\rm unresolved}) > 0
+\end{equation}
+during the lamphrodyne epoch. The admissibility evolution equation is
+\begin{equation}
+\frac{d}{dt}\Vol(\calA_{\rm unresolved}) = -\Gamma_A,
+\end{equation}
+integrating to
+\begin{equation}
+\Vol(\calA_{\rm unresolved})(t) = \Vol_0 - \int_0^t \Gamma_A(\tau)\,d\tau.
+\end{equation}
+By the Monotonic Admissibility Loss Proposition, the integral converges as
+$t \to \infty$. Define the total admissibility loss budget
+\begin{equation}
+\Delta_A = \int_0^\infty \Gamma_A(t)\,dt < \infty.
+\label{eq:loss_budget}
+\end{equation}
+The quantity $\Delta_A$ is a finite, theory-dependent constant that characterizes
+the total extent of relaxation undergone by the plenum during the lamphrodyne epoch.
+It plays a role analogous to a total entropy-production budget: just as thermodynamic
+processes are bounded by the total available free energy, lamphrodyne relaxation is
+bounded by $\Delta_A$. A large $\Delta_A$ corresponds to a plenum that undergoes
+extensive smoothing; a small $\Delta_A$ corresponds to a nearly pre-resolved initial
+state. The connection between $\Delta_A$ and the observed amplitude of primordial
+perturbations $A_s$ is a prediction target of the RSVP perturbation program.
+
+%------------------------------------------------------------
+\subsection{Admissibility Horizons and Causal Coherence}
+\label{sec:horizons}
+%------------------------------------------------------------
+
+A central objection to any non-inflationary smoothing mechanism concerns causal
+coherence: if regions were never in causal contact, what physically enforces their
+approach to a common equilibrium? Inflation answers this by altering causal
+structure via accelerated expansion; QQG inherits the same answer. RSVP requires a
+different account.
+
+We define an admissibility propagation cone $\mathcal{C}_A$ by the condition
+\begin{equation}
+ds_A^2 = -c_A^2\,dt^2 + d\mathbf{x}^2 = 0,
+\label{eq:admissibility_cone}
+\end{equation}
+where $c_A$ is the characteristic speed at which admissibility information
+propagates through the plenum. The corresponding admissibility horizon is
+\begin{equation}
+d_A(t) = \int_0^t c_A(\tau)\,d\tau.
+\label{eq:admissibility_horizon}
+\end{equation}
+In the prototype action~\eqref{eq:action}, $c_A$ is determined by the sound speeds
+of the coupled $(\Phi, S, v)$ system. If the entropy-field sound speed $c_S$ and
+vorticity propagation speed $c_v$ are both superluminal with respect to the
+effective metric speed during the deep lamphrodyne epoch---which is possible if the
+plenum dynamics precede the emergence of the standard metric---then $d_A(t)$ at
+early times exceeds the effective particle horizon of the emergent spacetime
+description.
+
+This provides a concrete mechanism by which large-scale coherence may be established
+in the plenum before the effective metric description is valid. Regions that appear
+causally disconnected in the FLRW description were, in the plenum picture,
+connected by admissibility propagation during the epoch when $c_A > c_{\rm eff}$.
+This is the RSVP analogue of the inflationary resolution of the horizon problem,
+and it makes a testable prediction: the coherence length of primordial perturbations
+in RSVP is set by $d_A$ rather than the comoving Hubble radius at horizon crossing,
+which implies a distinct dependence of the perturbation spectrum on scale that
+differs from the inflationary prediction at very large scales ($k \to 0$).
+
+%------------------------------------------------------------
+\section{Perturbations of the Relaxing Plenum}
+\label{sec:perturbations}
+%------------------------------------------------------------
+
+\subsection{Linearization}
+
+We expand the RSVP fields around the homogeneous background:
+\begin{equation}
+\Phi = \Phi_0(t) + \delta\Phi(t, \mathbf{x}), \quad
+\vv = \delta\vv(t, \mathbf{x}), \quad
+S = S_0(t) + \delta S(t, \mathbf{x}).
+\end{equation}
+The linearized field equations are obtained by varying the RSVP action to first
+order in the perturbations. In Fourier space, the perturbations decompose into
+scalar, vector, and tensor sectors under the spatial rotation group $SO(3)$.
+
+\subsection{Sector Classification}
+
+The scalar sector contains perturbations in $\delta\Phi$ and $\delta S$, together
+with the longitudinal part of $\delta\vv$. These mix under the linearized equations
+and produce the scalar power spectrum $P_s(k)$, which must match the observed CMB
+anisotropy amplitude $A_s \approx 2.1 \times 10^{-9}$.
+
+The vector sector contains the transverse part of $\delta\vv$. In standard
+cosmology, vector perturbations decay during radiation domination and are
+observationally irrelevant. In RSVP, where there is no metric expansion, the
+transverse vector perturbations do not decay by dilution and may persist to late
+times. Their contribution to the CMB anisotropy must be suppressed by the dynamics
+of the lamphrodyne epoch, which requires either that $\delta\vv_\perp$ is small
+initially or that it decays through entropy production.
+
+The tensor sector contains the transverse-traceless (TT) part of the perturbations.
+In the absence of metric fluctuations, tensor perturbations in RSVP arise entirely
+from the anisotropic stress of the plenum fields, as we now derive.
+
+%------------------------------------------------------------
+\section{Tensor Signatures of Lamphrodyne Relaxation}
+\label{sec:tensor}
+%------------------------------------------------------------
+
+\subsection{Sources of Tensor Modes}
+
+In standard inflationary cosmology, tensor perturbations---primordial gravitational
+waves---arise from quantum fluctuations of the metric during the de Sitter phase.
+Their amplitude is set by the Hubble parameter during inflation: $P_h \sim
+H_{\rm inf}^2/M_{\rm Pl}^2$. In QQG, the same mechanism operates, with $H_{\rm
+inf}$ determined by the RG-improved potential.
+
+In RSVP, no de Sitter phase occurs, so metric quantum fluctuations are not the
+source. Tensor perturbations arise instead from the anisotropic stress of the
+relaxing plenum. Three sources contribute at quadratic order in the plenum fields.
+
+\subsection{Effective Anisotropic Stress Tensor}
+
+The effective anisotropic stress tensor of the RSVP plenum is
+\begin{equation}
+\Teff = \alpha\,v_i v_j + \beta\,\partial_i S\,\partial_j S + \gamma\,\partial_i\Phi\,\partial_j\Phi,
+\label{eq:Teff}
+\end{equation}
+where $\alpha$, $\beta$, $\gamma$ are coupling coefficients determined by the RSVP
+action, and indices are spatial. This tensor is symmetric and, in general, has both
+trace and traceless parts. The trace part contributes to the effective pressure of
+the plenum; the transverse-traceless part sources gravitational waves.
+
+The TT projection of~\eqref{eq:Teff} is
+\begin{equation}
+\Pi_{ij}^{TT} = \Lambda_{ij,kl}\,T^{\rm eff}_{kl},
+\end{equation}
+where $\Lambda_{ij,kl} = P_{ik}P_{jl} - \frac{1}{2}P_{ij}P_{kl}$ is the TT
+projection operator and $P_{ij} = \delta_{ij} - \hat{k}_i\hat{k}_j$ is the
+transverse projector for wavevector $\mathbf{k}$.
+
+\subsection{Tensor Power Spectrum}
+
+The tensor power spectrum sourced by the anisotropic stress of the plenum is
+\begin{equation}
+\Ph(k) = \frac{4}{M_{\rm Pl}^4}\int\frac{d^3q}{(2\pi)^3}\,
+G^2_{\rm ret}(k, \tau)\,
+\Lambda_{ij,kl}\Lambda_{ij,mn}\,
+\langle T^{\rm eff}_{kl}(\mathbf{q})T^{\rm eff}_{mn}(\mathbf{k}-\mathbf{q})\rangle,
+\label{eq:Ph}
+\end{equation}
+where $G_{\rm ret}(k, \tau)$ is the retarded Green function for the tensor mode
+equation, and the angle brackets denote the two-point correlator evaluated in the
+lamphrodyne background state.
+
+The two-point correlators of the plenum fields in Fourier space are
+\begin{align}
+\langle\delta v_i(\mathbf{k})\,\delta v_j(\mathbf{k}')\rangle
+&= (2\pi)^3\delta^{(3)}(\mathbf{k}+\mathbf{k}')\,P_v(k)\,\delta_{ij}, \\
+\langle\delta S(\mathbf{k})\,\delta S(\mathbf{k}')\rangle
+&= (2\pi)^3\delta^{(3)}(\mathbf{k}+\mathbf{k}')\,P_S(k), \\
+\langle\delta\Phi(\mathbf{k})\,\delta\Phi(\mathbf{k}')\rangle
+&= (2\pi)^3\delta^{(3)}(\mathbf{k}+\mathbf{k}')\,P_\Phi(k),
+\end{align}
+where $P_v(k)$, $P_S(k)$, $P_\Phi(k)$ are the individual power spectra of the
+plenum field fluctuations, to be derived from the linearized field equations of the
+lamphrodyne epoch.
+
+\subsection{Tensor-to-Scalar Ratio}
+
+The tensor-to-scalar ratio in RSVP is defined as
+\begin{equation}
+\rRSVP = \frac{\Ph(k_*)}{P_s(k_*)},
+\label{eq:rRSVP}
+\end{equation}
+where $k_* \approx 0.05\,{\rm Mpc}^{-1}$ is the CMB pivot scale. Substituting
+the contributions from each plenum field source,
+\begin{equation}
+\rRSVP = F(\alpha, \beta, \gamma, P_v, P_S, P_\Phi, \etalamph),
+\label{eq:rRSVP_general}
+\end{equation}
+where $F$ is a functional that depends on the plenum coupling coefficients, the
+individual field power spectra, and the lamphrodyne relaxation parameter. In the
+slow-relaxation limit $|\etalamph| \ll 1$, $\rRSVP$ simplifies and can be expressed
+as a power law in $\etalamph$, analogously to the inflationary consistency relation
+$r = 16\epsilon$.
+
+The derivation of the full functional $F$ requires the explicit power spectra
+$P_v$, $P_S$, $P_\Phi$, which in turn require solving the linearized RSVP field
+equations on the lamphrodyne background. This is the primary open calculation
+of the present framework; we present the formal structure here and note that
+the derivation of $\rRSVP$ as a function of $\etalamph$ is the analog of deriving
+$r = 16\epsilon$ in inflation---a result that required the full apparatus of
+inflationary perturbation theory and was not available at the time the inflationary
+paradigm was first proposed.
+
+\subsection{Tensor Suppression and Spectral Tilt}
+
+The tensor spectral index $n_t$ is defined by $\Ph(k) \propto k^{n_t}$. In
+slow-roll inflation $n_t = -r/8 \approx -2\epsilon$, giving a slightly red
+spectrum. In QQG the tilt is similarly red. In RSVP, the tensor spectrum is sourced
+by plenum anisotropic stress rather than de Sitter vacuum fluctuations, which
+generically produces a different tilt.
+
+A key feature of the prototype action is the coupling $\xi_1 S F_{\mu\nu}F^{\mu\nu}$,
+which modifies the effective gauge kinetic function of the vector field to
+$(1 - 4\xi_1 S)$. This is a kinetic rescaling, not a Proca mass. It does not
+generate an $m_v^2 v_\mu v^\mu$ term; producing a genuine vector mass would require
+an additional Stückelberg or Higgs sector not present in the current prototype
+action. The distinction matters for the tensor suppression mechanism: a kinetic
+rescaling by factor $(1 - 4\xi_1 S_0)$ suppresses the vector propagator amplitude
+by $|1 - 4\xi_1 S_0|^{-1}$ relative to the unrescaled case, while a Proca mass
+suppresses it by $(k^2 + m_v^2)^{-1/2}$. The suppression mechanisms are
+qualitatively different.
+
+Within the prototype action as written, the tensor amplitude is suppressed relative
+to the inflationary vacuum amplitude by the smallness of the anisotropic stress
+correlators. The effective coupling ratio
+\begin{equation}
+\mathcal{R}_{\rm sup} \equiv \frac{\alpha^2}{|1 - 4\xi_1 S_0|^2} \cdot
+\frac{\Heff^2}{M_{\rm Pl}^4}
+\label{eq:suppression}
+\end{equation}
+controls the overall amplitude of $\Ph(k)$ relative to the scalar spectrum. For
+$(1 - 4\xi_1 S_0)$ of order unity and $\alpha \ll M_{\rm Pl}$, the tensor-to-scalar
+ratio is suppressed relative to the inflationary value $r = 16\epslamph$. The
+exact suppression depends on the background value of $S_0$ during the lamphrodyne
+epoch, which requires solving the full background equations~\eqref{eq:EL_Phi}
+--\eqref{eq:EL_S}.
+
+Regarding the spectral tilt: the $k$-dependence of $\Ph(k)$ is inherited from
+the $k$-dependence of the plenum correlators. For a vector field with kinetic
+function $(1 - 4\xi_1 S_0)$ varying slowly in time, the vector power spectrum
+$P_v(k)$ will be approximately scale-invariant at scales $k \gg \Heff$ and will
+turn over at $k \sim \Heff$. The resulting tensor tilt $n_t^{\rm RSVP}$ is
+therefore expected to be near zero or slightly positive (blue) at scales
+$k \gtrsim \Heff$, in qualitative contrast to inflation's red tilt. A blue tensor
+tilt is a structural prediction of sourced tensor mechanisms and would provide
+a distinctive observational signature of Class~3 smoothing, independent of the
+amplitude.
+
+\subsection{Admissibility Crossing as the Native Freeze-Out Condition}
+
+A more fundamental issue for the perturbation theory underlies both the scalar and
+tensor calculations. In inflationary perturbation theory, modes freeze when $k =
+aH$: the mode wavelength exceeds the Hubble horizon, and perturbations stop
+evolving. In QQG the same mechanism operates because the inflationary phase is
+still de Sitter. In RSVP, there is no metric expansion, so Hubble horizon crossing
+does not occur in the standard sense. The scalar spectrum derivation in
+Section~\ref{sec:scalar_spectrum} used the phenomenological GR embedding precisely
+to have access to $k = aH$ as a freeze-out condition, at the cost of importing FRW
+and Friedmann dynamics.
+
+The RSVP-native freeze-out condition is admissibility crossing: a mode $k$ freezes
+when
+\begin{equation}
+k \cdot d_A(t) \sim 1,
+\label{eq:admissibility_crossing}
+\end{equation}
+where $d_A(t) = \int_0^t c_A(\tau)\,d\tau$ is the admissibility horizon. Modes
+with $k \cdot d_A > 1$ are within the admissibility horizon and continue to
+exchange information through plenum dynamics; modes with $k \cdot d_A < 1$ have
+exited the admissibility horizon and are effectively frozen. This is the RSVP
+analogue of Hubble horizon crossing, with $d_A$ replacing $1/H$.
+
+The spectral index evaluated at admissibility crossing will differ from the
+phenomenological estimate~\eqref{eq:ns_conjecture} in precisely the regime where
+$d_A$ departs from $1/\Heff$. At large scales ($k \to 0$), if $c_A$ is
+approximately constant during the lamphrodyne epoch, then $d_A \propto t$ and the
+spectrum acquires a scale dependence controlled by the time evolution of
+$\epslamph(t)$. Deriving $n_s$ from admissibility crossing rather than Hubble
+crossing is the calculation that would produce a genuinely RSVP-native spectral
+index, as opposed to the multifield analogue estimate of
+Section~\ref{sec:scalar_spectrum}.
+
+\begin{proposition}[Lamphrodyne Consistency Conjecture]
+In the slow-relaxation regime $|\etalamph| \ll 1$, the tensor-to-scalar ratio
+admits an expansion
+\begin{equation}
+\rRSVP = C\,\epslamph^{\,p} + \mathcal{O}(\etalamph),
+\label{eq:conjecture}
+\end{equation}
+where the coefficient $C$ and exponent $p$ depend on the dominant plenum source
+contributing to $\Teff$. Specifically, if vector vorticity dominates, $p$ is
+determined by the scaling of $P_v(k)$ with $\epslamph$; if entropy shear dominates,
+$p$ reflects the scaling of $P_S(k)$. The slow-relaxation approximation
+$|\etalamph| \ll 1$ is the condition under which the $\mathcal{O}(\etalamph)$
+correction is negligible, exactly as $|\eta_{\rm infl}| \ll 1$ is required for the
+inflationary consistency relation $r = 16\epsilon$ to hold.
+\end{proposition}
+
+This conjecture is not proven here; it defines the research program. The derivation
+of the exponent $p$ and coefficient $C$ from explicit plenum power spectra is the
+calculation that would transform the present framework paper into a predictive
+cosmological model. We state the conjecture explicitly so that its resolution can
+serve as a milestone for the RSVP program, analogous to the derivation of
+$r = 16\epsilon$ in inflationary perturbation theory.
+
+%------------------------------------------------------------
+\section{The Empirical Fork}
+\label{sec:fork}
+%------------------------------------------------------------
+
+\subsection{The QQG Tensor Floor}
+
+The structural prediction of QQG is equation~\eqref{eq:qqg_floor}: the
+tensor-to-scalar ratio satisfies $\rQQG \gtrsim 10^{-2}$ as a consequence of the
+perturbativity bound $\lambda_{tH} \lesssim 1$. This bound is not a
+phenomenological choice but an internal consistency condition: if $\lambda_{tH}$
+exceeds unity, the 1-loop approximation that underlies the entire QQG inflationary
+scenario breaks down. The tensor floor is therefore a necessary consequence of the
+theory's validity conditions.
+
+The next generation of CMB polarization experiments---LiteBIRD, CMB-S4, and the
+Simons Observatory---will reach sensitivities of $\sigma(r) \sim 10^{-3}$, well
+below the QQG floor. A robust upper bound at $r < 10^{-2}$ would strongly challenge the simplest QQG
+realization and require modification of its perturbative assumptions.
+
+\subsection{RSVP Predictions: Three Cases}
+
+The RSVP prediction for $\rRSVP$ depends on the specific dynamics of the
+lamphrodyne epoch, which are not yet fully constrained. Three qualitative cases
+are distinguished.
+
+\textit{Case A: Suppressed tensor spectrum.} If the plenum field correlators
+$P_v$, $P_S$, $P_\Phi$ are strongly suppressed relative to the scalar power
+spectrum during the lamphrodyne epoch, then $\rRSVP \ll 10^{-2}$. This case is
+consistent with all current B-mode non-detections and would be favored if
+future experiments find no primordial tensor signal.
+
+\textit{Case B: Inflation-like tensor spectrum.} If the anisotropic stress of the
+relaxing plenum generates tensor modes at an amplitude comparable to the QQG floor,
+then $\rRSVP \sim 10^{-2}$. In this case, RSVP must account for why relaxation
+produces a tensor residue that mimics de Sitter quantum fluctuations in amplitude.
+
+\textit{Case C: Distinct spectral shape.} The tensor spectrum $\Ph(k)$ may have a
+spectral tilt $n_t^{\rm RSVP}$ that differs from the inflationary prediction
+$n_t = -2\epsilon$. Even if the amplitude $\rRSVP$ falls within the observationally
+accessible range, a blue or unusually tilted tensor spectrum would be a distinctive
+signature of lamphrodyne relaxation rather than de Sitter inflation.
+
+\subsection{Falsification Matrix}
+
+Table~\ref{tab:fork} summarizes the observational consequences for QQG and RSVP
+across the principal experimental outcomes.
+
+\begin{table}[h]
+\centering
+\caption{Empirical fork: observational outcomes and their implications for
+Class~2 (QQG) and Class~3 (RSVP) smoothing mechanisms.}
+\label{tab:fork}
+\begin{tabular}{>{\raggedright}p{5cm} p{4cm} p{4cm}}
+\toprule
+\textbf{Observation} & \textbf{QQG} & \textbf{RSVP} \\
+\midrule
+$r > 0.01$ & Survives; constrains $\lambda_{tH}$ & Must explain tensor residue
+from plenum stress \\[4pt]
+$r \approx 0.01$ & Survives at parameter boundary & Constrained; Case~B viable \\[4pt]
+$r < 0.01$ & Falsified by internal bound & Survives; Case~A or~C favored \\[4pt]
+Unusual tilt $n_t > 0$ & Requires significant model extension & Natural if plenum
+correlators are blue \\[4pt]
+Tilt consistent with $n_t = -r/8$ & Standard consistency; favors inflation &
+Coincidental; requires explanation \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%------------------------------------------------------------
+\section{Ontological Economy and the Large-\texorpdfstring{$N$}{N} Question}
+\label{sec:economy}
+%------------------------------------------------------------
+
+\subsection{Why QQG Requires Large $N$}
+
+The QQG inflationary scenario requires $N \sim 10^5$--$10^6$ matter fields to
+produce a spectral index $n_s$ compatible with CMB observations. This requirement
+is not optional: in the vacuum ($N = 0$) case, the beta-function trajectories do
+not generate a viable inflationary potential \citep{Liu2026}. The matter fields
+enter only through their vacuum fluctuation contributions to the one-loop beta
+functions; they need not be excited, and their physical content beyond loop
+corrections is left unspecified.
+
+The 't~Hooft-like coupling $\lambda_{tH} = \lambda_0 N/(4\pi)^2 \lesssim 1$ provides
+the perturbativity bound. As $N$ increases, $\lambda_0$ must decrease
+proportionally to keep $\lambda_{tH}$ under control. The large-$N$ matter content
+is therefore not a prediction of the theory but a parameter space requirement: it
+is needed to make the beta functions produce a viable slow-roll trajectory.
+
+\subsection{The Empirical Status of the Large-$N$ Sector}
+
+No independent observational consequence of the large-$N$ sector has yet been
+identified. The matter fields sit in their vacua throughout the inflationary epoch;
+they do not contribute to reheating, do not produce distinctive non-Gaussianities,
+and do not generate spectral features that would independently confirm their
+presence. Their role is to modify the RG flow of the gravitational couplings $\xi$
+and $\lambda$ so that a viable slow-roll trajectory is obtained.
+
+This is a meaningful distinction. The inflaton fields of Class~1 smoothing are
+empirically unjustified in their potential shape, but they do make independent
+predictions about reheating dynamics, curvaton mechanisms, and spectral features
+that can in principle be tested. Whether the large-$N$ spectator sector of QQG
+will ultimately yield analogous independent predictions---through, for example,
+its role in the strong-coupling regime or in the particle spectrum of the emergent
+radiation era---is an open question. As of the present paper, the sector is
+mathematically motivated by the requirements of the beta-function structure, while
+its empirical motivation remains to be established.
+
+\subsection{Relaxation Cosmology as an Alternative}
+
+The three RSVP plenum fields $\Phi$, $\vv$, $S$ are not introduced to fix
+observational parameters. They are required by the theoretical structure of the
+admissibility and constraint-closure program: $\Phi$ encodes constraint
+satisfaction, $\vv$ encodes directed entropy flux, and $S$ encodes
+irreversibility. Each field carries independent theoretical motivation; none is
+introduced solely to modify a running coupling.
+
+The ontological economy argument is not a simple appeal to parsimony or field
+count. A more precise formulation is the following: the QQG large-$N$ sector
+participates in the cosmological dynamics exclusively through renormalization-group
+effects on the gravitational couplings. Its fields sit in their vacua; they do not
+appear in the background equations, the reheating dynamics, or the perturbation
+spectrum except indirectly through beta-function corrections. The RSVP plenum fields
+$\Phi$, $\vv$, $S$, by contrast, participate directly in the dynamics being
+modeled: they define the background state, source the perturbations, generate the
+effective stress tensor, and carry the entropy gradient that produces the observed
+redshift. The distinction is not between many fields and few fields, but between
+fields that are dynamically active in the mechanism being proposed and fields that
+function as renormalization-group auxiliaries. Both frameworks introduce speculative
+field content; the claim here is only that RSVP's field content is dynamically
+necessary to the mechanism in a way that the QQG large-$N$ sector presently is not.
+
+%------------------------------------------------------------
+\section{Discussion}
+\label{sec:discussion}
+%------------------------------------------------------------
+
+\subsection{Inflation After the Inflaton}
+
+The QQG result of \citet{Liu2026} marks a genuine advance in theoretical
+cosmology. It demonstrates that the inflationary phase is not necessarily tied to
+the existence of an auxiliary scalar field with a tuned potential, but can instead
+emerge from the UV-complete dynamics of quantum gravity itself. This is a
+conceptually important result independent of whether QQG inflation ultimately
+proves correct: it establishes that the inflaton paradigm is not the only way to
+generate a quasi-de Sitter phase, and that the physical source of inflationary
+energy can be sought within the gravitational sector rather than appended to it.
+
+\subsection{What Remains to Be Explained}
+
+The QQG scenario does not address the question of whether inflationary expansion
+is necessary, only the question of its source. The three fundamental requirements
+of early-universe smoothing---isotropy, homogeneity, and scale-invariant
+perturbations---are explained within QQG by the same mechanism as in Class~1
+inflation: a de Sitter phase stretches modes beyond the Hubble horizon and
+establishes causal coherence before last scattering. QQG changes the energy
+source of this phase; it does not change its physical mechanism.
+
+RSVP proposes that the mechanism itself can be replaced. This is a stronger claim,
+and it carries a heavier formal burden. The present paper takes a step toward
+discharging that burden by providing the formal structure of the lamphrodyne
+background, the definition of $\etalamph$, and the tensor spectrum formula
+$\rRSVP$. The full derivation of $\rRSVP$ as a function of $\etalamph$---the
+RSVP analogue of $r = 16\epsilon$---remains the primary open problem of the
+framework.
+
+\subsection{Toward an RSVP Consistency Relation}
+
+The inflation literature is organized around the consistency relation $r =
+16\epsilon$. QQG organizes its predictions around the structural bound $\rQQG
+\gtrsim 10^{-2}$. RSVP is proposing the conjecture~\eqref{eq:conjecture}:
+\begin{equation}
+\rRSVP = C\,\epslamph^{\,p} + \mathcal{O}(\etalamph).
+\end{equation}
+These three relations define the comparison between smoothing classes at the level
+of a single observable:
+\begin{align}
+\text{Class 1 (inflation):} &\quad r = 16\epsilon_{\rm infl}, \\
+\text{Class 2 (QQG):} &\quad r \gtrsim 10^{-2}, \\
+\text{Class 3 (RSVP):} &\quad r = C\,\epslamph^{\,p} + \mathcal{O}(\etalamph).
+\end{align}
+The inflation relation is derived; the QQG bound is structural; the RSVP conjecture
+is programmatic. Deriving the exponent $p$ and coefficient $C$ from explicit plenum
+power spectra $P_v(k)$, $P_S(k)$, $P_\Phi(k)$ is the calculation that promotes
+the RSVP entry from programmatic to derived. At that point the comparison becomes
+genuinely quantitative rather than structural, and the three-class taxonomy becomes
+a three-model competition with a shared observable target.
+
+The sequence of steps required is clear from the framework developed here: specify
+the RSVP action and kinetic terms to fix $G_{AB}$; solve the linearized field
+equations on the lamphrodyne background to derive $P_v(k)$, $P_S(k)$, $P_\Phi(k)$;
+project $\Teff$ onto the TT sector; evaluate $\Ph(k)$; and extract $p$ and $C$ in
+the slow-relaxation limit. This is a well-posed calculation within the framework
+established here.
+
+\subsection{Multifield Analogy and Preliminary Spectral Estimate}
+\label{sec:scalar_spectrum}
+
+The scalar power spectrum is observationally primary. Any candidate cosmological
+model must reproduce the observed amplitude $A_s \approx 2.1 \times 10^{-9}$ and
+spectral index $n_s \approx 0.965$ \citep{Planck2020} before tensor predictions
+carry weight. We are at an earlier stage for scalar perturbations than for tensor
+perturbations, and we flag this explicitly. What follows is a heuristic estimate
+based on embedding RSVP in a phenomenological GR context; it is not a derived
+result from the RSVP-native perturbation theory, which requires admissibility
+horizons rather than Hubble horizons as the fundamental freeze-out condition. We
+present it as a multifield analogy to indicate the order of magnitude of what a
+complete calculation might yield.
+
+The prototype action~\eqref{eq:action}, restricted to its scalar sector
+$(\Phi, S)$ on a homogeneous FRW background, describes a two-field system with
+non-canonical kinetic mixing. The field-space metric in the $(\Phi, S)$ subspace
+is read off from the kinetic terms:
+\begin{equation}
+G_{AB} = \begin{pmatrix} 1 & -\xi_2 \\ -\xi_2 & 1 \end{pmatrix},
+\qquad
+G^{AB} = \frac{1}{1-\xi_2^2}\begin{pmatrix} 1 & \xi_2 \\ \xi_2 & 1 \end{pmatrix}.
+\end{equation}
+In the phenomenological GR embedding---where we treat the background as FRW and use
+$H$ for the metric Hubble rate---the slow-roll parameter $\epsilon_{\rm lamph}$,
+interpreted via the field-space gradient of the effective potential $V_{\rm eff} =
+V(\Phi) + W(S)$, takes the form
+\begin{equation}
+\epsilon_{\rm lamph} \approx \frac{M_{\rm Pl}^2}{2}
+\frac{(V')^2 + (W')^2 + 2\xi_2 V'W'}{(1-\xi_2^2)(V+W)^2}.
+\label{eq:eps_operational}
+\end{equation}
+This connects the admissibility-gradient definition of $\epslamph$ to an operational
+expression in terms of the prototype potentials, under the assumption that
+$\nabla_{\calF}\log\Vol(\calA)$ is proportional to $\nabla_{\calF}V_{\rm eff}$ for
+the vorticity-based admissibility constraint~\eqref{eq:admissible_set}. The
+proportionality holds when the admissibility boundary is level sets of $V_{\rm eff}$
+in field space, which is an assumption whose justification requires the full
+admissibility dynamics.
+
+Using the standard multi-field perturbation theory of \citet{Gordon2001} for a
+two-scalar system with field-space metric $G_{AB}$, the scalar spectral index at
+leading order in slow roll is
+\begin{equation}
+n_s - 1 = -a\,\epslamph - b\,\etalamph + \mathcal{O}(\epslamph^2),
+\label{eq:ns_conjecture}
+\end{equation}
+where the coefficients $a$ and $b$ depend on the trajectory curvature in field
+space, the isocurvature-to-adiabatic transfer, and the mixing parameter $\xi_2$.
+In the single-field limit $\xi_2 \to 0$, the standard result $a = 6$, $b = -2$
+is recovered. For nonzero $\xi_2$, the coefficients shift by $\mathcal{O}(\xi_2^2)$
+corrections.
+
+We emphasize that equation~\eqref{eq:ns_conjecture} is derived within the
+phenomenological GR embedding, not from the RSVP-native perturbation theory. In
+the GR embedding, horizon crossing at $k = aH$ determines the freeze-out scale,
+and the Mukhanov--Sasaki formalism applies directly. In the full RSVP framework,
+freeze-out instead occurs at admissibility crossing $k\,d_A(t) \sim 1$, where
+$d_A$ is the admissibility horizon defined in Section~\ref{sec:horizons}. The
+RSVP-native spectral index will therefore differ from~\eqref{eq:ns_conjecture}
+in its scale dependence at $k \to 0$, where the admissibility horizon structure
+modifies the spectrum relative to the inflationary prediction. Deriving this
+correction is the principal remaining calculation of the scalar perturbation
+program.
+
+Define the scalar power spectrum
+\begin{equation}
+P_s(k) = \langle \zeta(\mathbf{k})\,\zeta(-\mathbf{k})\rangle,
+\end{equation}
+where $\zeta$ is the gauge-invariant curvature perturbation. In the
+phenomenological embedding, $P_s(k_*) \approx H^2/(8\pi^2 M_{\rm Pl}^2
+\epslamph)$ at the pivot scale $k_*$, matching the inflationary formula with
+$\epsilon_{\rm infl}$ replaced by $\epslamph$. Setting this equal to $A_s$ gives
+a constraint on $\epslamph$ as a function of $H$ during the lamphrodyne epoch.
+This is the scalar normalization condition that the background solution must
+satisfy, and it connects $\epslamph$ to the observed CMB amplitude independently
+of the tensor sector.
+
+\subsection{Falsifiability of RSVP}
+
+It is important to state explicitly what would falsify the RSVP framework, not
+merely challenge it. Class~3 smoothing would be effectively refuted if all
+observable tensor properties satisfy inflationary consistency relations to high
+precision: specifically, if the tensor spectral index is measured to satisfy
+$n_t = -r/8$ with high significance, this would confirm de Sitter vacuum
+fluctuations as the tensor source and leave no room for a sourced alternative.
+RSVP would also be challenged if no admissibility-based relaxation model can
+simultaneously reproduce the observed scalar power spectrum amplitude $A_s$ and
+spectral index $n_s$ while maintaining the irreversibility condition
+$d\Vol(\calA_{\rm unresolved})/dt < 0$ throughout the lamphrodyne epoch---a failure
+of internal consistency analogous to QQG's strong-coupling bound. Finally, if the
+tensor spectrum is shown to be generated prior to any thermodynamic epoch, in a
+regime where entropy production is observationally excluded, the lamphrodyne
+mechanism loses its physical grounding. These are not remote possibilities; they
+are concrete conditions that the derivation of $\rRSVP$ must be tested against.
+
+\subsection{Future Observations}
+
+The observational landscape over the next decade will provide significant
+discriminating power. LiteBIRD, scheduled for launch in the early 2030s, targets
+a sensitivity of $\sigma(r) \sim 10^{-3}$ and will either detect primordial tensor
+modes above the QQG floor or push below it. CMB-S4 will provide complementary
+constraints on $n_s$, non-Gaussianity, and CMB spectral distortions. The Simons
+Observatory is currently operational and will provide intermediate constraints.
+
+For RSVP, the key observational target is not a single value of $r$ but the
+tensor spectral tilt $n_t$. If primordial tensor modes are detected, their spectral
+shape will distinguish de Sitter quantum fluctuations (slightly red, $n_t \approx
+-r/8$) from sourced tensor modes of the kind RSVP predicts. Specifically, if the
+tensor spectrum is blue ($n_t > 0$) at the pivot scale, this cannot be explained
+within any de Sitter inflation framework and would constitute strong evidence for
+a non-inflationary source of tensor modes, which lamphrodyne relaxation is
+designed to provide.
+
+%------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+%------------------------------------------------------------
+
+We have proposed a classification of early-universe smoothing mechanisms into
+three structurally distinct classes. Class~1---inflaton smoothing---uses an
+auxiliary scalar field with tuned potential to drive metric expansion. Class~2---
+geometric smoothing, exemplified by the QQG result of \citet{Liu2026}---uses
+quantum-corrected gravitational dynamics to generate the same expansion without a
+separate inflaton. Class~3---lamphrodyne relaxation, proposed within the RSVP
+framework---uses admissibility-reducing dynamics in a coupled scalar-vector-entropy
+plenum to achieve cosmological homogenization without global metric expansion.
+
+We have formalized Class~3 by defining the lamphrodyne background state $(\Phi_0,
+\vv_0, S_0)$, imposing the irreversibility condition
+$d\Vol(\calA_{\rm unresolved})/dt < 0$, introducing the field-space admissibility
+metric on $\calF$, and defining the lamphrodyne relaxation parameter $\etalamph$
+from admissibility geometry. We have constructed the effective anisotropic stress
+tensor of the relaxing plenum and constructed the formal structure of the tensor power spectrum
+$\Ph(k)$ and tensor-to-scalar ratio $\rRSVP$. We have compared these with the
+QQG tensor floor $\rQQG \gtrsim 10^{-2}$ and identified the empirical fork that
+future B-mode experiments will resolve.
+
+The significance of Quadratic Quantum Gravity may not be that it explains
+inflation. Its deeper significance is that it demonstrates that cosmological
+smoothing can emerge from the intrinsic dynamics of a fundamental theory. Once
+this possibility is admitted, inflationary expansion becomes one member of a
+broader class of smoothing mechanisms. RSVP explores a different member of this
+class: relaxation without expansion. Future measurements of primordial tensor
+modes---their amplitude, spectral tilt, and scale dependence---may determine which
+description better captures the universe's earliest history.
+
+The primary contribution of this paper is the demonstration that Class~3 smoothing
+is formally tractable. The lamphrodyne relaxation parameter $\etalamph$ plays the
+same structural role in RSVP that the slow-roll parameters play in inflation: it
+characterizes the regime in which the background is stable, perturbation theory is
+valid, and observables can be computed. The derivation of $\rRSVP$ as an explicit
+function of $\etalamph$---the RSVP consistency relation---is the next step, and it
+is a step that can be taken within the framework presented here.
+
+%------------------------------------------------------------
+\bibliographystyle{plainnat}
+\begin{thebibliography}{99}
+
+\bibitem[Albrecht and Steinhardt(1982)]{Albrecht1982}
+Albrecht, A. and Steinhardt, P.~J. (1982).
+Cosmology for grand unified theories with radiatively induced symmetry breaking.
+\textit{Physical Review Letters}, 48(17):1220--1223.
+
+\bibitem[Avramidi and Barvinsky(1985)]{Avramidi1985}
+Avramidi, I.~G. and Barvinsky, A.~O. (1985).
+Asymptotic freedom in higher-derivative quantum gravity.
+\textit{Physics Letters B}, 159(4):269--274.
+
+\bibitem[BICEP/Keck Collaboration(2021)]{BICEPKeck2021}
+Ade, P.~A.~R. et al. (2021).
+Improved constraints on primordial gravitational waves using Planck, WMAP, and BICEP/Keck observations through the 2018 observing season.
+\textit{Physical Review Letters}, 127(15):151301.
+
+\bibitem[Buccio et al.(2024)]{Buccio2024}
+Buccio, D., Donoghue, J.~F., Menezes, G., and Percacci, R. (2024).
+Physical running of couplings in quadratic gravity.
+\textit{Physical Review Letters}, 133(2):021604.
+
+\bibitem[Capper and Duff(1974)]{Capper1974}
+Capper, D.~M. and Duff, M.~J. (1974).
+Trace anomalies in dimensional regularization.
+\textit{Nuovo Cimento A}, 23:173.
+
+\bibitem[Fradkin and Tseytlin(1982)]{Fradkin1982}
+Fradkin, E.~S. and Tseytlin, A.~A. (1982).
+Renormalizable asymptotically free quantum theory of gravity.
+\textit{Nuclear Physics B}, 201(3):469--491.
+
+\bibitem[Guth(1981)]{Guth1981}
+Guth, A.~H. (1981).
+Inflationary universe: A possible solution to the horizon and flatness problems.
+\textit{Physical Review D}, 23(2):347--356.
+
+\bibitem[Holdom and Ren(2016)]{Holdom2016}
+Holdom, B. and Ren, J. (2016).
+QCD analogy for quantum gravity.
+\textit{Physical Review D}, 93(12):124030.
+
+\bibitem[Kofman et al.(1997)]{Kofman1997}
+Kofman, L., Linde, A., and Starobinsky, A.~A. (1997).
+Towards the theory of reheating after inflation.
+\textit{Physical Review D}, 56(6):3258--3295.
+
+\bibitem[Linde(1982)]{Linde1982}
+Linde, A.~D. (1982).
+A new inflationary universe scenario.
+\textit{Physics Letters B}, 108(6):389--393.
+
+\bibitem[Liu et al.(2026)]{Liu2026}
+Liu, R., Quintin, J., and Afshordi, N. (2026).
+Ultraviolet completion of the big bang in quadratic gravity.
+\textit{Physical Review Letters}, 136(11):111501.
+
+\bibitem[Louis et al.(2025)]{Louis2025}
+Louis, T. et al. (ACT Collaboration) (2025).
+The Atacama Cosmology Telescope: DR6 power spectra, likelihoods and cosmological parameters.
+\textit{Journal of Cosmology and Astroparticle Physics}, 11:062.
+
+\bibitem[Martin et al.(2014)]{Martin2014}
+Martin, J., Ringeval, C., and Vennin, V. (2014).
+Encyclop{\ae}dia inflationaris.
+\textit{Physics of the Dark Universe}, 5--6:75--235.
+
+\bibitem[Planck Collaboration(2020)]{Planck2020}
+Akrami, Y. et al. (Planck Collaboration) (2020).
+Planck 2018 results X: Constraints on inflation.
+\textit{Astronomy and Astrophysics}, 641:A10.
+
+\bibitem[Starobinsky(1980)]{Starobinsky1980}
+Starobinsky, A.~A. (1980).
+A new type of isotropic cosmological models without singularity.
+\textit{Physics Letters B}, 91(1):99--102.
+
+\bibitem[Gordon et al.(2001)]{Gordon2001}
+Gordon, C., Wands, D., Bassett, B.~A., and Maartens, R. (2001).
+Adiabatic and entropy perturbations from inflation.
+\textit{Physical Review D}, 63(2):023511.
+
+\end{thebibliography}
+
+\end{document}

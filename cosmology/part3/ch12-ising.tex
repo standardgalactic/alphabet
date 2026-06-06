@@ -1,0 +1,176 @@
+% ============================================================
+%  part3/ch12-ising.tex  —  Chapter 12: The Ising Model
+% ============================================================
+
+\chapter{The Ising Model}
+\label{ch:ising}
+
+\epigraph{%
+  The simple model already contains the germ of everything.%
+}{---}
+
+\begin{WhyMatters}
+  The Ising model is introduced not because the universe is
+  literally an Ising lattice, but because it is the simplest
+  system exhibiting: local interactions, domain formation,
+  symmetry breaking, coarsening, and defect stabilisation.
+  These are precisely the ingredients later required for
+  RSVP cosmology.
+  Every phenomenon in Chapters~13--18 and every structure in
+  Part~VII is a generalisation of what first appears here.
+\end{WhyMatters}
+
+\section{Setup}
+
+\begin{definition}[Ising model]
+  Let $\Lambda \subset \mathbb{Z}^d$ be a lattice.
+  Each site $i \in \Lambda$ carries a spin $\sigma_i \in \{-1,+1\}$.
+  The Hamiltonian is
+  \[
+    H(\sigma) = -J \sum_{\langle i,j\rangle} \sigma_i\sigma_j,
+    \quad J > 0,
+  \]
+  where the sum runs over nearest-neighbour pairs.
+\end{definition}
+
+\begin{proposition}
+  Aligned states minimise energy.
+\end{proposition}
+
+\begin{proof}
+  An aligned pair contributes $-J$; an anti-aligned pair $+J$.
+  Minimum energy is achieved when all pairs are aligned.
+\end{proof}
+
+\begin{theorem}[Ground states]
+  \label{thm:ising-ground}
+  The Ising Hamiltonian possesses exactly two global minima:
+  $\sigma_i \equiv +1$ and $\sigma_i \equiv -1$.
+\end{theorem}
+
+\begin{proof}
+  Every neighbouring pair must align (Proposition above).
+  Connectivity of $\Lambda$ forces all spins to match.
+  Since $\sigma_i \in \{-1,+1\}$, the two uniform states are
+  the only ground states.
+\end{proof}
+
+This is the first appearance of \emph{symmetry breaking}: the
+Hamiltonian is symmetric under $\sigma \mapsto -\sigma$, but
+each ground state breaks this symmetry.
+
+\section{Domain walls}
+
+When regions of opposite sign coexist, a \emph{domain wall}
+separates them.
+
+\begin{proposition}[Domain wall energy]
+  \label{prop:wall-energy}
+  Domain wall energy scales as surface area:
+  $E_{\mathrm{wall}} \propto |\partial D|$.
+\end{proposition}
+
+\begin{proof}
+  Each broken bond contributes $2J$ above the ground state.
+  The number of broken bonds equals the number of
+  nearest-neighbour pairs straddling the wall, which scales
+  with $|\partial D|$.
+\end{proof}
+
+\principle{Interfaces are energetically expensive.\\[4pt]
+  The rest of Part~III is the mathematics of removing them.}
+
+\section{Curvature-driven motion}
+
+A bulging interface has positive curvature $\kappa = 1/R$.
+Reducing curvature lowers interface energy.
+
+\textbf{Heuristic derivation.}
+Interface energy: $E = \gamma|\partial D|$.
+First variation: $\delta E = -\gamma \int_{\partial D} \kappa V_n\, dS$.
+Gradient descent requires:
+\[
+  \boxed{V_n \propto -\kappa.}
+\]
+Small structures shrink faster than large ones.
+
+\begin{theorem}[Characteristic scale growth]
+  \label{thm:ising-scaling}
+  Under curvature-driven motion, the characteristic domain
+  size grows as $\ell(t) \sim t^{1/2}$.
+\end{theorem}
+
+\begin{proof}
+  Since $\kappa \sim 1/\ell$, the interface velocity
+  $V_n \sim 1/\ell$.
+  Then $d\ell/dt \sim 1/\ell$, giving $\ell\, d\ell \sim dt$,
+  so $\ell^2 \sim t$, hence $\ell(t) \sim t^{1/2}$.
+\end{proof}
+
+This is the first appearance of the coarsening exponent $z = 2$.
+
+\begin{CrossDomain}
+  \begin{center}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{System} & \textbf{Order parameter} & \textbf{Exponent $z$} \\
+    \midrule
+    Ising magnet & Spin $\sigma_i$ & 2 \\
+    Allen--Cahn & Scalar field $\phi$ & 2 \\
+    Cahn--Hilliard & Conserved density & 3 \\
+    RSVP (conjectured) & $(\Phi,\mathbf{v},S)$ & $z(Pe,\Gamma,\Omega)$ \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+\end{CrossDomain}
+
+\WhatSurvived{Ising coarsening $\sigma(0) \mapsto \sigma(t)$}{%
+  Domain count (decreasing)\\
+  Ground-state symmetry\\
+  Topological defects%
+}{%
+  Initial spin configuration\\
+  Short-wavelength fluctuations\\
+  Sub-domain-scale detail%
+}{%
+  Partial; long-time state\\
+  is one of two ground states,\\
+  but path is irreversible.%
+}{%
+  $\ker$: all initial conditions\\
+  flowing to the same\\
+  final domain state.%
+}
+
+\begin{ProblemSet}
+\problem{
+  Verify that the Ising Hamiltonian $H(\sigma) = -J\sum_{\langle i,j\rangle}\sigma_i\sigma_j$
+  is invariant under the global spin flip $\sigma_i \mapsto -\sigma_i$.
+  Show that the two ground states $\sigma_i \equiv +1$ and
+  $\sigma_i \equiv -1$ are related by this symmetry.
+}
+\problem{
+  For a 1D Ising chain of $N$ sites with periodic boundary conditions,
+  count the number of domain walls as a function of the number of
+  sign changes in $(\sigma_1, \ldots, \sigma_N)$.
+  What is the minimum energy above the ground state that contains
+  exactly two domain walls?
+}
+\problem{
+  Using the scaling argument $d\ell/dt \sim 1/\ell$,
+  show that $\ell(t) \sim t^{1/2}$.
+  What initial condition $\ell(0)$ would give $\ell(1) = 1$ Mpc
+  if time is measured in Gyr?
+}
+\problem{
+  \textbf{Reconstruction exercise.}
+  Suppose you observe the state of a coarsened Ising system
+  at time $t = 100$.
+  Domain size is $\ell = 10$.
+  Can you determine the initial condition?
+  What information about the initial state survives in the
+  observed domain structure?
+  What is lost?
+  (This is a concrete instance of $E(x) = d(x, G(F(x))) > 0$.)
+}
+\end{ProblemSet}

@@ -1,0 +1,150 @@
+% ============================================================
+%  part4/ch20-existence-uniqueness.tex
+%  Chapter 20: Existence and Uniqueness
+% ============================================================
+
+\chapter{Existence and Uniqueness}
+\label{ch:existence-uniqueness}
+
+\section{The RSVP free-energy functional}
+
+The basic RSVP state is
+$X(t) = (\Phi, \mathbf{v}, S, \ell)$ with $L = \ell^2 \geq 0$.
+
+\begin{definition}[RSVP free-energy functional]
+  \label{def:rsvp-functional}
+  \[
+    \mathcal{F}[\Phi,\mathbf{v},S,\ell]
+    = \int_\Omega \Bigl[
+      \tfrac{\alpha}{2}|\nabla\Phi|^2 + V(\Phi)
+      + \tfrac{\beta}{2}|\nabla\ell|^2 + U(\ell)
+      + \lambda W(\Phi)\ell^2
+      + \tfrac{\rho}{2}|\mathbf{v}|^2
+      + \tfrac{\eta}{2}|\nabla\times\mathbf{v}|^2
+      + \tfrac{\chi}{2}|\nabla S|^2 - TS
+    \Bigr]dx.
+  \]
+\end{definition}
+
+The coupling term $\lambda W(\Phi)\ell^2$ is bounded below
+whenever $\lambda \geq 0$ and $W(\Phi) \geq 0$.
+Natural choices: $W(\Phi) = \Phi^2$ or $W(\Phi) = |\nabla\Phi|^2$.
+
+\section{Functional derivatives}
+
+\begin{proposition}[Variational derivatives of $\mathcal{F}$]
+  \label{prop:rsvp-variations}
+  \statusproven{}
+  Under periodic or no-flux boundary conditions:
+  \begin{align}
+    \frac{\delta\mathcal{F}}{\delta\Phi}
+    &= -\alpha\Delta\Phi + V'(\Phi) + \lambda W'(\Phi)\ell^2,
+    \label{eq:dFdPhi}\\
+    \frac{\delta\mathcal{F}}{\delta\ell}
+    &= -\beta\Delta\ell + U'(\ell) + 2\lambda W(\Phi)\ell,
+    \label{eq:dFdell}\\
+    \frac{\delta\mathcal{F}}{\delta S}
+    &= -\chi\Delta S - T,
+    \label{eq:dFdS}\\
+    \frac{\delta\mathcal{F}}{\delta\mathbf{v}}
+    &= \rho\mathbf{v} + \eta\nabla\times(\nabla\times\mathbf{v}).
+    \label{eq:dFdv}
+  \end{align}
+\end{proposition}
+
+\begin{proof}
+  For $\Phi$: vary $\Phi \mapsto \Phi + \varepsilon\psi$ and
+  differentiate at $\varepsilon = 0$.
+  The gradient term gives $-\alpha\Delta\Phi$ after integration
+  by parts.
+  The coupling term gives $\lambda W'(\Phi)\ell^2$.
+  Equations~\eqref{eq:dFdell}--\eqref{eq:dFdv} follow
+  analogously.
+\end{proof}
+
+\section{RSVP gradient flow}
+
+\begin{definition}[Pure dissipative RSVP system]
+  \label{def:rsvp-gf}
+  \begin{align*}
+    \partial_t\Phi &= M_\Phi[\alpha\Delta\Phi - V'(\Phi) - \lambda W'(\Phi)\ell^2],\\
+    \partial_t\ell &= M_\ell[\beta\Delta\ell - U'(\ell) - 2\lambda W(\Phi)\ell],\\
+    \partial_t S   &= M_S(\chi\Delta S + T),\\
+    \partial_t\mathbf{v} &= -M_v[\rho\mathbf{v} + \eta\nabla\times(\nabla\times\mathbf{v})].
+  \end{align*}
+\end{definition}
+
+\begin{theorem}[RSVP free-energy dissipation]
+  \label{thm:rsvp-dissipation}
+  \statusproven{}
+  For the pure gradient-flow RSVP system with
+  $M_\Phi, M_\ell, M_S, M_v \geq 0$,
+  \[
+    \frac{d\mathcal{F}}{dt}
+    = -M_\Phi\!\int\!\Bigl|\frac{\delta\mathcal{F}}{\delta\Phi}\Bigr|^2 dx
+    - M_\ell\!\int\!\Bigl|\frac{\delta\mathcal{F}}{\delta\ell}\Bigr|^2 dx
+    - M_S\!\int\!\Bigl|\frac{\delta\mathcal{F}}{\delta S}\Bigr|^2 dx
+    - M_v\!\int\!\Bigl|\frac{\delta\mathcal{F}}{\delta\mathbf{v}}\Bigr|^2 dx
+    \leq 0.
+  \]
+\end{theorem}
+
+\begin{proof}
+  By the chain rule for functionals,
+  $\frac{d\mathcal{F}}{dt}
+  = \sum_q \int \frac{\delta\mathcal{F}}{\delta q}\,\partial_t q\,dx$.
+  Substituting $\partial_t q = -M_q \frac{\delta\mathcal{F}}{\delta q}$
+  for each field $q \in \{\Phi, \ell, S, \mathbf{v}\}$ gives
+  $-M_q \int |\frac{\delta\mathcal{F}}{\delta q}|^2 dx \leq 0$.
+\end{proof}
+
+\section{Conservative lamphron variant}
+
+\begin{theorem}[Lamphron mass conservation]
+  \label{thm:lamphron-mass}
+  \statusproven{}
+  For the Cahn--Hilliard-type lamphron evolution
+  $\partial_t L = \nabla\cdot(M_L\nabla\mu_L)$
+  with $\mu_L = \delta\mathcal{F}/\delta L$ and no-flux boundaries,
+  \[
+    \frac{d}{dt}\int_\Omega L\,dx = 0,
+    \qquad
+    \frac{d\mathcal{F}}{dt}
+    = -\int_\Omega M_L|\nabla\mu_L|^2\,dx \leq 0.
+  \]
+\end{theorem}
+
+\begin{proof}
+  Mass conservation: integrate the evolution equation and apply
+  the divergence theorem.
+  Energy dissipation: $\frac{d\mathcal{F}}{dt}
+  = \int\mu_L\partial_tL\,dx = M_L\int\mu_L\Delta\mu_L\,dx
+  = -M_L\int|\nabla\mu_L|^2\,dx \leq 0$.
+\end{proof}
+
+\section{Reduced existence results and the global conjecture}
+
+\begin{StatusBox}{Proven Framework}
+  The following subsystems have classical existence theory:
+  Allen--Cahn $\partial_t\Phi = M_\Phi[\alpha\Delta\Phi - V'(\Phi)]$;
+  Cahn--Hilliard $\partial_t L = \nabla\cdot(M_L\nabla\mu_L)$.
+\end{StatusBox}
+
+\begin{conjecture}[Global weak RSVP existence]
+  \label{conj:rsvp-existence}
+  \statusconjectured{}
+  Let $(\Phi_0, \ell_0, S_0, \mathbf{v}_0) \in H^k(\Omega)$
+  with $k$ sufficiently large, finite free energy, and
+  compatible boundary conditions.
+  Then the coupled RSVP system admits a global weak solution
+  satisfying $\frac{d\mathcal{F}}{dt} \leq 0$ in the
+  distributional sense.
+\end{conjecture}
+
+\begin{OpenQuestion}[RSVP well-posedness]
+  Determine the minimal Sobolev index $k$ for which the
+  coupled RSVP system is well-posed, and prove or disprove
+  Conjecture~\ref{conj:rsvp-existence}.
+  The main difficulty is controlling the nonlinear coupling
+  term $\lambda W(\Phi)\ell^2$ under advection.
+\end{OpenQuestion}

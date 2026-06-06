@@ -1,0 +1,155 @@
+% ============================================================
+%  part2/proofs-part2.tex
+%  Core propositions for Part II — Reconstruction Theory
+%  These are referenced throughout Chapters 8-11 and Part V
+% ============================================================
+
+% This file is \input{} from ch27-clio-reconstruction.tex
+% so the propositions appear in context.
+% It is kept separate for maintenance.
+
+\section{The reconstruction propositions}
+\label{sec:reconstruction-propositions}
+
+We collect here the fundamental results about projection,
+reconstruction, and error that form the mathematical core of
+the CLIO framework.
+
+\begin{proposition}[Perfect reconstruction criterion]
+  \label{prop:perfect-recon}
+  $E(x) = 0$ for all $x$ if and only if $F$ is injective
+  and $G \circ F = \mathrm{id}$.
+\end{proposition}
+
+\begin{proof}
+  $(\Rightarrow)$ Suppose $E(x) = d(x, G(F(x))) = 0$ for all $x$.
+  Since $d$ is a metric, $G(F(x)) = x$ for all $x$,
+  so $G \circ F = \mathrm{id}$.
+  If $F(x_1) = F(x_2)$, applying $G$ gives $x_1 = x_2$,
+  so $F$ is injective.
+
+  $(\Leftarrow)$ If $F$ is injective and $G \circ F = \mathrm{id}$,
+  then $E(x) = d(x, G(F(x))) = d(x,x) = 0$.
+\end{proof}
+
+\begin{proposition}[Kernel lower bound]
+  \label{prop:kernel-lower}
+  Let $[x] = F^{-1}(F(x))$.
+  If $|[x]| > 1$, then $E(x) > 0$ for every deterministic
+  reconstruction map $G$.
+\end{proposition}
+
+\begin{proof}
+  If $|[x]| > 1$, there exists $y \neq x$ with $F(y) = F(x)$.
+  A deterministic $G$ must satisfy $G(F(x)) = G(F(y))$.
+  Hence $G$ cannot simultaneously return $x$ and $y$.
+  At least one incurs positive reconstruction error.
+\end{proof}
+
+\begin{theorem}[Reconstruction lower bound]
+  \label{thm:recon-lower}
+  If $F : \mathcal{M} \to L$ is not injective, then no
+  reconstruction map $G : L \to \mathcal{M}$ satisfies
+  $G(F(x)) = x$ for all $x$.
+\end{theorem}
+
+\begin{proof}
+  Non-injectivity gives $x_1 \neq x_2$ with $F(x_1) = F(x_2)$.
+  Applying $G$: $G(F(x_1)) = G(F(x_2))$, so exact
+  reconstruction of both is impossible.
+\end{proof}
+
+\begin{corollary}
+  If $E(x) = 0$ for every $x$, then $F$ must be injective.
+\end{corollary}
+
+\begin{proposition}[Equivalence-class reconstruction]
+  Every reconstruction map acts on equivalence classes,
+  not individual states:
+  if $y \in [x]$ then $G(F(y)) = G(F(x))$.
+\end{proposition}
+
+\begin{proof}
+  $y \in [x]$ means $F(y) = F(x)$, so $G(F(y)) = G(F(x))$.
+\end{proof}
+
+\begin{definition}[Representational entropy]
+  The \emph{representational entropy} of a projection
+  $\pi : X \to M$ at $m \in M$ is
+  \[
+    S_\pi(m) = \log \operatorname{Vol}(\pi^{-1}(m)).
+  \]
+\end{definition}
+
+\begin{proposition}[Entropy and injectivity]
+  \label{prop:entropy-inject}
+  $S_\pi(m) = 0$ for all $m$ if and only if $\pi$ is injective.
+\end{proposition}
+
+\begin{proof}
+  $S_\pi(m) = 0$ iff $\operatorname{Vol}(\pi^{-1}(m)) = 1$
+  iff each fibre contains one element iff $\pi$ is injective.
+\end{proof}
+
+\begin{theorem}[Minimum reconstruction principle]
+  \label{thm:min-recon}
+  The reconstruction $G$ minimising expected squared error
+  $\mathbb{E}[E(x)^2]$ satisfies
+  \[
+    G(F(x)) = \frac{\int_{[x]} y\, d\mu(y)}{\mu([x])}.
+  \]
+  That is, $G$ returns the centroid (Fréchet mean) of the
+  equivalence class.
+\end{theorem}
+
+\begin{proof}
+  Fix $m \in L$.
+  Minimise $\int_{F^{-1}(m)} d(y, \hat{y})^2\, d\mu(y)$
+  over $\hat{y}$.
+  Differentiating and setting to zero yields the Fréchet mean
+  condition.
+\end{proof}
+
+\begin{theorem}[Projection composition]
+  \label{thm:proj-composition}
+  For $X \xrightarrow{F} L \xrightarrow{\pi} O$,
+  \[
+    \ker(F) \subseteq \ker(\pi \circ F).
+  \]
+\end{theorem}
+
+\begin{proof}
+  If $x \in \ker(F)$ then $F(x) = 0$, so
+  $(\pi\circ F)(x) = \pi(0)$, hence $x \in \ker(\pi\circ F)$.
+\end{proof}
+
+\begin{corollary}
+  Every additional observational layer can only increase
+  information loss, never decrease it.
+\end{corollary}
+
+\begin{definition}[CLIO error functional]
+  \[
+    \mathcal{E}[F,G]
+    = \int_X d(x, G(F(x)))^2\, d\mu(x).
+  \]
+\end{definition}
+
+\begin{proposition}
+  $\mathcal{E}[F,G] \geq 0$, with equality iff $G \circ F = \mathrm{id}$.
+\end{proposition}
+
+\begin{theorem}[Existence of optimal reconstruction]
+  \label{thm:optimal-recon}
+  \statusproven{}
+  If $X$ is compact and $d$ is continuous, there exists
+  $G^*$ minimising $\mathcal{E}[F,G]$.
+\end{theorem}
+
+\begin{proof}
+  The space of admissible reconstructions with the topology
+  of uniform convergence is compact (Arzelà--Ascoli under
+  Lipschitz bounds).
+  $\mathcal{E}$ is continuous.
+  By the extreme value theorem, a minimiser exists.
+\end{proof}

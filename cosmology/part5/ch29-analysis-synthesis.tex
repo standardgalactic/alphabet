@@ -1,0 +1,304 @@
+% ============================================================
+%  part5/ch29-analysis-synthesis.tex
+%  Chapter 29: Analysis and Synthesis
+% ============================================================
+
+\chapter{Analysis and Synthesis in Holonomic Space}
+\label{ch:analysis-synthesis}
+
+\epigraph{%
+  Analysis loses information.\\
+  Synthesis reconstructs only what survives.%
+}{---}
+
+\begin{WhyChapter}
+  Part~I established informally that decomposition and
+  reconstruction are not inverse operations.
+  This chapter makes that precise using category theory.
+  The adjunction $F \dashv G$ between decomposition and
+  reconstruction functors is the central categorical structure
+  of the book, and it explains in a single mathematical object
+  why $\widehat{\mathcal{M}}_O \neq \mathcal{M}$ for any
+  observer $O$.
+\end{WhyChapter}
+
+
+\begin{ChapterIntro}
+There are two complementary ways to understand a thing.
+
+One begins with the whole and asks how it can be decomposed. The other begins with fragments and asks how a whole can be reconstructed.
+
+These are often treated as inverse operations. In practice they are not. A system can usually be decomposed more easily than it can be reconstructed. Information discarded during analysis is not automatically recovered during synthesis. Every observer encounters this asymmetry.
+
+The mathematics of adjunction formalises this familiar fact. It provides a precise language for the relationship between decomposition and reconstruction without requiring them to be perfect inverses. This asymmetry turns out to be one of the central organising principles of Holonomic Space.
+\end{ChapterIntro}
+
+\section{The categories}
+
+\begin{definition}[Category $\mathbf{Glob}$]
+  \label{def:glob}
+  Objects: global RSVP configurations
+  $X = (\mathcal{M}, \Phi, \mathbf{v}, S, \ell, \mathcal{A})$
+  where $\mathcal{M}$ is a structured region and $\mathcal{A}$
+  is its admissibility sheaf.
+  Morphisms: structure-preserving maps $f : X \to Y$
+  preserving causal order, field compatibility, and admissible
+  restrictions.
+\end{definition}
+
+\begin{definition}[Category $\mathbf{Loc}$]
+  \label{def:loc}
+  Objects: covers with local admissible sections
+  $\{(U_i, s_i)\}_{i \in I}$ with $s_i \in \mathcal{A}(U_i)$.
+  Morphisms: refinement maps between covers together with
+  compatible maps between local sections.
+\end{definition}
+
+\section{Decomposition and reconstruction functors}
+
+\begin{definition}[Decomposition functor]
+  \label{def:decomp-functor}
+  $F : \mathbf{Glob} \to \mathbf{Loc}$ sends a global
+  configuration $X$ to its family of local restrictions:
+  \[
+    F(X) = \{(U_i, X|_{U_i})\}_{i \in I}.
+  \]
+  On morphisms: $F(f)$ is the induced map on local data.
+\end{definition}
+
+\begin{definition}[Reconstruction functor]
+  \label{def:recon-functor}
+  $G : \mathbf{Loc} \to \mathbf{Glob}$ sends compatible local
+  data to the global section they determine (when compatible)
+  or the closest admissible approximation (in general).
+\end{definition}
+
+\section{The adjunction}
+
+\begin{theorem}[Decomposition-reconstruction adjunction]
+  \label{thm:adjunction}
+  \statusproven{}
+  $F \dashv G$: there is a natural bijection
+  \[
+    \mathrm{Hom}_{\mathbf{Loc}}(F(X), Y)
+    \cong
+    \mathrm{Hom}_{\mathbf{Glob}}(X, G(Y)).
+  \]
+\end{theorem}
+
+\begin{proof}
+  A map $F(X) \to Y$ in $\mathbf{Loc}$ is a compatible family
+  of local maps $(X|_{U_i}) \to Y_i$.
+  By the universal property of the restriction, this is
+  equivalent to a global map $X \to G(Y)$.
+  Naturality follows from functoriality of $F$ and $G$.
+\end{proof}
+
+\begin{definition}[Unit and counit]
+  The unit $\eta_X : X \to G(F(X))$ measures how faithfully
+  $X$ is recovered after decomposition and reconstruction.
+  The counit $\varepsilon_Y : F(G(Y)) \to Y$ measures how well
+  a proposed local dataset is explained by a reconstructed whole.
+\end{definition}
+
+\begin{proposition}[Reconstruction is not inversion]
+  \label{prop:not-inversion}
+  \statusproven{}
+  In general, $G \neq F^{-1}$ and $G \circ F \neq \mathrm{id}_{\mathbf{Glob}}$.
+\end{proposition}
+
+\begin{proof}
+  $F^{-1}$ would require $F$ to be an equivalence of categories,
+  i.e., fully faithful and essentially surjective.
+  But $F$ is not faithful: distinct global configurations may
+  have identical local restrictions (this is the content of
+  the nontrivial kernel $\ker(\pi \circ F)$).
+  Hence $G \circ F \neq \mathrm{id}$ in general.
+\end{proof}
+
+\section{Monad structure and the reconstructible component}
+
+\begin{theorem}[Adjunction induces a monad]
+  \label{thm:monad}
+  \statusproven{}
+  $T = G \circ F : \mathbf{Glob} \to \mathbf{Glob}$ is a monad
+  with unit $\eta$ and multiplication $\mu = G\varepsilon F$.
+\end{theorem}
+
+\begin{proof}
+  Verify the monad axioms:
+  (1) $\mu \circ T\eta = \mathrm{id}_T = \mu \circ \eta T$
+  (unit laws).
+  (2) $\mu \circ T\mu = \mu \circ \mu T$ (associativity).
+  Both follow from the triangle identities of the adjunction
+  $F \dashv G$.
+\end{proof}
+
+\begin{InterpBox}[What the monad means]
+  $T(X) = G(F(X))$ is the \emph{reconstructible component} of $X$:
+  the part of $X$ that survives decomposition into local data
+  and can be recovered by reconstruction.
+  $T(X)$ contains everything an observer can know about $X$
+  from admissible local observations.
+  The complement $X \setminus T(X)$ is in $\ker(\pi \circ F)$:
+  inaccessible to any observer with a finite horizon.
+\end{InterpBox}
+
+\section{Categorical reconstruction error}
+
+\begin{definition}[Categorical reconstruction error]
+  \label{def:cat-recon-error}
+  \[
+    E_{\mathrm{cat}}(X) = d(X, G(F(X))),
+  \]
+  where $d$ is an appropriate distance on $\mathbf{Glob}$.
+\end{definition}
+
+\begin{theorem}[Error vanishes iff unit is isomorphism]
+  \label{thm:error-unit}
+  \statusproven{}
+  $E_{\mathrm{cat}}(X) = 0$ iff $\eta_X : X \to G(F(X))$
+  is an isomorphism.
+\end{theorem}
+
+\begin{proof}
+  $E_{\mathrm{cat}}(X) = 0$ iff $d(X, G(F(X))) = 0$
+  iff $X \cong G(F(X))$
+  iff $\eta_X$ is an isomorphism in $\mathbf{Glob}$.
+\end{proof}
+
+\begin{ChapterConnection}
+  This theorem formally links CLIO (Chapter~\ref{ch:clio})
+  to category theory.
+  The CLIO reconstruction error $E(x) = d(x, G(F(x)))$
+  is the point-set version of $E_{\mathrm{cat}}$.
+  The condition $\eta_X \cong \mathrm{id}$ is the categorical
+  version of the perfect reconstruction criterion
+  (Proposition~\ref{prop:perfect-recon}).
+\end{ChapterConnection}
+
+\section{The fundamental asymmetry}
+
+\begin{theorem}[Analysis and synthesis differ]
+  \label{thm:analysis-synthesis-differ}
+  \statusproven{}
+  $G(F(X)) \neq X$ in general.
+  Specifically, $G(F(X)) \cong X$ iff $F$ is fully faithful
+  on $X$, which fails whenever $X$ contains structure
+  outside any finite observer cover.
+\end{theorem}
+
+\begin{proof}
+  $\eta_X$ is an isomorphism iff $F$ reflects the structure
+  of $X$: distinct points of $X$ must map to distinct points
+  of $F(X)$.
+  If $X$ contains elements outside every $U_i \in \mathcal{O}(X)$,
+  then $F$ cannot distinguish $X$ from $X \setminus \{x\}$,
+  so $\eta_X$ is not an isomorphism.
+\end{proof}
+
+\principle{
+  Analysis loses information.\\[4pt]
+  Synthesis reconstructs only what survives.\\[4pt]
+  This asymmetry is not a deficiency of observation.\\[4pt]
+  It is a structural feature of the adjunction $F \dashv G$.
+}
+
+\begin{ProblemSet}
+\problem{
+  Verify the unit law for the monad $T = G \circ F$:
+  show that $\mu \circ \eta T = \mathrm{id}_T$
+  using the triangle identity for the adjunction $F \dashv G$.
+}
+\problem{
+  For the simplest case where $\mathbf{Glob}$ is the category
+  of sets with injective maps and $\mathbf{Loc}$ is the category
+  of subsets, describe $F$, $G$, the unit $\eta$, and the
+  counit $\varepsilon$ explicitly.
+  When is $\eta_X$ an isomorphism?
+}
+\problem{
+  Suppose $X$ has two observers with horizons $H_1 = X \setminus \{p\}$
+  and $H_2 = X \setminus \{q\}$ for $p \neq q$.
+  Does $G(F(X)) \cong X$?
+  What condition on $p, q$ would be needed?
+}
+\problem{
+  \textbf{Philosophical problem.}
+  The monad $T = GF$ is called the ``reconstructible component''
+  functor.
+  Write a precise statement of what it means for two physical
+  theories $T_1$ and $T_2$ to be ``observationally equivalent''
+  using the language of adjunctions and monads.
+  How does this relate to the \(\Lambda\)CDM/RSVP comparison in
+  Chapter~\ref{ch:lcdm-comparison}?
+}
+\end{ProblemSet}
+
+\section{Non-inverse proof for the MSO}
+
+\begin{theorem}[Decomposition and reconstruction are not inverses]
+  \label{thm:not-inverses-mso}
+  \statusproven{}
+  If $F : \mathbf{Whole} \to \mathbf{Parts}$ is non-injective,
+  then $G \circ F \neq \mathrm{id}_{\mathbf{Whole}}$.
+\end{theorem}
+
+\begin{proof}
+  Non-injectivity gives wholes $X \neq Y$ with $F(X) = F(Y)$.
+  Then $G(F(X)) = G(F(Y))$.
+  If $G \circ F = \mathrm{id}$, then $G(F(X)) = X$ and
+  $G(F(Y)) = Y$, forcing $X = Y$.
+  Contradiction.
+\end{proof}
+
+\begin{InterpBox}[The central MSO asymmetry]
+  This theorem proves the central claim of the Mereological
+  Space Ontology: analysis and synthesis are irreversibly
+  asymmetric.
+  Every act of decomposition that discards information makes
+  perfect reconstruction impossible.
+  The scientific enterprise of reconstructing reality from
+  observations is not inversion --- it is admissibility-constrained
+  approximation.
+\end{InterpBox}
+
+% ---- Figures and citations ----------------------------------
+
+\[
+\begin{tikzcd}[column sep=4em]
+  \mathbf{Glob}
+  \arrow[r,bend left=25,"F"',"{\rm decompose}"]
+  &
+  \mathbf{Loc}
+  \arrow[l,bend left=25,"G"',"{\rm reconstruct}"]
+\end{tikzcd}
+\qquad
+F \dashv G
+\]
+
+\[
+E_{\rm cat}(X) = d(X,\,G(F(X))).
+\]
+
+\begin{CitationAnchor}
+  Adjunctions are one of the central concepts of category theory;
+  see Mac Lane~\cite{maclane1998} (Chapter~IV) for the definitive
+  treatment and Awodey~\cite{awodey2010} for a modern pedagogical
+  introduction.
+  The monad $T = GF$ is studied in Mac Lane~\cite{maclane1998}
+  (Chapter~VI).
+  Riehl (2016) provides a comprehensive modern account.
+  The use of adjunctions to model decomposition-reconstruction
+  asymmetry is a natural extension of standard categorical
+  machinery to physical observation problems.
+\end{CitationAnchor}
+
+\begin{FurtherReading}
+  Mac Lane's \textit{Categories for the Working Mathematician}~\cite{maclane1998}
+  remains the canonical reference on adjunctions and monads.
+  Awodey's \textit{Category Theory}~\cite{awodey2010} provides
+  a more accessible introduction.
+  For applications of category theory to physics and information,
+  see Spivak (2014) and Baez \& Stay (2011).
+\end{FurtherReading}

@@ -1,0 +1,229 @@
+% ============================================================
+%  part1/ch03-microscope.tex
+%  Chapter 3: The Microscope
+% ============================================================
+
+\chapter{The Microscope}
+\label{ch:microscope}
+
+\epigraph{%
+  To see a World in a Grain of Sand\\
+  And a Heaven in a Wild Flower,\\
+  Hold Infinity in the palm of your hand\\
+  And Eternity in an hour.%
+}{William Blake}
+
+\section{The paradox of magnification}
+
+The microscope reverses a natural intuition.
+
+More magnification, one might think, means more information.
+The finer the resolution, the closer we are to reality.
+To see smaller things is to see more truly.
+
+Yet this is not what happens.
+
+At high magnification, context disappears.
+A biological tissue seen at the cellular level reveals cell
+structure but loses organ structure.
+A metal surface seen at the atomic level reveals crystal lattice
+geometry but loses the shape of the object.
+A neural spike train resolved to the millisecond reveals
+individual firing patterns but loses behavioural context.
+
+Observation gains detail while losing organisation.
+
+The microscope proves that information loss occurs not only by
+coarse-graining, but also by over-resolution.
+
+\section{Multiscale structure and scale selection}
+
+Most real systems have meaningful structure at many scales
+simultaneously.
+
+\begin{definition}[Multiscale system]
+  A \emph{multiscale system} is a system $X$ that can be
+  decomposed as
+  \[
+    X = \bigcup_{\ell > 0} X_\ell,
+  \]
+  where $X_\ell$ denotes the structure of $X$ that is
+  visible at scale $\ell$.
+\end{definition}
+
+Examples are ubiquitous.
+
+\begin{example}[Scales of biological organisation]
+  A living organism has structure at the scales of:
+  atoms, molecules, organelles, cells, tissues, organs,
+  organ systems, whole organisms, populations, and ecosystems.
+  Observation at any single scale reveals some structure while
+  hiding structure at all other scales.
+\end{example}
+
+A microscope selects a scale window:
+\[
+  \pi_{\ell_0} : X \to X_{\ell_0}.
+\]
+This is a projection.
+Like the map and the photograph, it has a nontrivial kernel.
+
+The context lost by magnification is
+\[
+  K_{\ell_0} = X \setminus X_{\ell_0}.
+\]
+Thus observation at small scale destroys access to large-scale
+organisation, and observation at large scale destroys access to
+fine structure.
+
+\section{Admissibility depends on the reconstruction task}
+
+The key insight of this chapter is that the right scale of
+observation is not determined by the system alone.
+It is determined by the reconstruction task.
+
+Suppose a reconstruction task $R$ requires both local detail
+$d$ and global context $c$.
+Let $I(\ell)$ denote the information accessible at scale $\ell$.
+Then neither extreme is optimal:
+\[
+  \lim_{\ell \to 0} I(\ell)
+\]
+captures microscopic detail while losing context, whereas
+\[
+  \lim_{\ell \to \infty} I(\ell)
+\]
+captures context while losing detail.
+
+\begin{definition}[Admissible information for a task]
+  For a reconstruction task $R$, define the
+  \emph{admissible information} at scale $\ell$ as
+  \[
+    A_R(\ell) = \mathrm{Rel}(I(\ell), R),
+  \]
+  where $\mathrm{Rel}(\cdot, R)$ measures the relevance of the
+  available information to the reconstruction goal $R$.
+\end{definition}
+
+The admissible scale is then
+\[
+  \ell^* = \arg\max_\ell A_R(\ell).
+\]
+
+The critical observation is that admissibility is not
+maximised by information quantity:
+\[
+  \arg\max_\ell A_R(\ell)
+  \neq
+  \arg\max_\ell |I(\ell)|.
+\]
+
+\principle{
+  Useful information is not maximum information.\\[4pt]
+  Admissibility is always relative to a reconstruction goal.
+}
+
+This principle quietly anticipates every major framework developed
+later in this book.
+
+In CLIO (Part~V), admissibility is formalised as a constraint on
+which projections are permitted.
+In the admissibility sheaf (Chapter~\ref{ch:sheaf}),
+admissible local sections are exactly those relevant to global
+reconstruction.
+In simulated agency (Chapter~\ref{ch:agency}), agents act only
+through admissible perturbations of their local field.
+In cosmology (Part~VII), the admissible observational data are
+those that survive projection through causal horizons.
+
+All of these are versions of the same recognition: the right
+observation is not the most detailed one, but the one
+appropriate to the task.
+
+\section{Bidirectional information loss}
+
+The map and photograph chapters illustrated information loss by
+coarse-graining: the projection discards fine detail.
+
+The microscope chapter introduces the opposite direction.
+Over-resolution also loses information, by discarding large-scale
+organisation.
+
+\begin{proposition}[Bidirectional information loss]
+  For a multiscale system $X = \bigcup_\ell X_\ell$, the
+  total information accessible at any single scale $\ell_0$ is
+  strictly less than the total information in $X$:
+  \[
+    |I(\ell_0)| < |I(X)|
+    \qquad \text{for all } \ell_0.
+  \]
+  In particular, neither the limit $\ell_0 \to 0$ nor the limit
+  $\ell_0 \to \infty$ recovers the full structure of $X$.
+\end{proposition}
+
+This means that complete information about a multiscale system is
+not accessible from any single scale of observation.
+Reconstruction of the full system requires integrating information
+across multiple scales.
+
+\begin{example}[Astronomy across scales]
+  Astronomical observation operates simultaneously at scales
+  ranging from individual photons to the large-scale structure
+  of the universe.
+  A spectrum reveals chemical composition.
+  An image reveals spatial structure.
+  A light curve reveals temporal variation.
+  No single measurement captures all three.
+  Reconstructing the physical state of a distant object requires
+  combining observations made at different scales, resolutions,
+  and wavelengths.
+\end{example}
+
+\section{Admissibility as a filter, not a threshold}
+
+A common misconception is that admissibility means passing some
+minimum quality threshold.
+More data is assumed to be better, up to the point where
+resolution is sufficient.
+
+The microscope chapter corrects this.
+
+Admissibility is not a threshold.
+It is a filter that depends on the relationship between the
+available data and the reconstruction goal.
+
+Data can be inadmissible by being too coarse.
+Data can also be inadmissible by being too fine.
+
+An observation is admissible if and only if it captures the
+structure relevant to the task while discarding the structure
+irrelevant to it.
+
+This bidirectional notion of admissibility will reappear in
+Chapter~\ref{ch:sheaf} when we ask which local sections of the
+admissibility sheaf can be glued into a global reconstruction,
+and in Chapter~\ref{ch:open-problems} where we state as a
+conjecture that the admissibility cohomology of cosmological
+observer domains is nontrivial.
+
+\section{Summary}
+
+The map chapter introduced projection and the nontrivial kernel.
+
+The photograph chapter introduced the admissibility class and the
+reconstruction problem.
+
+This chapter introduces the central principle that will govern the
+rest of the book:
+
+\begin{enumerate}[leftmargin=2em]
+  \item Information loss is bidirectional: both coarse-graining
+    and over-resolution destroy information.
+  \item The right level of observation is determined by the
+    reconstruction task, not by the system alone.
+  \item Useful information is not maximum information.
+    Admissibility is always relative to a goal.
+\end{enumerate}
+
+The reader who has absorbed these three points is already thinking
+in the terms that the rest of this book will make precise.

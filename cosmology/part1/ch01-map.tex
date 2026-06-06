@@ -1,0 +1,365 @@
+% ============================================================
+%  part1/ch01-map.tex
+%  Chapter 1: The Map Is Not the Territory
+% ============================================================
+
+\chapter{The Map Is Not the Territory}
+\label{ch:map}
+
+\epigraph{%
+  The map is not the territory,\\
+  and the name is not the thing named.%
+}{Alfred Korzybski}
+
+\bigskip
+
+\begin{WhyMatters}
+  The map example is not about cartography.
+  It is the first appearance of a central theme:
+  \emph{useful representations depend on forgetting.}
+  Later chapters will show that detector measurements, memories,
+  and cosmological observations obey exactly the same principle.
+  The mathematics introduced here---projection, kernel,
+  quotient---will reappear in every subsequent part of the book.
+\end{WhyMatters}
+
+\section{A useful object that is always wrong}
+
+A map is a strange object.
+
+It is useful precisely because it is wrong.
+
+A road map does not show trees, clouds, buildings, birds, or people.
+A topographic map ignores political borders.
+A political map ignores elevation.
+A transit map distorts distance while preserving connectivity.
+
+Every successful map leaves something out.
+
+At first glance this seems obvious.
+No map could contain every detail of the territory it represents.
+A perfect map would be as large and as complicated as the territory
+itself and would therefore fail in its purpose.
+
+But this observation has a deeper consequence.
+
+The usefulness of a map depends not merely on what it contains,
+but on what it discards.
+
+A traveler cares about roads.
+A geologist cares about elevation.
+A city planner cares about infrastructure.
+
+The same territory gives rise to many different maps because
+different tasks require different projections.
+
+\section{The projection}
+
+\begin{TechNote}[Projection]
+  Throughout this book, a \emph{projection} need not be linear.
+  The term is used in the broader sense of any map
+  \[
+    \pi : X \to Y
+  \]
+  that preserves some structure while discarding other structure.
+  Quotient maps, detector outputs, coarse-grainings, and
+  observational restrictions are all projections in this sense.
+\end{TechNote}
+
+Let $X$ denote a territory and let $M$ denote a map.
+The map is a projection
+\[
+  \pi : X \to M.
+\]
+The projection preserves some structure and discards the rest.
+
+Suppose two distinct features of the territory are represented
+identically on the map:
+\[
+  \pi(x_1) = \pi(x_2), \qquad x_1 \neq x_2.
+\]
+The map cannot distinguish between them.
+From the perspective of the map, these two features are equivalent.
+
+The territory has therefore been partitioned into equivalence classes:
+\[
+  x_1 \sim_\pi x_2
+  \iff
+  \pi(x_1) = \pi(x_2).
+\]
+
+\begin{definition}[Projection equivalence]
+  \label{def:proj-equiv}
+  Given a map $\pi : X \to M$, two points $x_1, x_2 \in X$ are
+  \emph{projection-equivalent} if $\pi(x_1) = \pi(x_2)$.
+  The equivalence class of $x$ is denoted $[x]_\pi$.
+\end{definition}
+
+The map is then a faithful representation of the quotient space:
+\[
+  M \cong X / {\sim_\pi}.
+\]
+
+\begin{ForwardRef}
+  The equivalence relation $x_1 \sim_\pi x_2$ introduced here
+  will later reappear as \emph{observational equivalence} in
+  detector theory (Chapter~\ref{ch:detector}) and as
+  \emph{horizon equivalence} in cosmology
+  (Chapter~\ref{ch:horizons} and Part~VII).
+  In all three cases the same mathematics governs what an
+  observer cannot distinguish.
+\end{ForwardRef}
+
+\section{The kernel}
+
+The information lost by a projection can be measured precisely.
+
+\begin{definition}[Kernel of a projection]
+  \label{def:kernel}
+  Let $\pi : X \to M$ be a projection.
+  The \emph{kernel} of $\pi$ is the collection of all pairs that
+  $\pi$ fails to distinguish:
+  \[
+    \ker(\pi)
+    = \{(x_1, x_2) \in X \times X : \pi(x_1) = \pi(x_2),\;
+      x_1 \neq x_2\}.
+  \]
+  A projection is \emph{injective} (loses no information) if and
+  only if $\ker(\pi) = \emptyset$.
+\end{definition}
+
+Every useful map has a nontrivial kernel.
+
+Two cities at the same elevation appear identically on a topographic
+contour.
+Two neighborhoods in the same postal district appear identically on
+a postal map.
+Two points equidistant from the center appear identically on a
+radial transit diagram.
+
+The kernel is not a defect.
+It is the mechanism by which the map achieves its purpose.
+
+\begin{Misconception}
+  Information loss does not imply ignorance.
+  A map loses information yet remains useful.
+  The question is not whether information was discarded.
+  The question is whether the discarded information is
+  \emph{relevant to the reconstruction task}.
+  A road map that omits bird migration patterns is not
+  deficient for a traveler.
+  It is appropriately filtered.
+\end{Misconception}
+
+\principle{
+  The first lesson of admissibility is not that information is
+  lost.\\[4pt]
+  It is that information \emph{must} be lost.\\[4pt]
+  Without forgetting, representation itself would be impossible.
+}
+
+\section{Many maps, one territory}
+
+Different projections of the same territory reveal different
+structure.
+No single projection is complete.
+
+This suggests a natural question: given a collection of maps,
+can the territory be recovered?
+
+\begin{example}[Recovering terrain from multiple projections]
+  A topographic map preserves elevation.
+  A road map preserves connectivity.
+  A geological map preserves rock type.
+  Given all three simultaneously, a geologist can reconstruct
+  considerably more of the territory than any single map provides.
+  The reconstruction is still incomplete---the maps say nothing
+  about weather, population, or history---but it is richer than
+  any individual projection.
+\end{example}
+
+\begin{definition}[Reconstruction from projections]
+  \label{def:reconstruction}
+  Given a collection of projections
+  $\{\pi_i : X \to M_i\}_{i \in I}$
+  and observed data $\{m_i \in M_i\}_{i \in I}$,
+  the \emph{reconstruction problem} asks:
+  find $x \in X$ such that $\pi_i(x) = m_i$ for all $i \in I$.
+\end{definition}
+
+In general, the reconstruction problem has no unique solution.
+The set of solutions is
+\[
+  \mathcal{R}(\{m_i\})
+  = \bigcap_{i \in I} \pi_i^{-1}(m_i)
+  \subseteq X.
+\]
+The reconstruction is unique if and only if $\mathcal{R}$ contains
+exactly one point.
+
+When $\mathcal{R}$ contains many points, additional constraints
+are required to select among them.
+These constraints are \emph{admissibility conditions}.
+
+\begin{AdmPreview}
+  The reconstruction problem above already has the structure
+  that will drive the entire book.
+  Given multiple incomplete observations, we ask:
+  which original states are consistent with all observations
+  simultaneously?
+  The set of consistent states is the admissibility class.
+  Choosing among them requires criteria---admissibility
+  conditions---that specify which reconstructions are acceptable.
+  This idea will be made mathematically precise in Part~V
+  using sheaf theory and cohomology.
+\end{AdmPreview}
+
+\section{The holonomic perspective}
+
+The title of this book takes its name from a paper by Solórzano
+that formalizes precisely the situation we have just described.
+
+A \emph{holonomic space} in Solórzano's sense is a triple
+$(V, H, L)$ where $V$ is a normed vector space, $H$ is a subgroup
+of norm-preserving automorphisms of $V$, and $L : H \to \mathbb{R}$
+is a group-norm measuring the cost of transformations.
+The associated metric is
+\[
+  d_L(u, v)
+  = \inf_{a \in H} \sqrt{L^2(a) + \|u - av\|^2}.
+\]
+
+In plain language: the distance between two states is not just
+how far apart they are, but how far apart they are after allowing
+admissible internal reconfigurations at a measurable cost.
+
+For the map problem, the holonomic interpretation is:
+\begin{itemize}[leftmargin=2em]
+  \item $V$ is the space of territory states,
+  \item $H$ is the group of map-preserving rearrangements of the
+    territory (transformations that do not change the map image),
+  \item $L(h)$ measures the cost of such a rearrangement.
+\end{itemize}
+Two territory states that differ only by a map-preserving
+rearrangement are holonomically close even if they differ in
+absolute terms.
+
+This will become technically important in
+Chapter~\ref{ch:sheaf}, where each open observational domain
+carries a holonomic triple rather than a bare vector space.
+
+\begin{ReconExercise}
+  Suppose two cities $x_1$ and $x_2$ are mapped to the same
+  point $m \in M$ by a road map $\pi$.
+  \begin{enumerate}[leftmargin=2em]
+    \item What information about $x_1$ and $x_2$ can still be
+      recovered from $m$ alone?
+    \item What information is provably unrecoverable from $m$
+      alone?
+    \item If a second map $\pi'$ (e.g., a topographic map)
+      assigns $x_1$ and $x_2$ to \emph{different} points,
+      what does the pair $(\pi, \pi')$ allow you to reconstruct?
+  \end{enumerate}
+  This exercise previews the multi-projection reconstruction
+  problem that will recur throughout the book.
+\end{ReconExercise}
+
+\section{What this chapter anticipates}
+
+This chapter has introduced three ideas that will recur
+throughout the book.
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Projection.}
+    Every representation is a map from a richer domain to a
+    poorer one: $\pi : X \to M$.
+
+  \item \textbf{Nontrivial kernel.}
+    Every useful representation discards information:
+    $\ker(\pi) \neq \emptyset$.
+
+  \item \textbf{Reconstruction.}
+    Given multiple projections, one can attempt to recover the
+    original structure, but the recovery is generally incomplete
+    or non-unique.
+\end{enumerate}
+
+\begin{MathEcho}
+  This chapter introduced:
+  \[
+    \pi : X \to M,
+    \qquad
+    \ker(\pi),
+    \qquad
+    X / {\sim_\pi},
+    \qquad
+    \mathcal{R}(\{m_i\}) = \bigcap_i \pi_i^{-1}(m_i).
+  \]
+  These objects will reappear in:
+  \begin{itemize}[leftmargin=1.5em,itemsep=0pt]
+    \item Chapter~\ref{ch:detector}
+      (observational equivalence classes),
+    \item Chapter~\ref{ch:horizons}
+      (horizon-relative reconstruction),
+    \item Chapter~\ref{ch:clio}
+      (reconstruction error and CLIO),
+    \item Chapter~\ref{ch:sheaf}
+      (admissibility sheaf and gluing),
+    \item Chapter~\ref{ch:monoturn}
+      (the Monoturn as global reconstruction target).
+  \end{itemize}
+\end{MathEcho}
+
+\begin{OpenQuestion}
+  Given only a map $\pi : X \to M$ and no direct access to
+  the territory $X$, what classes of territory can be uniquely
+  reconstructed from $M$?
+
+  This question appears trivial in cartography.
+  It becomes fundamental in inverse problems, detector theory,
+  and cosmology, where $X$ is never directly accessible and
+  $M$ is all the observer ever has.
+\end{OpenQuestion}
+
+\WhatSurvived{Road map $\pi : X \to M$}{%
+  Connectivity between locations\\
+  Approximate relative position\\
+  Route structure\\
+  Named landmarks%
+}{%
+  Elevation\\
+  Physical texture\\
+  Most geometry\\
+  Temporal history\\
+  Unlabeled features%
+}{%
+  Partial. Combining multiple map types\\
+  improves reconstruction.%
+}{%
+  $\ker(\pi)$: all pairs $(x_1, x_2)$ with\\
+  $\pi(x_1) = \pi(x_2)$, including distinct\\
+  locations mapped to the same road node.%
+}
+
+\begin{HolonomyNote}
+  After traversing this chapter, what information appears only
+  in retrospect?
+
+  The equivalence relation $x_1 \sim_\pi x_2$ looks like a
+  simple identification.
+  But following this chapter's loop---projection, kernel,
+  quotient, reconstruction, holonomic metric---reveals that the
+  equivalence relation does not merely erase structure.
+  It \emph{defines} the class of transformations that are
+  invisible to the observer.
+
+  The holonomy of a representation is precisely the group of
+  transformations that leave all observations unchanged.
+  A large holonomy group means many invisible transformations
+  and a severely underdetermined reconstruction problem.
+  A trivial holonomy group means the representation is injective
+  and reconstruction is unique.
+
+  Every chapter in this book is a study of the holonomy of
+  some observation system.
+\end{HolonomyNote}

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL TRANSPONDER</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:#000;font-family:monospace;
+  touch-action:manipulation;
+  color:#00ff41;
+  text-shadow:0 0 5px #00ff41;
+}
+
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:900;
+  background:radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.6) 100%);
+}
+
+body::after{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:901;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,.20) 0px,rgba(0,0,0,.20) 1px,
+    transparent 1px,transparent 3px
+  );
+}
+
+#screen{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  will-change:transform;
+}
+
+#title{
+  position:fixed;top:18px;left:0;right:0;
+  text-align:center;
+  font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+  opacity:.72;z-index:100;
+}
+
+#tracks{
+  position:fixed;top:44px;left:0;right:0;
+  display:flex;justify-content:center;gap:14px;
+  z-index:100;
+}
+
+#tracks button{
+  background:none;
+  border:none;border-bottom:1px solid rgba(0,255,65,.22);
+  color:rgba(0,255,65,.42);
+  font-family:monospace;font-size:8px;
+  letter-spacing:.14em;padding:3px 6px;
+  cursor:pointer;transition:all .2s;
+}
+
+#tracks button.active{
+  color:#00ff41;
+  border-bottom-color:#00ff41;
+  text-shadow:0 0 8px #00ff41;
+}
+
+#clock{
+  position:fixed;top:18px;right:14px;
+  font-size:8px;letter-spacing:.1em;
+  opacity:.30;z-index:100;
+}
+
+canvas{
+  display:block;
+  width:min(360px,80vw);
+  height:min(360px,80vw);
+  image-rendering:pixelated;
+}
+
+#status{
+  position:fixed;bottom:48px;left:0;right:0;
+  text-align:center;font-size:7px;letter-spacing:.18em;
+  opacity:.22;z-index:100;
+}
+
+#subs{
+  position:fixed;bottom:14px;
+  left:50%;transform:translateX(-50%);
+  width:min(560px,86vw);
+  min-height:2em;
+  text-align:center;
+  font-size:11px;line-height:1.5;
+  letter-spacing:.03em;
+  opacity:.68;z-index:100;
+  font-style:italic;
+}
+
+#glitch-band{
+  position:fixed;left:0;right:0;height:2px;
+  background:rgba(0,255,65,.55);
+  pointer-events:none;z-index:902;
+  display:none;box-shadow:0 0 6px #00ff41;
+}
+
+#debug{
+  position:fixed;bottom:6px;left:8px;
+  font-size:6px;opacity:.10;z-index:100;
+  letter-spacing:.06em;
+}
+</style>
+</head>
+<body>
+
+<div id="screen">
+  <div id="title">—</div>
+  <div id="tracks"></div>
+  <span id="clock">00:00</span>
+  <canvas id="viz"></canvas>
+  <div id="status">[ click or touch · play / pause ]</div>
+  <div id="subs"></div>
+</div>
+
+<div id="glitch-band"></div>
+<div id="debug"></div>
+
+<audio id="audio" preload="auto"></audio>
+
+<script>
+const tracks = [
+  {
+    file:"How_Unfaithful_Algorithms_Reshape_Reality.mp3",
+    vtt:"How_Unfaithful_Algorithms_Reshape_Reality.vtt",
+    label:"UNFAITHFUL",
+    title:"HOW UNFAITHFUL ALGORITHMS RESHAPE REALITY",
+    mode:"unfaithful"
+  },
+  {
+    file:"Why_We_Keep_Burning_the_Blueprints.mp3",
+    vtt:"Why_We_Keep_Burning_the_Blueprints.vtt",
+    label:"BLUEPRINTS",
+    title:"WHY WE KEEP BURNING THE BLUEPRINTS",
+    mode:"blueprints"
+  },
+  {
+    file:"Everything_Is_A_Continuous_Maintenance_Process.mp3",
+    vtt:"Everything_Is_A_Continuous_Maintenance_Process.vtt",
+    label:"MAINTENANCE",
+    title:"EVERYTHING IS A CONTINUOUS MAINTENANCE PROCESS",
+    mode:"maintenance"
+  }
+];
+
+let trackIndex = 0;
+let mode       = tracks[0].mode;
+
+const audio     = document.getElementById("audio");
+const subsEl    = document.getElementById("subs");
+const titleEl   = document.getElementById("title");
+const trackBtns = document.getElementById("tracks");
+const clockEl   = document.getElementById("clock");
+const screen    = document.getElementById("screen");
+const glitchBand= document.getElementById("glitch-band");
+const debugEl   = document.getElementById("debug");
+
+/* ── audio ── */
+
+let audioCtx, analyser, freqData, timeData;
+
+function initAudio(){
+  if(audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  analyser.smoothingTimeConstant = .84;
+  freqData = new Uint8Array(analyser.frequencyBinCount);
+  timeData = new Uint8Array(analyser.fftSize);
+  const src = audioCtx.createMediaElementSource(audio);
+  src.connect(analyser);
+  analyser.connect(audioCtx.destination);
+}
+
+function buildButtons(){
+  tracks.forEach((t,i)=>{
+    const btn = document.createElement("button");
+    btn.textContent = t.label;
+    btn.onclick = async e=>{
+      e.stopPropagation();
+      initAudio();
+      if(audioCtx.state==="suspended") await audioCtx.resume();
+      await loadTrack(i,true);
+    };
+    trackBtns.appendChild(btn);
+  });
+}
+
+function updateButtons(){
+  [...trackBtns.querySelectorAll("button")]
+    .forEach((b,i)=>b.classList.toggle("active",i===trackIndex));
+}
+
+async function loadTrack(i,autoplay=true){
+  trackIndex = ((i%tracks.length)+tracks.length)%tracks.length;
+  const t = tracks[trackIndex];
+  mode = t.mode;
+  titleEl.textContent = t.title;
+  audio.src = t.file;
+  audio.load();
+  updateButtons();
+  // reset mode state
+  if(mode==="blueprints") resetBlueprints();
+  await loadVTT(t.vtt);
+  if(autoplay){ try{ await audio.play(); }catch(e){} }
+}
+
+audio.addEventListener("ended",()=>loadTrack(trackIndex+1,true));
+
+document.body.addEventListener("click",async ()=>{
+  initAudio();
+  if(audioCtx.state==="suspended") await audioCtx.resume();
+  if(audio.paused) await audio.play();
+  else audio.pause();
+});
+
+audio.ontimeupdate = ()=>{
+  const t = audio.currentTime|0;
+  clockEl.textContent =
+    `${String(t/60|0).padStart(2,"0")}:${String(t%60).padStart(2,"0")}`;
+  const c = cues.find(c=>audio.currentTime>=c.start&&audio.currentTime<c.end+.2);
+  subsEl.textContent = c ? c.text : "";
+};
+
+/* ── subtitles ── */
+
+let cues = [];
+
+async function loadVTT(url){
+  cues=[]; subsEl.textContent="";
+  try{
+    const r = await fetch(url);
+    if(!r.ok) return;
+    cues = parseVTT(await r.text());
+  }catch(e){}
+}
+
+function parseVTT(text){
+  const out=[];
+  for(const block of text.replace(/\r/g,"").split(/\n{2,}/)){
+    const lines=block.trim().split("\n");
+    const ts=lines.find(l=>l.includes("-->"));
+    if(!ts) continue;
+    const ti=lines.indexOf(ts);
+    const [s,e]=ts.split("-->").map(x=>x.trim());
+    out.push({start:parseTime(s),end:parseTime(e),
+              text:lines.slice(ti+1).join(" ")});
+  }
+  return out;
+}
+
+function parseTime(t){
+  t=t.split(" ")[0].replace(",",".");
+  const p=t.split(":");
+  if(p.length===3) return +p[0]*3600 + +p[1]*60 + parseFloat(p[2]);
+  return +p[0]*60 + parseFloat(p[1]);
+}
+
+/* ── canvas ── */
+
+const canvas = document.getElementById("viz");
+const ctx    = canvas.getContext("2d");
+const W=512, H=512, cx=W/2, cy=H/2;
+canvas.width=W; canvas.height=H;
+
+let frame=0, bass=0, mid=0, high=0, vol=0, entropy=0;
+
+function updateEnergy(){
+  if(!analyser) return;
+  analyser.getByteFrequencyData(freqData);
+  analyser.getByteTimeDomainData(timeData);
+  let b=0,m=0,h=0,v=0;
+  for(let i=0;i<40;i++) b+=freqData[i];
+  for(let i=40;i<180;i++) m+=freqData[i];
+  for(let i=180;i<freqData.length;i++) h+=freqData[i];
+  for(let i=0;i<freqData.length;i++) v+=freqData[i];
+  bass+=(b/(40*255)   -bass)*.08;
+  mid +=(m/(140*255)  -mid )*.06;
+  high+=(h/((freqData.length-180)*255)-high)*.05;
+  vol +=(v/(freqData.length*255)-vol)*.07;
+
+  let sum=0,ent=0;
+  for(let i=0;i<freqData.length;i++) sum+=freqData[i];
+  if(sum>0){
+    for(let i=0;i<freqData.length;i++){
+      const p=freqData[i]/sum;
+      if(p>0) ent-=p*Math.log2(p);
+    }
+    ent/=Math.log2(freqData.length);
+  }
+  entropy+=(ent-entropy)*.04;
+}
+
+/* ── glitch ── */
+
+let glitchActive=false, glitchTimer=0, glitchType=0, lastGlitch=0;
+
+function maybeGlitch(){
+  if(glitchActive) return;
+  if(entropy<.70&&vol<.50) return;
+  if(frame-lastGlitch<100) return;
+  if(Math.random()>.015) return;
+  glitchActive=true; glitchTimer=0;
+  glitchType=Math.random()<.55 ? 0 : 1;
+  lastGlitch=frame;
+}
+
+function applyGlitch(){
+  if(!glitchActive){
+    screen.style.transform="";
+    glitchBand.style.display="none";
+    return;
+  }
+  glitchTimer++;
+  const dur = glitchType===0 ? 20 : 9;
+
+  if(glitchType===0){
+    // horizontal vibrate — decays
+    const decay=1-glitchTimer/dur;
+    const jx=(Math.random()-.5)*7*decay;
+    const jy=(Math.random()-.5)*2*decay;
+    screen.style.transform=`translate(${jx}px,${jy}px)`;
+    glitchBand.style.display="none";
+  } else {
+    // scanline band slides
+    const pct=(glitchTimer/dur)*110-5;
+    glitchBand.style.display="block";
+    glitchBand.style.top=`${pct}%`;
+    glitchBand.style.opacity=`${1-glitchTimer/dur}`;
+    screen.style.transform="";
+  }
+
+  if(glitchTimer>=dur){
+    glitchActive=false;
+    screen.style.transform="";
+    glitchBand.style.display="none";
+  }
+}
+
+/* ── shared ── */
+
+function clearScreen(){
+  ctx.fillStyle="rgba(0,0,0,.16)";
+  ctx.fillRect(0,0,W,H);
+}
+
+// raw lissajous from timeData with two different lags
+function lis(ox,oy,rx,ry,lagFrac,alpha,lw){
+  if(!analyser) return;
+  const N=timeData.length;
+  const lag=Math.floor(N*lagFrac)&~1;
+  ctx.beginPath();
+  for(let i=0;i<N;i+=2){
+    const a=(timeData[i]-128)/128;
+    const b=(timeData[(i+lag)%N]-128)/128;
+    if(i===0) ctx.moveTo(ox+a*rx, oy+b*ry);
+    else      ctx.lineTo(ox+a*rx, oy+b*ry);
+  }
+  ctx.strokeStyle=`rgba(0,255,65,${alpha})`;
+  ctx.lineWidth=lw||1;
+  ctx.lineCap="round";
+  ctx.shadowBlur=alpha>.35?8:2;
+  ctx.shadowColor="#00ff41";
+  ctx.stroke();
+  ctx.shadowBlur=0;
+}
+
+/* ═══════════════════════════════════════════════════
+   MODE 1 — UNFAITHFUL ALGORITHMS
+   ───────────────────────────────────────────────────
+   A reference signal (the true target) stays fixed.
+   A copy starts faithful, then drifts — accumulating
+   error that slowly warps the space around it.
+   The reference doesn't move. The copy reshapes reality
+   until the two are in different worlds.
+═══════════════════════════════════════════════════ */
+
+// cumulative drift — persists across frames
+let driftX=0, driftY=0, driftPhase=0;
+
+function drawUnfaithful(){
+  // drift accumulates slowly — small random walk biased by mid freq
+  driftX += (Math.random()-.5)*.18 + mid*.08;
+  driftY += (Math.random()-.5)*.12 + mid*.04;
+  driftPhase += .0007 + high*.0008;
+  // soft clamp — drift can go far but not forever
+  driftX *= .998;
+  driftY *= .998;
+
+  const dMag = Math.hypot(driftX,driftY);
+
+  // ── reference signal: fixed at centre, unwavering ──
+  // uses lag .25 — clean X/Y decorrelation
+  lis(cx, cy, W*.28, W*.28, .25, .28, 1.0);
+
+  // ── copy signal: displaced by accumulated drift ──
+  // lag shifts slightly — it's not just position that drifts,
+  // the temporal relationship changes too
+  const copyLag = .25 + driftPhase%1*.18;
+  const copyX   = cx + driftX;
+  const copyY   = cy + driftY;
+  lis(copyX, copyY, W*.26+dMag*.4, W*.26+dMag*.3,
+      copyLag, .55+mid*.2, 1.4);
+
+  // ── distortion field ──
+  // as drift grows, faint warped echoes appear between
+  // the reference and the copy — the space being reshaped
+  const steps = 3;
+  for(let s=1;s<=steps;s++){
+    const t  = s/(steps+1);
+    const ix = cx  + driftX*t;
+    const iy = cy  + driftY*t;
+    const iLag = .25 + (driftPhase%1)*t*.18;
+    const iAlpha = .04 + t*.06 + dMag*.001;
+    lis(ix, iy, W*(.26+t*.02), W*(.26+t*.015),
+        iLag, iAlpha, .7);
+  }
+
+  // ── divergence indicator ──
+  // a very faint dashed line between ref and copy centres
+  // brightens as they move apart
+  if(dMag > 5){
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(copyX,copyY);
+    ctx.strokeStyle=`rgba(0,255,65,${Math.min(.25,dMag*.004)})`;
+    ctx.lineWidth=.8;
+    ctx.setLineDash([3,8]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   MODE 2 — BURNING THE BLUEPRINTS
+   ───────────────────────────────────────────────────
+   Structure accumulates over time — a growing lissajous
+   complexity as layers build up. Then a collapse fires:
+   the structure burns, clearing to near-nothing.
+   Reconstruction begins, but never reaches the previous
+   complexity before the next collapse. Each cycle
+   leaves a slightly simpler world.
+═══════════════════════════════════════════════════ */
+
+const bpBuffer  = [];   // history layers
+const BP_MAX    = 14;   // max layers before a collapse is possible
+const bpScratch = new Uint8Array(2048);
+let   bpComplexity = 1; // current max-layer ceiling, starts full
+let   bpCollapsing = false;
+let   bpCollapseT  = 0;
+let   bpCollapseLen= 38;
+let   bpCycleCount = 0;
+
+function resetBlueprints(){
+  bpBuffer.length=0;
+  bpComplexity=BP_MAX;
+  bpCollapsing=false;
+  bpCollapseT=0;
+  bpCycleCount=0;
+  // seed with gentle noise
+  for(let l=0;l<BP_MAX;l++){
+    const buf=new Uint8Array(2048);
+    for(let i=0;i<2048;i++) buf[i]=128+Math.sin(i*.035+l*.7)*12*(l/BP_MAX);
+    bpBuffer.push(buf);
+  }
+}
+
+function maybeCollapse(){
+  if(bpCollapsing) return;
+  // collapse triggers when buffer is near full AND entropy/bass is high
+  const full = bpBuffer.length >= Math.floor(bpComplexity);
+  const hot  = entropy>.66 || bass>.18;
+  if(full && hot && Math.random()<.007){
+    bpCollapsing=true;
+    bpCollapseT=0;
+    bpCycleCount++;
+    // each collapse lowers the ceiling — less rebuilds each time
+    bpComplexity = Math.max(2, bpComplexity - .8 - Math.random()*.6);
+  }
+}
+
+function stepBlueprints(){
+  if(bpCollapsing){
+    bpCollapseT++;
+    // shed layers one by one during collapse
+    if(bpCollapseT%3===0 && bpBuffer.length>1){
+      bpBuffer.shift(); // remove oldest first — history burns
+    }
+    if(bpCollapseT>=bpCollapseLen){
+      bpCollapsing=false;
+      bpCollapseT=0;
+    }
+    return;
+  }
+  // accumulate: capture waveform every 4 frames up to ceiling
+  if(frame%4!==0||!analyser) return;
+  if(bpBuffer.length >= Math.floor(bpComplexity)) return;
+  analyser.getByteTimeDomainData(bpScratch);
+  bpBuffer.push(new Uint8Array(bpScratch));
+}
+
+function drawBlueprints(){
+  maybeCollapse();
+  stepBlueprints();
+
+  const N = bpBuffer.length;
+  if(N===0) return;
+
+  bpBuffer.forEach((buf,li)=>{
+    const age   = li/(N-1||1);       // 0=oldest 1=newest
+    const alpha = bpCollapsing
+      ? age*(1-bpCollapseT/bpCollapseLen)*.45    // fade during collapse
+      : .03+age*.40;
+    const r = W*(.08+age*.22);
+    const lag = Math.floor(buf.length*(.20+li*.018))&~1;
+
+    ctx.beginPath();
+    for(let i=0;i<buf.length;i+=2){
+      const a=(buf[i]-128)/128;
+      const b=(buf[(i+lag)%buf.length]-128)/128;
+      if(i===0) ctx.moveTo(cx+a*r, cy+b*r*.92);
+      else      ctx.lineTo(cx+a*r, cy+b*r*.92);
+    }
+    ctx.strokeStyle=`rgba(0,255,65,${Math.max(0,alpha)})`;
+    ctx.lineWidth = age<.3?.6:age<.65?1:1.7;
+    ctx.shadowBlur= age>.7 && !bpCollapsing ? 8:0;
+    ctx.shadowColor="#00ff41";
+    ctx.stroke();
+    ctx.shadowBlur=0;
+  });
+
+  // collapse flash — brief bright flare when a burn starts
+  if(bpCollapsing && bpCollapseT<6){
+    const flare=(6-bpCollapseT)/6;
+    ctx.beginPath();
+    ctx.arc(cx,cy,W*(.24*flare),0,Math.PI*2);
+    ctx.strokeStyle=`rgba(0,255,65,${flare*.25})`;
+    ctx.lineWidth=1;
+    ctx.stroke();
+  }
+
+  // complexity ceiling indicator — a very faint outer ring
+  // shrinks with each burn cycle
+  const ceilR = W*(.08 + (bpComplexity/BP_MAX)*.22);
+  ctx.beginPath();
+  ctx.arc(cx,cy,ceilR,0,Math.PI*2);
+  ctx.strokeStyle="rgba(0,255,65,.04)";
+  ctx.lineWidth=1;
+  ctx.setLineDash([2,10]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+
+/* ═══════════════════════════════════════════════════
+   MODE 3 — CONTINUOUS MAINTENANCE PROCESS
+   ───────────────────────────────────────────────────
+   The structure is always being held together.
+   Not built and burned — perpetually patched.
+   When patching is active the signal stays coherent.
+   When it falters (quiet passages) you see fraying:
+   the lissajous begins to drift and lose definition.
+   The repair is the process. There is no finished state.
+═══════════════════════════════════════════════════ */
+
+// repair threads — active patches visible as short bright arcs
+const repairPts = [];
+const REPAIR_MAX = 28;
+
+function spawnRepair(){
+  if(repairPts.length >= REPAIR_MAX) return;
+  // repairs spawn more readily when vol/bass is active
+  const rate = .06 + vol*.18 + bass*.12;
+  if(Math.random() > rate) return;
+  const a = Math.random()*Math.PI*2;
+  const r = W*(.08 + Math.random()*.22);
+  repairPts.push({
+    x: cx + Math.cos(a)*r,
+    y: cy + Math.sin(a)*r,
+    life: 1.0,
+    decay: .018 + Math.random()*.022,
+    size: W*(.04 + Math.random()*.08)
+  });
+}
+
+function drawMaintenance(){
+  // age and cull repair points
+  for(let i=repairPts.length-1;i>=0;i--){
+    repairPts[i].life -= repairPts[i].decay;
+    if(repairPts[i].life<=0) repairPts.splice(i,1);
+  }
+  spawnRepair();
+
+  // ── base lissajous: coherence depends on repair activity ──
+  // when repairs are numerous and fresh, signal is clean
+  // when repairs are sparse, the lag drifts → fraying
+  const repairVitality = Math.min(1, repairPts.length / REPAIR_MAX);
+  const fray  = 1 - repairVitality;          // 0=maintained 1=fraying
+  const baseLag = .25 + fray*.14;            // lag drifts when unrepaired
+  const baseR   = W*(.22 + fray*.06);        // expands slightly as it frays
+
+  // primary — the maintained structure
+  lis(cx, cy, baseR, baseR*.92, baseLag,
+      .35 + repairVitality*.25, 1.2 + repairVitality*.6);
+
+  // fraying ghost — appears when maintenance drops
+  if(fray > .25){
+    lis(cx, cy, baseR*1.06, baseR*.98,
+        baseLag + fray*.08,
+        (fray-.25)*.22, .7);
+  }
+
+  // ── repair threads ──
+  // each is a small lissajous arc centred at the repair site
+  repairPts.forEach(p=>{
+    const alpha = p.life * (.45 + mid*.15);
+    ctx.beginPath();
+    // short arc rather than full lissajous — a patch, not a rebuild
+    if(analyser){
+      const N   = timeData.length;
+      const lag = Math.floor(N*.25)&~1;
+      const slice = Math.floor(N * .12); // only draw a slice
+      const start = Math.floor(Math.random()*N*.5)&~1;
+      for(let i=0;i<slice;i+=2){
+        const idx=(start+i)%N;
+        const a=(timeData[idx]-128)/128;
+        const b=(timeData[(idx+lag)%N]-128)/128;
+        const x=p.x+a*p.size;
+        const y=p.y+b*p.size*.88;
+        if(i===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+      }
+    }
+    ctx.strokeStyle=`rgba(0,255,65,${alpha})`;
+    ctx.lineWidth=p.life*1.8;
+    ctx.lineCap="round";
+    ctx.shadowBlur=p.life>0.6?8:2;
+    ctx.shadowColor="#00ff41";
+    ctx.stroke();
+    ctx.shadowBlur=0;
+  });
+
+  // ── maintenance pulse ──
+  // a very faint ring that contracts toward centre —
+  // the inward pressure of continuous upkeep
+  const pulseR = W*(.26 + Math.sin(frame*.018)*.04);
+  ctx.beginPath();
+  ctx.arc(cx,cy,pulseR,0,Math.PI*2);
+  ctx.strokeStyle=`rgba(0,255,65,${.03 + repairVitality*.04})`;
+  ctx.lineWidth=1;
+  ctx.setLineDash([1,12]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+/* ── main loop ── */
+
+function draw(){
+  frame++;
+  updateEnergy();
+  maybeGlitch();
+  applyGlitch();
+  clearScreen();
+
+  ctx.save();
+  if(mode==="unfaithful") drawUnfaithful();
+  if(mode==="blueprints") drawBlueprints();
+  if(mode==="maintenance") drawMaintenance();
+  ctx.restore();
+
+  debugEl.textContent=`F:${frame} E:${entropy.toFixed(2)} V:${vol.toFixed(2)} B:${bass.toFixed(2)} DRIFT:${Math.hypot(driftX,driftY).toFixed(1)} BP:${bpBuffer.length}/${Math.floor(bpComplexity)}`;
+
+  requestAnimationFrame(draw);
+}
+
+resetBlueprints();
+buildButtons();
+loadTrack(0,false);
+draw();
+</script>
+</body>
+</html>

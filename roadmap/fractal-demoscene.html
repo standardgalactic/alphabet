@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FRACTAL TARTAN // RSVP DEMOSCENE</title>
+<style>
+  html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+    color:#9ff;
+    font-family: ui-monospace, "C64 Pro Mono", "Courier New", monospace;
+    touch-action:none;
+  }
+  canvas{
+    position:fixed;
+    inset:0;
+    width:100vw;
+    height:100vh;
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+    background:#000;
+  }
+  #hud{
+    position:fixed;
+    left:12px;
+    top:10px;
+    z-index:3;
+    font-size:13px;
+    line-height:1.35;
+    color:#d7f7ff;
+    text-shadow:2px 2px #001060, 0 0 8px #00d8ff;
+    pointer-events:none;
+    letter-spacing:.04em;
+    opacity:.88;
+    mix-blend-mode:screen;
+  }
+  #boot{
+    position:fixed;
+    inset:0;
+    z-index:5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(0,80,160,.25), transparent 45%),
+      #05002a;
+    color:#bffcff;
+    text-align:center;
+    cursor:pointer;
+    user-select:none;
+  }
+  #panel{
+    border:3px solid #77e8ff;
+    box-shadow:0 0 0 5px #1a1170, 0 0 30px #00d8ff;
+    background:#120052;
+    padding:28px 34px;
+    max-width:760px;
+  }
+  #panel h1{
+    margin:0 0 12px;
+    font-size:clamp(24px,5vw,54px);
+    color:#fff;
+    text-shadow:4px 4px #3030a0, 0 0 16px #f0f;
+  }
+  #panel p{margin:8px 0;font-size:15px}
+  .key{color:#fff36a}
+</style>
+</head>
+<body>
+<canvas id="screen"></canvas>
+
+<div id="hud">
+  <div>*** RSVP / TARTAN / SPHEREPOP ***</div>
+  <div id="line1">Φ CAPACITY :: v TRANSPORT :: S ENTROPY</div>
+  <div id="line2">CLICK/TAP: AUDIO &nbsp; SPACE: PAUSE &nbsp; M: MUTE &nbsp; F: FULLSCREEN</div>
+</div>
+
+<div id="boot">
+  <div id="panel">
+    <h1>FRACTAL TARTAN</h1>
+    <p>C64-style fullscreen demoscene visualizer</p>
+    <p>procedural techno + RSVP fields + recursive tartan transformations</p>
+    <p><span class="key">CLICK / TAP</span> to start audio</p>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+
+/*
+  FRACTAL TARTAN // single-file HTML visualizer
+  - no dependencies
+  - WebAudio procedural techno
+  - low-res pixel buffer scaled fullscreen for C64/demoscene feel
+  - RSVP-inspired scalar/vector/entropy fields
+  - tartan interference, recursive plaid, Julia/Mandelbrot-ish warps
+*/
+
+const canvas = document.getElementById("screen");
+const ctx = canvas.getContext("2d", { alpha:false });
+const boot = document.getElementById("boot");
+const hud1 = document.getElementById("line1");
+
+let W=0,H=0,DPR=1;
+let LOW_W=320, LOW_H=200;
+let off = document.createElement("canvas");
+let octx = off.getContext("2d", { alpha:false, willReadFrequently:true });
+let img, pix;
+let running = true;
+let started = false;
+let muted = false;
+let frame = 0;
+let t0 = performance.now();
+
+const C64 = [
+  [0,0,0],       [255,255,255], [136,0,0],     [170,255,238],
+  [204,68,204],  [0,204,85],    [0,0,170],     [238,238,119],
+  [221,136,85],  [102,68,0],    [255,119,119], [51,51,51],
+  [119,119,119], [170,255,102], [0,136,255],   [187,187,187]
+];
+
+function resize(){
+  DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  W = Math.floor(innerWidth * DPR);
+  H = Math.floor(innerHeight * DPR);
+  canvas.width = W; canvas.height = H;
+  canvas.style.width = "100vw"; canvas.style.height = "100vh";
+  // adaptive internal resolution: fast but fullscreen crisp
+  const aspect = innerWidth / innerHeight;
+  LOW_H = innerWidth < 700 ? 160 : 200;
+  LOW_W = Math.max(240, Math.round(LOW_H * aspect));
+  off.width = LOW_W; off.height = LOW_H;
+  img = octx.createImageData(LOW_W, LOW_H);
+  pix = img.data;
+  ctx.imageSmoothingEnabled = false;
+}
+addEventListener("resize", resize, {passive:true});
+resize();
+
+// -------------------- Audio --------------------
+
+let AC, master, delay, filter;
+let nextNoteTime = 0, step = 0, timer = null;
+let tempo = 150;
+const scale = [0,3,5,7,10,12,15,17];
+
+function midi(n){ return 440 * Math.pow(2, (n-69)/12); }
+
+function envGain(time, attack, decay, peak=0.5){
+  const g = AC.createGain();
+  g.gain.setValueAtTime(0.0001, time);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), time + attack);
+  g.gain.exponentialRampToValueAtTime(0.0001, time + attack + decay);
+  return g;
+}
+
+function osc(type, freq, time, dur, gain, dest, detune=0){
+  const o = AC.createOscillator();
+  o.type = type;
+  o.frequency.setValueAtTime(freq, time);
+  o.detune.setValueAtTime(detune, time);
+  const g = envGain(time, 0.004, dur, gain);
+  o.connect(g).connect(dest);
+  o.start(time);
+  o.stop(time + dur + 0.05);
+}
+
+function noiseBurst(time, dur, gain, hp=6000){
+  const len = Math.floor(AC.sampleRate * dur);
+  const buf = AC.createBuffer(1, len, AC.sampleRate);
+  const d = buf.getChannelData(0);
+  for(let i=0;i<len;i++) d[i] = (Math.random()*2-1) * Math.pow(1-i/len, 2);
+  const src = AC.createBufferSource();
+  src.buffer = buf;
+  const f = AC.createBiquadFilter();
+  f.type = "highpass"; f.frequency.value = hp;
+  const g = envGain(time, 0.001, dur, gain);
+  src.connect(f).connect(g).connect(master);
+  src.start(time);
+}
+
+function kick(time){
+  const o = AC.createOscillator();
+  const g = AC.createGain();
+  o.type = "sine";
+  o.frequency.setValueAtTime(120, time);
+  o.frequency.exponentialRampToValueAtTime(42, time+0.12);
+  g.gain.setValueAtTime(0.9, time);
+  g.gain.exponentialRampToValueAtTime(0.0001, time+0.18);
+  o.connect(g).connect(master);
+  o.start(time); o.stop(time+0.22);
+}
+
+function snare(time){
+  noiseBurst(time, 0.09, 0.28, 1200);
+  osc("triangle", 180, time, 0.08, 0.05, master);
+}
+
+function hat(time, open=false){
+  noiseBurst(time, open?0.12:0.035, open?0.13:0.09, 8000);
+}
+
+function bass(time, note, len=0.13){
+  const f = midi(note);
+  osc("sawtooth", f, time, len, 0.13, filter, -5);
+  osc("square", f/2, time, len, 0.06, filter, 4);
+}
+
+function lead(time, note){
+  const f = midi(note);
+  osc("square", f, time, 0.16, 0.07, delay, 0);
+  osc("triangle", f*2, time, 0.10, 0.035, delay, 3);
+}
+
+function setupAudio(){
+  AC = new (window.AudioContext || window.webkitAudioContext)();
+  master = AC.createGain();
+  master.gain.value = 0.72;
+  filter = AC.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 900;
+  filter.Q.value = 8;
+  delay = AC.createDelay();
+  delay.delayTime.value = 0.18;
+  const fb = AC.createGain();
+  fb.gain.value = 0.32;
+  const dg = AC.createGain();
+  dg.gain.value = 0.22;
+  delay.connect(fb).connect(delay);
+  delay.connect(dg).connect(master);
+  filter.connect(master);
+  master.connect(AC.destination);
+  nextNoteTime = AC.currentTime + 0.05;
+  timer = setInterval(scheduler, 25);
+}
+
+function scheduler(){
+  if(!AC || muted) return;
+  const look = 0.12;
+  const spb = 60/tempo/4; // sixteenth
+  while(nextNoteTime < AC.currentTime + look){
+    const s = step % 64;
+    const bar = Math.floor(step / 16);
+    if(s % 4 === 0) kick(nextNoteTime);
+    if(s % 16 === 8 || s % 16 === 12) snare(nextNoteTime);
+    if(s % 2 === 1) hat(nextNoteTime, s%16===15);
+    const root = 36 + ((bar%4===2)?5:(bar%4===3?7:0));
+    if([0,3,6,10,12,15].includes(s%16)) bass(nextNoteTime, root + [0,0,7,10,12,7][(s+s/2|0)%6]);
+    if((s + bar) % 5 === 0){
+      const n = 60 + scale[(s/2 + bar*2 | 0) % scale.length] + (bar%2)*12;
+      lead(nextNoteTime, n);
+    }
+    // filter motion: "admissibility pressure"
+    const f = 500 + 2800 * (0.5 + 0.5*Math.sin((step+frame*0.015)*0.17));
+    filter.frequency.setTargetAtTime(f, nextNoteTime, 0.025);
+    nextNoteTime += spb;
+    step++;
+  }
+}
+
+function start(){
+  if(started) return;
+  started = true;
+  boot.style.display = "none";
+  setupAudio();
+  if(AC.state === "suspended") AC.resume();
+}
+boot.addEventListener("pointerdown", start);
+canvas.addEventListener("pointerdown", start);
+
+// -------------------- Visuals --------------------
+
+function pal(idx){
+  const c = C64[idx & 15];
+  return c;
+}
+
+function put(x,y,r,g,b){
+  const i = (y*LOW_W + x) << 2;
+  pix[i]=r; pix[i+1]=g; pix[i+2]=b; pix[i+3]=255;
+}
+
+function hash(n){
+  n = (n ^ 61) ^ (n >>> 16);
+  n = n + (n << 3);
+  n = n ^ (n >>> 4);
+  n = Math.imul(n, 0x27d4eb2d);
+  n = n ^ (n >>> 15);
+  return (n >>> 0) / 4294967295;
+}
+
+function render(now){
+  requestAnimationFrame(render);
+  if(!running) return;
+  frame++;
+  const time = (now - t0) * 0.001;
+  const beat = started && AC ? AC.currentTime * tempo / 60 : time * 2.5;
+  const cx = LOW_W/2, cy = LOW_H/2;
+  const asp = LOW_W/LOW_H;
+
+  // RSVP fields:
+  // Phi = scalar capacity, vector transport = swirl, S = entropy/obligation texture.
+  const phiPhase = Math.sin(time*0.37) * 0.7;
+  const vPhase = time*0.61;
+  const sPhase = time*0.23 + Math.sin(time*.1);
+
+  for(let y=0;y<LOW_H;y++){
+    const ny0 = (y-cy)/LOW_H*2.0;
+    for(let x=0;x<LOW_W;x++){
+      let nx = (x-cx)/LOW_H*2.0;
+      let ny = ny0;
+
+      // vector transport swirl
+      const rr = Math.sqrt(nx*nx + ny*ny) + 0.0001;
+      const aa = Math.atan2(ny,nx);
+      const swirl = 0.42*Math.sin(time*0.55 + rr*4.0) + 0.14*Math.sin(beat*0.4);
+      let a = aa + swirl/(0.45+rr);
+      let r = rr + 0.035*Math.sin(12*a + time*2.0);
+      let ux = Math.cos(a)*r;
+      let uy = Math.sin(a)*r;
+
+      // recursive tartan fold: histories -> states
+      let fx = ux, fy = uy;
+      for(let k=0;k<3;k++){
+        fx = Math.abs((fx*1.37 + Math.sin(fy*2.1 + time*.31))*1.02) - 0.74;
+        fy = Math.abs((fy*1.21 - Math.cos(fx*2.2 - time*.27))*1.02) - 0.68;
+      }
+
+      // tartan bands: crossing scalar constraints
+      const band1 = Math.sin((ux*LOW_H*0.30) + time*7.0 + Math.sin(uy*6)*2);
+      const band2 = Math.sin((uy*LOW_H*0.34) - time*5.4 + Math.cos(ux*5)*2);
+      const band3 = Math.sin((ux+uy)*LOW_H*0.18 + time*3.3);
+      const band4 = Math.sin((ux-uy)*LOW_H*0.22 - time*4.1);
+
+      // Julia-like field as ontology repair pressure
+      let zx = ux*1.2, zy = uy*1.2;
+      const cr = -0.72 + 0.11*Math.sin(time*0.21);
+      const ci =  0.27 + 0.12*Math.cos(time*0.19);
+      let iter = 0;
+      for(; iter<9; iter++){
+        const zxx = zx*zx - zy*zy + cr;
+        zy = 2*zx*zy + ci;
+        zx = zxx;
+        if(zx*zx + zy*zy > 4.0) break;
+      }
+
+      // Ising-ish local coupling feel: hard cell domains/domain walls
+      const cell = 7 + 3*Math.sin(time*.2);
+      const gx = Math.floor((x + 8*Math.sin(time+y*.03))/cell);
+      const gy = Math.floor((y + 8*Math.cos(time+x*.02))/cell);
+      const spin = ((gx*73856093 ^ gy*19349663 ^ (frame>>4)) & 1) ? 1 : -1;
+      const domain = spin * Math.sin((gx+gy)*0.7 + time*1.7);
+
+      // entropy texture
+      const h = hash((x>>2) + ((y>>2)<<9) + ((frame>>2)<<18));
+      const entropy = (h - 0.5) * (0.9 + 0.7*Math.sin(sPhase + rr*9));
+
+      // combine fields into C64 palette index
+      let val =
+        band1*1.2 + band2*1.1 + band3*.55 + band4*.45 +
+        (iter/9)*3.5 +
+        domain*.75 +
+        entropy*.45 +
+        Math.sin(rr*18 - time*5 + phiPhase)*0.9;
+
+      // raster bars and beat flashes
+      val += Math.sin(y*0.18 + time*11)*0.25;
+      if((frame % 32) < 2) val += 1.2*Math.exp(-rr*1.7);
+
+      let idx = Math.floor(Math.abs(val*3.0 + beat*0.25)) & 15;
+
+      // palette remap into techno tartan ranges
+      if(band1 > .88 || band2 > .9) idx = [1,7,10,14][(x+y+frame)&3];
+      if(iter > 7 && (x^y^frame)&8) idx = [0,6,11,2][(x>>2)&3];
+      if(Math.abs(band1-band2) < .035) idx = 1;
+
+      let c = pal(idx);
+      let R=c[0], G=c[1], B=c[2];
+
+      // CRT scanline / phosphor
+      const scan = (y&1) ? 0.62 : 1.0;
+      const vign = Math.max(0.25, 1.15 - rr*0.55);
+      R = Math.min(255, R*scan*vign);
+      G = Math.min(255, G*scan*vign);
+      B = Math.min(255, B*scan*vign);
+
+      // RGB channel little shimmer
+      put(x,y,R,G,B);
+    }
+  }
+
+  octx.putImageData(img,0,0);
+
+  // scale low-res buffer to fullscreen
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0,0,W,H);
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(off,0,0,W,H);
+
+  // C64 borders / raster glints
+  ctx.save();
+  ctx.scale(DPR,DPR);
+  const iw = innerWidth, ih = innerHeight;
+  ctx.globalAlpha = 0.18 + 0.08*Math.sin(time*5);
+  ctx.strokeStyle = "#77e8ff";
+  ctx.lineWidth = 6;
+  ctx.strokeRect(3,3,iw-6,ih-6);
+  ctx.globalAlpha = 0.09;
+  for(let yy=0; yy<ih; yy+=4){
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, yy, iw, 1);
+  }
+  ctx.globalAlpha = 0.75;
+  ctx.font = "12px monospace";
+  ctx.fillStyle = "#fff36a";
+  if(frame % 240 < 120){
+    ctx.fillText("DISTINCTIONS BEFORE OBJECTS // TRAJECTORIES BEFORE STATES", 14, ih-18);
+  } else {
+    ctx.fillText("REPAIR PRESSURE // ADMISSIBLE FUTURES // FRACTAL TARTAN", 14, ih-18);
+  }
+  ctx.restore();
+
+  hud1.textContent =
+    "Φ:" + (0.5+0.5*Math.sin(time*.7)).toFixed(2) +
+    "  v:" + (0.5+0.5*Math.sin(time*.43+1)).toFixed(2) +
+    "  S:" + (0.5+0.5*Math.sin(time*.31+2)).toFixed(2) +
+    "  STEP:" + step;
+}
+requestAnimationFrame(render);
+
+// -------------------- Controls --------------------
+
+addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if(k === " "){
+    running = !running;
+    e.preventDefault();
+  }
+  if(k === "m"){
+    muted = !muted;
+    if(master) master.gain.setTargetAtTime(muted ? 0 : 0.72, AC.currentTime, 0.02);
+  }
+  if(k === "f"){
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+  if(k === "arrowup"){
+    tempo = Math.min(190, tempo+5);
+  }
+  if(k === "arrowdown"){
+    tempo = Math.max(90, tempo-5);
+  }
+});
+
+})();
+</script>
+</body>
+</html>

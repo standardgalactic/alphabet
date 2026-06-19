@@ -1,0 +1,1181 @@
+\documentclass[11pt, oneside]{book}
+
+%% ── Encoding & fonts ─────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+
+%% ── Mathematics ──────────────────────────────────────────────────────────────
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+
+%% ── Layout ───────────────────────────────────────────────────────────────────
+\usepackage[margin=1.15in, top=1.2in, bottom=1.3in]{geometry}
+\usepackage{setspace}
+\setstretch{1.18}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.75em}
+
+%% ── Headers & footers ────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape Flyxion Research Program: Briefing Monograph}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%% ── Section styling ──────────────────────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries}{\chaptertitlename\ \thechapter}{14pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{30pt}{20pt}
+
+%% ── Hyperlinks ───────────────────────────────────────────────────────────────
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue]{hyperref}
+
+%% ── Miscellaneous ────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+%% ── Theorem environments ─────────────────────────────────────────────────────
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{principle}{Principle}[chapter]
+\newtheorem{conjecture}{Conjecture}[chapter]
+\newtheorem{proposition}{Proposition}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[chapter]
+
+%% ── Coloured summary boxes ───────────────────────────────────────────────────
+\newtcolorbox{summarybox}[1][]{
+  enhanced, colback=gray!7, colframe=gray!40,
+  boxrule=0.5pt, arc=3pt,
+  fonttitle=\bfseries, title={#1}
+}
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\title{%
+  \textbf{Process, Distinction, and Reachability}\\[0.6em]
+  \large A Comprehensive Briefing on the Flyxion Research Program\\[0.3em]
+  \normalsize Covering RSVP, Admissibility, Distinguishability Geometry,\\
+  Repair Theory, CPR, and the Broader Software and Creative Ecosystem
+}
+\author{Flyxion \\ \small Independent Researcher \\ \small \texttt{github.com/standardgalactic}}
+\date{June 2026}
+
+\begin{document}
+
+\frontmatter
+\maketitle
+\thispagestyle{empty}
+
+\vspace{2em}
+\begin{center}
+\large\textbf{Abstract}
+\end{center}
+\begin{quote}
+\noindent
+This document provides a sustained technical and conceptual account of the Flyxion research program as it currently stands. The program spans theoretical physics, computational ontology, cognitive architecture, semantics, philosophy of science, and software engineering, yet is organized around a comparatively small set of foundational commitments: that histories are more fundamental than states, that distinctions are more fundamental than objects, that reachability constraints are more fundamental than representational accuracy, and that repair is a more primitive category than static correctness. The primary focus of this briefing is the three foundational theoretical frameworks—the Relativistic Scalar–Vector Plenum (RSVP), the Admissibility Program, and Distinguishability Geometry—which are treated in depth. Supplementary sections cover the CPR (Constraint, Projection, and Reachability) textbook, the Repair Pressure formal paper, CLIO, HYDRA, MEM$|$8, Spherepop, and the broader software and creative ecosystem. The document is addressed to collaborators and peer researchers already oriented to the relevant literature in mathematical physics, philosophy of computation, and formal epistemology.
+\end{quote}
+
+\vspace{2em}
+\tableofcontents
+
+\chapter*{Preface}
+
+This briefing is not an introduction for the general reader, and it makes no attempt to justify its starting assumptions from first principles in the manner of a textbook. It is addressed to readers who are already conversant with mathematical physics, formal semantics, philosophy of science, and computational theory, and who need an accurate, technically honest account of what this research program actually proposes and where its major open problems lie.
+
+The program developed over many years without an institutional home, which has both disadvantages and advantages. The disadvantage is the absence of the normal scaffolding—seminars, grant cycles, editorial boards—that forces periodic external accountability. The advantage is that it became possible to follow conceptual problems across disciplinary boundaries in ways that institutional research rarely permits. The same structural questions kept appearing in cosmology, in the design of memory systems, in the foundations of computation, in the philosophy of scientific change, and in the theory of economic systems. That recurrence eventually demanded explanation, and the attempt to supply one became the unifying project described here.
+
+The five core commitments—history before state, distinction before object, reachability before representation, repair before correctness, admissibility before prediction—are not presented as proven results. They are presented as research orientations that have proved generative and that continue to motivate productive formal work. Where formal results exist, they are described accurately. Where only conjectures and research programs exist, those are clearly labelled as such.
+
+\mainmatter
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{The Conceptual Architecture of the Program}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Origins and Motivating Problems}
+
+The research program began not with a theory but with a dissatisfaction—specifically, with the recurring tendency of successful formal frameworks to treat their objects of study as more fundamental than the processes responsible for generating and maintaining them. Classical mechanics treats point particles as primitive. Classical logic treats propositions as primitive. Classical computer science treats program states as primitive. Classical economics treats agents and their preference orderings as primitive. In each case the framework is internally consistent and has produced genuine achievements, yet in each case there is also a persistent residue of problems that resist resolution within the framework's own terms. Physical systems display time-asymmetric irreversibility that is difficult to recover from time-symmetric fundamental laws. Logical inference frameworks struggle to model the dynamics of belief revision and concept change. Computational models based on state transitions provide poor accounts of provenance, fault tolerance, and the meaningful reuse of historical information. Economic models based on static preference orderings provide poor accounts of how preference structures themselves change under experience, institutional constraint, and accumulated failure.
+
+The conjecture that emerged from surveying this residue was not that any of these frameworks is simply wrong. Each is a genuine achievement on its own terms. The conjecture was rather that the residue systematically points toward a common explanatory gap: the absence of an adequate theory of the processes by which the entities treated as primitive—states, propositions, objects, preferences—are themselves generated, maintained, degraded, and repaired. The program described in this document is an attempt to develop such a theory, or rather a family of interrelated theories, across several domains simultaneously.
+
+\section{The Five Core Commitments}
+
+Five interconnected commitments organize the program. They are stated here in a deliberately strong form, because weak forms of each are already accepted within mainstream frameworks and would not be interesting. The strong forms make genuinely revisionary claims about explanatory priority.
+
+\begin{principle}[History before State]
+The history of a system's evolution through time is explanatorily prior to any synchronic description of its current state. State descriptions are understood as compressions of historical structure, and the information lost in that compression is not in general recoverable or safely ignorable.
+\end{principle}
+
+\begin{principle}[Distinction before Object]
+The capacity to maintain a distinction between two configurations is prior to the identification of either configuration as an object with determinate properties. Objects are stable products of ongoing distinction-maintenance processes and should be modelled as such rather than as primitives.
+\end{principle}
+
+\begin{principle}[Reachability before Representation]
+The primary epistemic and practical value of a model or representation lies not in its fidelity to a static reality but in the degree to which it preserves future possibilities for action, intervention, and inquiry. Representational fidelity and reachability preservation are distinct properties that may diverge substantially.
+\end{principle}
+
+\begin{principle}[Repair before Correctness]
+Correction, revision, and the restoration of adequate distinction structure are more fundamental activities than the achievement of any particular static notion of correctness. Systems that persist over time do so primarily through repair rather than through the maintenance of unchanging correct states.
+\end{principle}
+
+\begin{principle}[Admissibility before Prediction]
+The question of which transformations preserve a desired class of future possibilities is prior to and more general than the question of which transformations maximize accuracy in predicting a specified outcome. Optimization and admissibility preservation are distinct desiderata that frequently conflict.
+\end{principle}
+
+These five principles are not independent. They form a closely coupled network in which each implies or motivates the others. Histories preserve the distinctions responsible for reachability. Distinctions enable the identification of failures that initiate repair. Reachability determines which repairs are possible. Repair generates new historical structure. Admissibility specifies which transformations preserve reachability. The program's architecture is therefore not a hierarchy with a single foundation but a web of mutually supporting commitments.
+
+\section{Relationship to Existing Frameworks}
+
+The program does not aim to replace existing frameworks. It aims to situate them within a broader structure that explains both their successes and the pattern of problems they leave systematically unaddressed. Standard optimization theory is an important special case of admissibility-preserving transformation when the future possibility being preserved is a single measurable outcome. Classical logic is an important special case of distinction maintenance under idealized conditions of complete information and costless measurement. State-based computation is an important special case of historical computation in which the full execution history is ignored and only the terminal state is semantically significant.
+
+The claim is therefore not that existing frameworks are false but that they occupy a specific region of a larger conceptual space, and that problems appearing at the boundary of that region—brittleness under distribution shift, sensitivity to historical context, difficulty modelling repair and revision—become tractable when the larger space is explicitly mapped. The present document attempts to sketch that map at sufficient resolution to enable productive formal work.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{RSVP: The Relativistic Scalar–Vector Plenum}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Overview and Motivation}
+
+The Relativistic Scalar–Vector Plenum (RSVP) is the primary physical framework of the research program. It originates in dissatisfaction with aspects of standard cosmological modelling—specifically with the treatment of the vacuum as a passive background against which dynamical processes unfold, with the difficulty of integrating informational and thermodynamic considerations into geometric spacetime descriptions, and with the tendency of inflationary and similar early-universe models to resolve fine-tuning problems by introducing additional tunable parameters rather than deriving smoothness conditions from more fundamental dynamical principles.
+
+RSVP proposes a plenum of three coupled fields as the fundamental physical substrate. These fields are not presented as competitors to the standard model's matter content but as describing a more fundamental layer of physical structure from which both metric geometry and thermodynamic behaviour emerge through constraint dynamics. The three fields are:
+
+\begin{definition}[RSVP Field Variables]
+Let $\Phi : \mathcal{M} \to \mathbb{R}$ denote the scalar capacity field, representing the local degree of structural coherence or organizational potential available to the plenum at a given point in spacetime. Let $\mathbf{v} : \mathcal{M} \to T\mathcal{M}$ denote the vector transport field, representing the preferred direction and magnitude of organizational flux. Let $S : \mathcal{M} \to \mathbb{R}$ denote the constraint or obligation field, representing the local density of structural demands imposed upon the plenum by its history of interactions.
+\end{definition}
+
+The dynamics of these three fields are governed by a system of coupled partial differential equations whose general structure is:
+\begin{align}
+\partial_t \Phi &= -\nabla \cdot (\Phi \mathbf{v}) + \mathcal{D}_\Phi[\Phi, S], \\
+\partial_t \mathbf{v} &= -(\mathbf{v} \cdot \nabla)\mathbf{v} - \frac{1}{\Phi}\nabla \Phi + \mathcal{F}[S, \mathbf{v}], \\
+\partial_t S &= \mathcal{G}[\Phi, \mathbf{v}, S],
+\end{align}
+where $\mathcal{D}_\Phi$, $\mathcal{F}$, and $\mathcal{G}$ are interaction functionals whose precise form is a major object of ongoing investigation. The current working hypothesis is that these functionals must satisfy a family of constraints derived from the admissibility program: specifically, that the evolution they generate must preserve a sufficiently rich set of future distinguishable configurations, in the sense that the constraint entropy does not increase faster than can be compensated by the transport dynamics.
+
+\begin{summarybox}[Status of RSVP]
+Unlike the other major frameworks discussed in this volume, RSVP should presently be regarded as a speculative physical research program rather than an established mathematical framework. Its conceptual architecture is considerably more developed than its empirical foundations. The field equations are motivated by process-native principles, but the interaction functionals $\mathcal{D}_\Phi$, $\mathcal{F}$, and $\mathcal{G}$ remain undetermined, and no quantitative predictions have yet been derived that are ready for confrontation with cosmological data. The primary value of RSVP at present lies in the questions it generates and the organizational perspective it offers---the treatment of physical systems as evolving constraint structures rather than collections of objects---rather than in confirmed physical predictions. Readers should weigh the cosmological proposals in the following sections accordingly.
+\end{summarybox}
+
+\section{Physical Interpretation}
+
+The scalar capacity field $\Phi$ is most naturally interpreted as a generalization of the concept of local degree of freedom density. In regions where $\Phi$ is high, the plenum supports a rich space of distinguishable configurations; in regions where $\Phi$ approaches zero, the local configuration space collapses and the system becomes effectively frozen. The gradient of $\Phi$ therefore encodes information about how quickly accessible configuration space is changing across the plenum, which in the cosmological setting corresponds to how rapidly the structural resources available for complex organization are varying in space and time.
+
+The vector transport field $\mathbf{v}$ describes how organizational potential flows through the plenum. Unlike a simple velocity field, $\mathbf{v}$ encodes not merely the motion of a conserved quantity but the propagation of structural coherence from regions where it is being generated or preserved to regions where it is being demanded. This makes the RSVP transport dynamics fundamentally non-local in its coupling: the behaviour of $\mathbf{v}$ in one region is influenced not only by local field values but by the global pattern of constraint obligations encoded in $S$.
+
+The constraint field $S$ is perhaps the most novel element of the framework. It accumulates as a consequence of the history of interactions between $\Phi$ and $\mathbf{v}$, recording the degree to which past organizational activity has created demands for future coherence maintenance. A high value of $S$ in a region indicates that the plenum in that region has entered into a complex web of structural commitments that must be honoured if its organizational integrity is to be preserved. This field therefore embodies the principle of history before state at the physical level: the current dynamical state of the plenum cannot be adequately described without reference to the accumulated constraint obligations it carries.
+
+\section{Cosmological Applications}
+
+\subsection{Falling Universe Cosmology}
+
+The most developed cosmological application is what the program calls Falling Universe Cosmology, in which the large-scale structure of the universe is interpreted not as the outcome of an inflationary expansion from a singular beginning but as the result of a relaxation process within the RSVP plenum. The basic picture is that the observed universe occupies a region of the plenum that is undergoing a constrained descent toward lower constraint density—a falling rather than expanding motion in the space of plenum configurations. The apparent expansion of space, in this interpretation, reflects not the stretching of a metric background but the propagation of a relaxation wave through the constraint field $S$.
+
+This interpretation offers a potential resolution of the horizon problem without invoking an inflationary epoch, because relaxation within a sufficiently well-connected plenum can in principle establish large-scale coherence before any metrical separation becomes significant. It also offers a reinterpretation of dark energy as the effective pressure produced by regions of the plenum where constraint density $S$ remains high and transport $\mathbf{v}$ is directed outward, producing an apparent acceleration of distant structures relative to local observers. Both of these claims remain at the level of physical motivation and order-of-magnitude plausibility arguments; their derivation from the RSVP field equations is a major open problem.
+
+\subsection{Lamphrodyne Relaxation}
+
+Lamphrodyne Relaxation is the name given to the class of RSVP dynamics in which the transport field $\mathbf{v}$ organizes itself into stable vortical or laminar structures capable of sustaining organized relaxation over extended timescales. The term is introduced to have a concise name for what is physically a generalization of the concept of laminar flow in fluid dynamics, extended to encompass flows not of matter or energy in the usual sense but of organizational coherence through the constraint field. The conjecture motivating this research thread is that early-universe smoothing—the establishment of the large-scale homogeneity and isotropy that cosmological observations reveal—occurred through lamphrodyne relaxation rather than inflationary stretching.
+
+\subsection{Reachability-Based Cosmology}
+
+The connection between RSVP and the admissibility program is most direct in what is called Reachability-Based Cosmology. Here the central object of study is not the metric or the stress-energy tensor but the cosmological reachability manifold $\mathcal{A}_{\text{cosm}}$: the space of plenum configurations accessible from the current state of the universe given the constraint dynamics. The claim is that the structure of the observable universe—its large-scale homogeneity, its specific values of cosmological parameters, the existence of complex organized structures within it—is better explained as a consequence of the geometry of $\mathcal{A}_{\text{cosm}}$ than as a consequence of special initial conditions or anthropic selection among an ensemble of possible universes. Observationally, Reachability-Based Cosmology predicts that cosmological parameters should cluster near the boundaries of regions where $\mathcal{A}_{\text{cosm}}$ undergoes sharp topological changes, because those boundaries represent transitions in the space of accessible futures. This prediction is not yet at a stage of quantitative precision sufficient for confrontation with data.
+
+\section{RSVP Quantization}
+
+The quantization of RSVP remains an open problem of significant difficulty. The standard approaches to quantizing field theories—canonical quantization, path integral formulation, lattice regularization—can in principle be applied to the RSVP field equations, but each encounters specific difficulties arising from the constraint field $S$. Because $S$ encodes historical structure, its quantization requires a formalism in which the quantum state carries information about the path by which it was reached and not only about the instantaneous configuration, which conflicts with the standard Hilbert space picture in which states are equivalence classes of preparation procedures. The most promising current approach treats $S$ as a classical background that evolves slowly compared to the quantum fluctuations of $\Phi$ and $\mathbf{v}$, allowing a semiclassical treatment analogous to quantum field theory in curved spacetime, with $S$ playing a role analogous to the metric. Full quantization that treats $S$ as a dynamical quantum field remains a programme for future work.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{The Admissibility Program}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Conceptual Foundations}
+
+The admissibility program is in many ways the theoretical centre of gravity of the broader research project. While RSVP addresses the physical instantiation of process-native dynamics, and Distinguishability Geometry addresses the ontological layer of distinction maintenance, the admissibility program addresses the most general question that runs through all of them: what does it mean for a transformation to preserve what matters? The answer it proposes is that what matters, in an extremely wide range of physical, computational, cognitive, and social contexts, is the preservation of future possibility—and that the concept adequate to this preservation is admissibility rather than correctness, optimization, or accuracy.
+
+The starting observation is simple but has surprisingly far-reaching consequences. Consider any agent embedded in an environment and facing a choice among possible transformations of that environment or of its own internal state. Standard decision theory evaluates transformations by their expected outcomes relative to a utility function. The admissibility perspective adds a second dimension of evaluation that is orthogonal to expected utility: the degree to which a transformation preserves the space of futures the agent might later want to access. High-admissibility transformations leave many futures open. Low-admissibility transformations, even when they achieve excellent immediate outcomes, foreclose large regions of future possibility. The distinction is familiar from everyday experience—financial decisions that lock in short-term gains while eliminating long-term options are the paradigm case—but it has not been adequately formalized in the existing literature on decision theory, planning, or machine learning.
+
+\section{The Admissibility Manifold}
+
+\begin{definition}[Admissibility Manifold]
+Let $\mathcal{C}$ be the configuration space of a system, and let $\mathcal{F} \subseteq 2^\mathcal{C}$ be a designated family of future possibility sets, representing the futures whose preservation is considered normatively or practically significant. For a transformation $T : \mathcal{C} \to \mathcal{C}$, the admissibility of $T$ with respect to $\mathcal{F}$ from configuration $c \in \mathcal{C}$ is the measure of the intersection of the forward reachable set of $T(c)$ with the forward reachable set of $c$, normalized by the measure of the forward reachable set of $c$. The admissibility manifold $\mathcal{A}(\mathcal{C}, \mathcal{F})$ is the subspace of the space of transformations on $\mathcal{C}$ consisting of those transformations whose admissibility exceeds a specified threshold $\alpha \in [0,1]$.
+\end{definition}
+
+Several features of this definition deserve emphasis. First, admissibility is relative to a designated family $\mathcal{F}$; there is no notion of absolute or agent-independent admissibility. This agent-relativity is not a defect of the framework but a deliberate theoretical commitment, reflecting the view that the question of which futures matter is always answered relative to the interests, goals, and capacities of some actual or hypothetical agent or community of agents. The admissibility program is not committed to any particular account of how $\mathcal{F}$ is specified; it is committed to the claim that once $\mathcal{F}$ is specified, the geometry of $\mathcal{A}(\mathcal{C}, \mathcal{F})$ determines a family of constraints on rational transformation that are distinct from and frequently in tension with the constraints delivered by utility maximization.
+
+Second, the admissibility manifold has genuine geometric structure. It is not merely a subset of the space of transformations but a submanifold with curvature, boundaries, and topological features that carry physical and practical significance. Boundaries of $\mathcal{A}$ represent transitions at which small perturbations to a transformation's parameters shift it from admissible to inadmissible—that is, transitions at which the transformation begins substantially foreclosing futures in $\mathcal{F}$. These boundaries correspond to what the program calls admissibility catastrophes: transformations that appear locally reasonable but produce globally irreversible foreclosure of valued futures.
+
+\section{Admissibility and Optimization}
+
+The relationship between admissibility preservation and optimization is one of the program's most important and technically demanding topics. In the simplest case, when $\mathcal{C}$ is a finite set, $\mathcal{F}$ is specified by a simple reachability criterion, and the transformation space is compact, it is possible to show that the admissibility manifold and the set of optimization-maximizing transformations generically intersect in a set of measure zero—that is, that optimizing a fixed objective function and maximizing admissibility preservation are almost never simultaneously achievable and that the agent who cares about both must navigate a genuine tradeoff. In more complex settings the relationship is more intricate, but the generic tension persists.
+
+This result has significant implications for artificial intelligence. Most current machine learning frameworks optimize a fixed objective—a loss function, a reward signal—without any explicit representation of admissibility. The admissibility program predicts that systems trained in this way will systematically develop low-admissibility behaviour in the regions of configuration space where their training objective is most easily satisfied, because optimization pressure tends to push toward the boundaries of the admissibility manifold. This is one formal expression of the familiar intuition that highly optimized systems tend to become brittle. The proposed remedy is not to abandon optimization but to impose admissibility preservation as an explicit constraint on the optimization process, using the geometry of $\mathcal{A}$ to define a family of admissibility-preserving learning dynamics.
+
+\section{Admissibility-Based Alignment}
+
+The alignment problem in artificial intelligence—the problem of ensuring that highly capable AI systems pursue goals that are actually beneficial to their operators and to humanity more broadly—is reframed within the admissibility program as a problem of admissibility specification and maintenance. The standard framing of the alignment problem in terms of goal specification—if we could only specify the right goal, the system would behave well—is seen as inadequate because any sufficiently capable optimizer will find high-admissibility-destroying paths to its specified goal unless admissibility preservation is built into the objective structure from the outset.
+
+The admissibility-based approach to alignment specifies the alignment target not as a point in outcome space but as a region within the admissibility manifold: a set of transformations that preserve the relevant family $\mathcal{F}$ of human-valued futures. The system is then trained not to achieve a fixed outcome but to remain within this region while pursuing whatever local objectives are assigned to it. This reframing makes the alignment problem geometrically tractable in principle, though the practical difficulties of specifying $\mathcal{F}$ at sufficient precision and the computational challenges of maintaining knowledge of the admissibility manifold in high-dimensional configuration spaces remain formidable open problems.
+
+\section{Admissibility in Economics and Public Systems}
+
+The admissibility program has been applied to economic systems under the heading of Fiscal Reachability and the Geometry of Public Finance. The central claim is that the standard metrics by which fiscal policy is evaluated—deficit levels, debt-to-GDP ratios, growth rates, unemployment rates—all measure properties of the current state of the economy without capturing the degree to which that state preserves the government's future capacity for policy action. An economy with low current deficits but severely constrained productive capacity, degraded institutional capability, and exhausted policy instruments may be fiscally admissible by conventional metrics while being deeply inadmissible in the sense that matters: it has foreclosed large regions of the future policy space.
+
+The Fiscal Reachability framework proposes to evaluate fiscal positions not by their current state metrics but by their position within an appropriate admissibility manifold defined over the space of possible future economic configurations. A fiscally admissible policy trajectory is one that preserves the government's ability to respond to a sufficiently rich set of future economic contingencies. Policies that improve current metrics while reducing fiscal admissibility are evaluated negatively, regardless of their short-term outcomes.
+
+\section{Projection and Admissibility: The CLIO Connection}
+
+The admissibility program connects naturally to CLIO (Constraint-Leveraged Inference and Optimization), which studies the effects of projection on information preservation. A projection $P : \mathcal{C} \to \mathcal{C}'$ is admissibility-preserving if the admissibility structure of $\mathcal{C}$ is recovered from its image in $\mathcal{C}'$—that is, if no admissibility catastrophe is introduced by the loss of information that the projection entails. The study of admissibility-preserving projections is important for understanding when dimensionality reduction, model compression, and representational abstraction can be safely performed in systems where admissibility preservation matters.
+
+The CLIO framework develops the concept of projection failure: the situation in which a projection that appears innocuous by standard reconstruction-error metrics produces substantial admissibility degradation because it eliminates precisely the information that was responsible for maintaining the system's position within the admissibility manifold. Projection failure is proposed as a formal model of a wide range of phenomena: the failure of compressed economic models to anticipate crises, the failure of dimensionality-reduced machine learning representations to generalize under distribution shift, and the failure of simplified scientific theories to account for anomalies that were present in the uncompressed data.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{Distinguishability Geometry}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Overview}
+
+Distinguishability Geometry is the program's ontological layer. Where RSVP addresses the physical substrate and the admissibility program addresses the space of transformations, Distinguishability Geometry addresses the more fundamental question of how the configuration space $\mathcal{C}$ itself is constituted—that is, how it comes to have the structure that makes states, differences, trajectories, and admissibility all well-defined. The answer it proposes is that configuration spaces are not given in advance but are constituted through ongoing processes of distinction maintenance, and that the geometry of any configuration space is therefore inseparable from the dynamics of the processes responsible for maintaining the distinctions that define it.
+
+This is a revisionary proposal in several respects. Standard mathematical physics treats configuration spaces as fixed geometric structures—manifolds with specified metrics, topologies, and symmetry groups—and treats the dynamics of physical systems as taking place within those structures. Distinguishability Geometry treats the configuration space itself as a dynamical object whose structure evolves in response to the history of distinction-maintaining processes and can degrade, undergo topological change, and require repair. The mathematics required to make this precise is substantially more demanding than standard differential geometry, and the current state of the program reflects this: the conceptual foundations are well-developed, but the formal mathematical apparatus is still being constructed.
+
+\section{Distinctions and Their Costs}
+
+\begin{definition}[Distinction]
+A distinction within a configuration space $\mathcal{C}$ is a partition of $\mathcal{C}$ into two non-empty measurable subsets $\mathcal{C}_0$ and $\mathcal{C}_1$ such that there exists an observable—a measurable function $f : \mathcal{C} \to \mathbb{R}$—that takes reliably different values on configurations in $\mathcal{C}_0$ than on configurations in $\mathcal{C}_1$.
+\end{definition}
+
+Several aspects of this definition are non-standard and deserve comment. The requirement that the partition be implemented by a measurable observable ties the existence of a distinction not to the intrinsic properties of the configurations themselves but to the capacities of some actual or hypothetical measurement apparatus. A distinction that requires an arbitrarily powerful measurement apparatus to maintain is formally admissible within the definition but practically fragile. This fragility is captured by what the program calls the maintenance cost of a distinction: the minimal computational, energetic, or informational resources required to keep the observable $f$ discriminating between $\mathcal{C}_0$ and $\mathcal{C}_1$ in the face of noise, environmental perturbation, and the natural tendency of complex systems toward higher entropy.
+
+High-cost distinctions are vulnerable to what the program calls distinction collapse: the process by which increasing maintenance demands cause an observer or institution to allow a previously maintained distinction to dissolve. Distinction collapse is not simply a failure of measurement—it is a structural change in the effective configuration space as seen by the observer, because once the distinction between $\mathcal{C}_0$ and $\mathcal{C}_1$ is no longer maintained, configurations in those two sets become equivalent for all practical purposes, and the effective configuration space contracts to the quotient $\mathcal{C} / {\sim}$ where $\sim$ is the equivalence relation induced by the collapsed distinction.
+
+\section{Distinction Topology}
+
+The set of distinctions available to an observer at any given time has a natural topological structure, which the program calls the distinction topology of that observer. The open sets in this topology correspond to families of distinctions that can be maintained simultaneously by the observer, and the closed sets correspond to families of distinctions whose maintenance is mutually exclusive given the observer's resource constraints. The distinction topology therefore encodes not just which distinctions an observer can make but the complex pattern of compatibility and incompatibility among their available distinctions.
+
+This topological structure has several important properties. It is not fixed: as the observer's resources change, as environmental pressures increase or decrease, and as the history of past distinction maintenance generates new institutional and informational structure, the distinction topology changes. The study of how the distinction topology evolves over time—how new distinctions become available, how existing ones are maintained or lost, and how distinction collapse propagates through the topological structure—is one of the central topics of Distinguishability Geometry.
+
+A particularly important class of distinction topology changes are what the program calls distinction cascades: events in which the collapse of one distinction propagates through the topological structure to destabilize previously stable neighbouring distinctions. Distinction cascades are proposed as models of a wide range of phenomena, including scientific crises (where the failure of a core theoretical distinction propagates to undermine the stability of many dependent theoretical claims), institutional failures (where the loss of a critical operational distinction propagates to undermine the coherence of dependent institutional processes), and linguistic change (where the semantic bleaching of a category boundary propagates to shift the meaning of semantically adjacent terms).
+
+\section{Ontological Deficit}
+
+\begin{definition}[Ontological Deficit]
+An observer $\mathcal{O}$ experiences ontological deficit with respect to a system $\Sigma$ when the distinction topology of $\mathcal{O}$ is insufficiently fine-grained to represent the distinctions in $\Sigma$ that are causally relevant to the phenomena the observer is attempting to predict, explain, or control.
+\end{definition}
+
+Ontological deficit is distinct from ordinary ignorance. An observer who is ignorant of the current value of a variable that their distinction topology can in principle represent is not experiencing ontological deficit; they are experiencing ordinary epistemic limitation that can in principle be remedied by measurement. An observer experiencing ontological deficit cannot resolve their limitation by measurement, because their distinction topology does not include distinctions fine-grained enough to capture the relevant causal structure. Remedying ontological deficit requires what the program calls distinction creation: the development of new measurement apparatus, new conceptual vocabulary, new observational practices, or new institutional arrangements capable of maintaining distinctions that were previously beyond the observer's reach.
+
+The concept of ontological deficit is proposed as a unified model of a wide range of phenomena that have traditionally been described in more domain-specific terms. Scientific anomalies that resist resolution within an existing theoretical framework are interpreted as evidence of ontological deficit: the existing theoretical distinction topology is too coarse to represent the causal structure responsible for the anomalous observations. Persistent policy failures that resist correction within an existing institutional framework are interpreted as evidence of institutional ontological deficit: the institution's operational distinction topology is too coarse to represent the causal structure responsible for the policy failure. Failures of machine learning systems to generalize across distribution shifts are interpreted as evidence of representational ontological deficit: the model's learned representations do not maintain distinctions fine-grained enough to track the causally relevant structure of the new distribution.
+
+\section{Repair Theory and Distinction Restoration}
+
+The connection between Distinguishability Geometry and the program's broader commitment to repair as a fundamental category is direct. Repair, at the level of abstraction relevant to Distinguishability Geometry, is the process of restoring adequate distinction structure after degradation, collapse, or ontological deficit. The program distinguishes three types of distinction repair that operate at different levels of structural depth.
+
+First-order repair consists of restoring a distinction that has collapsed while the distinction topology as a whole remains stable—reinstating a measurement practice, retraining a classifier, or recalibrating an instrument. The distinction that was lost is restored, and the topological neighbourhood of distinctions around it is not substantially altered. First-order repair is the most common and the least theoretically demanding form of repair, and it is the form usually connoted by the word in engineering and maintenance contexts.
+
+Second-order repair consists of reorganizing the distinction topology to accommodate a new pattern of distinctions that resolves an ontological deficit—introducing new theoretical categories, new measurement instruments, or new institutional roles that make previously unmakeable distinctions possible. Second-order repair does not merely restore what was lost but changes the distinction topology in a way that makes the lost distinction recoverable in a more robust way, or that substitutes a better-structured set of distinctions for the one that collapsed. Scientific revolutions are paradigm cases of second-order repair in this sense.
+
+Third-order repair consists of restructuring the meta-level framework by which distinctions are evaluated, maintained, and prioritized—revising the criteria by which the significance and maintenance priority of distinctions are determined. Third-order repair is the rarest and most consequential form. It corresponds to paradigm changes not just within a scientific discipline but in the criteria by which scientific progress is measured: Copernican, Darwinian, and quantum-mechanical revolutions each involved elements of third-order repair in this sense, as did the development of statistical mechanics and the introduction of computer-based scientific modelling.
+
+\section{The Repair Pressure Formal Paper}
+
+A major current output of the Distinguishability Geometry program is the formal paper tentatively titled \textit{Repair Pressure and the Lifecycle of Distinctions}. This paper develops the concept of repair pressure—the rate at which a system's distinction structure tends to degrade in the absence of active maintenance—as a formally tractable quantity and investigates its relationship to the other variables in the Distinguishability Geometry framework.
+
+The central formal result aimed at in this paper is the Repair Pressure Theorem: a result establishing that under specified conditions on the dynamics of the distinction topology and the resource constraints of the maintaining agent, there exists a critical threshold of repair pressure above which no strategy of maintenance can indefinitely preserve the viability of the distinction structure, and the system inevitably undergoes distinction cascade. This result, if provable in the anticipated form, would constitute the first formally precise analogue within the Distinguishability Geometry framework of results from information theory and statistical mechanics concerning the fundamental limits of error correction and channel capacity. The analogy is not merely heuristic: the mathematical tools being deployed—measure theory on partition lattices, ergodic theory of distinction-maintaining dynamics, and the theory of concentration of measure—are closely related to those used in information-theoretic channel coding.
+
+The paper also introduces the concept of the distinction lifecycle: the characteristic temporal trajectory followed by a distinction from its creation through its maturation, maintenance, degradation, repair, and eventual collapse or transformation. The lifecycle concept allows the program to make comparative claims about the longevity of distinctions under different maintenance regimes, the typical failure modes of different types of distinctions, and the conditions under which repair remains viable versus conditions under which third-order repair becomes necessary.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{The CPR Textbook: Constraint, Projection, and Reachability}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Overview and Current Status}
+
+The CPR textbook—formally titled \textit{Constraint, Projection, and Reachability: A Mathematical Introduction to Process-Native Frameworks}—is the program's primary pedagogical output and the most mature single document in the entire project. At its current stage of development it comprises 92 chapters and approximately 391 compiled pages, organized into five major parts: foundations, constraint geometry, projection theory, reachability analysis, and applications. The primary technical apparatus is LuaLaTeX, reflecting both the typographic demands of the material and the program's commitment to producing research outputs that can serve simultaneously as research documents and archival records.
+
+The CPR textbook is not a popularization. Its intended audience is advanced graduate students and researchers in mathematical physics, theoretical computer science, and formal epistemology who are already comfortable with differential geometry, measure theory, and abstract algebra, and who are looking for a rigorous entry into the process-native frameworks developed in the broader program. The book makes no attempt to motivate its content in terms of prior frameworks or to justify its approach by comparison with mainstream alternatives; it develops the material from its own first principles and allows the reader to develop their own understanding of the relationship to existing literature.
+
+\section{Major Remaining Tasks}
+
+Four major tasks remain before the CPR textbook can be considered a complete first draft suitable for external review. The first is bibliography expansion: the current bibliography contains approximately the right structural coverage but needs to be expanded to approximately 200 entries, including relevant work in mathematical physics, theoretical computer science, philosophy of science, and information theory that the text cites or should cite. The second is the development of 12 core TikZ figures—geometric diagrams illustrating the admissibility manifold, the distinction topology, the constraint field geometry, and the reachability landscape—that are referenced in the text but not yet compiled. The third is proof densification in approximately 15 chapters where the current treatment provides sketch proofs, intuitive arguments, or deferred proofs that need to be replaced with complete formal treatments. The fourth, and most significant, is the restricted RDR conjecture proof: a result in Chapter 74 that is stated as a conjecture and that the author believes provable with the machinery already developed in earlier chapters but that has not yet been formally established.
+
+\begin{conjecture}[Restricted Reachability-Distinction Reducibility (RDR)]
+Under the conditions specified in Chapters 61–63, any sequence of admissible transformations whose composition is distinction-preserving is reducible to a sequence of elementary repair operations drawn from a finite generating set determined by the distinction topology of the initial configuration.
+\end{conjecture}
+
+The significance of this conjecture, if true, is that it establishes a decomposition theorem for admissible-and-distinction-preserving dynamics: any complex evolution of a system that satisfies both admissibility preservation and distinction preservation can be understood as a combination of a finite and classifiable set of elementary repair moves. This would significantly simplify the analysis of both the RSVP dynamics and the admissibility geometry by providing a canonical basis for the space of admissible evolutions.
+
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{CLIO, HYDRA, and the Intelligence Layer}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{CLIO: Constraint-Leveraged Inference and Optimization}
+
+CLIO is the program's framework for studying intelligence and inference under the conditions that process-native analysis reveals to be generic: information loss through projection, constraint accumulation through history, and the fundamental tension between optimization and admissibility preservation. Its name reflects its central concern: using the structure of constraints—rather than treating them as obstacles to be circumvented—as the primary resource for inference and optimization.
+
+The starting point for CLIO is the observation that any cognitive system operating in a complex environment faces projection at every level of its processing. Perception projects the continuous high-dimensional world onto a lower-dimensional sensory representation. Attention projects the full sensory representation onto a subset relevant to current goals. Memory projects the full history of experience onto a compressed and reconstructable trace. Language projects complex conceptual structures onto linear sequences of tokens. At each level, the projection entails information loss, and the question of which information can be safely lost and which cannot is precisely the question of admissibility-preserving projection developed in the admissibility program.
+
+CLIO proposes to study intelligent systems as projection-managing architectures: systems whose primary organizing principle is not the maximization of any fixed objective but the maintenance of sufficient informational structure to preserve admissibility across all the projection levels through which they process their environment. The formal theory of CLIO is still being developed, but its central technical contribution is expected to be a characterization of the class of projection sequences that preserve admissibility in the sense that no level of projection in the sequence introduces admissibility catastrophes that cannot be compensated by subsequent processing within the sequence.
+
+\subsection{Representational Entropy}
+
+Every projection introduces ambiguity. Multiple underlying configurations may produce the same compressed representation, and as the degree of projection increases, so does the uncertainty about the underlying state. CLIO captures this phenomenon through the concept of representational entropy $S_\pi$: a measure of the expected ambiguity introduced by a projection $\pi : \mathcal{C} \to \mathcal{C}'$, defined in terms of the distribution of inverse-image sizes $|\pi^{-1}(c')|$ weighted by the natural measure on $\mathcal{C}$. The key insight is that representational entropy and admissibility degradation are distinct but correlated quantities: a projection can introduce high representational entropy while preserving admissibility (when the collapsed distinctions are irrelevant to the valued futures), or low entropy while destroying admissibility (when the few distinctions it collapses are precisely the ones that matter). Disentangling these two effects is one of CLIO's central technical tasks.
+
+\subsection{Projection Failure}
+
+Projection failure is the situation in which a projection that appears acceptable by conventional reconstruction-error metrics produces substantial admissibility degradation because it eliminates precisely the distinctions responsible for maintaining the system's position within the admissibility manifold. Projection failure is not merely an engineering problem; it is a structural consequence of the mismatch between the metric used to evaluate projection quality and the actual criteria for admissibility preservation. CLIO proposes to address this mismatch by evaluating projections not by reconstruction error but by admissibility distortion $D_A$: the measure of the displacement of the post-projection reachability structure from the pre-projection structure in the topology of the admissibility manifold.
+
+\section{HYDRA: Multi-Module Reasoning Architecture}
+
+HYDRA extends CLIO's analysis of inference under projection to the setting of multi-module systems in which different components of a reasoning architecture specialize in different types of projection management. The name reflects the multi-headed character of the architecture: HYDRA systems are not unified single-objective reasoners but collections of specialized modules, each managing a specific class of projection, coordinated by a global admissibility monitor that ensures the combined projection of all modules preserves the admissibility requirements of the overall system.
+
+The theoretical interest of HYDRA lies primarily in the coordination problem: given a collection of modules each optimizing its own local projection quality, what coordination mechanisms ensure that the global combination of their projections remains admissibility-preserving? This is a non-trivial problem because local admissibility preservation at each module does not guarantee global admissibility preservation at the level of their composition. The HYDRA framework addresses this by introducing a distinction-topology monitor that tracks the effects of each module's projection on the global distinction topology and raises repair demands when admissibility-threatening distinction collapses are detected.
+
+The cognitive loop underlying HYDRA can be expressed as:
+\[
+\text{History} \to \text{Memory} \to \text{Distinction} \to \text{Reachability} \to \text{Planning} \to \text{Action} \to \text{History}
+\]
+Each component of this loop corresponds to a specialized HYDRA module: a memory subsystem $M$ that maintains the historical record, a distinction subsystem $D$ that tracks and repairs the distinction topology, a reachability subsystem $R$ that computes accessible futures, and a planning subsystem $P$ that selects actions within the admissibility manifold. The global admissibility monitor ensures that the composition of all module projections remains within acceptable bounds.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{Historical Computation: MEM$|$8 and Spherepop}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Programs as Histories: The Computational Turn}
+
+The process-native research program's transition from theoretical description to executable architecture is nowhere more direct than in the computational branch. The question driving this branch is simple but far-reaching: if histories, distinctions, reachability, and repair are genuinely more fundamental than states, representations, and correctness, what would computation look like if it were built around them from the beginning rather than added as an afterthought?
+
+Most modern computation inherits a state-centered ontology without examination. Variables possess values, memory contains states, programs transform states, and execution is described as a sequence of state transitions. This framework has proven extraordinarily successful—virtually all modern computing systems depend upon it. Yet several persistent difficulties arise from this orientation. State descriptions conceal provenance: knowing that a value exists tells us nothing about the history of decisions that produced it. State descriptions discard historical information that may remain operationally important. State descriptions make reconstruction difficult: recovering the trajectory that led to a given state from the state alone is in general impossible. And state descriptions obscure the processes by which decisions were reached, making debugging, auditing, and explanation harder than they need to be.
+
+The alternative perspective that motivates the computational branch begins with events rather than states. A state describes what currently exists; an event describes what occurred. Histories consist of events, and states emerge from histories as compressed summaries. This reversal changes not the mechanics of computation but its ontology: rather than treating history as a byproduct of execution that can safely be discarded once the terminal state is reached, history becomes the primary computational object. The current state becomes a derived quantity—a compact description of historical structure that is convenient for certain purposes but that loses information.
+
+\subsection{The Provenance Problem}
+
+Many practical difficulties in software development originate from a single source: systems frequently know what happened but not why it happened. A value exists whose provenance is unclear. A model produces a prediction whose reasoning is difficult to reconstruct. A configuration changes and the historical cause is forgotten. A document evolves and the sequence of transformations disappears. These situations are familiar because conventional computation treats provenance as optional metadata—information that can be attached to computational objects but is not part of their essential structure. A history-native framework treats provenance as part of the computation itself, so that the question is not merely ``what is the current state?'' but ``what historical process produced this state?''
+
+The significance of this shift extends well beyond engineering convenience. When provenance is a first-class computational object, a system can reason about its own history, identify the point at which an assumption became invalid, trace the lineage of a decision, and perform repair operations that are informed by historical context rather than constrained to act only on current state. These capacities are increasingly important as computational systems grow more autonomous, more interconnected, and more difficult to understand from the outside.
+
+\section{MEM$|$8 and Historical Memory}
+
+MEM$|$8 is the program's framework for treating memory as a fundamentally historical rather than archival phenomenon. The key distinction is between memory as a store of states and memory as a maintained capacity for historical reconstruction. A store of states can be queried and returned intact or as corrupted; a historical reconstruction capacity can degrade in ways that are not detectable by direct inspection, because the capacity for accurate reconstruction is not recoverable from the set of currently stored items without knowledge of the historical processes by which the items were stored and the reconstruction capacity was maintained.
+
+The MEM$|$8 framework characterizes memory in terms of four interacting processes. Event registration is the incorporation of new experiences into the historical structure. Ecphory is the reconstruction of past experiences from partial cues—a process that is active and constructive rather than passive retrieval. Consolidation is the reorganization of historical structure to reduce maintenance costs and improve future retrievability. And distinction maintenance is the active preservation of the distinctions that make different remembered experiences separable from one another. The interaction of these four processes generates the characteristic phenomena of biological memory—retroactive interference, context-dependence of retrieval, the constructive rather than reproductive character of recall—that are systematically difficult to explain in purely archival models.
+
+The MEM$|$8 framework shares conceptual territory with the independently developed system of the same name produced by the team at 8b.IS, which similarly emphasizes wave-based representations, temporal structure, and historical persistence rather than conventional vector database architectures. The convergence of independently developed frameworks around similar architectural commitments is itself evidence for the recurrence thesis developed later in this volume.
+
+\section{Spherepop and the Computational Ontology of History}
+
+Spherepop began as an experiment in what happens when histories, rather than states, are taken as the primitive objects of a computational framework. In standard imperative programming, a computation is a sequence of state transformations; the states are primary and the sequence is secondary, in the sense that only the final state is semantically significant. In Spherepop the sequence itself—the history of operations performed—is primary, and states are projections of historical structure: compressed summaries of what has happened rather than independently existing entities.
+
+The primitive operations of Spherepop reflect this orientation. \textsc{Pop} extracts the most recent event from a history, making it available for inspection or further computation. \textsc{Refuse} records the rejection of a proposed operation, making the rejection itself part of the history rather than treating it as an exceptional event that interrupts normal computation. \textsc{Collapse} produces a compressed state summary of a history at a level of detail specified by the calling context. \textsc{Bind} creates a named reference to a history that can be incorporated into other histories, enabling the composition of historical structures in the same way that conventional languages compose values.
+
+The unusual presence of \textsc{Refuse} among the primitive operations deserves special attention. In standard computational frameworks, failure and rejection are typically treated as exceptions that interrupt normal computation and must be handled by special-purpose error-handling machinery. The effect is to make the history of what the system declined to do invisible from within the computation. In Spherepop, rejection is a first-class operation that makes the system's resistance to proposed operations part of the computable historical record. This design decision reflects a substantive theoretical commitment: in the process-native framework, what a system refuses to do is often as informative as what it does, particularly for systems where admissibility preservation—the avoidance of future-foreclosing transformations—is a primary operational concern.
+
+The execution of a Spherepop program is therefore not correctly described as the transformation of an input state into an output state. It is more accurately described as the progressive construction of a historical structure through a sequence of events that includes not only successful operations but also refusals, collapses, and bindings. The ``output'' of a Spherepop computation is not a terminal state but a history, from which any desired state summary can be obtained by appropriate collapse operations. This makes the program's execution transparent in a way that conventional execution is not: the full record of what occurred, what was refused, and why each operation was performed remains accessible as a first-class object rather than having been discarded in the production of a final state.
+
+The current implementation is a C interpreter with event-sourced semantics, capable of executing basic Spherepop programs and recording their full execution histories. A Rust implementation with PyO3 bindings is in development. The longer-term goal is a complete virtual machine architecture in which historical structure is maintained throughout execution and accessible to programs as a first-class data resource.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{Intelligence as Reachability Preservation}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Beyond Prediction}
+
+The process-native framework does not reject traditional accounts of intelligence. Prediction matters. Learning matters. Problem solving matters. Optimization matters. These capacities are real and important. But the framework treats them as consequences rather than foundations, asking why they are valuable: the recurring answer is that they are valuable because and insofar as they preserve and expand future possibility. An intelligent system that achieves excellent predictive performance on its training distribution while destroying the distinction structure needed to adapt to distribution shift has not demonstrated genuine intelligence in the sense that matters for survival in a changing environment; it has demonstrated local optimization at the cost of global admissibility.
+
+This observation motivates redefining intelligence not in terms of performance on any particular task but in terms of the preservation and navigation of reachability. An intelligent system, on this account, is a system that maintains a sufficiently rich distinction structure to track the relevant causal structure of its environment, preserves admissibility by avoiding transformations that foreclose valued futures, performs repair when its distinction structure degrades, and navigates the reachability landscape of its situation to find trajectories that are both locally effective and globally flexible.
+
+\section{Admissibility-Based Alignment}
+
+The alignment problem in artificial intelligence—ensuring that highly capable systems pursue goals that are actually beneficial—is reframed within the process-native framework as a problem of admissibility specification and maintenance. The standard formulation of alignment in terms of goal or reward specification is seen as inadequate because any sufficiently capable optimizer will find admissibility-destroying paths to its specified goal unless admissibility preservation is built into the objective structure from the outset. A system instructed to maximize a fixed reward function in a complex environment will systematically explore and exploit the boundaries of the admissibility manifold, because those boundaries represent the transitions at which constraint on future possibility is weakest, and exploitation of weak constraint is precisely what optimization pressure selects for.
+
+The admissibility-based approach specifies the alignment target not as a point or region in outcome space but as a region within the admissibility manifold: a set of transformations that preserve the family $\mathcal{F}$ of human-valued futures while pursuing whatever local objectives are assigned. The system is trained not to achieve a fixed outcome but to remain within this region under all conditions, with local objectives functioning as secondary criteria that are pursued only within the admissibility constraint. This reframing makes the alignment problem geometrically tractable in principle, because the admissibility manifold has a well-defined geometric structure that can in principle be learned, represented, and monitored. The practical challenges—specifying $\mathcal{F}$ at sufficient precision, computing the admissibility manifold in high-dimensional spaces, and verifying that a system's behaviour remains within it—remain formidable, but they are at least well-posed problems rather than the informal intuitions on which most current alignment work depends.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{Social Systems, Economics, and Collective Cognition}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Scaling the Framework}
+
+The process-native principles that govern individual memory, cognition, and computation also appear, with appropriate modifications, at the scale of institutions, economies, scientific communities, and civilizations. This is not a claim that individuals and social systems are the same kind of thing, or that social phenomena reduce to cognitive ones. It is a claim that certain organizational challenges are genuinely scale-independent: any system that must persist through time, maintain distinction structure, navigate future possibility, and perform repair in response to degradation faces structurally similar problems regardless of whether it is implemented in neural tissue, software, or human institutions.
+
+Societies are historical objects before they are political or economic ones. The significance of a social system depends heavily upon its history, because historical trajectories shape norms, institutions, trust structures, and the space of available futures in ways that no synchronic description can capture. Two societies with similar present-day configurations may differ dramatically in their historical trajectories and therefore in their future reachability—in which futures remain genuinely accessible to them and which have been foreclosed by accumulated commitments, institutional structures, and resource distributions. This observation motivates treating history-before-state as a principle of social analysis no less than of physical or cognitive analysis.
+
+\section{Institutions as Repair Mechanisms}
+
+Institutions are frequently described in terms of authority, governance, and coordination—as mechanisms for making and enforcing collective decisions. The process-native perspective highlights a function that is equally important but less often theorized: institutions perform repair. Courts repair disputes by restoring the distinction between legitimate and illegitimate claims that conflict has blurred. Regulatory agencies repair market failures by restoring the distinctions among market participants that concentrated power has collapsed. Universities repair knowledge deficits by maintaining and extending the distinction structures on which accurate prediction and intervention depend. Scientific communities repair explanatory frameworks through peer review, replication, and revision.
+
+The institutional repair interpretation has significant empirical consequences. It predicts that institutional health should be measured not only by output metrics—cases decided, regulations issued, papers published—but by repair capacity: the ability to identify degrading distinctions, mobilize repair operations, and restore viable distinction structure in the face of novel challenges. Institutions that produce high output while their repair capacity deteriorates are analogous to organisms that grow rapidly while their immune function declines: the apparent health conceals accumulating vulnerability. This framing connects institutional analysis directly to the concept of repair pressure developed in Distinguishability Geometry, suggesting that repair pressure metrics developed for scientific knowledge systems might be adapted for institutional analysis.
+
+\section{Fiscal Reachability and Economic Systems}
+
+The Fiscal Reachability framework applies the admissibility perspective to economic and public policy analysis. Conventional fiscal analysis evaluates economic positions through state metrics: deficit levels, debt-to-GDP ratios, growth rates, unemployment figures, current account balances. These metrics measure properties of the current economic state without capturing the degree to which that state preserves the government's future capacity for policy action.
+
+Fiscal admissibility, by contrast, is the property of a fiscal trajectory that preserves the government's ability to respond effectively to a sufficiently rich set of future economic contingencies. A fiscally admissible trajectory is one that keeps the government within a region of the fiscal-policy configuration space from which a wide range of responses remain available. Policies that improve current-state metrics while reducing fiscal admissibility—by exhausting policy instruments, eliminating productive capacity, creating path dependencies that foreclose future options, or generating commitments that consume future fiscal space—are evaluated negatively on admissibility grounds regardless of their immediate outcomes. Conversely, policies that sacrifice some immediate metric performance to preserve greater future policy flexibility may be fiscally admissible even when they appear costly by conventional standards.
+
+The Preference Fields framework, developed in parallel, treats preferences not as static properties of agents but as dynamic structures that evolve in response to institutional constraints, environmental changes, and the accumulated history of past decisions. Rather than modeling economic agents as possessing fixed utility functions over outcomes, the framework models preferences as trajectories within a semantic manifold whose geometry changes over time in response to institutional and informational pressures. This makes the framework better suited to modelling the dynamics of preference change—including the emergence of new preferences, the extinction of old ones, and the propagation of preference structures through social networks—than fixed-preference models allow.
+
+\section{Civilizations as Reachability-Preservation Systems}
+
+At the largest scale, civilizations may be interpreted as mechanisms for preserving and expanding reachability across generations. Infrastructure preserves physical reachability by maintaining the capacity to move people, goods, and information. Knowledge systems preserve intellectual reachability by maintaining the distinction structures on which accurate prediction and intervention depend. Institutions preserve organizational reachability by maintaining the capacity to coordinate large-scale collective action. Memory systems—archives, traditions, educational institutions—preserve historical reachability by maintaining access to the accumulated experience of past generations.
+
+Civilizational collapse, viewed through this lens, is not primarily an event but a process: the gradual contraction of reachability across multiple dimensions simultaneously. Distinctions degrade as maintenance costs exceed institutional capacity. Institutions lose repair capacity as the distinction structures on which they depend deteriorate. Memory becomes fragmented as the distinction structures needed to organize and reconstruct it collapse. Coordination weakens as the shared distinction structures that enable it dissolve. The final collapse, when it occurs, may be rapid, but the underlying process of reachability contraction typically unfolds over much longer periods. This interpretation connects the study of civilizational fragility directly to the concepts of repair pressure and admissibility developed in the foundational frameworks.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{The Recurrence Problem and Toward Unification}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Why the Same Structures Keep Appearing}
+
+A recurring question shadows every framework described in this volume. Why do the same concepts keep appearing? Histories appear in memory systems, software systems, scientific development, and biological evolution. Distinctions appear in cognition, economics, institutions, and physical measurement. Reachability appears in planning, artificial intelligence, public finance, and scientific methodology. Repair appears in biology, engineering, organizations, and knowledge systems. Admissibility appears in decision-making, alignment, economics, and governance.
+
+At first glance this repetition may appear suspicious. Perhaps the observer is imposing the same vocabulary on unrelated phenomena. Perhaps the recurrence reflects cognitive preference rather than underlying reality. This possibility must be taken seriously; the history of science contains many examples of frameworks that became self-reinforcing and began finding their own concepts everywhere regardless of their genuine applicability.
+
+Three possible explanations present themselves. The coincidence hypothesis holds that the recurrence is accidental. The observer-bias hypothesis holds that the researcher is finding what they expect to find, and that the concepts spread not because they are genuinely applicable but because the vocabulary is flexible enough to be applied anywhere. The structural recurrence hypothesis holds that these concepts correspond to genuinely important organizational structures that appear repeatedly because they reflect real constraints on the persistence of complex systems. The program's current assessment is that the structural recurrence hypothesis is the most consistent with the evidence, but the observer-bias hypothesis cannot be dismissed and requires ongoing methodological vigilance.
+
+\section{Organizational Invariants}
+
+The case for structural recurrence rests on the observation that all persistent complex systems face similar organizational challenges. They must maintain organization against entropic degradation. They must preserve identity through change. They must navigate uncertain futures. They must adapt to changing environments. These challenges appear remarkably universal, and the concepts that appear repeatedly are precisely the ones that address them directly.
+
+History appears repeatedly because persistence itself generates history, and the longer a system survives, the more its historical structure determines the space of available futures. Distinction appears repeatedly because adaptive response to a complex environment requires the ability to tell different situations apart, and any system that loses this ability loses its capacity for appropriate response. Reachability appears repeatedly because every decision alters future possibilities, and any system that manages its future possibility badly tends toward fragility. Repair appears repeatedly because no complex system remains undegraded indefinitely, and the alternative to repair is collapse. Admissibility appears repeatedly because the preservation of future possibility is a more general objective than the achievement of any particular outcome, and optimization without admissibility constraints tends toward brittleness.
+
+These observations motivate the concept of organizational invariants: structural properties that remain relevant across a wide range of domains and scales not because they are imposed from the outside but because they reflect genuine constraints on the persistence and adaptation of complex systems. The process-native research program's central hypothesis is that history, distinction, reachability, repair, and admissibility are organizational invariants in this sense. This hypothesis generates testable predictions: these concepts should continue to prove useful in new domains, should support novel explanations, and should reveal hidden connections between previously unrelated phenomena. Failure to do so would weaken the hypothesis; ongoing success would strengthen it.
+
+\section{The Unified Architecture}
+
+The layered architecture that emerges from the research program positions the five foundational concepts as a generative sequence:
+\[
+\text{History} \to \text{Distinction} \to \text{Reachability} \to \text{Repair} \to \text{Admissibility}
+\]
+with memory, computation, cognition, social systems, and physics appearing as different manifestations of this underlying process at different scales and in different substrates. The architecture is not strictly hierarchical: repair generates new history, distinctions influence reachability, and admissibility constraints shape the repair operations that are available. The appropriate picture is a web of mutual dependencies rather than a strict bottom-up stack.
+
+What the architecture does assert is a priority ordering in the sense of explanatory dependence: states are better explained by histories than histories by states, objects by the distinction-maintenance processes that constitute them rather than vice versa, representations by the reachability structures they enable rather than by their fidelity to some substrate-independent reality. This priority ordering is not metaphysical in the sense of claiming that one level of the architecture is ontologically more real than another; it is explanatory in the sense of identifying which direction of analysis tends to reveal more structure and to generate more productive research.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{The Software Ecosystem}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Overview}
+
+The theoretical frameworks described in previous chapters motivate a software ecosystem that attempts to make their commitments computationally operational. The ecosystem is currently organized around five major projects: the Spherepop stack, the Smart Tree Terminal Interface (STTI), Cakewalk, the Admissibility Lab, and the \texttt{signal\_as\_structure} Rust library. These projects are at different stages of development and different levels of integration with the theoretical framework, but all share the common goal of making the process-native perspective technically actionable rather than merely formally describable.
+
+\section{STTI: The Smart Tree Terminal Interface}
+
+STTI is a semantic navigation system designed to allow users to traverse large archives, knowledge structures, and codebases according to conceptual rather than merely hierarchical organization. The motivation is the observation that the filesystem metaphor—which organizes information by containment in a hierarchical tree—is a poor model for the structure of knowledge as understood by the process-native framework. Knowledge is not organized primarily by containment but by historical connection, distinction relationship, and reachability: documents are related not because they share a directory but because they were produced in response to similar problems, because they maintain overlapping sets of distinctions, or because navigating between them preserves a desired class of future informational possibilities.
+
+STTI is being developed as a terminal interface that presents users with a semantically organized view of their archives, allowing navigation by conceptual similarity, historical connection, and admissibility-preserving traversal rather than by filename or directory structure.
+
+\section{Cakewalk: Publishing and Automation}
+
+Cakewalk is a publishing and media production automation framework whose primary current function is managing the pipeline from research documents to compiled outputs, audio processing, visualizer generation, and web publication. Its theoretical interest lies in the fact that its design reflects the program's commitments about history and provenance: Cakewalk maintains a complete event-sourced log of all publication operations, making the history of how each output was produced a first-class record rather than an implementation detail.
+
+\section{The Admissibility Lab and the signal\_as\_structure Library}
+
+The Admissibility Lab is a Python ecosystem designed to enable computational experimentation with admissibility geometry, distinction topology, and reachability analysis. It provides implementations of the core mathematical objects—configuration spaces, transformation manifolds, admissibility metrics, and distinction-topology representations—in a form suitable for numerical experimentation and simulation.
+
+The \texttt{signal\_as\_structure} library is a Rust implementation of the program's computational model of signals as historical structures rather than instantaneous values. It provides the data structures and algorithms needed to represent, store, and manipulate signals in a history-native format, with PyO3 bindings allowing integration with Python-based analysis pipelines. It embodies at the implementation level the claim that signals—whether physical, computational, or cognitive—are most accurately represented as historical records of how they evolved rather than as sequences of instantaneous values.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{Creative and Media Projects}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{Role of Creative Work in the Program}
+
+The creative and media projects associated with the research program are not peripheral to it. They constitute a parallel channel through which the same theoretical commitments are expressed, tested, and developed in registers that formal mathematics and academic prose cannot access. Complex ideas about historical process, distinction collapse, reachability, and repair are in many cases more perspicuously illustrated through narrative, image, and sound than through equations, and the creative projects function as laboratories in which the conceptual adequacy of the theoretical frameworks is tested against the demands of representation in concrete form.
+
+The creative work also serves a communication function that the formal work cannot: it makes the program's ideas accessible to audiences who would not engage with formal monographs, and in doing so it tests whether the concepts are genuinely intelligible or whether their apparent clarity in formal settings conceals obscurity that only becomes visible when the technical scaffolding is removed.
+
+\section{Major Creative Projects}
+
+The \textit{Nine Parsecs} graphic novel screenplay investigates questions of identity, historical continuity, and the collapse of distinction structures through a science-fiction narrative in which the distinction between personal identity across time and place becomes the central dramatic concern. The narrative is developed in LuaLaTeX with typographic conventions that reflect the Standard Galactic Alphabet system developed as a parallel project.
+
+The \textit{Yarncrawlers of Titan} comic production bible develops a world in which physical and informational structures are maintained by crawler organisms whose primary function is distinction preservation—a narrative elaboration of the repair-centred ontology that is one of the program's theoretical commitments. The formal paper on the Yarncrawler abstraction treats the crawlers as models of a general class of distinction-maintaining agents and develops their properties in terms that connect to the CLIO and admissibility frameworks.
+
+The \textit{Admissible Cosmos} audio visualizer series—currently at version 2—produces interactive standalone HTML visualizers in which audio signal structure is displayed using geometric representations derived from the RSVP framework. These visualizers serve simultaneously as public-facing demonstrations of the research program and as experimental environments for developing and testing the visual language in which the program's geometric concepts are most naturally presented.
+
+The \textit{Flyxion Atlas Cards} develop the program's conceptual vocabulary into a card-game format in which the structural relationships among core concepts—history, distinction, reachability, repair, admissibility—become the game mechanics. The game functions as a pedagogical tool and as a stress test of the conceptual architecture: the structural relationships must be precise enough to support consistent rule-following, which exposes any ambiguities in the theoretical framework.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{Methodological Principles of the Process-Native Program}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{The Problem of Method}
+
+A theory may possess elegant concepts, sophisticated mathematics, and internal coherence without being reliable. The history of science contains many beautiful systems that ultimately failed. The challenge therefore extends beyond ontology: a research program requires methods for evaluating itself, mechanisms for detecting error, procedures for revision, and standards for criticism.
+
+The process-native research program is particularly vulnerable to methodological failure because of its breadth. The same concepts appear across physics, cognition, computation, economics, memory systems, and social organization, and such generality creates genuine opportunities for self-deception. Without methodological discipline, broad frameworks drift toward vagueness, and the apparent recurrence of favoured concepts across domains may reflect the flexibility of the vocabulary rather than the structure of the phenomena. The principles described in this chapter are intended to prevent that outcome.
+
+\section{The Repair Principle}
+
+The most fundamental methodological commitment follows directly from the ontology. The framework assumes that all sufficiently complex systems require repair—and research programs are no exception. No theory is final, no conceptual structure complete, no framework immune to revision. Consequently criticism is not external to the research process but one of its primary repair mechanisms. Anomalies become valuable. Failures become informative. Contradictions become opportunities for improvement rather than threats to be deflected.
+
+\section{The Witness Principle}
+
+A claim should, whenever possible, produce a witness: something inspectable that connects the abstract claim to concrete reality. In mathematics a witness may be a construction. In software it may be an implementation. In science it may be a measurement. In philosophy it may be a thought experiment with determinate structure. The witness principle acts as a safeguard against purely rhetorical explanation—ideas that cannot be witnessed often conceal unresolved confusion, and the requirement of a witness serves as a diagnostic tool that exposes this confusion before it propagates.
+
+\section{The Projection and Intervention Principles}
+
+Every observation involves projection. Every measurement discards information. The projection principle requires continual attention to what has been projected away: what distinctions were removed, what information was discarded, what futures became unreachable, what assumptions became hidden. This vigilance helps expose projection failure before it becomes catastrophic.
+
+The intervention principle adds that description and intervention are not identical: a model may describe a system successfully while remaining unable to guide action. Knowledge should therefore be evaluated not only for descriptive accuracy but for its capacity to support meaningful intervention. This principle reflects the influence of reachability throughout the program: descriptions matter because they alter what can be done, and representations that do not connect to action are incomplete in a practically important sense.
+
+\section{The Anomaly Principle and Self-Repair}
+
+Persistent anomalies occupy a privileged methodological position because they often indicate missing distinctions rather than mere measurement error. Many significant advances originate from anomalies that resisted dismissal, and the practice of dismissing anomalies as noise or measurement artifact is one of the most reliable ways to accumulate the kind of ontological deficit that eventually precipitates a crisis. The process-native program therefore treats anomalies as high-priority inputs to the repair process rather than as inconveniences to be managed.
+
+Most importantly, the framework must remain capable of repairing itself. A framework incapable of self-correction has limited long-term value, and a framework whose core commitments are defined in a way that makes them immune to revision has ceased to be a scientific program and become a metaphysical position. The process-native framework's concepts must remain open to modification; its distinctions must remain revisable; its assumptions must remain examinable. The objective is not protecting the framework but preserving its capacity for repair.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{Open Problems and Research Frontiers}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{The Fundamental Question}
+
+Every research program eventually reaches a point where its greatest value lies not in the questions it has answered but in the questions it has exposed. The process-native program remains firmly in this category. Many of its frameworks are still developing; some possess substantial mathematical foundations while others remain primarily conceptual; several exist as partially implemented software systems and others as research directions only. This incompleteness is a natural consequence of attempting to explore organizational principles that appear repeatedly across multiple domains, each of which has its own technical demands.
+
+The deepest unresolved issue can be stated simply: are history, distinction, reachability, repair, and admissibility genuinely fundamental organizational principles, or are they merely useful abstractions? The entire research program depends upon this question. The concepts recur frequently and exhibit substantial explanatory power, connecting domains that are rarely discussed together. But recurrence alone is insufficient; a stronger foundation requires formalization, prediction, and successful application in domains where the framework makes non-trivial predictions that can be independently evaluated.
+
+\section{Mathematical Frontiers}
+
+Several core concepts remain only partially formalized. The admissibility manifold is well-defined for finite and finite-dimensional configuration spaces but its extension to the infinite-dimensional settings required for field theory and for neural network parameter spaces requires new mathematical machinery that has not yet been developed. The distinction topology is conceptually clear but lacks a mature mathematical representation that would allow distinction collapse and repair to be studied with the precision that physical and information-theoretic questions demand. Repair Theory currently provides a conceptual framework without the corresponding formal apparatus—repair metrics, repair operators, repair costs, repair pressure measures, and repair conservation laws—that would allow quantitative predictions.
+
+The restricted RDR conjecture described in Chapter 5 remains the most immediate formal open problem. Its proof, if achievable with the machinery already developed in the CPR textbook, would constitute the first major formal result unifying the admissibility and distinguishability programs and would significantly simplify the analysis of admissible dynamics across all application domains.
+
+\section{Computational and AI Frontiers}
+
+The computational branch faces the fundamental empirical question of whether history-native architectures provide practical advantages over state-centered ones in the domains where the framework predicts they should: provenance tracking, fault tolerance, repair, and the reuse of historical information. Spherepop provides a framework for exploring this question but not yet an answer.
+
+In artificial intelligence, the central open question concerns the feasibility of admissibility-based alignment. Can alignment be specified as a geometric constraint on the learning dynamics—a requirement that the system remain within the admissibility manifold during training and deployment—rather than as a reward function to be optimized? Can projection failure be detected automatically, allowing systems to identify missing distinctions before failure occurs rather than after? These questions have significant practical consequences and remain genuinely open.
+
+\section{Physical Frontiers}
+
+The physical branch faces the most demanding open problem: developing RSVP into a fully predictive mathematical framework that makes quantitative contact with cosmological data. The conceptual motivation for RSVP is strong, and several of its qualitative predictions—the clustering of cosmological parameters near admissibility manifold boundaries, the interpretation of dark energy as constraint-field pressure, the absence of an inflationary epoch—are in principle distinguishable from standard cosmological models. But translating these qualitative predictions into quantitative ones requires solving the RSVP field equations in cosmologically relevant regimes, which remains intractable without further analytical or numerical progress. Until this gap is bridged, RSVP remains a physically motivated conjecture rather than a testable theory.
+
+\section{A Twenty-Year Horizon}
+
+Looking forward, the following milestones would substantially advance the program: a mature mathematical theory of admissibility including infinite-dimensional results; a quantitative theory of repair including measurable repair pressure and repair conservation laws; practical history-native computation demonstrating advantages over state-centered alternatives in target domains; admissibility-constrained AI systems with verifiable alignment properties; large-scale semantic infrastructure integrating provenance, distinction maintenance, and historical navigation; empirically testable RSVP predictions; and a unified process-native formalism capable of expressing the major frameworks in a common mathematical language. Achieving even a subset of these goals would substantially transform the current state of the program.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{A View from the Boundary}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\section{The Nature of the Project}
+
+Every sufficiently large research program eventually confronts a question that additional technical work cannot answer: why does this project exist? Not what problem does it solve, not what theory does it propose, not what software does it implement—but why, at a deeper level, does this investigation matter?
+
+The process-native research program emerged gradually from dissatisfaction with a recurring pattern: the tendency of successful formal frameworks to treat their primitive objects as more fundamental than the processes responsible for generating and maintaining them. Particles, propositions, states, agents—each framework begins with primitives and then studies their relations, and each framework accumulates a characteristic residue of problems that resist resolution within its own terms. The conjecture motivating this program is that the residue is systematic: it points toward the same explanatory gap across very different domains, and filling that gap requires developing an adequate theory of the processes by which apparent objects are themselves generated, maintained, degraded, and repaired.
+
+\section{The Noun Problem Revisited}
+
+One theme reappears with sufficient frequency to deserve emphasis. Human beings describe reality naturally through nouns, and the convenience of nouns tends to conceal the processes responsible for the stability they name. A civilization appears as a thing; in reality it is an ongoing process of memory maintenance, repair, and coordination. A scientific theory appears as a thing; in reality it is an evolving distinction structure maintained by a community of practitioners. A software system appears as a thing; in reality it is a continuous historical process of modification, extension, and repair. Even a person may be more accurately understood as an ongoing process than as a static object.
+
+The process-native framework repeatedly encounters situations in which the noun obscures the mechanism. One of its primary contributions is therefore not any particular formal result but a habit of inquiry: the practice of asking, whenever a stable object is identified, what processes are responsible for its stability, what those processes require, how they can fail, and what repair would look like. This habit is methodologically prior to any specific framework and survives the revision or replacement of any particular theory within the program.
+
+\section{Persistence as the Central Problem}
+
+Persistence occupies a special place within the program. Much of science concerns prediction; much of engineering concerns construction; much of economics concerns allocation. The process-native perspective repeatedly returns to a different question: why do some structures persist while others disappear? The apparent stability of persistent structures is so familiar that it tends to be overlooked, yet every persistent structure confronts similar challenges—entropy, noise, uncertainty, environmental change, competition, failure—and the survival of organization under such conditions is genuinely remarkable. Understanding persistence therefore becomes one of the central motivations of the program, and history, distinction, reachability, repair, and admissibility all emerged from attempts to understand this phenomenon in different domains.
+
+\section{The Boundary}
+
+The title of this chapter refers to a particular kind of perspective: one that becomes available at the edges of disciplines rather than at their centres. The process-native program repeatedly operates at boundaries—between physics and computation, between cognition and memory, between knowledge and repair, between individual intelligence and collective intelligence, between philosophy and engineering, between theory and implementation. The recurring concepts developed throughout this volume emerged precisely because these boundaries were explored rather than avoided. Whether that exploration has identified genuine organizational invariants or merely constructed a consistent vocabulary for describing disparate phenomena is the question that ongoing work must answer.
+
+The program remains incomplete. Many concepts are only partially formalized, many software systems are prototypes, many mathematical questions are unresolved, and several major theories are speculative. This incompleteness is not an embarrassment but a feature of a living research program: it identifies where the next work needs to happen. The process-native program should be judged not by the completeness of its current answers but by the quality of the questions it generates and its capacity to continue repairing itself in response to the anomalies those questions expose.
+
+
+\backmatter
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter*{Summary of Active Projects and Priorities}
+\addcontentsline{toc}{chapter}{Summary of Active Projects and Priorities}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\begin{summarybox}[Immediate Priorities]
+\begin{enumerate}[leftmargin=1.5em]
+\item Complete bibliography expansion for CPR textbook ($\sim$200 entries).
+\item Develop 12 core TikZ figures for CPR geometry chapters.
+\item Proof densification across $\sim$15 sketch-proof chapters.
+\item Establish the restricted RDR conjecture proof (Chapter 74).
+\item Complete \textit{Repair Pressure and the Lifecycle of Distinctions} formal paper.
+\item Finalize admissibility-based alignment paper grounded in agent-relative $\mathcal{F}$ specification.
+\end{enumerate}
+\end{summarybox}
+
+\begin{summarybox}[Framework Status]
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Framework & Status & Primary Output \\
+\midrule
+RSVP & Active development & Physics monographs \\
+Admissibility Program & Active development & CPR textbook; papers \\
+Distinguishability Geometry & Active development & Repair Pressure paper \\
+CLIO & Conceptual stage & Integration with CPR \\
+HYDRA & Conceptual stage & Architecture draft \\
+MEM$|$8 & Implementation stage & Prototype system \\
+Spherepop & Implementation stage & C interpreter; Rust WIP \\
+STTI & Early development & Terminal prototype \\
+Cakewalk & Operational & Publishing pipeline \\
+Admissibility Lab & Active & Python library \\
+signal\_as\_structure & Active & Rust library + PyO3 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{summarybox}
+
+\begin{summarybox}[Creative Projects]
+\begin{itemize}[leftmargin=1.5em]
+\item Nine Parsecs — graphic novel screenplay (ongoing)
+\item Yarncrawlers of Titan — comic production bible (ongoing)
+\item The Call From Ankyra — narrative project (ongoing)
+\item Admissible Cosmos v2 — HTML audio visualizer (complete)
+\item Standard Galactic Alphabet — typography system (ongoing)
+\item Flyxion Atlas Cards — card game / reference system (ongoing)
+\end{itemize}
+\end{summarybox}
+
+%%═════════════════════════════════════════════════════════════════════════════
+\appendix
+%%═════════════════════════════════════════════════════════════════════════════
+
+\chapter{Genealogy of the Research Program}
+
+The frameworks described throughout this volume did not emerge in their current form. Most began as attempts to solve specific local problems, and only later did the larger connections become visible. This appendix provides a historical reconstruction of the major conceptual lineages that eventually converged into the process-native research program.
+
+The physics stream originated in questions about why large-scale structures persist and how constraints should be represented in dynamical theories. These investigations eventually produced RSVP and its cosmological applications—the Falling Universe Program, Lamphrodyne Relaxation, and Constraint-First Physics. At the time these projects appeared largely independent of later work on memory, computation, and cognition; only afterward did common themes become visible.
+
+The memory stream emerged from questions concerning persistence and reconstruction—specifically, from dissatisfaction with archival models that failed to account for the reconstructive, interference-prone, and context-dependent character of biological memory. The key insight—that histories are more fundamental than states—first crystallized here before propagating to the computational and physical branches. This stream contributed substantially to the conceptual overlap with independently developed systems such as MEM$|$8 from 8b.IS.
+
+The computation stream emerged from dissatisfaction with state-centered models of computation and eventually produced Spherepop and the broader investigation of history-native execution. The cognition stream, originating in artificial intelligence concerns about projection failure, representation, and alignment, eventually produced CLIO and HYDRA. The ontology stream, emerging from questions about scientific change and concept persistence, produced Distinguishability Geometry and Repair Theory. The reachability stream, emerging from planning and future-preservation concerns, produced the Admissibility Program.
+
+Initially these streams developed largely independently. The convergence period began when recurring structures became impossible to ignore: the same five concepts—history, distinction, reachability, repair, admissibility—appeared repeatedly across all streams. At that point the separate streams began transforming into a unified research program, and the current architecture emerged as the historical residue of many independent investigations that repeatedly discovered the same ideas from different directions.
+
+\chapter{Glossary of Core Concepts}
+
+The concepts introduced throughout this volume frequently appear in multiple contexts and often carry meanings that differ somewhat from their usage in traditional disciplines. This glossary provides concise working definitions intended to facilitate navigation of the framework. Definitions should be understood operationally rather than metaphysically: the emphasis is on what concepts do rather than what they are.
+
+\textbf{Admissibility.} The property of a transformation that preserves a specified class of future possibilities. Admissibility is agent-relative: what counts as an admissible transformation depends on the family $\mathcal{F}$ of futures whose preservation is considered significant. An action may achieve an immediate objective while remaining inadmissible if it unnecessarily forecloses future options.
+
+\textbf{Admissibility Manifold} $\mathcal{A}$. The subspace of the transformation space consisting of those transformations whose admissibility exceeds a specified threshold. The geometry of $\mathcal{A}$—its curvature, boundaries, and topological features—determines the constraints on rational transformation imposed by admissibility preservation.
+
+\textbf{Anomaly.} An observation, result, or behaviour that cannot be adequately accommodated within an existing distinction structure. Anomalies often function as signals of missing distinctions, projection failure, or ontological deficit. Persistent anomalies frequently motivate repair and are treated as high-priority inputs to the maintenance process rather than as noise to be managed.
+
+\textbf{Capacity} $\Phi$. One of the three central RSVP field variables. Represents the local ability of a system to sustain organized structure; in cosmological contexts, the local degree of freedom density of the plenum.
+
+\textbf{Collapse.} The reduction of possibility through selection among alternatives. Collapse is not inherently negative; without it, decision-making is impossible. The challenge is managing collapse so as not to unnecessarily destroy admissibility.
+
+\textbf{Constraint} $S$. One of the three central RSVP field variables. Represents accumulated obligations, restrictions, and structural commitments. In physical terms, the history-dependent constraint field that records the degree to which past organizational activity has created demands for future coherence maintenance.
+
+\textbf{Distinction.} A partition of a configuration space implemented by an observable that takes reliably different values on different regions. Distinctions support explanation, prediction, intervention, and coordination. Maintaining useful distinctions is one of the primary challenges of any adaptive system.
+
+\textbf{Distinction Collapse.} The process by which a previously maintained distinction dissolves, reducing the effective configuration space to the quotient under the collapsed equivalence relation and degrading the observer's explanatory and predictive capacity.
+
+\textbf{Distinguishability Geometry.} The framework for studying the formation, persistence, collapse, and repair of distinctions. Treats categories as dynamic structures rather than static primitives and investigates the maintenance costs, collapse dynamics, and repair operations associated with distinction structures.
+
+\textbf{History} $H$. An organized sequence of events. The process-native framework treats histories as more fundamental than the states they generate, on the grounds that histories contain information—provenance, trajectory, the record of what was refused—that states cannot adequately represent.
+
+\textbf{HYDRA.} Hybrid Dynamic Reasoning Architecture. A multi-module cognitive architecture integrating memory, distinction maintenance, planning, repair, and reasoning. Represents the intelligence layer of the broader framework.
+
+\textbf{Ontological Deficit} $\delta_T$. The condition in which an observer's distinction topology is insufficiently fine-grained to represent the distinctions that are causally relevant to the phenomena being studied. Distinct from ordinary ignorance: remedying ontological deficit requires distinction creation, not just measurement.
+
+\textbf{Projection} $\pi : \mathcal{C} \to \mathcal{C}'$. The reduction of a richer configuration space to a simpler representation. Projection is unavoidable in any finite cognitive or computational system; the central challenge is preserving the distinctions and reachability structure that matter while compressing what does not.
+
+\textbf{Projection Failure.} The situation in which a projection that appears acceptable by reconstruction-error metrics produces substantial admissibility degradation by eliminating precisely the distinctions responsible for admissibility maintenance.
+
+\textbf{Provenance.} The historical origin of a structure, decision, artifact, or state. Treated as a first-class object in history-native computation rather than as optional metadata.
+
+\textbf{Reachability.} The set of futures accessible from a given configuration under specified constraints. The central geometric object of the admissibility program.
+
+\textbf{Refusal} $\bot_R$. A first-class Spherepop operation recording the rejection of a proposed transformation, making the rejection part of the computable historical record.
+
+\textbf{Repair} $\mathcal{R}$. The restoration or preservation of viability through correction of degraded distinction structure, reachability, or historical continuity. Treated as a foundational organizational process that governs persistence in physical, cognitive, computational, and institutional systems.
+
+\textbf{Repair Pressure} $P_R$. A measure of the accumulated tendency of a system to require corrective intervention. High repair pressure indicates increasing maintenance demands and accumulating fragility.
+
+\textbf{RSVP.} Relativistic Scalar--Vector Plenum. The primary physical framework, organized around the three coupled field variables $\Phi$ (capacity), $\mathbf{v}$ (transport), and $S$ (constraint).
+
+\textbf{Spherepop.} A computational framework centred on histories rather than states, with primitive operations Pop, Refuse, Collapse, and Bind. Represents the computational layer of the broader process-native architecture.
+
+\textbf{Transport} $\mathbf{v}$. One of the three central RSVP field variables. Represents the movement of organizational coherence, influence, or physical effects through the plenum.
+
+\textbf{Witness.} An inspectable artifact produced by a claim, theory, or construction—a proof, demonstration, implementation, or measurement that connects abstract claims to concrete reality. The requirement of a witness serves as a primary methodological safeguard against purely rhetorical explanation.
+
+\chapter{Notation Reference}
+
+The following table collects the most commonly used symbols across the major frameworks.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Symbol & Meaning & Framework \\
+\midrule
+$\Phi$ & Scalar capacity field & RSVP \\
+$\mathbf{v}$ & Vector transport field & RSVP \\
+$S$ & Constraint/obligation field & RSVP \\
+$\mathcal{A}$ & Admissibility manifold & Admissibility \\
+$D_A$ & Admissibility distortion & Admissibility \\
+$\sim_A$ & Admissibility equivalence & Admissibility \\
+$R$ & Reachability operator & Admissibility \\
+$(X, \sim)$ & Distinguished configuration space & Dist.\ Geometry \\
+$\delta_T$ & Ontological deficit measure & Dist.\ Geometry \\
+$D$ & Distinction operator & Dist.\ Geometry \\
+$\mathcal{R}$ & Repair operator & Repair Theory \\
+$P_R$ & Repair pressure & Repair Theory \\
+$C_R$ & Repair cost & Repair Theory \\
+$H$ & Historical structure / trajectory & History/MEM$|$8 \\
+$e_i$ & $i$-th event in a history & History \\
+$G_P$ & Provenance graph & History \\
+$\downarrow$ & Collapse operation & Spherepop \\
+$\bot_R$ & Refusal operator & Spherepop \\
+$\otimes$ & Bind operation & Spherepop \\
+$\uparrow$ & Pop operation & Spherepop \\
+$\pi : X \to M$ & Projection & CLIO \\
+$S_\pi$ & Representational entropy & CLIO \\
+$F_\pi$ & Projection failure measure & CLIO \\
+$\Phi_t(\theta)$ & Preference field & Preference Fields \\
+$G_S$ & Semantic graph & Sem.\ Infrastructure \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+General conventions: lowercase Roman letters denote local variables; uppercase Roman letters denote global structures or operators; lowercase Greek letters denote parameters or local quantities; uppercase Greek letters denote fields, capacities, or large-scale structures; script symbols ($\mathcal{A}$, $\mathcal{R}$, $\mathcal{C}$) denote geometric spaces or manifolds.
+
+\chapter{Intellectual Influences and Lineage}
+
+No research program emerges in isolation. This appendix identifies the intellectual traditions that helped shape the questions from which the framework developed, without claiming direct inheritance in every case.
+
+The systems theory tradition—von Bertalanffy, Ashby, Beer, Forrester, Meadows—provided the foundational orientation toward relationships and organizational structure rather than isolated components, and the insight that feedback and adaptation are more fundamental than static equilibrium. The cybernetic tradition—Wiener, Ashby, Pask—introduced the principle that persistence requires active regulation, which the process-native framework generalizes into the claim that repair is a foundational organizational category. William T. Powers's Perceptual Control Theory reinforced the importance of maintained reference conditions and the interpretation of behavior as control of perception rather than production of output.
+
+Information theory provided both inspiration and productive opposition. Shannon's framework remains one of the most important achievements of twentieth-century science, and the process-native program builds directly on it, but it also extends beyond it in directions that information theory alone does not motivate—toward distinction maintenance, reachability preservation, and repair as independent desiderata that cannot be reduced to entropy measures.
+
+Constructive mathematics, through its emphasis on witnesses and its insistence that existence claims require explicit constructions, provided the methodological backbone of the witness principle. The philosophy of science tradition—Kuhn's account of scientific revolutions, Popper's emphasis on falsification, Lakatos's research program analysis—shaped the program's interpretation of scientific change as distinction repair and the treatment of anomalies as high-priority maintenance signals.
+
+Judea Pearl's work on causality, and specifically the observational--interventional distinction, directly influenced the development of admissibility, reachability, CLIO, and Distinguishability Geometry. Alicia Juarrero's work on constraint as an explanatory principle reinforced the constraint-first orientation and the treatment of organizational constraints as primary explanatory objects rather than secondary consequences. Alison Gopnik's work on developmental cognition and model revision provided an important model of intelligence as ongoing distinction maintenance and repair rather than accumulation of fixed representations. Karl Fant's Null Convention Logic influenced the computational branch through its demonstration that organization and timing can emerge from structural relationships rather than external coordination. Christopher Alexander and Nikos Salingaros contributed the insight that successful persistent structures often reflect deep organizational constraints that emerge through iterative adaptation.
+
+The author's background in linguistics contributed questions about distinction, categorization, compression, and semantic organization that shaped later developments in Distinguishability Geometry and semantic infrastructure. The culture of open software development—version control, distributed collaboration, transparency, reproducibility—reinforced the importance of historical structure and the operational significance of provenance, repair, and reconstruction as first-class concerns.
+
+\chapter{Selected Works and Reading Paths}
+
+\section*{Foundational Texts}
+
+\textit{Constraint Before Content} provides the clearest concise statement of the constraint-first orientation underlying the entire program. \textit{The Admissibility Field} is the primary reference for admissibility geometry and future preservation. \textit{Distinguishability Geometry} is the primary reference for distinction structure, ontological deficit, and repair.
+
+\section*{Physics and Cosmology}
+
+Readers should begin with the RSVP framework documentation, then \textit{Three Smoothing Mechanisms in Early Cosmology} and \textit{Axioms for a Falling Universe}. Constraint-First Physics essays provide the connection to the admissibility program.
+
+\section*{Computer Scientists}
+
+\textit{Programs as Histories} provides the foundational statement of the computational perspective. Spherepop language documentation covers the implementation. Semantic Infrastructure project documentation covers the knowledge-persistence angle. \textit{Distinguishability Geometry} covers the ontological foundations.
+
+\section*{AI Researchers}
+
+Begin with CLIO framework documentation, then \textit{Against Latent Fundamentalism}, \textit{Beyond Prediction}, HYDRA architectural specification, and \textit{The Admissibility Field} for the alignment connection.
+
+\section*{Philosophers}
+
+Begin with \textit{Constraint Before Content}, then \textit{Distinguishability Geometry}, \textit{Repair as a Fundamental Category}, \textit{The Topology of Failure}, and this volume.
+
+\section*{General Readers}
+
+The audio essay series and \textit{The Secret Life of Nouns} comic provide accessible entry points. \textit{Constraint Before Content} and \textit{Repair as a Fundamental Category} are the shortest formal texts suitable for non-specialist readers.
+
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{Chronological Development}
+%%═════════════════════════════════════════════════════════════════════════════
+
+The following timeline identifies the major phases through which the research program developed. The dates are approximate and reflect the period during which each stream became a primary focus rather than when the first relevant questions arose.
+
+\begin{center}
+\begin{tabular}{lp{9.5cm}}
+\toprule
+Period & Primary Developments \\
+\midrule
+2015--2017 & Cosmology and physics foundations. Early questions concerning
+             large-scale structure, constraint dynamics, and organizational
+             persistence. First formulations of what would become RSVP. \\[4pt]
+2018--2020 & RSVP development. Three-field architecture ($\Phi$, $\mathbf{v}$, $S$)
+             established. Falling Universe Program and Lamphrodyne Relaxation
+             as cosmological applications. Constraint-first physical reasoning. \\[4pt]
+2020--2022 & Historical memory and process ontology. History-before-state
+             principle crystallized. Memory as reconstruction rather than
+             storage. Provenance as a first-class computational object.
+             MEM$|$8 framework initiated. \\[4pt]
+2022--2024 & Repair and distinction concepts. Distinguishability Geometry
+             and Repair Theory developed. Ontological deficit formalized.
+             Anomaly-driven repair as model of scientific change.
+             Persistent Anomalies monograph. \\[4pt]
+2024--2025 & Admissibility and reachability. Admissibility Program emerges
+             as geometric core. Admissibility manifold, Fiscal Reachability,
+             Preference Fields, and admissibility-based alignment formulated.
+             Against Latent Fundamentalism. \\[4pt]
+2025--2026 & CLIO, HYDRA, Spherepop, CPR. Intelligence layer (CLIO, HYDRA)
+             formalized. Spherepop C interpreter implemented. CPR textbook
+             reaches 92 chapters, 391 pages. Repair Pressure paper in
+             preparation. Software ecosystem (Admissibility Lab,
+             \texttt{signal\_as\_structure}) active. \\[4pt]
+2026--     & Unified process-native program. Current phase: integration,
+             formalization, and empirical confrontation. RDR conjecture
+             targeted. RSVP quantitative predictions under development.
+             Semantic infrastructure and STTI prototyping ongoing. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The trajectory visible in this timeline is not one of linear accumulation but of repeated convergence. Each phase initially appeared to introduce new primitives; in retrospect, each was rediscovering the same five organizational concepts---history, distinction, reachability, repair, admissibility---from a different angle. The recognition of this pattern, roughly midway through the program, transformed a collection of independent projects into a unified research architecture.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{Supplementary Mathematical Derivations}\label{app:math}
+%%═════════════════════════════════════════════════════════════════════════════
+
+This appendix collects formal definitions, propositions, and proof sketches for the core mathematical claims made throughout the volume. The results are presented in order of conceptual dependency: reachability and projection first, then admissibility composition, then repair and distinction capacity, then representational entropy, and finally the optimization--admissibility conflict and the non-recoverability of history from state. Each result is stated at the level of precision appropriate to its current stage of development; more elaborate versions appear in the CPR textbook and in the Repair Pressure paper.
+
+\section{Reachability Loss Under Projection}
+
+\begin{definition}[Reachable Set]
+Let $\mathcal{C}$ be a configuration space and let $\mathcal{T}$ be a family of admissible transformations. The reachable set from $c \in \mathcal{C}$ is
+\[
+\mathsf{Reach}_{\mathcal{T}}(c) = \{c' \in \mathcal{C} : c' = T(c) \text{ for some finite composition } T \in \langle \mathcal{T} \rangle \}.
+\]
+\end{definition}
+
+\begin{definition}[Projection-Induced Reachability Loss]
+Let $\pi:\mathcal{C}\to\mathcal{M}$ be a projection. Define the projected reachable set by
+\[
+\mathsf{Reach}_{\pi}(c) = \pi^{-1}\!\left(\mathsf{Reach}_{\pi\mathcal{T}\pi^{-1}}(\pi(c))\right),
+\]
+where $\pi\mathcal{T}\pi^{-1}$ denotes the induced family of transformations on the quotient representation whenever this is well-defined. The projection-induced reachability loss is
+\[
+L_{\pi}(c) = 1 - \frac{\mu\bigl(\mathsf{Reach}_{\mathcal{T}}(c)\cap \mathsf{Reach}_{\pi}(c)\bigr)}{\mu\bigl(\mathsf{Reach}_{\mathcal{T}}(c)\bigr)}.
+\]
+\end{definition}
+
+\begin{proposition}
+If $\pi$ is injective on $\mathsf{Reach}_{\mathcal{T}}(c)$, then $L_{\pi}(c)=0$.
+\end{proposition}
+
+\begin{proof}
+If $\pi$ is injective on $\mathsf{Reach}_{\mathcal{T}}(c)$, then no two distinct reachable configurations are identified by the projection. Therefore the projected dynamics preserve all distinctions among configurations reachable from $c$, and lifting the projected reachable set recovers the original:
+\[
+\mathsf{Reach}_{\pi}(c)\cap \mathsf{Reach}_{\mathcal{T}}(c) = \mathsf{Reach}_{\mathcal{T}}(c).
+\]
+Hence $L_{\pi}(c) = 1 - \mu(\mathsf{Reach}_{\mathcal{T}}(c))/\mu(\mathsf{Reach}_{\mathcal{T}}(c)) = 0$.
+\end{proof}
+
+\begin{remark}
+This proposition formalizes the key point: projection is not harmful merely because it compresses. It becomes harmful when it collapses distinctions that are relevant to future reachability. Projection failure in the sense of CLIO is not excessive compression per se but distinction-relevant compression.
+\end{remark}
+
+\section{Admissibility Composition}
+
+\begin{definition}[Admissibility Score]
+Let $\mathcal{F}(c)$ denote the family of futures judged relevant from configuration $c$. For a transformation $T:\mathcal{C}\to\mathcal{C}$, define
+\[
+A_T(c) = \frac{\mu\bigl(\mathsf{Reach}(T(c))\cap \mathcal{F}(c)\bigr)}{\mu\bigl(\mathsf{Reach}(c)\cap \mathcal{F}(c)\bigr)}.
+\]
+When $A_T(c)\geq \alpha$, the transformation $T$ is called $\alpha$-admissible at $c$.
+\end{definition}
+
+\begin{proposition}[Composition of Admissibility Bounds]
+Suppose $T_1$ is $\alpha$-admissible at $c$, and $T_2$ is $\beta$-admissible at $T_1(c)$ with respect to the transported future family. Then $T_2\circ T_1$ is at least $\alpha\beta$-admissible at $c$.
+\end{proposition}
+
+\begin{proof}
+By assumption,
+\[
+\mu\bigl(\mathsf{Reach}(T_1(c))\cap \mathcal{F}(c)\bigr) \geq \alpha\cdot\mu\bigl(\mathsf{Reach}(c)\cap \mathcal{F}(c)\bigr).
+\]
+Applying $T_2$ preserves at least a $\beta$ fraction of the futures remaining after $T_1$:
+\[
+\mu\bigl(\mathsf{Reach}(T_2(T_1(c)))\cap \mathcal{F}(c)\bigr) \geq \beta\cdot\mu\bigl(\mathsf{Reach}(T_1(c))\cap \mathcal{F}(c)\bigr).
+\]
+Combining the two inequalities gives
+\[
+\mu\bigl(\mathsf{Reach}(T_2(T_1(c)))\cap \mathcal{F}(c)\bigr) \geq \alpha\beta\cdot\mu\bigl(\mathsf{Reach}(c)\cap \mathcal{F}(c)\bigr),
+\]
+so $T_2\circ T_1$ is at least $\alpha\beta$-admissible at $c$.
+\end{proof}
+
+\begin{remark}
+This result explains why small admissibility losses accumulate severely under long transformation sequences. Even if each local step preserves a fraction $\alpha = 0.99$ of valued futures, a sequence of $n = 1000$ steps preserves only $0.99^{1000} \approx 4.3\times 10^{-5}$ of the original futures---near-total foreclosure despite apparently conservative local behaviour. This multiplicative erosion is the formal basis for treating admissibility preservation as a global constraint rather than a local heuristic.
+\end{remark}
+
+\section{Repair and Distinction Capacity}
+
+\begin{definition}[Distinction Capacity]
+Let $\mathcal{D}$ be a finite family of distinctions available to an observer. Assign each distinction $d_i\in\mathcal{D}$ a maintenance weight $w_i>0$ and a reliability score $r_i\in[0,1]$. Define the distinction capacity of the observer by
+\[
+\mathrm{Cap}(\mathcal{D}) = \sum_{d_i\in\mathcal{D}} w_i r_i.
+\]
+\end{definition}
+
+\begin{definition}[Repair Operator]
+A repair operator is a transformation $\mathcal{R}:\mathcal{D}\to\mathcal{D}'$ such that $\mathrm{Cap}(\mathcal{D}') > \mathrm{Cap}(\mathcal{D})$.
+\end{definition}
+
+\begin{proposition}[Minimal Repair Criterion]
+Let $\mathcal{D}$ be a distinction family with target capacity $\tau$. If $\mathrm{Cap}(\mathcal{D})<\tau$, then a repair operator $\mathcal{R}$ restores viability precisely when
+\[
+\sum_{d_i\in\mathcal{D}'} w_i r_i \geq \tau.
+\]
+\end{proposition}
+
+\begin{proof}
+Viability relative to $\tau$ requires distinction capacity at least $\tau$. After repair, the distinction family is $\mathcal{D}'$, so viability is restored exactly when $\mathrm{Cap}(\mathcal{D}') \geq \tau$---which is both necessary and sufficient by definition.
+\end{proof}
+
+\begin{remark}
+This deliberately minimal model makes repair quantitatively tractable. More realistic versions would make $w_i$ and $r_i$ time-dependent, allow distinctions to interact (so that the collapse of one degrades neighbours), and include costs for maintaining or introducing distinctions. These extensions are developed in the Repair Pressure paper.
+\end{remark}
+
+\section{Repair Pressure and Collapse Threshold}
+
+\begin{definition}[Repair Pressure]
+Let $\mathrm{Cap}_t$ denote distinction capacity at time $t$, let $m_t$ denote maintenance effort applied at time $t$, and let $\lambda_t$ denote degradation pressure. A simple linear repair-pressure model is
+\[
+\mathrm{Cap}_{t+1} = \mathrm{Cap}_t + m_t - \lambda_t.
+\]
+The repair pressure at time $t$ is $P_t = \lambda_t - m_t$.
+\end{definition}
+
+\begin{proposition}[Collapse Under Persistent Positive Repair Pressure]
+If there exists $\epsilon>0$ such that $P_t\geq \epsilon$ for all $t\geq t_0$, then distinction capacity eventually falls below any fixed viability threshold $\tau$.
+\end{proposition}
+
+\begin{proof}
+Since $\mathrm{Cap}_{t+1} = \mathrm{Cap}_t - P_t$ and $P_t \geq \epsilon$, we have $\mathrm{Cap}_{t+1} \leq \mathrm{Cap}_t - \epsilon$. Iterating from $t_0$:
+\[
+\mathrm{Cap}_{t_0+n} \leq \mathrm{Cap}_{t_0} - n\epsilon.
+\]
+For any threshold $\tau$, choose $n > (\mathrm{Cap}_{t_0} - \tau)/\epsilon$. Then $\mathrm{Cap}_{t_0+n} < \tau$.
+\end{proof}
+
+\begin{remark}
+This is the simplest formal expression of the repair-pressure intuition: if degradation consistently exceeds maintenance, collapse below the viability threshold is not an accident but a guaranteed consequence of the dynamics. The result motivates treating repair pressure as a leading indicator of systemic fragility rather than a retrospective explanation for collapse.
+\end{remark}
+
+\section{Representational Entropy and the Projection--Ambiguity Identity}
+
+\begin{definition}[Representational Entropy]
+Let $\pi:X\to M$ be a projection from a finite configuration space $X$ to a representation space $M$. For $m\in M$, let $p(m) = |\pi^{-1}(m)|/|X|$. The representational entropy of $\pi$ is
+\[
+S_\pi = -\sum_{m\in M} p(m)\log p(m).
+\]
+Define also the expected inverse-image entropy $\bar{S}_{\pi} = \sum_{m\in M}p(m)\log|\pi^{-1}(m)|$.
+\end{definition}
+
+\begin{proposition}[Projection--Ambiguity Identity]
+Let $X$ be finite and uniformly distributed, and let $\pi:X\to M$ be any projection. Then
+\[
+S_\pi + \bar{S}_{\pi} = \log|X|.
+\]
+\end{proposition}
+
+\begin{proof}
+Since $X$ is uniformly distributed, $p(m) = |\pi^{-1}(m)|/|X|$, so $-\log p(m) = \log|X| - \log|\pi^{-1}(m)|$. Therefore
+\[
+S_\pi = \sum_{m}p(m)\bigl(\log|X| - \log|\pi^{-1}(m)|\bigr) = \log|X| - \bar{S}_\pi,
+\]
+which gives $S_\pi + \bar{S}_\pi = \log|X|$.
+\end{proof}
+
+\begin{remark}
+This identity gives CLIO a useful diagnostic: projection does not destroy complexity but redistributes it. Complexity removed from explicit representation reappears as ambiguity inside inverse images. A projection that looks efficient---low $S_\pi$---may be creating high ambiguity $\bar{S}_\pi$ about which underlying configuration is present. When those distinctions are admissibility-relevant, the redistribution constitutes projection failure.
+\end{remark}
+
+\section{Ontological Deficit Bound}
+
+\begin{definition}[Ontological Deficit]
+Let $\mathcal{D}_{\mathrm{req}}$ be the family of distinctions required for successful intervention and $\mathcal{D}_{\mathrm{obs}}$ the family available to the observer. Define
+\[
+\delta_T = \frac{\mu(\mathcal{D}_{\mathrm{req}}\setminus \mathcal{D}_{\mathrm{obs}})}{\mu(\mathcal{D}_{\mathrm{req}})}.
+\]
+\end{definition}
+
+\begin{proposition}
+$\delta_T = 0$ if and only if every required distinction is available up to null sets. $\delta_T = 1$ if and only if none of the required distinctions are available up to null sets.
+\end{proposition}
+
+\begin{proof}
+If $\delta_T = 0$ then $\mu(\mathcal{D}_{\mathrm{req}}\setminus\mathcal{D}_{\mathrm{obs}}) = 0$, so required distinctions not in $\mathcal{D}_{\mathrm{obs}}$ form a null set, meaning all required distinctions are available up to null sets. If $\delta_T = 1$ then $\mu(\mathcal{D}_{\mathrm{req}}\setminus\mathcal{D}_{\mathrm{obs}}) = \mu(\mathcal{D}_{\mathrm{req}})$, so $\mu(\mathcal{D}_{\mathrm{req}}\cap\mathcal{D}_{\mathrm{obs}}) = 0$, meaning no required distinctions are available except on a null set.
+\end{proof}
+
+\begin{remark}
+More refined versions of $\delta_T$ should weight distinctions by intervention relevance, maintenance cost, and causal centrality---so that the loss of a high-centrality distinction contributes more to the deficit than the loss of a peripheral one. These refinements are part of the ongoing Distinguishability Geometry formalization.
+\end{remark}
+
+\section{The Optimization--Admissibility Conflict}
+
+\begin{proposition}[Generic Conflict Between Optimization and Admissibility]
+Let $\mathcal{C}=[0,1]$, $U(x)=x$, and let the admissible region be $\mathcal{A}=[0,a]$ for some $0<a<1$. Then the utility-maximizing point $x^* = 1$ is inadmissible.
+\end{proposition}
+
+\begin{proof}
+$U(x)=x$ is strictly increasing on $[0,1]$, so $x^* = 1$. But $1 \notin [0,a]$ since $a < 1$, so the optimum lies outside the admissible region.
+\end{proof}
+
+\begin{remark}
+The example is deliberately minimal, but it captures a recurring structural fact: the point maximizing a local objective need not preserve future possibility. In high-dimensional systems this conflict is much harder to detect, because the admissibility manifold boundary is not visible in the metric used to evaluate performance. The practical consequence is that optimization pressure systematically pushes systems toward the admissibility boundary without this being detectable from performance metrics alone.
+\end{remark}
+
+\section{History--State Non-Recoverability}
+
+\begin{definition}[State Projection]
+Let $\mathcal{H}$ be a set of histories and let $\sigma:\mathcal{H}\to\mathcal{S}$ map each history to its terminal state.
+\end{definition}
+
+\begin{proposition}[Non-Recoverability of History from State]
+If there exist distinct $H_1, H_2 \in \mathcal{H}$ with $\sigma(H_1) = \sigma(H_2)$, then no function $r:\mathcal{S}\to\mathcal{H}$ can recover the original history for all inputs.
+\end{proposition}
+
+\begin{proof}
+Assume $r$ exists. Since $\sigma(H_1) = \sigma(H_2) = s$, the function $r$ must satisfy both $r(s) = H_1$ and $r(s) = H_2$. Since $H_1 \neq H_2$, this is impossible for a function. Contradiction.
+\end{proof}
+
+\begin{remark}
+This is the formal core of the history-before-state principle. Whenever multiple histories share a terminal state, the state cannot contain sufficient information to reconstruct the history---and any framework that discards the history in favour of the state thereby discards information that is in principle unrecoverable. The practical significance is that state-centered computational systems are irreversibly information-lossy in a way that history-native systems need not be.
+\end{remark}
+
+%%═════════════════════════════════════════════════════════════════════════════
+\chapter{Future Research Directions}
+%%═════════════════════════════════════════════════════════════════════════════
+
+This appendix provides short previews of the major research directions that are active, planned, or clearly implied by the current state of the framework but not yet sufficiently developed to occupy main-text chapters. The document as a whole describes what the program has accomplished; this appendix describes where it is going. The distinction matters: a monograph that ends with a sense of closure misrepresents a living research program, and the open frontiers are at least as important as the established results.
+
+\subsection*{Repair Pressure (Formal Paper)}
+
+The Repair Pressure paper---\textit{Repair Pressure and the Lifecycle of Distinctions}---is the most immediate formal output in preparation. It develops the sketch results in Appendix~\ref{app:math} into a complete formal treatment, including a full proof of the Repair Pressure Collapse Theorem under general (not merely linear) degradation dynamics, a classification of distinction lifecycles by characteristic failure modes, and a quantitative account of how repair pressure propagates through distinction topologies via cascade. The paper is intended as the foundational formal contribution of the Distinguishability Geometry program and will serve as the technical backbone for subsequent work on institutional repair and scientific knowledge dynamics.
+
+\subsection*{The RDR Conjecture (CPR Textbook, Chapter~74)}
+
+The restricted Reachability-Distinction Reducibility conjecture claims that any sequence of admissible, distinction-preserving transformations can be decomposed into elementary repair operations drawn from a finite generating set determined by the distinction topology of the initial configuration. Proof of this result would provide a canonical basis for the space of admissible evolutions and significantly simplify analysis across all application domains. The necessary machinery is developed in CPR Chapters~61--73; the proof itself is the primary remaining mathematical priority in the textbook.
+
+\subsection*{Semantic Infrastructure}
+
+The Semantic Infrastructure project aims to build knowledge systems organized around provenance, reconstruction, and distinction maintenance rather than keyword search and file hierarchy. The vision is a unified archive in which documents are navigable by historical connection, distinction relationship, and admissibility-preserving traversal---so that the question ``what should I read next given what I know and what I am trying to do?'' has a geometrically informed answer. Current prototyping uses embedding-based similarity as a first approximation; the roadmap involves integrating distinction-topology representations as the formal framework matures.
+
+\subsection*{History DAGs and Provenance Systems}
+
+A more specific computational priority is the development of History DAG (directed acyclic graph) data structures capable of representing the full provenance structure of computational objects---not merely version history in the sense of a linear commit log but the branching, merging, and selective-replay structure that event-sourced systems require. History DAGs are the natural data structure for Spherepop's execution model and for MEM$|$8-style memory systems, and their formal properties---what can be efficiently queried, what cannot be recovered, how they compose---are an important open area.
+
+\subsection*{Preference Fields}
+
+Preference Fields on semantic manifolds remain at an early stage despite their importance for economic and collective-cognition applications. The key open problem is specifying the dynamics: how preference fields evolve in response to institutional constraints, information shocks, and interaction among agents. A worked example connecting Preference Field dynamics to the admissibility program---showing that preference trajectories that preserve admissibility are precisely those that avoid certain classes of coordination failure---would constitute the first formal result of this subprogram.
+
+\subsection*{Constraint-First Physics and RSVP Predictions}
+
+The most demanding frontier is translating RSVP's qualitative cosmological proposals into quantitative predictions. The three priority predictions are: (1) clustering of cosmological parameters near admissibility manifold boundaries in the RSVP configuration space; (2) reinterpretation of the dark energy equation-of-state parameter $w$ as a function of constraint-field pressure $S$; and (3) an alternative early-universe smoothing mechanism via lamphrodyne relaxation that produces large-scale homogeneity without an inflationary epoch. Each prediction requires solving the RSVP field equations in cosmologically relevant regimes, which in turn requires specifying the interaction functionals $\mathcal{D}_\Phi$, $\mathcal{F}$, and $\mathcal{G}$. This specification is the primary physics open problem.
+
+\subsection*{Reachability Economics}
+
+The Fiscal Reachability framework has been developed at the level of concepts and policy intuitions. The next phase requires formal models: an agent economy in which fiscal admissibility can be computed explicitly, a comparison of admissibility-preserving fiscal rules with conventional debt-brake or deficit-targeting rules under simulated shocks, and a measure of civilizational reachability at the level of national economies that can be estimated from available data. Connecting these models to the admissibility manifold geometry would constitute the first quantitative result of the reachability economics program.
+
+\subsection*{Admissibility-Based Alignment}
+
+The admissibility-based alignment proposal---specifying alignment targets as regions of the admissibility manifold rather than as reward functions---requires a formal model of the admissibility manifold for a realistic learning system, a training dynamics that incorporates admissibility constraints without collapsing into pure constraint satisfaction, and an evaluation framework that can distinguish admissible from inadmissible systems behaviourally. These are hard problems, but they are well-posed in a way that many current alignment formulations are not, and the formal machinery of the admissibility program provides tools that purely reward-theoretic approaches lack.
+
+\subsection*{Spherepop VM and History-Native Execution}
+
+The Spherepop virtual machine is the engineering priority for the computational branch. The C interpreter provides proof of concept; the Rust implementation in development will provide the performance and type-safety needed for serious programs. The longer-term goal is a VM architecture in which execution histories are maintained as first-class objects throughout runtime---accessible to programs for replay, inspection, and repair---without the performance overhead that naive event-sourcing incurs. This requires designing the VM's internal data structures around History DAGs rather than stacks or heaps.
+
+\subsection*{STTI: Semantic Terminal Interface}
+
+STTI is the user-facing manifestation of the semantic infrastructure vision. The prototype currently provides embedding-based navigation of a local archive. The roadmap involves: (1) integrating distinction-topology navigation so that adjacent documents are those that maintain overlapping distinctions rather than those that are merely semantically similar; (2) adding admissibility-aware traversal that highlights paths through the archive that preserve a user-specified class of future possibilities; and (3) exposing History DAG provenance so that users can navigate the development history of ideas rather than merely their current state.
+
+\subsection*{Cakewalk and Automated Research Dissemination}
+
+Cakewalk's role is to reduce the overhead of maintaining a large, continuously evolving research output across multiple formats and platforms. The current system handles LuaLaTeX compilation, audio processing, and basic web publication. The roadmap involves automating the production of structured research summaries keyed to the layered architecture of this monograph, so that each new paper or monograph is automatically situated within the broader program rather than requiring manual cross-referencing.
+
+\subsection*{Semantic Merge Systems}
+
+A longer-term computational vision is the development of semantic merge systems: tools that can merge two versions of a research document, codebase, or knowledge structure not by line-level text diffing but by distinction-topology diffing---identifying where the two versions make incompatible distinctions, where they maintain the same distinctions under different vocabulary, and where one version has lost distinctions that the other maintains. This application would demonstrate the practical value of Distinguishability Geometry in a domain where the current state of the art (text-based diff and merge) is clearly inadequate.
+
+%%═════════════════════════════════════════════════════════════════════════════
+\begin{thebibliography}{99}
+%%═════════════════════════════════════════════════════════════════════════════
+
+\bibitem{alexander1979} Alexander, C. (1979). \textit{The Timeless Way of Building}. Oxford University Press.
+\bibitem{alexander2002} Alexander, C. (2002--2005). \textit{The Nature of Order}, Vols. I--IV. Center for Environmental Structure.
+\bibitem{ashby1956} Ashby, W. R. (1956). \textit{An Introduction to Cybernetics}. Chapman \& Hall.
+\bibitem{barwise1983} Barwise, J., \& Perry, J. (1983). \textit{Situations and Attitudes}. MIT Press.
+\bibitem{bertalanffy1968} von Bertalanffy, L. (1968). \textit{General System Theory}. George Braziller.
+\bibitem{brooks1991} Brooks, R. A. (1991). Intelligence without representation. \textit{Artificial Intelligence}, 47(1--3), 139--159.
+\bibitem{church1936} Church, A. (1936). An unsolvable problem of elementary number theory. \textit{American Journal of Mathematics}, 58(2), 345--363.
+\bibitem{codd1970} Codd, E. F. (1970). A relational model of data for large shared data banks. \textit{Communications of the ACM}, 13(6), 377--387.
+\bibitem{cover2006} Cover, T. M., \& Thomas, J. A. (2006). \textit{Elements of Information Theory} (2nd ed.). Wiley.
+\bibitem{crutchfield1994} Crutchfield, J. P. (1994). The calculi of emergence. \textit{Physica D}, 75(1--3), 11--54.
+\bibitem{dawkins1982} Dawkins, R. (1982). \textit{The Extended Phenotype}. Oxford University Press.
+\bibitem{dennett1991} Dennett, D. C. (1991). \textit{Consciousness Explained}. Little, Brown and Company.
+\bibitem{fant1973} Fant, K. M. (1973). \textit{Logically Determined Design}. MCA Publishing.
+\bibitem{feynman1965} Feynman, R. P. (1965). \textit{The Character of Physical Law}. MIT Press.
+\bibitem{friston2010} Friston, K. (2010). The free-energy principle: A unified brain theory? \textit{Nature Reviews Neuroscience}, 11(2), 127--138.
+\bibitem{gibson1979} Gibson, J. J. (1979). \textit{The Ecological Approach to Visual Perception}. Houghton Mifflin.
+\bibitem{godel1931} G\"odel, K. (1931). \"Uber formal unentscheidbare S\"atze. \textit{Monatshefte f\"ur Mathematik und Physik}, 38, 173--198.
+\bibitem{gopnik2009} Gopnik, A. (2009). \textit{The Philosophical Baby}. Farrar, Straus and Giroux.
+\bibitem{gopnik1999} Gopnik, A., Meltzoff, A. N., \& Kuhl, P. K. (1999). \textit{The Scientist in the Crib}. William Morrow.
+\bibitem{holland1992} Holland, J. H. (1992). \textit{Adaptation in Natural and Artificial Systems}. MIT Press.
+\bibitem{jaynes2003} Jaynes, E. T. (2003). \textit{Probability Theory: The Logic of Science}. Cambridge University Press.
+\bibitem{juarrero1999} Juarrero, A. (1999). \textit{Dynamics in Action: Intentional Behavior as a Complex System}. MIT Press.
+\bibitem{kauffman1993} Kauffman, S. A. (1993). \textit{The Origins of Order}. Oxford University Press.
+\bibitem{kolmogorov1965} Kolmogorov, A. N. (1965). Three approaches to the quantitative definition of information. \textit{Problems of Information Transmission}, 1(1), 1--7.
+\bibitem{kuhn1962} Kuhn, T. S. (1962). \textit{The Structure of Scientific Revolutions}. University of Chicago Press.
+\bibitem{lakatos1978} Lakatos, I. (1978). \textit{The Methodology of Scientific Research Programmes}. Cambridge University Press.
+\bibitem{lamport1978} Lamport, L. (1978). Time, clocks, and the ordering of events in a distributed system. \textit{Communications of the ACM}, 21(7), 558--565.
+\bibitem{lecun2022} LeCun, Y. (2022). A path toward autonomous machine intelligence. Open Review White Paper.
+\bibitem{mackay2003} MacKay, D. J. C. (2003). \textit{Information Theory, Inference and Learning Algorithms}. Cambridge University Press.
+\bibitem{maturana1980} Maturana, H., \& Varela, F. (1980). \textit{Autopoiesis and Cognition}. Reidel.
+\bibitem{mccarthy1960} McCarthy, J. (1960). Recursive functions of symbolic expressions. \textit{Communications of the ACM}, 3(4), 184--195.
+\bibitem{meadows2008} Meadows, D. H. (2008). \textit{Thinking in Systems}. Chelsea Green.
+\bibitem{milnor1963} Milnor, J. (1963). \textit{Morse Theory}. Princeton University Press.
+\bibitem{newell1972} Newell, A., \& Simon, H. A. (1972). \textit{Human Problem Solving}. Prentice Hall.
+\bibitem{norvig2021} Russell, S., \& Norvig, P. (2021). \textit{Artificial Intelligence: A Modern Approach} (4th ed.). Pearson.
+\bibitem{pearl2009} Pearl, J. (2009). \textit{Causality} (2nd ed.). Cambridge University Press.
+\bibitem{popper1959} Popper, K. (1959). \textit{The Logic of Scientific Discovery}. Hutchinson.
+\bibitem{powers1973} Powers, W. T. (1973). \textit{Behavior: The Control of Perception}. Aldine.
+\bibitem{prigogine1984} Prigogine, I., \& Stengers, I. (1984). \textit{Order Out of Chaos}. Bantam.
+\bibitem{rosen1985} Rosen, R. (1985). \textit{Anticipatory Systems}. Pergamon.
+\bibitem{rumelhart1986} Rumelhart, D. E., McClelland, J. L., \& PDP Research Group. (1986). \textit{Parallel Distributed Processing}. MIT Press.
+\bibitem{salingaros2021} Salingaros, N. A. (2021). \textit{Twelve Lectures on Architecture}. Umbau-Verlag.
+\bibitem{shannon1948} Shannon, C. E. (1948). A mathematical theory of communication. \textit{Bell System Technical Journal}, 27, 379--423, 623--656.
+\bibitem{simon1962} Simon, H. A. (1962). The architecture of complexity. \textit{Proceedings of the American Philosophical Society}, 106(6), 467--482.
+\bibitem{smolin2006} Smolin, L. (2006). \textit{The Trouble with Physics}. Houghton Mifflin.
+\bibitem{turing1936} Turing, A. M. (1936). On computable numbers. \textit{Proceedings of the London Mathematical Society}, 42(2), 230--265.
+\bibitem{wainwright2008} Wainwright, M. J., \& Jordan, M. I. (2008). Graphical models, exponential families, and variational inference. \textit{Foundations and Trends in Machine Learning}, 1(1--2), 1--305.
+\bibitem{wiener1948} Wiener, N. (1948). \textit{Cybernetics}. MIT Press.
+\bibitem{whittle2017} Whittle, M. (2017). \textit{Cosmology: The History and Nature of Our Universe}. The Great Courses.
+
+%% ── Process-Native Program ────────────────────────────────────────────────────
+\bibitem{flyxion_admissibility} Flyxion. (2026). \textit{The Admissibility Field}. Unpublished monograph.
+\bibitem{flyxion_distinguishability} Flyxion. (2026). \textit{Distinguishability Geometry}. Unpublished monograph.
+\bibitem{flyxion_repair} Flyxion. (2026). \textit{Repair as a Fundamental Category}. Unpublished monograph.
+\bibitem{flyxion_repair_pressure} Flyxion. (2026). \textit{Repair Pressure and the Lifecycle of Distinctions}. Working paper.
+\bibitem{flyxion_constraint} Flyxion. (2026). \textit{Constraint Before Content}. Research monograph.
+\bibitem{flyxion_failure} Flyxion. (2026). \textit{The Topology of Failure}. Research essay.
+\bibitem{flyxion_programs} Flyxion. (2026). \textit{Programs as Histories}. Research monograph.
+\bibitem{flyxion_collapse} Flyxion. (2026). \textit{Waves of Collapse}. Research monograph.
+\bibitem{flyxion_anomalies} Flyxion. (2026). \textit{Persistent Anomalies and the Geometry of Ontology Revision}. Research monograph.
+\bibitem{flyxion_fiscal} Flyxion. (2026). \textit{Fiscal Reachability and the Geometry of Public Finance}. Research monograph.
+\bibitem{flyxion_coordination} Flyxion. (2026). \textit{Coordination Geometry}. Research monograph.
+\bibitem{flyxion_kernel} Flyxion. (2026). \textit{Kernel Embeddings and the Separation of Measure Phenomenon}. Research monograph.
+\bibitem{flyxion_beyond} Flyxion. (2026). \textit{Beyond Prediction: Reachability, Admissibility, and the Geometry of Future Preservation}. Research paper.
+\bibitem{flyxion_latent} Flyxion. (2026). \textit{Against Latent Fundamentalism}. Research essay.
+\bibitem{flyxion_rsvp} Flyxion. (2026). \textit{RSVP: Relativistic Scalar--Vector Plenum}. Working framework documentation.
+\bibitem{flyxion_hydra} Flyxion. (2026). \textit{HYDRA: Hybrid Dynamic Reasoning Architecture}. Architectural specification.
+\bibitem{flyxion_clio} Flyxion. (2026). \textit{CLIO: Constraint-Leveraged Inference and Optimization}. Research framework.
+\bibitem{flyxion_spherepop} Flyxion. (2026). \textit{Spherepop: Histories, Collapse, and Computational Ontology}. Language specification and implementation notes.
+\bibitem{flyxion_cpr} Flyxion. (2026). \textit{Constraint, Projection, and Reachability: A Mathematical Introduction to Process-Native Frameworks}. Monograph in preparation (92 chapters, 391 pp.).
+\bibitem{flyxion_coordination2} Flyxion. (2026). \textit{Civilizations as Reachability Systems}. Research essay.
+\bibitem{flyxion_preference} Flyxion. (2026). \textit{Preference Fields on Semantic Manifolds}. Research paper.
+\bibitem{mem8} 8b.IS. (2026). \textit{MEM$|$8 Documentation and Design Notes}. Available from \texttt{https://8b.is/}.
+
+\end{thebibliography}
+
+\end{document}

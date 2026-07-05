@@ -1,0 +1,158 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Pagella}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem*{remark}{Remark}
+
+\title{\textbf{The Ecology of Constraints}\\[4pt]
+\large Feasibility and Diversity in Constraint Populations}
+\author{Flyxion}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Prior work in this corpus treats constraints as generative at the level of a single system: a single admissible region, a single viability manifold, a single boundary within which structure becomes possible. This essay moves to populations of constraints, asking not what one constraint does but how many constraints, jointly governing overlapping territory, compete, cooperate, propagate violation, and repair one another. The central formal move is to recognize that a constraint population is a sympoietic system in the precise sense already established in \emph{Recursive Continuation}, with individual constraints playing the role that agents play in that essay's Definition 5.1. This licenses importing that essay's diversity apparatus directly: a population of constraints can fail in two independent ways, by being jointly infeasible (no state satisfies all of them) or by being redundant (nominally many constraints that in fact catch the same failures, and so provide little more protection than one). The essay establishes that these two pathologies are not simply independent: for a population of exactly two constraints, infeasibility structurally forces the pair to register as maximally diverse rather than redundant, but this protection fails once three or more constraints are present, where a genuinely redundant block can be entangled with a conflicting constraint such that positive and negative correlation cancel in the population average, reporting maximal diversity for a population that is three-quarters a single constraint wearing multiple names.
+\end{abstract}
+
+\section{From Single Constraint to Constraint Population}
+
+Existing treatments of admissibility in this corpus fix a single viability manifold $A\subseteq X$ and ask whether a trajectory remains inside it. This essay considers instead a \emph{population} of constraints $\chi_1,\dots,\chi_n$, each $\chi_i$ specifying its own admissible region $A_i\subseteq X$, with the population's joint admissible region given by
+\[
+A \;=\; \bigcap_{i=1}^n A_i.
+\]
+Nothing about this setup is new on its own; intersection of constraints is the ordinary way multiple requirements combine. What is new is treating the $\chi_i$ themselves as objects with their own histories and their own dynamics, rather than as fixed, given sets — a building code that is amended, a type system that is extended, a norm that shifts. Each $\chi_i$ is, in the sense of \emph{History Before Function}, itself a compressed operator $\chi_i = C(H_i)$ arising from some history of prior cases, disputes, and revisions, and each is, in the sense of \emph{Recursive Continuation}, subject to its own Level-3 recursive modification, $\chi_i(t+1) = G_i(\chi_i(t), \dots)$. The question this essay asks is what happens once the $\dots$ in that update rule is allowed to depend on the state of the \emph{other} constraints in the population, not only on $\chi_i$'s own trajectory.
+
+\section{Constraints as Sympoietic Agents}
+
+\begin{proposition}[Constraint Populations Are Sympoietic]
+\label{prop:sympoietic}
+Let $\chi_1,\dots,\chi_n$ be a constraint population sharing a common state space $X$ (the medium $E_t$ of \emph{Recursive Continuation}, Definition 5.1), with each $\chi_i$'s update depending on the joint state of the population: $\chi_i(t+1) = J_i(\chi_i(t), E_{t+1})$, and $E_{t+1} = H(E_t, \chi_1(t),\dots,\chi_n(t))$. Then the population instantiates that essay's Definition 5.1 directly, with $\chi_i$ playing the role of agent $a_i$, and Theorem 5.2 applies without modification: the population exhibits Level-3 recursive modification at the collective level even where no individual $\chi_i$, considered alone, does.
+\end{proposition}
+
+\begin{proof}
+Direct substitution into Definition 5.1 and Theorem 5.2 of \emph{Recursive Continuation}: the hypotheses of that theorem require only the coupled-update structure stated above, which is exactly what is assumed here.
+\end{proof}
+
+\begin{remark}
+This is the essay's central reframing, and it costs nothing new to state because it was already proved. A body of statutory law that shifts only through the accumulated, individually modest effect of many separate judicial rulings, no one of which represents or intends to be modifying the law's overall shape, is a direct instance: each ruling is a local, low-level update, and the shape of the law that emerges is a collective Level-3 phenomenon in exactly \emph{Recursive Continuation} \S 5's sense, with case law standing in for that essay's example of language change through the aggregate of individually unremarkable utterances.
+\end{remark}
+
+\begin{remark}[Propagation and repair, restated]
+What was informally described as one constraint's violation being ``absorbed'' by neighboring constraints tightening or loosening elsewhere is simply Proposition~\ref{prop:sympoietic} in operation: $\chi_i$'s update rule $J_i$ is permitted to respond to the joint state $E_{t+1}$, which encodes the current state of every other constraint in the population, not merely $\chi_i$'s own history. No new mechanism is required beyond the coupling already built into the sympoietic structure.
+\end{remark}
+
+\section{Two Independent Pathologies}
+
+Reusing the sympoietic frame licenses a second import: \emph{Recursive Continuation}'s repair-diversity apparatus, with the constraints $\chi_1,\dots,\chi_n$ now playing the role that essay's repair or verification channels $c_1,\dots,c_m$ played in Definition 14.1.
+
+\begin{definition}[Feasibility]
+A constraint population is \emph{feasible} if $A = \bigcap_i A_i \neq \varnothing$.
+\end{definition}
+
+\begin{definition}[Constraint Diversity]
+Let $\bar\rho\in[0,1]$ denote the average pairwise correlation among the $\chi_i$'s failure events (the frequency with which they are jointly violated by the same states), and define, as in \emph{Recursive Continuation}, Definition 14.1,
+\[
+D_\chi \;=\; \frac{n}{1+(n-1)\bar\rho}.
+\]
+\end{definition}
+
+\begin{corollary}[Constraint Monoculture]
+As $\bar\rho\to1$, $D_\chi\to1$ regardless of $n$, and by that essay's Corollary 15.1, a single failure mode that defeats one $\chi_i$ defeats the population as a whole: many nominally distinct constraints provide no more protection against inadmissible drift than a single constraint would.
+\end{corollary}
+
+\begin{remark}[Against a folk intuition]
+Ordinary usage suggests that constraints ``cooperating'' — pulling in the same direction, reinforcing one another — is the healthy condition, and constraints ``competing'' — pulling against one another — is the pathological one. The apparatus above shows this is not quite right, and in one respect is backwards. Constraints that always move together, always violated by the same states and always satisfied by the same states, are exactly the $\bar\rho\to1$ case: however many of them there are, they function as one constraint wearing many names, and the population inherits the fragility of a single point of failure. What ordinary usage calls ``competition'' — constraints that bind on different states, ruling out different failure modes — is closer to the $\bar\rho\to0$ case that Definition 14.1 identifies as healthy diversity. Genuine pathology is not disagreement between constraints; it is either infeasibility (§4) or redundancy dressed up as multiplicity.
+\end{remark}
+
+\section{Feasibility Constrains Measured Diversity — Sometimes Perversely}
+
+A first fact is worth establishing before attempting any classification: for a population of exactly two constraints, infeasibility and measured redundancy cannot coincide.
+
+\begin{lemma}[Two-Constraint Infeasibility Bound]
+\label{lem:twoconstraint}
+Let $\chi_1,\chi_2$ be a population of two constraints on a finite state space, and let $\bar\rho$ denote their pairwise correlation computed as the standard $\phi$ coefficient on the violation-indicator contingency table. If the population is infeasible ($A=\varnothing$, equivalently no state satisfies both), then $\bar\rho\leq0$.
+\end{lemma}
+
+\begin{proof}
+Infeasibility means no state is jointly satisfied by both constraints, i.e.\ the contingency-table cell $n_{00}=0$. The $\phi$ coefficient is $\phi = (n_{11}n_{00}-n_{10}n_{01})/\sqrt{n_{1\cdot}n_{0\cdot}n_{\cdot1}n_{\cdot0}}$; with $n_{00}=0$ the numerator reduces to $-n_{10}n_{01}\leq0$, and the denominator is non-negative, giving $\phi\leq0$.
+\end{proof}
+
+\begin{remark}
+This is a clean, if narrow, fact: two genuinely incompatible constraints can never register as redundant under the standard correlation-based diversity measure. Infeasibility, at $n=2$, structurally pushes measured diversity up, not down — an incompatible pair looks maximally diverse by Definition~2.3's measure precisely because it is incompatible. Whatever pathology infeasibility represents, it is not the same pathology as redundancy, and the two cannot be conflated even in principle at this population size.
+\end{remark}
+
+This might suggest that feasibility and diversity, while independent, at least fail in mutually exclusive ways. The next result shows this impression does not survive once a third constraint is added.
+
+\begin{proposition}[Diversity Can Mask Redundancy in the Presence of Conflict]
+\label{prop:masking}
+There exists a population of four constraints, jointly infeasible, in which three of the four are pairwise identical (perfectly redundant), and yet the population's average pairwise correlation is exactly $\bar\rho=0$, giving $D_\chi=n=4$: the maximum value the diversity measure can report.
+\end{proposition}
+
+\begin{proof}
+Let $X=\{1,\dots,8\}$. Let $\chi_1=\chi_2=\chi_3$ each admit $\{1,2,3,4\}$ (violated exactly on $\{5,6,7,8\}$), and let $\chi_4$ admit $\{5,6,7,8\}$ (violated exactly on $\{1,2,3,4\}$). The joint admissible set is $\{1,2,3,4\}\cap\{5,6,7,8\}=\varnothing$: the population is infeasible. Among the $\binom{4}{2}=6$ pairs, the three pairs within $\{\chi_1,\chi_2,\chi_3\}$ have violation indicators that agree everywhere (all violated exactly on $\{5,6,7,8\}$), giving $\phi=+1$ for each. The three pairs crossing to $\chi_4$ have violation indicators that are exact complements of one another on every state, giving $\phi=-1$ for each. The average over all six pairs is $\bar\rho = (3\cdot(+1) + 3\cdot(-1))/6 = 0$ exactly, giving $D_\chi = 4/(1+3\cdot0) = 4$.
+\end{proof}
+
+\begin{remark}
+This is the essay's genuine payload, and it is a sharper and more useful finding than a simple classification into independent quadrants would have been. The positive correlation contributed by real redundancy and the negative correlation contributed by genuine conflict cancel in a simple average, and the resulting scalar $D_\chi$ reports the population as maximally diverse despite three-quarters of it being a single constraint wearing three names. A population's health cannot, therefore, be read off $D_\chi$ alone whenever both redundancy and conflict are simultaneously present: the diversity measure inherited from \emph{Recursive Continuation} was built and validated in that essay's setting, where the channels under discussion were repair or verification mechanisms not typically in tension with one another, and Lemma~\ref{lem:twoconstraint} together with Proposition~\ref{prop:masking} shows the measure requires a feasibility check alongside it, not merely as an independent second axis, but because feasibility failures can actively corrupt what the diversity score appears to say once three or more constraints are in play.
+\end{remark}
+
+Two further examples establish the more basic point that feasibility and diversity are not the same axis even away from this corrupting interaction.
+
+\begin{proposition}[Feasible Populations Span Both High and Low Diversity]
+\label{prop:feasiblespan}
+Feasibility does not determine $D_\chi$: there exist feasible populations with $D_\chi$ near its maximum and feasible populations with $D_\chi$ at its minimum.
+\end{proposition}
+
+\begin{proof}
+On $X=\{1,2,3,4\}$: let $\chi_1$ admit $\{1,2,3\}$ and $\chi_2$ admit $\{2,3,4\}$. Then $A=\{2,3\}\neq\varnothing$ (feasible), and the violation indicators ($\chi_1$ violated only at $4$; $\chi_2$ violated only at $1$) give $\phi=-1/3$, low correlation and $D_\chi$ close to its maximum of $2$. By contrast, let $\chi_1=\chi_2$ both admit $\{1,2,3\}$: $A=\{1,2,3\}\neq\varnothing$ (feasible), but the two constraints are violated by exactly the same state in every case, giving $\phi=1$ and $D_\chi=1$ despite $n=2$.
+\end{proof}
+
+\begin{remark}
+Together, Lemma~\ref{lem:twoconstraint} through Proposition~\ref{prop:feasiblespan} establish the essay's operational conclusion: feasibility must be checked directly, $A\neq\varnothing$, and diversity must be checked directly, via $\bar\rho$ computed with attention to whether conflicting and redundant subgroups might be present simultaneously — neither can be inferred from the other, and in populations of three or more constraints, a favorable diversity score cannot be trusted at face value without also checking whether it is the product of exactly this kind of cancellation.
+\end{remark}
+
+\section{Worked Examples}
+
+\textbf{Constitutional and statutory law.} A constitution changes slowly and sets the outer admissible region within which statutes, which change quickly, further narrow the admissible space. This is a two-timescale sympoietic pair in the sense of Proposition~\ref{prop:sympoietic}: statutory revision is the fast, individually modest update; constitutional interpretation shifts more slowly and in response to the accumulated pattern of statutory and judicial activity, exactly mirroring the fast agent/slow medium structure of \emph{Recursive Continuation} \S 5.
+
+\textbf{Building codes and inspection regimes.} A code is a constraint; an inspection regime is a verification channel in the sense of Definition 14.1. Multiple inspectors trained identically, using the same checklist and the same assumptions, add little effective diversity however many of them there are — the direct structural analogue of that essay's ten-identical-servers example in \S 14.1 — while inspectors drawing on independent training or independent professional traditions raise $D_\chi$ meaningfully even at the same headcount.
+
+\textbf{Type systems and runtime checks.} A static type system and a runtime assertion checking the same property are a low-$D_\chi$ pair: both fail together on the same category of error. A static type system paired with a runtime check for a genuinely different class of failure (resource exhaustion, say, rather than type mismatch) is a high-$D_\chi$ pair, catching different failure modes at different times.
+
+\textbf{Gene regulatory networks.} Transcription factor networks routinely exhibit precisely this structure: feedback loops in which one regulatory constraint's activation state governs another's threshold, and network motifs recur across organisms in a pattern well documented in systems biology, precisely because sympoietic constraint coupling of this kind is a repeatedly re-discovered solution rather than a special case.
+
+\section{Relation to the Corpus}
+
+This essay is intended to sit at the intersection of three previously separate programs. The Admissibility Program supplies the single-constraint apparatus — viability manifolds, repair, and the diversity machinery of \emph{Recursive Continuation} — that this essay extends from one constraint to a population of them. Coordination Geometry is concerned with how multiple agents jointly navigate shared constraint structure; Proposition~\ref{prop:sympoietic} is the specific claim that the constraints themselves, not only the agents subject to them, should be treated as the coordinating population. The Ontological Critique Program's insistence that operators and rules are compressed histories rather than primitives, developed in \emph{History Before Function}, is what licenses treating each $\chi_i$ as itself a dynamic, revisable object with its own generating history $H_i$, rather than as a static given the population merely intersects. None of these connections is claimed to be a theorem of the other programs specifically, since this essay does not have access to their full internal development; they are recorded here as the shape a unification would need to take.
+
+\section*{Open Problems}
+
+\begin{enumerate}
+\item \textbf{Ecological stability and extinction.} Under what conditions does a constraint in a population become effectively vacuous — never binding, because other constraints in the population already exclude every state it would have ruled out — and should a vacuous constraint be understood as having gone extinct in an ecological sense?
+\item \textbf{Invasive constraints.} A newly introduced constraint $\chi_{n+1}$ added to an existing population can be absorbed (raising $D_\chi$ if it targets an under-covered failure mode), rejected (rendering the population infeasible), or destabilizing (highly correlated with an existing $\chi_i$, contributing headcount without diversity). A formal criterion for predicting which outcome a given new constraint will produce, prior to introducing it, is not developed here.
+\item \textbf{Dynamics of $J_i$.} Proposition~\ref{prop:sympoietic} assumes each constraint's update rule $J_i$ exists without specifying its form. A general theory of how $J_i$ should depend on the joint state $E_t$ — how aggressively a constraint should tighten or loosen in response to violations elsewhere — is left to future work, plausibly connecting to \emph{Threshold of Deferral}'s treatment of when correction should be continuous versus deferred.
+\end{enumerate}
+
+\section*{References}
+
+\begin{enumerate}
+\item Flyxion. \emph{Recursive Continuation: Autopoiesis, Sympoiesis, and the Compression of Self-Modification}. 2026.
+\item Flyxion. \emph{History Before Function: Compression as the Origin of Operators}. 2026.
+\item Elinor Ostrom. \emph{Governing the Commons: The Evolution of Institutions for Collective Action}. Cambridge University Press, 1990.
+\item Jon Elster. \emph{Ulysses Unbound: Studies in Rationality, Precommitment, and Constraints}. Cambridge University Press, 2000.
+\item Uri Alon. \emph{An Introduction to Systems Biology: Design Principles of Biological Circuits}. Chapman and Hall/CRC, 2006.
+\end{enumerate}
+
+\end{document}

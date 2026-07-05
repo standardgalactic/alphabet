@@ -1,0 +1,663 @@
+% !TEX program = lualatex
+% ============================================================
+% Recursive Continuation: Autopoiesis, Sympoiesis, and the
+% Compression of Self-Modification
+% Author: Flyxion
+% Date: 2026
+% NOTE: This is a SKELETON pass — theorem statements, definitions,
+% and proof sketches are in final form; surrounding prose is
+% deliberately compressed and will be expanded in the next pass.
+% ============================================================
+
+\documentclass[12pt,a4paper]{article}
+
+% --------------------- Preamble ---------------------
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Termes}
+\usepackage{microtype}
+\usepackage{geometry}
+\geometry{margin=1.1in}
+\usepackage{setspace}
+\setstretch{1.2}
+\usepackage{parskip}
+\usepackage{titlesec}
+\titleformat{\section}{\Large\bfseries}{\thesection.}{0.8em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\paragraph}[runin]{\bfseries}{\theparagraph}{0.8em}{}[.]
+
+\usepackage{enumitem}
+\setlist{topsep=4pt,itemsep=4pt}
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{ragged2e}
+\usepackage{xcolor}
+\usepackage{amsthm}
+\usepackage{makeidx}
+\makeindex
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{skeletonnote}[theorem]{Skeleton Note}
+
+\newcommand{\Adm}{\mathcal{A}}
+\newcommand{\DR}{D_R}
+
+\title{\textbf{Recursive Continuation}\\
+\large Autopoiesis, Sympoiesis, and the Compression of Self-Modification}
+\author{Flyxion}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Discussions of recursive self-improvement (RSI) in artificial intelligence typically treat it as a threshold event: a future moment at which a sufficiently capable system begins inspecting and rewriting itself, triggering an accelerating spiral of capability. This essay argues that the underlying phenomenon — a system modifying the rule that governs its own future modification — is neither future nor rare. Autopoietic systems (cells, organisms) and sympoietic systems (ecosystems, languages, scientific communities, civilizations) have exhibited rule-level recursive modification for as long as life and culture have existed. What is misleading is the word \emph{improvement}: autopoiesis and sympoiesis are not, in general, optimization processes. Their recursion is aimed at continuation — at preserving the conditions under which the system's activity remains admissible — and improvement, where it occurs, is one trajectory among many available to a continuation-preserving system, not the defining one. This reframing yields a formal hierarchy, $\text{Recursive Self-Improvement} \subset \text{Admissible Recursive Modification} \subset \text{Recursive Continuation Dynamics}$, and a small number of theorems governing when recursive modification remains viable: a complexity–repair relation bounding sustainable capability growth, a repair-dominance result showing that mature systems become repair-limited rather than capability-limited, and a compression principle locating the genuine novelty of AGI not in recursion itself but in the concentration of recursive modification into a single, low-diversity substrate. Artificial general intelligence is then reframed as one case, not the central case, of a general theory of recursive continuation under admissibility constraints.
+\end{abstract}
+\newpage
+
+\tableofcontents
+\newpage
+
+% ============================================================
+\part{Recursion Before Improvement}
+% ============================================================
+
+\section{The Misleading Grammar of ``Self-Improvement''}
+\label{sec:myth-of-novelty}
+
+The contemporary discussion of artificial general intelligence (AGI) treats recursive self-improvement as a discrete, future threshold. The canonical version of the story runs roughly as follows: a system reaches a level of general capability sufficient to understand its own architecture; it uses that understanding to design a better version of itself; the better version is, among other things, better at the specific task of designing better versions of itself; and the loop compounds, each iteration shortening the time to the next, until capability grows far faster than any external process could track or correct. The event is typically presented as historically unprecedented — a departure from anything biological, cultural, or technological systems have previously done, and precisely for that reason treated as uniquely difficult to reason about, regulate, or prepare for.
+
+This essay's central claim is the opposite. Recursive modification of the rule governing a system's own future behavior is not new; it is close to definitional of autopoietic and sympoietic organization, and has characterized cells, organisms, ecosystems, languages, scientific communities, and civilizations for as long as those systems have existed. A cell does not merely persist through time; it continuously rebuilds the membranes, replaces the proteins, and regulates the metabolic pathways that are themselves responsible for continuing to rebuild, replace, and regulate. A language does not sit still while its speakers use it; every act of speech is also, cumulatively, an act of quiet revision to the grammar future speakers will inherit. Neither the cell nor the speech community is doing anything resembling intelligence-explosion-style optimization, and yet both are engaged in exactly the structural operation — a system's own activity altering the rule by which its future activity proceeds — that the AGI literature treats as novel.
+
+What \emph{is} misleading in the standard framing is the word \emph{improvement}, which smuggles in an optimization-oriented reading before any argument has been given for it. Autopoiesis, in Maturana and Varela's original sense, is a claim about organizational closure — a system continuously regenerating the components that regenerate it — with no built-in commitment to increasing capability. Sympoietic systems, a term due to Beth Dempster and developed further by Donna Haraway, more often evolve toward robustness, redundancy, and coexistence than toward any scalar notion of improvement: an ecosystem that becomes more resilient to disturbance has not thereby become more capable of anything in particular, and a language that develops a richer system of evidential marking has not thereby become a better language by any standard its speakers would recognize as improvement rather than mere change.
+
+The thesis of this essay is therefore not that recursive self-improvement is old. It is that recursive self-improvement is a narrow, optimization-biased special case of a more general and older phenomenon: \emph{recursive continuation}, in which a system's activity modifies the very rule by which it continues, without that modification being required to increase anything at all. The formal spine of the essay develops this containment,
+\[
+\text{Recursive Self-Improvement} \;\subset\; \text{Admissible Recursive Modification} \;\subset\; \text{Recursive Continuation Dynamics},
+\]
+and argues that what is genuinely novel about AGI is located in Part~III of this essay — not in the presence of recursion, but in its compression into a single, low-diversity substrate. Parts~I and~II are devoted to earning the containment above properly: showing, first, that rule-level recursive modification is already everywhere once it is defined precisely (Sec.~\ref{sec:recursive-modification} onward), and second, that whether such modification is \emph{improvement} in any interesting sense is a separate and much harder question than whether it occurs at all (Part~II).
+
+\section{Recursive Modification}
+\label{sec:recursive-modification}
+
+\subsection{Three Levels of Adaptation}
+\label{subsec:three-levels}
+
+Discussions of self-modifying systems routinely conflate three distinct phenomena. Making the distinction precise is the essay's first formal task, because much of the popular urgency around RSI depends on treating sophisticated instances of the first two levels as though they were instances of the third. The conflation is understandable: from the outside, a system whose behavior is changing looks the same whether the change is happening at Level 1, 2, or 3. The levels differ not in how much behavior changes but in \emph{what kind of object} is doing the changing.
+
+\begin{definition}[Levels of adaptation]
+\label{def:levels}
+Let $X$ be a state space, $\Theta$ a parameter space, and $\mathcal{F}$ a space of maps $X \to X$.
+\begin{itemize}
+  \item \textbf{Level 1 (state update).} $x_{t+1} = F(x_t)$, for fixed $F$. The system moves through $X$ under an unchanging rule.
+  \item \textbf{Level 2 (parameter update).} $x_{t+1} = F_{\theta_t}(x_t)$, where $F: \Theta \times X \to X$ is fixed but $\theta_t \in \Theta$ varies. The system's behavior changes, but only within the range expressible by the fixed parametric family $F$.
+  \item \textbf{Level 3 (rule update).} $F_{t+1} = G(F_t, x_t, E_t)$, where $G$ acts on $\mathcal{F}$ itself, $E_t$ an environment. The mapping governing future behavior is now the object being modified, not merely a parameter feeding into a fixed mapping.
+\end{itemize}
+\end{definition}
+
+Only Level 3 is recursive self-modification in the strong sense this essay is concerned with. A neural network updating weights by gradient descent is Level 2: the architecture and the update rule are fixed, and $\theta_t$ moves through $\Theta$. Treating Level 2 flexibility as evidence of Level 3 dynamics is the single most common category error in popular discussions of RSI.
+
+\subsection{A Worked Example: Three Systems, Three Levels}
+\label{subsec:worked-three-levels}
+
+The distinction is easiest to see by holding the domain fixed and varying only the level. Consider three systems that all ``get better at playing chess.''
+
+A chess engine following a fixed evaluation function and fixed search algorithm, whose only per-game variation is the sequence of board states it visits, is a Level~1 system: $F$ (evaluate position, search to depth $d$) never changes, only $x_t$ does. A system such as AlphaZero's training process is Level~2: the network architecture and the reinforcement-learning update rule are fixed by the researchers in advance, and what changes over training is $\theta_t$, the weight vector, moving through a fixed parametric family to better approximate a value function within that family's expressive range. No amount of additional training turns a fixed architecture into a different architecture. A neural architecture search process that evaluates candidate network topologies and selects better-performing structures, or a self-hosting compiler that rewrites the algorithm it uses to compile programs (including the next version of itself), is Level~3: the object being modified is $F$ itself, not a coordinate within a fixed $F$. In the architecture-search case, $G$ maps a topology together with performance data to a new topology, altering the very functional form future ``training'' will operate on; in the compiler case, $G$ maps a compilation algorithm together with its own source to a revised compilation algorithm, which can now compile itself differently than before.
+
+This example also makes the strictness of Theorem~\ref{thm:adaptation-hierarchy}'s inclusions concrete rather than merely existential: the AlphaZero case witnesses $\mathcal{P}\setminus\mathcal{S}$ directly (its parameter trajectory $\theta_t$ is manifestly non-constant, and no fixed $F$ describes its behavior at the state level alone), and the self-hosting compiler witnesses $\mathcal{R}\setminus\mathcal{P}$ directly (no fixed parametric family $F_\theta$ describes a system whose compilation algorithm's functional form, not merely a numeric setting within it, is what changes between versions).
+
+\begin{theorem}[Adaptation Hierarchy]
+\label{thm:adaptation-hierarchy}
+Let $\mathcal{S}$, $\mathcal{P}$, $\mathcal{R}$ denote the classes of dynamical systems expressible at Levels 1, 2, and 3 respectively. Then
+\[
+\mathcal{S} \subsetneq \mathcal{P} \subsetneq \mathcal{R}.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\mathcal{S} \subseteq \mathcal{P}$: any Level-1 system $x_{t+1}=F(x_t)$ is a Level-2 system with $\theta_t \equiv \theta_0$ constant. $\mathcal{P} \subseteq \mathcal{R}$: any Level-2 system is a Level-3 system in which $G$ is restricted to updating only the $\theta$-slot of a fixed functional form $F_\theta$, i.e.\ $G(F_{\theta_t}, x_t, E_t) = F_{\theta_{t+1}}$ for some $\theta_{t+1}$ depending on $(x_t, E_t)$, leaving the functional form itself untouched. Strictness of each inclusion is witnessed concretely in Sec.~\ref{subsec:worked-three-levels} above.
+\end{proof}
+
+The chess example is deliberately mundane. Nothing about neural architecture search or self-hosting compilers is exotic or futuristic; both exist today, are widely deployed, and are rarely described using the language of recursive self-improvement at all. This is itself evidence for the essay's thesis: Level-3 rule modification is not a threshold that has yet to be crossed. It is a known engineering technique, already in ordinary use, that only becomes alarming once combined with the further conditions this essay develops in Part~III.
+
+\section{Recursive Continuation}
+\label{sec:recursive-continuation}
+
+Level-3 recursive modification, on its own, says nothing about whether the system persists. A rule can change and become worse; a system can self-modify into extinction. A corporation that recursively restructures its own supply chain to cut costs, where each restructuring is itself informed by the cost savings of the last, is engaged in genuine Level-3 recursion — the rule generating future restructuring decisions is itself a product of prior restructuring — and can recursively optimize its way into a supply chain so brittle that a single disruption ends the company. Nothing about the recursion was insufficiently sophisticated; the modification simply was not required, by anything internal to the process, to preserve the conditions under which the company could keep operating. This section isolates the property that actually matters, prior to any question of improvement.
+
+\begin{definition}[Viability manifold and admissible continuation]
+\label{def:admissibility}
+Let $\Adm \subset X$ be a \emph{viability manifold}: the set of states under which the system's characteristic activity remains possible. A recursive process $(x_t, F_t, E_t)$ is \emph{continuation-preserving} (admissible) if
+\[
+x_t \in \Adm \;\implies\; x_{t+1} = F_t(x_t) \in \Adm \qquad \text{for all } t.
+\]
+\end{definition}
+
+\begin{proposition}[Recursion does not imply continuation]
+\label{prop:no-implication}
+There exist Level-3 recursive systems $(x_t, F_t, E_t)$, with $F_{t+1}=G(F_t,x_t,E_t)$, that are not continuation-preserving for any nontrivial $\Adm$.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+Immediate by construction: let $G$ modify $F_t$ so that $F_{t+1}$ maps every state outside a shrinking neighborhood of a fixed point to a point outside $\Adm$. Rule-level recursion places no constraint on the image of $F_{t+1}$ relative to $\Adm$ unless $G$ is specifically constrained to respect it. The brittle-supply-chain corporation above is an informal instance: each successive $F_t$ is a strictly more cost-efficient rule than its predecessor by the metric the company was optimizing, and the sequence nonetheless converges toward a state with no tolerance for perturbation, i.e.\ outside any reasonable $\Adm$ for continued operation.
+\end{proof}
+
+This is the essay's pivot. Recursive modification is a large, permissive class; recursive \emph{continuation} is the much smaller, and much more interesting, subclass in which modification of the rule does not undermine the conditions that make future modification possible at all. Sections~\ref{sec:autopoiesis}--\ref{sec:evolution} argue that autopoiesis, sympoiesis, and evolution are best understood as three different mechanisms for achieving admissible recursive continuation, none of which presuppose or require improvement — and, unlike the corporation above, all three have been doing this successfully for a very long time, which is itself worth explaining.
+
+\section{Autopoiesis as Local Recursive Continuation}
+\label{sec:autopoiesis}
+
+Maturana and Varela introduced autopoiesis to characterize the minimal organization distinguishing a living system from a merely persistent physical structure: not metabolism or reproduction as such, but the continuous production, by the system's own components, of the network of processes that produces those components. A cell membrane is not a fixed container within which chemistry happens; it is itself synthesized, maintained, and repaired by the metabolic processes it encloses, which in turn depend on the membrane to maintain the concentration gradients that make those processes possible. Neither the membrane nor the metabolism is primary; each is the ongoing condition of the other's continued production. This closure, not any particular chemistry, is what autopoiesis names.
+
+\begin{definition}[Autopoietic system, formalized]
+\label{def:autopoiesis}
+Let $P_t$ denote the components of a system at time $t$ and $O_t$ its organization (the network of relations among components that determines which further components get produced). An autopoietic system satisfies
+\[
+P_t \;\longrightarrow\; O_t, \qquad O_t \;\longrightarrow\; P_{t+1},
+\]
+i.e.\ components produce the organization, and the organization governs production of the next generation of components.
+\end{definition}
+
+\begin{theorem}[Autopoietic Recursion]
+\label{thm:autopoietic-recursion}
+Any system satisfying Definition~\ref{def:autopoiesis} is a Level-3 recursive system in the sense of Definition~\ref{def:levels}, with $O_t$ playing the role of $F_t$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Identify $x_t := P_t$ and $F_t := O_t$ (organization-as-production-rule: $O_t$ maps current components to next-generation components). Since $P_t \to O_t \to P_{t+1}$, the organization at $t+1$ is determined by the components produced under $O_t$, i.e.\ $O_{t+1} = G(O_t, P_t)$ for some $G$ — exactly the Level-3 schema $F_{t+1}=G(F_t,x_t,E_t)$ with $E_t$ absorbing external perturbation.
+\end{proof}
+
+\begin{remark}
+Nothing in Definition~\ref{def:autopoiesis} or Theorem~\ref{thm:autopoietic-recursion} involves a capability functional $K$. Autopoiesis is rule-level recursion aimed at reproducing $O_t$, i.e.\ at satisfying Definition~\ref{def:admissibility} for whatever $\Adm$ characterizes the organism's continued organizational identity. A tree does not spend a growing season redesigning itself into a better tree; it spends the season reproducing the conditions under which it remains a tree. The immune system offers a sharper case: it does not merely fight pathogens, it continuously revises, at the level of somatic hypermutation and clonal selection, the very repertoire of antibody-producing rules by which it will fight future pathogens — a textbook Level-3 update, occurring constantly, in every healthy adult, with no relation whatsoever to anything resembling an intelligence explosion. Autopoiesis is recursive self-\emph{maintenance}; self-improvement, where it occurs (immune learning, neural plasticity directed at improved future learning), is an additional property some autopoietic systems have, not a consequence of autopoiesis itself.
+\end{remark}
+
+\begin{remark}[When local recursion escapes $\Adm$]
+\label{rem:cancer-preview}
+Autopoiesis is not automatically admissible; Definition~\ref{def:autopoiesis} describes a structure, not a guarantee. Cancer is the clearest biological counterexample: a cell lineage whose Level-3 production rule $O_t$ has itself been altered (by mutation, itself a form of $G$ acting on $O_t$) so that $P_t \to O_t \to P_{t+1}$ continues to hold perfectly well \emph{for the lineage}, while the lineage's continued production actively destroys the $\Adm$ of the organism that contains it. The lineage's local recursive continuation and the organism's are no longer the same viability manifold. This anticipates the relationship between capability and repair developed formally in Part~II: unconstrained local proliferation is exactly the failure mode Sec.~\ref{sec:complexity-repair} treats in general terms.
+\end{remark}
+
+\section{Sympoiesis as Distributed Recursive Continuation}
+\label{sec:sympoiesis}
+
+Autopoiesis locates recursive continuation inside a single bounded system. Many of the systems this essay is ultimately interested in — languages, markets, scientific communities, ecosystems — have no such boundary, and no component that could be said to house the relevant $O_t$ on its own. Beth Dempster coined \emph{sympoiesis} for exactly this case: collectively-producing systems that lack self-defined boundaries, in which the very distinction between producer and product, or between system and environment, is continuously renegotiated by the activity of many interacting agents rather than settled in advance.
+
+\begin{definition}[Sympoietic system]
+\label{def:sympoiesis}
+Let $a_1, \ldots, a_n$ be agents interacting through a shared medium $E_t$ (an environment, language, market, or institutional substrate). Suppose
+\[
+E_{t+1} = H(E_t, a_1^t, \ldots, a_n^t), \qquad a_i^{t+1} = J_i(a_i^t, E_{t+1}).
+\]
+The medium is co-produced by the agents, and the agents are in turn shaped by the medium they co-produced.
+\end{definition}
+
+A language is the clearest illustration. No speaker holds, or updates, a representation of the grammar; each act of speech is a Level-1 or at most Level-2 act from the speaker's point of view, an utterance produced according to a grammar the speaker did not consciously choose and mostly cannot articulate. Yet the aggregate of those utterances is precisely what determines which constructions become more frequent, which irregular forms get regularized, and which new constructions become grammatical for the next generation of speakers — a Level-3 modification of the grammar itself, occurring continuously, with no individual speaker as its locus. A currency market exhibits the identical structure: individual traders follow fixed or slowly-adapting strategies (Level 1 or 2), while the aggregate of their trades continuously reshapes the price-formation dynamics — the effective rule by which future prices are set — that every trader's strategy takes as given.
+
+\begin{theorem}[Distributed Recursion]
+\label{thm:distributed-recursion}
+A sympoietic system as in Definition~\ref{def:sympoiesis} exhibits Level-3 recursive modification at the level of the collective system $(a_1,\ldots,a_n,E)$, even when each individual $a_i$ is only a Level-1 or Level-2 system.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Define the collective continuation rule $F^{\text{coll}}_t$ as the joint map $(a_1^t,\ldots,a_n^t,E_t) \mapsto (a_1^{t+1},\ldots,a_n^{t+1},E_{t+1})$ induced by $H$ and $\{J_i\}$. Because $E_{t+1}$ depends on the full agent profile at $t$, and each $a_i^{t+1}$ depends on $E_{t+1}$, the effective transition rule for the collective state changes shape as the agent profile changes — i.e.\ $F^{\text{coll}}_{t+1} = G(F^{\text{coll}}_t, \cdot)$ for a nontrivial $G$ — even where every individual $J_i$ is a fixed, Level-1 or Level-2 map.
+\end{proof}
+
+\begin{remark}[Composition elevates level]
+\label{rem:composition-elevates}
+This is the essay's first genuinely non-obvious technical point: rule-level (Level-3) recursion can be an \emph{emergent property of composition}, present in a collective system without being present in any individual component. Intuitively, no single agent needs to represent or reason about $F^{\text{coll}}_t$ for the collective to be modifying it; the modification is carried entirely by the aggregate effect of many independently unremarkable individual updates. This is the formal basis for treating science, language, and markets as recursively self-modifying systems without requiring that any scientist, speaker, or trader personally rewrite their own cognitive architecture.
+\end{remark}
+
+\section{Evolution as Pre-Intelligent Recursive Continuation}
+\label{sec:evolution}
+
+If Level-3 recursion can be an emergent property of many interacting cognitive agents (Sec.~\ref{sec:sympoiesis}), the natural next question is whether it requires cognition at all. Evolution by natural selection, together with the more specific phenomenon of niche construction, shows that it does not.
+
+\begin{definition}[Niche-constructing evolutionary loop]
+\label{def:evolution-loop}
+Let $G_t$ be a genotype distribution, $P_t$ the resulting phenotype distribution, and $E_t$ the selection environment. Suppose
+\[
+G_t \to P_t, \qquad P_t \to E_{t+1} \quad \text{(niche construction)}, \qquad E_{t+1} \to G_{t+1} \quad \text{(selection)}.
+\]
+\end{definition}
+
+Beavers provide the standard illustration of niche construction: the phenotype (dam-building behavior) alters the environment (converting flowing streams into ponds), and the altered environment changes the selection pressures acting on the beaver population's future genotypes, favoring further adaptations to still-water rather than stream habitats. Earthworms alter soil chemistry and structure in ways that change which plant and microbial genotypes are favored in the same location for generations afterward. Human dairy farming, a purely cultural and phenotypic innovation, altered the selection environment for the human genome itself sufficiently to drive the spread of lactase-persistence alleles in populations with a sufficiently long history of pastoralism — culture recursively modifying the genetic rule governing future populations, with no genotype anywhere containing a representation of that fact.
+
+\begin{theorem}[Evolutionary Recursion]
+\label{thm:evolutionary-recursion}
+The loop of Definition~\ref{def:evolution-loop} is a Level-3 recursive system in which the selection rule mapping populations to next-generation populations is itself modified by the population's own prior activity (via niche construction), without requiring foresight, intention, or intelligence in any individual organism.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Let $F_t$ be the effective selection map $G_t \mapsto G_{t+1}$ induced by composing phenotype expression, niche construction, and selection. Since $E_{t+1}$ (and hence the fitness landscape defining $F_t$) depends on $P_t$, which depends on $G_t$, the selection map itself is a function of the population's history: $F_{t+1} = G(F_t, G_t)$, the Level-3 schema, with no agent in the loop possessing a representation of $F_t$ at all.
+\end{proof}
+
+\begin{remark}
+Evolution is the cleanest available demonstration that Level-3 recursion requires neither intelligence nor intention. This matters for the essay's overall argument: if rule-level recursive modification is achievable by a process with no cognition whatsoever, then citing an AI system's cognitive sophistication cannot be what makes its recursive self-modification distinctively dangerous. Whatever is genuinely new about AGI (Part~III) has to be found elsewhere.
+\end{remark}
+
+% ============================================================
+\part{Repair and Admissibility}
+% ============================================================
+
+\section{Improvement as a Special Case}
+\label{sec:improvement-special-case}
+
+Part~I established that rule-level recursive modification is old and common. It did not establish that such modification is generally beneficial to the systems undergoing it, and Remark~\ref{rem:cancer-preview} already flagged a case — a cell lineage whose local recursion actively destroys the organism containing it — where it plainly is not. This section makes the resulting distinction precise: between a recursive process that merely continues, one that continues while also becoming more capable by some measure, and the much larger space of recursive processes that neither.
+
+\begin{definition}[Admissible recursive modification and self-improvement]
+\label{def:arm-and-rsi}
+Let $K: X \to \mathbb{R}$ be a capability functional. A recursive process is:
+\begin{itemize}
+  \item \textbf{Admissible} if it satisfies Definition~\ref{def:admissibility} relative to $\Adm$.
+  \item \textbf{Self-improving} if, in addition, $K(x_{t+1}) > K(x_t)$ for all (or almost all) $t$.
+\end{itemize}
+\end{definition}
+
+\begin{proposition}[Strict containment]
+\label{prop:strict-containment}
+\[
+\{\text{self-improving trajectories}\} \;\subsetneq\; \{\text{admissible trajectories}\} \;\subsetneq\; \{\text{all Level-3 trajectories}\}.
+\]
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+Right inclusion is Proposition~\ref{prop:no-implication}. Left inclusion: a stable homeostatic system with $K(x_{t+1})=K(x_t)$ for all $t$ — an adult organism maintaining constant metabolic function, neither growing nor declining — is admissible without being self-improving, witnessing strictness in one direction. The cancerous cell lineage of Remark~\ref{rem:cancer-preview} witnesses the other: local capability $K$ (proliferation rate) strictly increases at every step, satisfying the letter of ``self-improving,'' while the lineage's own trajectory exits the organism's $\Adm$ in finite time. Self-improvement, as defined, is therefore neither necessary nor sufficient for admissibility unless the definition explicitly nests it inside admissibility as a further condition — which is exactly what Definition~\ref{def:arm-and-rsi} does, and exactly what the informal notion of ``recursive self-improvement'' in the AGI literature typically fails to do, treating $K(x_{t+1})>K(x_t)$ as though it were the whole of the relevant claim.
+\end{proof}
+
+This gives the essay's governing hierarchy its final, precise form:
+\[
+\text{Recursive Self-Improvement} \;\subset\; \text{Admissible Recursive Modification} \;\subset\; \text{Recursive Continuation Dynamics} \;\subset\; \text{Recursive Modification (Sec.~\ref{sec:recursive-modification})}.
+\]
+Autopoiesis and sympoiesis (Secs.~\ref{sec:autopoiesis}--\ref{sec:evolution}) populate the second and third of these classes far more often than the first: a tree, a language, and an ecosystem are, for most of their history, admissible without being especially self-improving by any capability metric worth naming. The remainder of Part~II asks what determines whether a given trajectory of capability growth — the narrower, more demanding case — stays inside the admissible class at all, rather than repeating the cancer lineage's mistake of confusing local capability increase with genuine continuation.
+
+\section{Capability Is Not Free}
+\label{sec:complexity-repair}
+
+Every domain in which capability accumulates also accumulates a cost of keeping that capability working. A software system that grows in feature count must also track a growing web of interactions between features, any of which can silently break when another part of the system changes; the discipline of software engineering has a standard name for the resulting burden, \emph{technical debt}, precisely because it behaves like a debt — it does not go away on its own, and it compounds. A biological organism that grows in size and metabolic complexity must devote a growing share of its resources to DNA repair, protein quality control, and immune surveillance simply to keep its existing capability from degrading. Neither case is a story about insufficient capability. Both are stories about a maintenance burden that scales with capability and has to be paid out of some separate budget.
+
+\begin{definition}[Maintenance burden and repair capacity]
+\label{def:maintenance-repair}
+Let $K_t = K(x_t)$ be capability at time $t$, $C: \mathbb{R} \to \mathbb{R}_{\ge0}$ the maintenance burden imposed by a given capability level (with $C' > 0$), and $R_t \ge 0$ the repair capacity available to the system at $t$. Model viability by the difference equation
+\[
+V_{t+1} = V_t - C(K_t) + R_t.
+\]
+\end{definition}
+
+\begin{theorem}[Complexity--Repair Theorem]
+\label{thm:complexity-repair}
+If there exists $T$ such that $C(K_t) > R_t$ for all $t > T$, then $V_t \to -\infty$, i.e.\ the system eventually leaves any bounded viability threshold.
+\end{theorem}
+
+\begin{proof}
+Immediate from Definition~\ref{def:maintenance-repair}: for $t>T$, $V_{t+1}-V_t = R_t - C(K_t) < 0$ by hypothesis, so $V_t$ is eventually strictly decreasing without bound below.
+\end{proof}
+
+\begin{corollary}[Sustainability condition]
+\label{cor:sustainability}
+A capability trajectory $K_t$ is sustainable only if $R_t \ge C(K_t)$ for all sufficiently large $t$.
+\end{corollary}
+
+\begin{proposition}[Robustness beyond the linear model]
+\label{prop:robustness-general}
+Let $V_{t+1} = \Psi(V_t, K_t, R_t)$ for any $\Psi$ that is non-decreasing in $R_t$, non-increasing in $C(K_t)$, and satisfies $\Psi(V,K,R) \le V - c(K) + R$ for some baseline burden function $c$ with $c' > 0$. Then the conclusion of Theorem~\ref{thm:complexity-repair} still holds — $V_t \to -\infty$ whenever $R_t < c(K_t)$ persistently — with $c$ in place of $C$.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+The domination hypothesis gives $V_{t+1} \le V_t - c(K_t) + R_t$ directly at each step, for the system's actual realized values. Whenever $R_t < c(K_t)$, this forces $V_{t+1} < V_t$; under the same persistent-shortfall hypothesis as Theorem~\ref{thm:complexity-repair} (applied now to $c$ rather than $C$), the same argument gives $V_t \to -\infty$, since $V_t$ is bounded above by the linear comparison sequence $L_t$ defined by $L_{t+1}=L_t - c(K_t) + R_t$, $L_0 = V_0$, which diverges to $-\infty$ by Theorem~\ref{thm:complexity-repair} itself.
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:robustness-general} is the essay's answer to the objection that Definition~\ref{def:maintenance-repair}'s linear difference equation is an artificial modeling choice. It is a modeling choice, but the qualitative conclusion — sustained excess of maintenance burden over repair capacity is fatal to viability — does not depend on linearity, only on the much weaker requirement that $\Psi$ respond monotonically to its two inputs and be no better than some baseline convex-in-$K$ cost. Nonlinear, stochastic, or domain-specific versions of $\Psi$ (a logistic viability model, a stochastic difference equation with a repair-capacity-dependent survival probability) inherit the same divergence result by the same comparison argument, provided the monotonicity and domination conditions hold.
+\end{remark}
+
+\section{The Repair Dominance Theorem}
+\label{sec:repair-dominance}
+
+Corollary~\ref{cor:sustainability} says only that repair must keep pace with maintenance burden. It does not yet say which of the two variables — increasing capability, or increasing repair capacity — is the better use of a marginal unit of whatever resource the system has to spend. The next result answers that question, and the answer changes as capability grows.
+
+\begin{theorem}[Repair Dominance]
+\label{thm:repair-dominance}
+Under the dynamics of Definition~\ref{def:maintenance-repair}, suppose $C$ is convex with $C'(0) < 1$ and $C'(K) \to \infty$ as $K \to \infty$. Then there exists a threshold $K^\ast$ (defined by $C'(K^\ast) = 1$) such that for all $K > K^\ast$,
+\[
+\left| \frac{\partial V_{t+1}}{\partial K_t} \right| \;=\; C'(K_t) \;>\; 1 \;=\; \frac{\partial V_{t+1}}{\partial R_t}.
+\]
+\end{theorem}
+
+\begin{proof}
+From $V_{t+1} = V_t - C(K_t) + R_t$, direct differentiation gives $\partial V_{t+1}/\partial R_t = 1$ and $\partial V_{t+1}/\partial K_t = -C'(K_t)$. By convexity of $C$ and $C'(0)<1<\lim_{K\to\infty}C'(K)$, the intermediate value theorem gives a unique $K^\ast$ with $C'(K^\ast)=1$, and $C'$ increasing thereafter gives $C'(K)>1$ for all $K>K^\ast$.
+\end{proof}
+
+\begin{remark}
+Past $K^\ast$, a marginal unit of repair capacity buys more viability than a marginal unit of capability. This is the formal content behind the informal observation that aging organisms, aging software systems, and aging institutions become repair-limited rather than capability-limited: the theorem shows this is not an empirical curiosity but a structural consequence of any convex maintenance-cost model, independent of the specific domain.
+\end{remark}
+
+\subsection{Three Domains Past $K^\ast$}
+\label{subsec:three-domains}
+
+The convexity assumption on $C$ is doing real work, and it is worth checking that it is not an artifact of the model but an observed feature of the systems the theorem is meant to describe.
+
+\emph{Senescence.} Cellular damage — DNA lesions, misfolded proteins, dysfunctional mitochondria — accumulates as a roughly fixed byproduct of ordinary metabolic activity, but the resources available for DNA repair, autophagy, and proteostasis do not scale up to match a growing organism's growing metabolic rate; if anything, repair-pathway efficiency itself declines with age, which is a second, compounding mechanism this section's single-variable model does not even need to invoke to make its point. An organism well past developmental maturity is a system for which $K$ (sustained metabolic and functional capacity) is no longer profitably increased by any available means, and for which the marginal return on repair investment (caloric restriction's effect on lifespan being one of the better-studied empirical instances) is comparatively large.
+
+\emph{Software.} Technical debt is convex almost by definition: adding the $n$-th feature to a codebase risks interacting with any of the $n-1$ existing features, so the surface area of possible unintended interaction grows combinatorially, not linearly, in the size of the system, even though each individual feature took roughly constant effort to add. Mature software organizations recognize $K^\ast$ operationally — it is the point at which teams shift from being feature-constrained to being refactoring-constrained, and organizations that fail to make this shift accumulate exactly the divergent-$V_t$ trajectory Theorem~\ref{thm:complexity-repair} describes, typically labeled a systemic rewrite becoming unavoidable.
+
+\emph{Empires.} Administrative and logistical overhead in pre-modern states scaled worse than linearly with territorial extent, since the cost of maintaining communication, tax collection, and military presence across a periphery grows with both the number of provinces and the interactions among them; historians of imperial decline have long treated a growing gap between administrative capacity and territorial extent as a leading indicator of collapse, independently of any theory of recursive systems. The same $K^\ast$ structure describes a very different kind of system: capability (territorial extent) growing past the point at which repair capacity (administrative capacity) can keep pace with the convex maintenance burden that extent imposes.
+
+These three cases are not offered as proof that the linear-$C$ model is correct in any of them, only as evidence that the qualitative shape the model predicts — a marginal-return crossover past which repair dominates — is not an artifact of the formalism but a pattern independently visible wherever complexity accumulates a maintenance burden.
+
+\section{Admissibility as Viable Recursion}
+\label{sec:admissibility-viable}
+
+\begin{theorem}[Admissibility Theorem]
+\label{thm:admissibility}
+A rule-update sequence $G$ (Definition~\ref{def:levels}, Level 3) is a viable continuation strategy relative to $\Adm$ only if, for all $t$, the induced capability and repair trajectories satisfy the sustainability condition of Corollary~\ref{cor:sustainability}. The Complexity--Repair relation is a sufficient mechanism by which admissibility (Definition~\ref{def:admissibility}) can fail; it is not offered as the only such mechanism.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+If $R_t < C(K_t)$ persistently, Theorem~\ref{thm:complexity-repair} gives $V_t \to -\infty$, which for any viability manifold $\Adm$ defined by $V_t$ remaining above some threshold entails $x_t \notin \Adm$ for large $t$, violating Definition~\ref{def:admissibility}. The qualifier ``sufficient, not necessary'' is required because $\Adm$ can be exited by mechanisms independent of the $(K,C,R)$ model — e.g.\ a discrete external shock — that this section's apparatus does not model.
+\end{proof}
+
+\begin{corollary}[Repair Precedes Continuation]
+\label{cor:repair-precedes-continuation}
+Let $x_t^{\mathrm{cand}} = F_t(x_t)$ denote the raw candidate produced by applying the current rule, prior to any check against $\Adm$. Define the \emph{validated predecessor}
+\[
+x_t^{+} =
+\begin{cases}
+x_t^{\mathrm{cand}} & \text{if } x_t^{\mathrm{cand}} \in \Adm, \\
+\rho(x_t^{\mathrm{cand}}) & \text{otherwise, for some repair map } \rho \text{ with } \rho(x_t^{\mathrm{cand}}) \in \Adm \text{ when repair succeeds.}
+\end{cases}
+\]
+Only $x_t^{+}$, not $x_t^{\mathrm{cand}}$, may serve as $x_{t+1}$ in the next iteration of the recursion.
+\end{corollary}
+
+\begin{proof}[Proof sketch]
+Immediate from Definition~\ref{def:admissibility}: the admissibility condition is a condition on $x_{t+1}$, not on any intermediate candidate the system happens to generate en route to it. Setting $x_{t+1} := x_t^{\mathrm{cand}}$ without the case split risks violating $x_{t+1}\in\Adm$ whenever $\rho$ would have been needed; setting $x_{t+1} := x_t^{+}$ enforces the condition by construction.
+\end{proof}
+
+\begin{remark}
+This is a small point with a disproportionate consequence for how the recursion in Definition~\ref{def:levels} should actually be implemented, and it sharpens something Part~II has been assuming rather than stating: a rule-update sequence is not simply an alternation between applying $F_t$ and checking membership in $\Adm$ after the fact. The object that gets fed back into the next iteration is the \emph{validated} predecessor $x_t^+$, and the recursion is honest only if $x_t^{\mathrm{cand}}$ is never allowed to silently stand in for it. This is the same structure this author's companion work on telemetry and boundary repair names $\Gamma \to \Gamma^* \to \Gamma^+$ (raw fragments, repaired candidate, admitted history) — arrived at independently, for a different kind of system, but resolving to the identical requirement: repair and admission are not optional bookkeeping performed on a history that continues regardless, they are the gate that determines what the next round of continuation is even allowed to continue \emph{from}.
+\end{remark}
+
+This closes Part~II's argument: admissibility, not capability, is the governing property, and Secs.~\ref{sec:complexity-repair}--\ref{sec:repair-dominance} identify one general, structural reason (convex maintenance cost) why capability-maximizing trajectories tend to be exactly the trajectories that risk leaving $\Adm$.
+
+It is worth returning briefly to Part~I in light of this result, because the systems examined there turn out, with hindsight, to already be organized around exactly this constraint. Autopoiesis (Sec.~\ref{sec:autopoiesis}) devotes the overwhelming majority of a cell's activity to $R_t$-type maintenance — membrane repair, protein turnover, metabolic regulation — rather than to increasing any capability functional, which by Theorem~\ref{thm:repair-dominance} is exactly the correct allocation for a system that is not near the low-$K$ region where capability investment still dominates. Sympoietic systems (Sec.~\ref{sec:sympoiesis}) go further: science's peer review and replication, civilization's courts and archives, and a market's clearinghouses and audits are, functionally, distributed repair capacity $R_t$ maintained by institutions rather than by any single agent, which is precisely what allows the collective's $K$ (accumulated knowledge, accumulated capital, accumulated law) to keep growing without the collective as a whole drifting outside $\Adm$. Evolution (Sec.~\ref{sec:evolution}) selects directly on the joint trajectory, since a lineage whose repair mechanisms (DNA proofreading, immune function, wound healing) fail to keep pace with its own metabolic or morphological complexity is a lineage that does not survive to reproduce — natural selection is, among other things, a filter that removes exactly the trajectories Theorem~\ref{thm:complexity-repair} predicts will diverge.
+
+None of this is coincidence, and none of it required intelligence to arise: it is what remains after billions of years, or centuries, of variation and selection have removed the alternative — the systems visible today are disproportionately the ones whose recursive modification happened to respect Corollary~\ref{cor:sustainability}, whether or not anything inside them ever represented that constraint explicitly. Part~III asks what happens to this picture once recursive modification is moved into a substrate that has not been filtered by any comparable process, and where the distributed repair architecture that Sec.~\ref{sec:sympoiesis} showed to be doing much of the real work is no longer guaranteed to be present at all.
+
+% ============================================================
+\part{Compression}
+% ============================================================
+
+\section{The Compression Principle}
+\label{sec:compression-principle}
+
+Part~II identified admissibility, not capability, as the property that determines whether recursive modification is sustainable. It said nothing about \emph{when} an admissible-looking trajectory is actually at risk of quietly drifting out of $\Adm$ before anyone notices. This section develops the essay's account of that risk, and — unlike the informal treatments this idea has received elsewhere in this author's notes — attempts to derive rather than merely assert it, under a stated and clearly flagged model.
+
+\begin{definition}[Iteration period and locus count]
+\label{def:compression-vars}
+Let $n$ denote the number of independent, only weakly-coupled loci at which Level-3 recursive modification occurs, and let $\Delta t$ denote the characteristic period between successive rule-updates $F_t \to F_{t+1}$ at a given locus. Let $\tau$ denote the characteristic period on which an external, independent verification or correction process can detect and respond to a rule error.
+\end{definition}
+
+\begin{remark}[Resolving an ambiguity]
+Earlier informal treatments of this idea describe $\Delta t$ inconsistently, sometimes as ``repair latency'' (where small $\Delta t$ is safe) and sometimes as ``iteration speed'' (where small $\Delta t$ is dangerous). Definition~\ref{def:compression-vars} resolves this: $\Delta t$ is the period of the \emph{rule-update} loop, not of repair. The quantity that matters is the ratio $N^\ast = \tau/\Delta t$: the number of unmonitored rule-iterations that can occur within one external-verification window. Danger scales with $N^\ast$, not with $\Delta t$ alone.
+\end{remark}
+
+\subsection{An Operational Model}
+\label{subsec:operational-risk-model}
+
+Suppose each rule-iteration at a locus independently introduces an uncorrected, $\Adm$-violating error with probability $p$ (a rough idealization: real error processes are neither independent nor identically distributed across iterations, a point returned to below). Within one verification window, a locus undergoes $N^\ast = \tau/\Delta t$ iterations, so the probability that the locus accumulates \emph{at least one} undetected error before the window's external check occurs is
+\[
+q(N^\ast) \;=\; 1 - (1-p)^{N^\ast},
+\]
+strictly increasing in $N^\ast$. This already recovers half the Compression Principle without further assumptions: shortening $\Delta t$ relative to $\tau$ increases $N^\ast$ and hence increases $q$, the per-locus probability of an undetected error surviving to the next verification point.
+
+The $n$-dependence requires a further assumption about how the system as a whole tolerates a failure at any one locus. Suppose $n$ independent loci operate with cross-checking such that a genuinely system-wide, $\Adm$-violating drift requires a \emph{majority} of loci — some fraction $\theta \in (1/2, 1]$ — to fail within the same window, on the idea that a minority of erroneous loci can be identified and corrected by comparison against the uncorrupted majority (this is the quantitative content behind Sec.~\ref{sec:sympoiesis}'s informal claim that distributed institutions provide error correction). Under this assumption, system-wide risk is
+\[
+\mathrm{Risk}(n, N^\ast) \;=\; \Pr\!\big[\mathrm{Binomial}(n, q(N^\ast)) \ge \theta n\big].
+\]
+
+\begin{proposition}[Compression bound under the quorum model]
+\label{prop:compression-bound}
+For fixed $q(N^\ast) < \theta$, $\mathrm{Risk}(n,N^\ast) \le \exp\!\big(-2n(\theta - q(N^\ast))^2\big)$, which tends to $0$ as $n \to \infty$. For fixed $n$, $\mathrm{Risk}(n, N^\ast)$ is non-decreasing in $q(N^\ast)$, hence non-decreasing in $N^\ast$.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+The bound is Hoeffding's inequality applied to a sum of $n$ i.i.d.\ Bernoulli$(q)$ variables: $\Pr[\mathrm{Binomial}(n,q)\ge \theta n] \le \exp(-2n(\theta-q)^2)$ whenever $\theta > q$. Monotonicity in $q$ (and hence in $N^\ast$ via $q=q(N^\ast)$) is immediate since increasing the success probability of each Bernoulli trial stochastically increases the binomial sum, and $\Pr[\text{Binomial} \ge \theta n]$ is non-decreasing under stochastic dominance.
+\end{proof}
+
+\begin{conjecture}[Compression Principle]
+\label{conj:compression}
+Beyond the specific quorum model of Prop.~\ref{prop:compression-bound}, risk of inadmissible recursive drift increases with $N^\ast = \tau/\Delta t$ and decreases with effective, uncorrelated locus count: concentrating recursive modification into few loci with an iteration period much shorter than the available external-verification period increases the number of self-modifications that occur before any independent check can occur.
+\end{conjecture}
+
+\begin{remark}
+Proposition~\ref{prop:compression-bound} is a theorem, not a conjecture, but only about the idealized quorum model — independent per-locus failure, i.i.d.\ error probability, and majority-vote correction. Conjecture~\ref{conj:compression} is the claim that the qualitative shape of this result (risk falling exponentially in locus count, rising in $N^\ast$) survives relaxing those idealizations to something resembling real distributed systems, where failures are correlated, error probabilities vary, and correction is not a clean majority vote. That further step is exactly where Sec.~\ref{sec:repair-diversity}'s $\DR$ becomes necessary: $n$, the raw locus count, is the wrong variable once failures can be correlated, and the quorum model above should be read as the special case $\DR = n$ (fully independent loci) of the more general dependence on $\DR$ developed next.
+\end{remark}
+
+\section{Repair Diversity and the Recursive Stability Principle}
+\label{sec:repair-diversity}
+
+The quorum model of Sec.~\ref{subsec:operational-risk-model} assumed $n$ \emph{independent} loci. Real repair and verification channels are rarely independent: ten servers running identical software share a bug the moment it is introduced; ten peer reviewers trained in the same paradigm share its blind spots. Raw count overstates real redundancy whenever failures are correlated, and the Compression Principle needs a variable that accounts for this.
+
+\begin{definition}[Repair-path diversity]
+\label{def:repair-diversity}
+Let a system have access to repair or verification channels $c_1,\ldots,c_m$ (replication, peer review, competing institutions, independent physical copies, etc.), and let $\bar\rho \in [0,1]$ denote the average pairwise correlation among their failure events. Define the \emph{effective repair diversity}
+\[
+\DR \;=\; \frac{m}{1 + (m-1)\bar\rho},
+\]
+the standard design-effect correction for effective sample size under intra-class correlation, applied here to repair channels rather than survey respondents.
+\end{definition}
+
+\begin{proposition}[Boundary behavior of $\DR$]
+\label{prop:dr-boundary}
+$\DR = m$ when $\bar\rho = 0$ (fully independent channels), and $\DR \to 1$ as $\bar\rho \to 1$ for any fixed $m$ (fully correlated channels), regardless of how large $m$ is.
+\end{proposition}
+
+\begin{proof}
+Direct substitution: $\bar\rho=0$ gives $\DR = m/1 = m$. As $\bar\rho \to 1$, $\DR \to m/(1+(m-1)) = m/m = 1$.
+\end{proof}
+
+\subsection{A Worked Example}
+\label{subsec:dr-worked-example}
+
+Consider two systems, each with $m=10$ repair channels. System A consists of ten replica servers running identical, unmodified software images with $\bar\rho = 0.9$ (a bug in the shared image is very likely to be present, and to fail, in all ten simultaneously): $\DR = 10/(1+9\times0.9) = 10/9.1 \approx 1.10$. Ten nominal copies buy barely more effective diversity than one. System B consists of ten independently developed, competing implementations — different teams, different codebases, different assumptions — with $\bar\rho = 0.1$: $\DR = 10/(1+9\times0.1) = 10/1.9 \approx 5.26$. The same raw count $m=10$ yields nearly five times the effective diversity once correlation is accounted for. This is the essay's answer to a question Sec.~\ref{sec:compression-principle} left open: $n$ in the quorum model of Prop.~\ref{prop:compression-bound} should be read as $\DR$, not as raw locus count, whenever the loci in question can fail together.
+
+\begin{conjecture}[Recursive Stability Principle]
+\label{conj:stability}
+Stability of a recursive adaptive system is increasing in $\DR$, not merely in the raw count $m$ of agents or copies: $S \propto \DR$.
+\end{conjecture}
+
+\begin{remark}
+Definition~\ref{def:repair-diversity} discharges half of this section's earlier skeleton obligation — a concrete, standard construction for $\DR$ rather than a placeholder — and Sec.~\ref{subsec:dr-worked-example} discharges the other half, a numeric example showing correlated copies buying little real diversity. What remains conjectural is only the proportionality $S \propto \DR$ itself, because ``stability'' $S$ has not been given an operational definition independent of the risk model of Sec.~\ref{sec:compression-principle}; substituting $\DR$ for $n$ in Prop.~\ref{prop:compression-bound}'s bound would turn this conjecture into a theorem of the same kind, at the cost of assuming the quorum model's idealizations apply with $\DR$ playing the role of effective independent trial count, which is itself an approximation rather than an exact reduction.
+\end{remark}
+
+\section{Monocultures and Recursive Failure}
+\label{sec:monocultures}
+
+\begin{corollary}[Monoculture Corollary]
+\label{cor:monoculture}
+As $\DR \to 1$, a single rule-error is no longer contained by independent cross-checking and propagates without an external correction opportunity, producing system-wide rather than local failure.
+\end{corollary}
+
+\begin{proof}[Proof sketch]
+Direct from Conjecture~\ref{conj:stability} together with Prop.~\ref{prop:compression-bound}: substituting $\DR \to 1$ for $n$ in the quorum-model bound removes the exponential suppression of risk with locus count entirely, since the bound $\exp(-2n(\theta-q)^2)$ degenerates to a constant near $1$ as the effective trial count collapses to one. Correlation, not raw count, is what determines whether redundancy actually functions as redundancy.
+\end{proof}
+
+\begin{remark}
+Financial contagion, agricultural monoculture collapse, and software supply-chain single-points-of-failure are instances of Corollary~\ref{cor:monoculture} outside any AI context, which is the point: the corollary is about $\DR$, not about intelligence, artificial or otherwise. The 2021 discovery of a critical vulnerability in a single, near-universally embedded software logging library affected an estimated proportion of enterprise Java systems large enough that the raw count of affected organizations — nominally in the millions — provided no protection whatsoever, because $\bar\rho$ across those organizations' exposure was close to $1$: they were not independent instances of risk, they were one risk wearing many organizational names, in exactly the sense System~A of Sec.~\ref{subsec:dr-worked-example} illustrates. The Irish Potato Famine is the pre-computational version of the same corollary: a food system with a large raw count of individual farms and an enormous total planted area nonetheless had $\DR$ close to $1$ with respect to \emph{Phytophthora infestans}, because nearly the entire crop was one genetically near-identical cultivar, and genetic near-identity is exactly the biological form of $\bar\rho \to 1$. Neither case required anything resembling artificial intelligence; both are instances of the same structural failure this section formalizes.
+\end{remark}
+
+This closes Part~III's argument. Sec.~\ref{sec:compression-principle} showed that risk falls exponentially in effective, independent locus count under a stated model, and rises with the ratio of iteration speed to verification speed; Sec.~\ref{sec:repair-diversity} showed that ``locus count'' has to mean effective, correlation-adjusted diversity rather than raw copies, with a twenty-line calculation separating a ten-times-replicated monoculture from ten genuinely independent institutions; and this section's corollary is the two put together, applied to the limiting case where diversity collapses entirely. None of the three results mention intelligence. All three are about the topology through which recursive modification propagates and gets checked — which is exactly the variable Part~IV now asks what AGI does to.
+
+% ============================================================
+\part{Case Studies and Synthesis}
+% ============================================================
+
+\section{Science as Recursive Improvement of Improvement}
+\label{sec:science}
+
+\begin{definition}[Scientific recursion loop]
+\label{def:science-loop}
+Let $K_t$ be accumulated knowledge, $M_t$ methods, $I_t$ instruments. Suppose $K_{t+1} = M_t(I_t, K_t)$, and methods and instruments are themselves revised by knowledge: $(M_{t+1}, I_{t+1}) = \Xi(K_{t+1}, M_t, I_t)$.
+\end{definition}
+
+Science is a Level-3, sympoietic (Sec.~\ref{sec:sympoiesis}) recursive system: it is not merely knowledge accumulation but method self-revision, distributed across researchers, institutions, and time. The development of the randomized controlled trial, of blind and double-blind protocols, and of formal statistical inference were not discoveries \emph{within} an existing method; they were revisions \emph{of} method, produced by knowledge (statistical theory, accumulated case studies of bias) feeding back into $M_t$ exactly as Definition~\ref{def:science-loop} describes. Its high $\DR$ under ordinary conditions — independent replication, competing research groups, adversarial peer review, many institutions with no shared incentive to agree — is, by Sec.~\ref{sec:repair-diversity}, the structural reason this recursive loop has remained admissible for roughly four centuries without central coordination.
+
+\begin{remark}[The replication crisis as a $\DR$ failure]
+\label{rem:replication-crisis}
+Science's own history supplies a case where this mechanism visibly degraded, and it is instructive precisely because the raw locus count $m$ (number of active researchers, journals, and institutions) was, if anything, larger than ever. In the years leading up to psychology's and related fields' replication crisis, a large fraction of published findings relied on closely related statistical practices — small sample sizes, flexible analysis choices made after seeing the data, a shared threshold for statistical significance — that were formally distinct researchers but methodologically correlated choices. In the vocabulary of Definition~\ref{def:repair-diversity}, $\bar\rho$ across the field's nominal verification channels was high, because the channels were not independently arriving at their methodological standards; they were converging on the same conventions via shared training and shared incentives. The result was exactly Corollary~\ref{cor:monoculture}'s prediction: when the shared methodological assumption turned out to be unreliable, it failed simultaneously across a large fraction of the literature, not independently across isolated studies, and the failure looked, retrospectively, far more systemic than the field's large $m$ would have suggested it could be. The field's ongoing response — pre-registration, mandatory replication, adversarial collaboration, greater diversity of statistical approaches — is a direct, if not always self-described, attempt to raise $\bar\rho$'s complement back toward the conditions under which Prop.~\ref{prop:compression-bound}'s bound actually delivers the protection a large $m$ seems to promise.
+\end{remark}
+
+\section{Civilization as Meta-Learning}
+\label{sec:civilization}
+
+\begin{definition}[Civilizational recursion loop]
+\label{def:civ-loop}
+Let $C_t = (T_t, I_t, A_t)$ be tools, institutions, and agents. Suppose $C_t \to (T_{t+1}, I_{t+1})$, $(T_{t+1},I_{t+1}) \to A_{t+1}$, and $A_{t+1} \to C_{t+1}$.
+\end{definition}
+
+Schools, libraries, and laboratories are not merely products of civilization; under Definition~\ref{def:civ-loop} they are the $F_t$ of a civilizational Level-3 system, mechanisms by which civilization modifies its own future capacity to produce. Civilization is species-scale recursive continuation, exhibiting the same sympoietic structure as Sec.~\ref{sec:sympoiesis} at greater scale and slower $\Delta t$.
+
+\begin{remark}[Textual transmission as a historical $\DR$ transition]
+\label{rem:printing-press}
+The transition from scribal to printed textual transmission is a clean historical instance of a civilizational system's $\DR$ changing by orders of magnitude within a single technology's adoption. Under scribal copying, a text's transmission lineage typically ran through a small number of sequential copies — each new manuscript copied from one, or occasionally two, prior exemplars — so an error introduced at any point propagated forward through every subsequent copy descended from it, with no independent line available for cross-checking. This is Definition~\ref{def:repair-diversity}'s $\bar\rho \to 1$ condition realized structurally, not statistically: sequential, single-source copying is close to the least diverse repair topology available, regardless of how many manuscripts eventually existed in total. Movable-type printing did not merely make copies faster; it made large numbers of \emph{textually identical, independently distributable} copies from a single set type, which — once multiple independent print runs, editions, and geographically dispersed printers entered circulation — allowed textual corruptions to be identified by comparison across genuinely independent lines of transmission in a way scribal culture structurally could not support at scale. The effect on civilizational $\DR$ for the specific function of preserving textual accuracy was closer to the jump from System~A to System~B in Sec.~\ref{subsec:dr-worked-example} than to a mere increase in raw copy count $m$.
+\end{remark}
+
+Civilizational institutions more generally — courts that create precedent reviewable by later courts, patent systems that make prior art searchable and challengeable, contract law that makes agreements independently enforceable rather than dependent on the continued goodwill of the original parties — are, functionally, mechanisms for keeping $\DR$ high for the specific recursive loop of legal and economic continuation, in the same sense peer review keeps $\DR$ high for the scientific loop of Sec.~\ref{sec:science}. None of these institutions were designed with Definition~\ref{def:repair-diversity} in mind; their persistence, in a Darwinian sense not unlike Sec.~\ref{sec:evolution}'s treatment of biological recursion, is some evidence that societies lacking them are less likely to sustain civilizational recursion over comparable timescales, whether or not anyone inside those societies ever represented the mechanism explicitly.
+
+\section{AGI as an Extreme Case}
+\label{sec:agi-extreme-case}
+
+\subsection{The Claim This Essay Has Actually Earned}
+\label{subsec:earned-claim}
+
+It is worth stating precisely what Parts~I and~II license, because it is narrower than it can sound. The standard argument for an intelligence explosion treats recursive self-improvement as doing most of the work on its own: a system capable of studying and modifying itself acquires a qualitatively new capacity, and that capacity is what carries it from human-level to superhuman capability. Sections~\ref{sec:autopoiesis}--\ref{sec:evolution} show that the capacity in question — Level-3, rule-level recursive modification — is not qualitatively new at all. Cells, immune systems, languages, markets, and evolution by natural selection all instantiate it, and Sec.~\ref{sec:evolution} shows this requires no intelligence whatsoever. The defensible conclusion is:
+\[
+\text{Recursive self-modification is neither unique to intelligence nor sufficient for intelligence.}
+\]
+This is already useful. It removes recursion itself as a marker of anything distinctive, and it shifts the burden of argument: anyone claiming AGI's recursive self-improvement is dangerous \emph{because it is recursive} owes an account of why AGI's instance of an old and common pattern should behave differently from every other instance of it.
+
+\subsection{What This Does Not Show}
+\label{subsec:overstatement-risk}
+
+It would be a mistake, and a tempting one, to treat the conclusion above as a refutation of intelligence-explosion arguments generally. It is not. Showing that
+\[
+\text{Rule-level recursion} \;\not\Rightarrow\; \text{intelligence, or anything AGI-specific}
+\]
+does not touch a more specific and more carefully stated claim, which is roughly that \emph{high-speed, low-diversity} rule-level recursion produces dynamics unlike anything biological or cultural recursion has produced, precisely because biological and cultural recursion has never operated under those particular conditions. That claim is not refuted by pointing to evolution, language, or markets, because the argument was never that recursion as such is dangerous — the argument, stated carefully, is conditional on rate and concentration, and the honest response to a conditional claim is to examine the conditions, not to point out that the unconditional version of the claim is false. An essay that spent Parts~I and~II establishing recursion's ubiquity and then treated that as settling the question of AGI risk would be substituting an easier, adjacent victory for the actual argument it needs to have.
+
+\subsection{The Question That Remains}
+\label{subsec:remaining-question}
+
+The honest reformulation is this: Sections~\ref{sec:autopoiesis}--\ref{sec:civilization} establish that Level-3 recursive modification, distributed across many loci ($n\gg1$) with an iteration period large relative to available external verification, is the ordinary condition of living and cultural systems, and Part~II's Repair Dominance and Admissibility results give a structural reason this distribution matters: it is what has historically kept $R_t \ge C(K_t)$ and $\DR$ high enough for recursive modification to remain admissible. AGI is distinguished not by exhibiting Level-3 recursion but by the open possibility of instantiating it under the opposite conditions: $n \to 1$, $\Delta t \ll \tau$ (Conjecture~\ref{conj:compression}), and $\DR \to 1$ if the system's internal repair or oversight channels are themselves centralized or correlated (Conjecture~\ref{conj:stability}). Whether any actual AGI system does or will satisfy these conditions, and whether satisfying them is in fact sufficient for the kind of runaway dynamics the intelligence-explosion literature describes, are empirical and architectural questions this essay's formal apparatus does not settle — it only says what would need to be true for the concern to be well-founded, and, just as importantly, what would need to be true for the concern to be misplaced (high $\DR$, verification periods comparable to or shorter than $\Delta t$, in which case the same historical mechanism that stabilized biological and cultural recursion would be available to AGI as well).
+
+\begin{remark}
+This reframes the object of concern without dissolving it. The claim is not $\text{Risk} \propto \text{Intelligence}$, which Secs.~\ref{sec:sympoiesis} and~\ref{sec:evolution} already show cannot be the whole story. Nor is the claim $\text{Risk} \approx 0$ because recursion is old. The claim, still marked as a conjecture rather than a proof (Sec.~\ref{sec:compression-principle}), is closer to $\text{Risk} \propto N^\ast / \DR$ — a conjunction of high iteration-to-verification ratio and low repair diversity — of which AGI is a candidate extreme instance, not a refuted one and not a proven one.
+\end{remark}
+
+\section{Distinction Preservation as the Deeper Object}
+\label{sec:distinction-preservation}
+
+The viability manifold $\Adm$ of Definition~\ref{def:admissibility} has, throughout Parts~I--III, done the actual explanatory work this essay needed: not capability, not intelligence, but the preservation of whatever structure makes the system's continued activity possible. This is the same object this author's Admissibility Program treats under the name \emph{recoverable distinction}: a system persists not by retaining its states unchanged but by retaining the capacity to reconstruct what matters about them across transformation. A cell preserves distinctions between self and non-self; a scientific field preserves distinctions between supported and unsupported claims; a civilization preserves distinctions encoded in law, language, and institutional memory. Recursive continuation, in the vocabulary developed here, and distinction preservation, in the vocabulary of that separate program, are the same claim viewed from systems theory and from a theory of admissibility respectively. This essay does not import that program's full apparatus; the connection is noted here as the place a future, unified treatment would need to go, not as a claim this essay has independently established.
+
+A second, independent line of support for treating $\Adm$ as the fundamental object is more useful precisely because it comes from outside this author's own corpus: a body of argument in analytic philosophy of truth, developed with no stake in recursive systems or admissibility theory, converges on structurally the same idea under the heading of \emph{non-propositional truth}.
+
+\subsection{Truth Without Propositions}
+\label{subsec:truth-without-propositions}
+
+Contemporary analytic philosophy standardly restricts truth to propositions and propositional attitudes: sentences, beliefs, assertions. Ordinary English usage does not observe this restriction — we speak of a true friend, true north, a true chair, a true coin — but the standard response, following what Ross and Dixon call \emph{restriction} or the weaker \emph{non-relation}, is to treat these uses as either philosophically irrelevant or simply unrelated to the propositional case, a homonym no more interesting than the two senses of ``bank.'' Ross and Dixon's \emph{In Defense of Non-propositional Truth} argues against both positions by developing unified theories of truth under which objects, actions, and propositions are truth-bearers in exactly the same sense. Three such theories are relevant here.
+
+\subsection{The Non-Deception Theory and the Viability Manifold}
+\label{subsec:non-deception-viability}
+
+\begin{quote}
+\emph{Non-deception theory} (attributed to early Buddhist and Madhyamaka sources): $X$ is true iff $X$ is non-deceptive, false iff $X$ is deceptive. A true chair supports the weight of the person sitting on it, as its socially established function leads one to expect; a chair that collapses is a false chair.
+\end{quote}
+
+The structural content of this theory is immediate once stated in this essay's vocabulary. Fix an object or system $X$ of a given kind, and let $\Phi_X$ denote the functional profile that kind is expected to satisfy — the behavior a chair, a coin, or a claim about snow is supposed to exhibit. Let $\Adm_{\Phi_X}$ be the viability manifold determined by that profile: the set of states in which $X$'s behavior continues to satisfy $\Phi_X$'s expectations.
+
+\begin{quote}
+\textbf{Correspondence.} $X$ is non-deceptive (true) at $t$ in exactly the sense that $x_t \in \Adm_{\Phi_X}$ (Definition~\ref{def:admissibility}); $X$ is deceptive (false) in exactly the sense that $x_t \notin \Adm_{\Phi_X}$.
+\end{quote}
+
+A chair that collapses is a chair whose state has exited the viability manifold determined by the chair-function profile. This is not an analogy grafted onto the non-deception theory from outside; it is the same claim, arrived at independently. The non-deception theory's treatment of \emph{graded} truth — salt water is truer than a mirage because it satisfies more of water's socially determined functions, even though it fails others (thirst-quenching) — corresponds to the observation, already available in this essay's own apparatus (Sec.~\ref{sec:complexity-repair}), that viability itself is not binary: $V_t$ is a real-valued quantity, and a state can be closer to or further from the boundary of $\Adm$ rather than simply inside or outside it. Approximate truth, on this reading, is distance from $\partial\Adm_{\Phi_X}$, not a separate and harder-to-formalize notion bolted onto a binary theory of truth.
+
+\subsection{The Trustworthiness Theory and Observer-Independent Admissibility}
+\label{subsec:trustworthiness-objective}
+
+\begin{quote}
+\emph{Trustworthiness theory} (derived from the Hebrew Bible): $X$ is true iff $X$ is trustworthy, false iff untrustworthy. A fake doorknob on a theater set is untrustworthy — one \emph{ought not} to trust it — even for the set builder who is never actually deceived by it.
+\end{quote}
+
+The non-deception theory, taken alone, makes admissibility observer-relative: whether $X$ deceives depends on a particular observer's background knowledge and expectations, which is why Ross and Dixon's stage-door example (true for the set builder who knows better, false for the visitor who doesn't) looks like a straightforward relativism. The trustworthiness theory's normative move — replacing \emph{does it deceive this observer} with \emph{ought it be trusted, independent of who is asking} — is exactly the move already built into Definition~\ref{def:admissibility}, which fixes $\Adm$ as a property of the system and its functional profile, not as a property relative to any given observer's beliefs about that system. This essay's viability manifold was never observer-relative to begin with; the trustworthiness theory shows why that choice, rather than the more psychological non-deception reading, is the one worth preserving if the goal is an objective admissibility claim rather than a claim about who currently happens to be fooled.
+
+\subsection{The Teleological Theory and Recursive Continuation}
+\label{subsec:teleological-continuation}
+
+\begin{quote}
+\emph{Teleological theory}: $X$ is true iff $X$ is an ideal instance of its kind, false iff a defective instance. A true heart is one that pumps blood effectively, because pumping blood is what a heart is for.
+\end{quote}
+
+This is the closest of the three to this essay's own thesis, because it is not merely a claim about a single state but a claim about a kind's characteristic activity being carried out well over time — which is exactly what Definition~\ref{def:autopoiesis}'s organizational closure and Theorem~\ref{thm:admissibility}'s viable-recursion condition are claims about. A ``true'' autopoietic system, on this reading, is simply one that realizes its own telos: continued organizational closure, $P_t \to O_t \to P_{t+1}$, carried out ideally rather than defectively. A heart that pumps blood only sporadically, or a cell that only partially regenerates its own components, is a defective instance of its kind in exactly the sense that a state trajectory with $R_t < C(K_t)$ (Theorem~\ref{thm:complexity-repair}) is a trajectory drifting toward exiting $\Adm$. The teleological theory's ``ideal instance of its kind'' and this essay's ``trajectory that remains admissible under Theorem~\ref{thm:admissibility}'' are not two claims that happen to resemble each other; read carefully, they are the same claim about the same objects, arrived at from opposite directions — one starting from a theory of truth and generalizing outward to objects, the other starting from a theory of recursive systems and finding truth-language already fitting what it needed to say.
+
+\subsection{One Structure, Three Parameterizations}
+\label{subsec:one-structure-three}
+
+The three theories are not competitors offering incompatible accounts of the same cases; they largely disagree only about how the functional profile $\Phi_X$ and its associated $\Adm_{\Phi_X}$ should be fixed.
+\begin{itemize}
+  \item \textbf{Non-deception:} $\Phi_X$ is fixed by a given observer's actual expectations — admissibility relative to \emph{this} observer's model of $X$'s kind.
+  \item \textbf{Trustworthiness:} $\Phi_X$ is fixed by the socially or normatively correct expectations for $X$'s kind, independent of any particular observer's actual beliefs.
+  \item \textbf{Teleological:} $\Phi_X$ is fixed by $X$'s own kind-defining function or telos, treated as objective rather than merely socially agreed.
+\end{itemize}
+Each is a different answer to \emph{whose expectations, or what standard, defines the viability manifold}, not a different answer to \emph{what it is for $X$ to be true given that manifold}. This essay's own use of $\Adm$ throughout Parts~I--III has consistently taken the teleological parameterization without saying so: an autopoietic system's $\Adm$ is fixed by its own organizational closure, not by any external observer's expectations of it, and a scientific community's $\Adm$ is fixed by what continued inquiry requires, not by what any individual scientist currently believes.
+
+\subsection{Truth as the Representational Special Case}
+\label{subsec:truth-as-special-case}
+
+The correspondence developed above should not be read as $\text{Truth} = \text{Admissibility}$. Admissibility, as this essay uses it, is the broader category: a biological trajectory can be admissible or not, a fiscal trajectory can be admissible or not, a pattern of social coordination can be admissible or not, and in none of these cases is ``true'' or ``false'' the natural word for what has succeeded or failed. What non-propositional truth theories pick out is narrower — the special case where the functional profile $\Phi_X$ concerns \emph{representation}: where $X$'s job, whatever else it does, includes standing in for, guiding expectations about, or asserting something about some further state of affairs. A chair's function is structural, not representational, and yet the non-deception theory still calls a collapsing chair ``false''; this is either evidence that ordinary usage extends ``true/false'' language somewhat loosely to any functional success or failure, or evidence that even a chair's affordances (Sec.~\ref{subsec:non-deception-viability}'s doorknob case makes this explicit) carry an implicit representational component — an object that looks graspable is, among other things, asserting something about what will happen if grasped. Either reading is compatible with the more conservative formulation this essay actually needs:
+\[
+\text{Truth} \;\subseteq\; \text{Admissibility}, \qquad \text{with equality only under a representational functional profile } \Phi_X.
+\]
+This is the claim worth defending. The stronger identity is not, and collapsing the two would cost this essay nothing it needs while inheriting every objection that has ever been raised against reducing truth to success generally (pragmatist theories of truth face exactly this objection, and this essay has no stake in re-litigating it here).
+
+\subsection{What This Does Not Claim}
+\label{subsec:truth-caveat}
+
+None of the above establishes that non-propositional theories of truth are correct, nor that propositional truth reduces to admissibility, nor that this essay has solved a live problem in philosophy of truth. Ross and Dixon's own text raises serious objections to non-propositional truth theories generally — a change-of-subject argument (perhaps ``true chair'' and ``true proposition'' are simply homonyms), worries about whether non-deception theories can preserve ordinary logical entailment, and an epistemic-uselessness argument aimed at showing that only propositional truth serves philosophy's actual (epistemic) interests. This essay takes no position on whether those objections succeed. What can be said without settling that debate is narrower and more defensible: independent of whether ``non-propositional truth'' is the right name for it, the formal structure those theories describe — a kind-relative functional profile, and a fact of the matter about whether a given instance realizes or fails that profile — is the same structure this essay has called admissibility, and its recurrence in a debate this essay's authors did not construct is some evidence that the structure is doing real work, not merely convenient formal bookkeeping.
+
+\section{Conclusion: The Geometry of Recursive Systems}
+\label{sec:conclusion}
+
+\begin{theorem}[Geometry of Recursive Systems, informal capstone]
+\label{thm:geometry-capstone}
+The long-run admissibility of a recursively self-modifying system is governed less by its capability $K$ than by the relationship among $K$, its repair capacity $R$, its repair-path diversity $\DR$, and its viability manifold $\Adm$. Autopoiesis, sympoiesis, science, and civilization are instances of systems that have historically remained admissible by keeping $R$ commensurate with $C(K)$ (Sec.~\ref{sec:complexity-repair}) and $\DR$ high (Sec.~\ref{sec:repair-diversity}). AGI is a candidate instance of a system attempting rule-level recursion under the opposite conditions.
+\end{theorem}
+
+The essay's argument has moved through four registers, and it is worth retracing them briefly, because the capstone theorem above compresses all of them into a single sentence that can be read too quickly. Part~I established that Level-3, rule-level recursive modification — a system's own activity altering the rule governing its future behavior, not merely its state or its parameters — is neither rare nor recent. Cells, immune systems, languages, markets, and evolution by natural selection all instantiate it, and evolution does so without any cognition anywhere in the loop, which was the essay's first and most load-bearing result: whatever eventually turns out to matter about AGI's recursive self-modification, it cannot be the recursion itself, because recursion this old and this common cannot be the exceptional ingredient a genuinely novel danger would require.
+
+Part~II supplied the concept that recursion's ubiquity had been quietly missing: admissibility, not improvement, as the property that actually determines whether a recursive trajectory survives. A cancer cell lineage recursively modifies its own production rule and increases its own capability at every step, and is nonetheless a textbook failure by the only standard that was ever going to matter, because its trajectory exits the viability manifold of the organism containing it. The Complexity--Repair Theorem and its Repair Dominance corollary gave this a structural rather than merely definitional grounding: past a threshold set by the convexity of maintenance cost, repair capacity matters more than additional capability, a result visible in cellular senescence, software technical debt, and imperial administrative overhead alike, none of which share anything but the underlying mathematical shape.
+
+Part~III asked when admissible-looking recursion is actually at risk of failing quietly, and derived, rather than merely asserted, an answer under a stated model: risk falls exponentially in effective, independent locus count and rises with the ratio of iteration speed to external verification speed. The word ``effective'' carries the section's real weight. Raw redundancy is not real redundancy once failure modes correlate, and the difference between ten independent institutions and ten copies of the same institution — quantified concretely via the design-effect correction for correlated channels — is the difference between a system that can catch its own errors and one that only appears to be able to.
+
+Part~IV supplied the case studies that make the preceding three parts more than an abstract exercise. Science's replication crisis is what a temporary collapse in effective diversity looks like when it happens to an otherwise well-functioning recursive system, and the field's methodological reforms since are a real-world instance of a system re-raising its own $\DR$ after discovering the cost of having let it fall. The shift from scribal to printed textual transmission is what a civilizational system's diversity transition looks like when a technology changes the topology of verification rather than merely its speed. Neither example was constructed to fit this essay's formalism; both were selected because they already fit it.
+
+Against that background, the question this essay was written to address — whether recursive self-improvement is the novel and singular threshold the contemporary AGI discussion treats it as — has a precise and now fully earned answer. It is not. Recursive self-improvement is not the arrival of a new principle in the history of complex systems; it is the possible acceleration and compression of an old one. Life, evolution, science, and civilization achieved recursive self-modification that remained admissible only by distributing it across many agents, timescales, and independent repair mechanisms. A recursively self-modifying system is not successful because it improves itself; it is successful only insofar as its modifications preserve the admissible conditions under which continuation, repair, and distinction-generation remain possible at all. The question for artificial general intelligence is not whether recursive self-improvement will arrive — by the argument of this essay, in the relevant structural sense, it already has, repeatedly, throughout the history of life and culture. The question, stated as precisely as Part~III's formal apparatus allows and no more precisely than that, is whether it remains admissible once compressed into a substrate with few independent loci, a short iteration period relative to any external check, and low repair-path diversity — and that question, this essay has argued throughout, has nothing essential to do with how intelligent the substrate is.
+
+% ============================================================
+\section*{Skeleton Status}
+\addcontentsline{toc}{section}{Skeleton Status}
+
+This pass brings the entire essay to full prose. Parts~I--III (Secs.~\ref{sec:myth-of-novelty}--\ref{sec:monocultures}) were completed in earlier passes, with all originally-flagged skeleton notes discharged rather than merely restated: a concrete worked example for the Adaptation Hierarchy (Sec.~\ref{subsec:worked-three-levels}), a generalization of Complexity--Repair beyond the linear model (Prop.~\ref{prop:robustness-general}), a derived exponential risk bound for the Compression Principle under a stated quorum model (Prop.~\ref{prop:compression-bound}), and a concrete, standard construction for repair diversity with a worked numeric example (Def.~\ref{def:repair-diversity}, Sec.~\ref{subsec:dr-worked-example}). This pass completes Part~IV: Sec.~\ref{sec:science} gained the replication crisis as a worked instance of a $\DR$ failure inside an otherwise healthy recursive system (Remark~\ref{rem:replication-crisis}), Sec.~\ref{sec:civilization} gained the scribal-to-print transition as a historical $\DR$ transition (Remark~\ref{rem:printing-press}), Sec.~\ref{sec:agi-extreme-case} was revised earlier to state the essay's actually-earned claim precisely, Sec.~\ref{sec:distinction-preservation} carries both the recoverable-distinction connection to this author's Admissibility Program and the non-propositional-truth grounding tightened to $\text{Truth}\subseteq\text{Admissibility}$, and the Conclusion (Sec.~\ref{sec:conclusion}) now retraces the full four-part argument rather than restating only the capstone theorem. Remaining candidate work, none of it required for the essay to stand on its own: deciding whether Prop.~\ref{prop:compression-bound}'s quorum-model idealizations are worth relaxing formally rather than flagged informally; and whether the connection to \emph{Continuation Under Constraint}'s Composition Failure Theorem (raised in correspondence but not verified against that document's actual text) belongs here once it can be checked directly.
+
+\end{document}
+

@@ -1,0 +1,116 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Pagella}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+
+\newtheorem{definition}{Definition}[section]
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem*{remark}{Remark}
+
+\title{\textbf{Against Eventless Ontology}\\[4pt]
+\large Two Failures of State-Sufficiency}
+\author{Flyxion}
+\date{2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Much of the constraint-first, admissibility-theoretic work developed across this corpus assumes, without ever directly defending, that histories are ontologically prior to states. This essay makes that assumption explicit and argues for it directly, rather than leaving it as a background posture inherited case by case. The argument is not a general polemic against state-based description as a matter of taste or convenience; it is an audit. Two results already established elsewhere in this corpus are shown to violate \emph{state-sufficiency} — the claim that every quantity a theory needs can be written as a function of the current state alone — in a precise, formal sense: repair, and repair entropy, are both provably not functions of state alone. From these two failures, together with the independent observation that the state-like objects of this corpus (compressed operators) are themselves shown elsewhere to be residues of history rather than primitives, the essay develops a positive proposal: states should be understood as equivalence classes of compressed trajectories, not as the ground floor on which trajectories are built. The essay closes by distinguishing this domain-local argument from the much larger and unsettled debate over process versus state ontology in fundamental physics, which it does not attempt to resolve.
+\end{abstract}
+
+\section{Naming the Default}
+
+\begin{definition}[State-Sufficiency]
+A theory $T$ is \emph{state-sufficient} (equivalently, \emph{eventless}) if every quantity $Q$ that $T$ needs to express can be written as $Q = q(x_t)$ for some function $q$ of the instantaneous state $x_t$ alone, with no further dependence on how $x_t$ was reached.
+\end{definition}
+
+State-sufficiency is the default assumption of a great deal of formal work, often held implicitly rather than argued for. Classical mechanics specifies a system's future entirely by its present position and momentum. Standard Markov decision processes assume the transition and reward structure depends only on the current state and action, not on the trajectory that produced it. Much of model theory treats a structure as a static configuration, with time, if present at all, indexing a family of such configurations rather than entering the configurations themselves. In each case, the state is treated as the primitive unit of description, and history, where it appears, is treated as a derived record of a sequence of such units — informative, perhaps, but not itself part of what the theory is fundamentally about.
+
+This essay does not dispute that state-sufficient formulations are often useful, tractable, and in many domains entirely adequate. The claim is narrower and, within its domain, stronger: for the specific theories this corpus has already developed and proved results about, state-sufficiency does not hold, and it does not hold in a way that can be checked rather than merely asserted.
+
+\section{Two Formal Failures of State-Sufficiency}
+
+\begin{proposition}[Repair Is Not State-Sufficient]
+\label{prop:repair}
+The repair map $\rho$ of \emph{Recursive Continuation}, Corollary 12.2, is not in general a function of the candidate state $x_t^{\mathrm{cand}}$ alone.
+\end{proposition}
+
+\begin{proof}
+By construction in that essay's own Remark 8.1: $\rho$ is there defined as $\rho(x_t^{\mathrm{cand}}, H_t)$, a function of the candidate state together with the historical record $H_t$, and the same remark states directly that $\rho$ ``degrades toward guessing'' as $H_t$ is impoverished. A map that degrades as an argument is impoverished is a map for which that argument carries information the map depends on; if $\rho$ were expressible as a function of $x_t^{\mathrm{cand}}$ alone, no degradation from impoverishing $H_t$ would be possible, since $H_t$ would not appear in the map's inputs at all. Concretely: two systems can present an identical candidate state $x_t^{\mathrm{cand}}$ while differing in $H_t$, and Recursive Continuation's own apparatus requires $\rho$ to behave differently on the two, since one retains the record needed to identify the correct repair and the other does not.
+\end{proof}
+
+\begin{proposition}[Repair Entropy Is Not a Function of the Compressed State Alone]
+\label{prop:entropy}
+Fix an operator $F$, playing the role of a state in the compressed sense of \emph{History Before Function}. There exist retention traces $T_{\min}\subseteq H$ with $C(T_{\min}) = C(H) = F$ — identical by any state-first reading — such that $S_R(F\mid T_{\min}) \neq S_R(F\mid H)$.
+\end{proposition}
+
+\begin{proof}
+Immediate from the Anti-Alignment Theorem of \emph{History Before Function}: $S_R(F\mid T)\leq S_R(F\mid T_{\min})$ for all $T\in\mathcal{L}_F$, with strict inequality whenever some fact in $H\setminus T_{\min}$ excludes a fault location consistent with $T_{\min}$ alone. Both $T_{\min}$ and $H$ compress to the same $F$ by construction of the retention lattice, so a state-first description that records only $F$ cannot distinguish the two cases, and yet the two cases differ — provably, not just plausibly — in repair entropy.
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:entropy} is the sharper of the two failures, because it does not merely note that some auxiliary bookkeeping variable happens to reference history; it shows that a quantity \emph{Recursive Continuation}'s own Admissibility Theorem makes load-bearing for viability — repair entropy governs whether a system can be repaired at all within the sustainability condition of that essay's Corollary 10.5 — fails to supervene on the state-like object a state-first theory would take as primitive. Two systems in the identical compressed state $F$ can differ in whether they are repairable, and no amount of additional information about $F$ itself resolves the difference. Only the retained history does.
+\end{remark}
+
+\section{The Deeper Failure: The State Itself Is Derivative}
+
+Propositions~\ref{prop:repair} and~\ref{prop:entropy} both grant, for the sake of argument, that something like a state — $x_t^{\mathrm{cand}}$, or the compressed operator $F$ — is a legitimate object, and show that state-sufficiency fails even so: some further quantity the theory needs cannot be recovered from that object alone. \emph{History Before Function} makes a stronger and independent claim that does not grant even this much. On that essay's account, $F$ itself is not a primitive at all; it is $C(H)$, the compressed residue of an underlying history $H$, existing only because some trajectory of attempts, corrections, and successes was folded into it. The apparent primitiveness of $F$ — the fact that it can be invoked, inspected as a behavior, and treated as a fixed point of reference — is itself a property conferred by compression, not evidence that $F$ was there from the start.
+
+This is the deeper sense in which the corpus's results resist eventless restatement. It is not merely that certain quantities computed \emph{from} a state require additional historical information, as Propositions~\ref{prop:repair} and~\ref{prop:entropy} show. It is that the state-like objects themselves are, on independent grounds argued elsewhere, compressed histories rather than the ground floor histories are built upon. An eventless ontology that takes $F$ as primitive has already conceded the game by the time it starts, since $F$'s existence as an invocable, well-behaved object was never available without $H$ having occurred first.
+
+\section{Further Corroboration Across the Corpus}
+
+The two formal failures above are sufficient to establish the essay's central claim on their own; the observations in this section are offered as corroborating pattern rather than additional proof; they were not independently derived to the same standard and should be read as testimony that the failure is recurrent, not as a third and fourth proposition.
+
+\textsc{MEM|8} takes memory as prior to representation, on the view that a representational state is only ever a particular slice through an ongoing memory process, not an object memory subsequently attaches to. \textsc{Spherepop}'s event calculus makes irreversibility a computational primitive, building histories directly into the semantics of collapse rather than deriving irreversibility as a fact about sequences of otherwise reversible states. \emph{Compression of Expertise} supplies a case that resists state-first description on all three fronts simultaneously: an expert operator cannot be adequately described as a bare state (it is a compressed history), cannot be assessed for its repairability without reference to what was retained rather than discarded (Proposition~\ref{prop:entropy}, instantiated), and cannot be accounted for as a static object at all once its acquisition and eventual decay are considered, which is precisely why that essay deferred those questions to a theory of expertise as recursive continuation rather than attempting to answer them in state-first terms.
+
+\section{The Positive Proposal}
+
+\begin{definition}[State as Compressed-Trajectory Class]
+A state, on the account this essay defends, is not a primitive point but an equivalence class $[H]_C$ of histories under compression: two trajectories occupy the same state exactly when they compress to the same operator, $C(H_1)=C(H_2)$. What a state-first theory calls ``the state'' is this equivalence class considered without reference to which representative history produced it — convenient exactly where that information is not needed, and Propositions~\ref{prop:repair} and~\ref{prop:entropy} exhibit the specific quantities for which it is needed regardless.
+\end{definition}
+
+\begin{remark}
+This is not a rejection of using states at all. It is a claim about priority: the equivalence class is derivative of the trajectories it groups, not the trajectories derivative of some pre-existing partition into states. A theory may quotient by $C$ whenever the quantities it cares about happen to be constant on $[H]_C$ — and many do, which is exactly why state-based methods work as well as they do in so many domains — but this is a fact to be checked in each case, per Propositions~\ref{prop:repair} and~\ref{prop:entropy}, not a default that history-dependence must overcome the burden of proof to displace.
+\end{remark}
+
+\section{Anticipated Objection: Mathematical Convenience}
+
+The obvious reply on behalf of state-first methods is that they are indispensable in practice: the entire apparatus of calculus, dynamical systems theory, and much of theoretical computer science treats state as the argument of a function precisely because doing otherwise is intractable. This essay does not dispute the practical claim. The reply is that convenience of this kind is itself evidence for, rather than against, the priority argued for here. A state variable that suffices to predict a system's future evolution is not a brute fact about the world; it is what remains after a compression has already been performed, discarding exactly the historical detail that turned out not to matter for the quantities in question. Classical mechanics' use of position and momentum as a complete state is a compression that works because, for the systems classical mechanics was built to describe, essentially all historical detail besides current position and momentum genuinely is irrelevant to future evolution — a fact about which systems those are, established by finding that the compression loses nothing needed, not a fact showing states were primitive all along. Where the analogous compression loses something needed — as Propositions~\ref{prop:repair} and~\ref{prop:entropy} show it does for repair and repair entropy — the convenience disappears along with the compression's adequacy, and the underlying history reasserts itself as necessary.
+
+\section{Stakes Beyond the Corpus}
+
+The argument of this essay is domain-local: it establishes that specific, already-proven results in this corpus's repair and admissibility apparatus are not state-sufficient, and it draws a general moral about compression and priority from that specific finding. It does not attempt to resolve, and should not be read as taking a side in, the much larger and long-standing debate in physics and metaphysics between eternalist or block-universe views, on which the totality of events across time is equally real and history is not ontologically distinguished from any other slice of a four-dimensional structure, and presentist or process-relational views, on which only the present, or only ongoing process, is fully real and the past is real only in the attenuated sense of having been. Serious positions are defended on both sides of that debate by physicists and philosophers with far more at stake in it than this essay is equipped to adjudicate, and nothing here bears directly on it. Similarly, in reinforcement learning, the choice between Markovian state representations and history-dependent architectures (recurrent networks, transformers with full context) is a long-running, empirically contested design question in its own right, not one this essay's domain-local propositions settle. What this essay does claim is narrower: within the specific theories this corpus has built, two identified quantities are not state-sufficient, and the pattern recurs often enough elsewhere in the corpus to suggest the underlying posture — histories first, states as their derivative equivalence classes — was the correct one to hold from the start, for these theories specifically.
+
+\section{Relation to the Corpus}
+
+This essay is intended as a consolidation rather than a new construction. \emph{Frozen Processes}, \emph{Spherepop}, \emph{Repair as a Fundamental Category}, and \emph{Why Distinctions Survive} each assumed, in their own vocabulary, that process or history is not reducible to a sequence of otherwise self-sufficient states. \emph{Recursive Continuation} and \emph{History Before Function} then produced, without particularly setting out to, two formal results — Propositions~\ref{prop:repair} and~\ref{prop:entropy} above — that make the assumption checkable rather than merely declared. This essay's contribution is to notice that those results, read together, constitute the defense the earlier essays' shared assumption had not yet received, and to state that defense in one place rather than leaving it distributed across essays that each needed only a piece of it.
+
+\section*{Open Problems}
+
+\begin{enumerate}
+\item \textbf{A general translation procedure.} Given an arbitrary state-first theory, is there a systematic procedure for identifying which of its quantities are state-sufficient and which are not, short of the case-by-case audit performed here?
+\item \textbf{Is the reverse translation truly impossible, or merely inconvenient?} This essay has shown that two specific quantities are not state-sufficient under the theories as currently formulated. It has not shown that no reformulation could enlarge the state space (for instance, by folding a summary of $H_t$ into an extended state) to restore state-sufficiency at the cost of a larger state. Whether such enlargement is always possible in principle, and whether it counts as a genuine refutation of this essay's argument or merely a relabeling of history as a bigger state, is left open.
+\item \textbf{Formal criteria for essential versus incidental history-dependence.} Not every appearance of $H_t$ in a formula indicates a genuine ontological dependency; some may be eliminable with sufficient reformulation. A general criterion distinguishing essential history-dependence (of the kind exhibited in Propositions~\ref{prop:repair} and~\ref{prop:entropy}) from incidental history-dependence (removable by a cleverer choice of state variables) is not developed here.
+\end{enumerate}
+
+\section*{References}
+
+\begin{enumerate}
+\item Flyxion. \emph{Recursive Continuation: Autopoiesis, Sympoiesis, and the Compression of Self-Modification}. 2026.
+\item Flyxion. \emph{History Before Function: Compression as the Origin of Operators}. 2026.
+\item Flyxion. \emph{The Compression of Expertise}. 2026.
+\item Craig Callender (ed.). \emph{The Oxford Handbook of Philosophy of Time}. Oxford University Press, 2011.
+\item Richard T. W. Arthur. \emph{The Reality of Time Flow: Persistence and Becoming in Relativistic Physics}. Springer, 2019.
+\item Richard S. Sutton and Andrew G. Barto. \emph{Reinforcement Learning: An Introduction}, 2nd ed. MIT Press, 2018.
+\end{enumerate}
+
+\end{document}

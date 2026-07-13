@@ -1,0 +1,118 @@
+\documentclass[11pt]{article}
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Pagella}
+\usepackage[margin=1.25in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage[hidelinks]{hyperref}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+
+\title{History-Preserving and History-Erasing Operators: \\ A Theory of Information Retention in Continuation Processes}
+\author{Flyxion \\ \small Independent Researcher}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A companion analysis of continuation operators established when a chain of transformations applied to a space of admissible continuations depends on the order in which its operators are applied, and when it does not. That result answers a binary question: does history matter. This essay asks a finer question about the same objects: when history does matter, which parts of it survive, and which are destroyed. The central notion is recoverability rather than mere set inclusion: an operator preserves an aspect of its input if that aspect can be reconstructed from the operator's output together with a description of the operator itself. Under this definition, a static narrowing operator is shown to preserve membership information exactly on its fixed target region and to destroy it completely outside that region, which identifies static narrowing as a special case of a more general projection operation rather than a distinct mechanism. A state-dependent narrowing operator is shown to behave, once its output is observed, exactly like some static narrowing operator, but which one is determined only by the input and cannot be known from the operator's description in advance; this retroactive determination is identified as the precise source of the non-commutativity established elsewhere. An override operator is shown to destroy recoverability of every aspect of its input without exception, and persistence is shown to be a different kind of mechanism entirely, one that repeatedly reinjects a fixed piece of information into a chain rather than either preserving or erasing information already present. Composition results are proved for each case, including an exact description of how loss accumulates under repeated static narrowing and a proof that a single override anywhere in a chain annihilates recoverability of everything that preceded it.
+\end{abstract}
+
+\newpage
+\section{From whether history matters to what survives}
+
+A companion analysis of continuation operators, developed elsewhere, established a binary distinction. A chain of operators acting on a space of admissible continuations either exhibits order-dependence or it does not, and the distinction was shown to turn on whether every operator in the chain acts by intersecting the current space with a target region fixed independently of that space, the static case, or whether at least one operator's target region is computed from the space it acts on, discarded outright, or reinjected at every step. That analysis answers the question of whether history matters. It does not answer a closely related and finer question: when a chain is history-dependent, what specifically has been lost, and what, if anything, has survived.
+
+This essay develops that finer question directly. The central move is to stop asking whether an operator's output equals its input, which is too coarse a test to distinguish the several mechanisms already identified, and to ask instead what can be reconstructed about the input from the output together with a description of the operator that produced it. This reframing turns out to unify two mechanisms that appeared distinct in the earlier analysis, static narrowing and projection, and to give a precise account of why state-dependent narrowing generates the path-dependence it does, in terms of what it withholds rather than merely in terms of set containment.
+
+\section{Recoverability}
+
+\begin{definition}
+Let $C : 2^{\mathcal{S}_0} \to 2^{\mathcal{S}_0}$ be a continuation operator and let $X \subseteq \mathcal{S}_0$ be a possible input. An element $x \in \mathcal{S}_0$ has \emph{recoverable membership} in $X$ relative to $C$ if, from the output $C(X)$ together with a complete description of $C$, one can determine whether $x \in X$. The operator $C$ is \emph{lossless at $X$} if every element of $\mathcal{S}_0$ has recoverable membership in $X$ relative to $C$; equivalently, $X$ is the unique preimage of $C(X)$ under $C$. The operator $C$ is \emph{lossless} if it is lossless at every $X \subseteq \mathcal{S}_0$, that is, if $C$ is injective.
+\end{definition}
+
+This definition is deliberately about reconstructibility rather than about the relationship $C(X) \subseteq X$. An operator can satisfy $C(X) \subsetneq X$, discarding some elements outright, while still being lossless in the sense above, provided the identity of what was discarded is nonetheless recoverable from the output and the operator's description; conversely, as the next section shows, an operator can leave $C(X)$ quite large while still destroying recoverability for most of $\mathcal{S}_0$.
+
+\section{Classifying continuation operators by recoverability}
+
+\begin{proposition}
+Let $C_A$ be a static narrowing operator with region $A \subseteq \mathcal{S}_0$, so that $C_A(X) = X \cap A$. For every $X \subseteq \mathcal{S}_0$ and every $x \in A$, $x$ has recoverable membership in $X$ relative to $C_A$. For every $x \notin A$, $x$ does not have recoverable membership in $X$ relative to $C_A$, for any $X$ other than the case $X \cap (\mathcal{S}_0 \setminus A) = \emptyset$.
+\end{proposition}
+
+\begin{proof}
+For $x \in A$: $x \in X$ if and only if $x \in X \cap A = C_A(X)$, since $x \in A$ already. The output directly settles membership. For $x \notin A$: $x \notin X \cap A$ regardless of whether $x \in X$, since $x \notin A$ excludes it from the intersection either way. Given only $C_A(X)$ and the description of $C_A$, an observer cannot distinguish an input $X$ containing $x$ from an input $X \setminus \{x\}$ not containing it, since $C_A(X) = C_A(X \setminus \{x\})$ whenever $x \notin A$.
+\end{proof}
+
+This result gives a static narrowing operator an exact and unusually clean recoverability profile: membership is perfectly recoverable on $A$ and completely unrecoverable outside $A$, with no intermediate case. There is nothing partial about it at the level of individual elements, even though the operator as a whole is neither fully lossless nor fully destructive.
+
+\begin{remark}
+This is exactly the behavior of a projection operator that retains recoverable membership for a single region, $A$, and destroys recoverable membership everywhere else. A static narrowing operator is therefore not a separate mechanism from projection; it is the special case of projection in which the elements retained with recoverable membership are exactly those of one fixed region. The distinction drawn in the companion analysis between static narrowing and selective-forgetting projection operators, useful as it was for locating the source of order-dependence, collapses at the level of recoverability: both are instances of the same underlying operation, distinguished only by how large and which portion of $\mathcal{S}_0$ retains recoverable membership under them.
+\end{remark}
+
+\begin{proposition}
+Let $C$ be an override operator with region $A$, so that $C(X) = A$ for every $X$. Then no element of $\mathcal{S}_0$ has recoverable membership in $X$ relative to $C$, for any $X$.
+\end{proposition}
+
+\begin{proof}
+Since $C(X) = A$ regardless of $X$, the output is identical for every possible input. An observer given only $C(X)$ and the description of $C$ cannot distinguish any two inputs $X, X'$, since $C(X) = C(X') = A$ always. No aspect of $X$ is recoverable, since none of it is reflected in the output at all.
+\end{proof}
+
+An override is accordingly strictly more destructive than a static narrowing operator with an empty target region, even though both can produce a small or empty final output: the static narrowing operator with an empty region at least reveals, correctly, that no element of $\mathcal{S}_0$ was excluded for any reason other than the fixed emptiness of its own target, whereas the override's output carries no information about the input under any circumstances, because the output would have been identical no matter what the input was.
+
+\begin{proposition}
+Let $C_2$ be the state-dependent narrowing operator that selects, from any $X$, the elements whose theme matches the majority theme of $X$ itself. Then for any particular input $X_0$, once the output $C_2(X_0)$ is observed, that output is identical to the output of some static narrowing operator $C_{A}$ applied to $X_0$, where $A$ is the set of all elements of $\mathcal{S}_0$ sharing the majority theme of $X_0$. However, the region $A$ is not determined by the description of $C_2$ alone; it depends on $X_0$.
+\end{proposition}
+
+\begin{proof}
+Let $T$ be the majority theme of $X_0$ and let $A = \{x \in \mathcal{S}_0 : \mathrm{theme}(x) = T\}$. By construction, $C_2(X_0) = \{x \in X_0 : \mathrm{theme}(x) = T\} = X_0 \cap A = C_A(X_0)$, so the two operators agree on this particular input. But $T$, and hence $A$, is computed from $X_0$ itself, specifically from which theme occurs most often among its elements; a different input $X_0'$ with a different majority theme would require a different region $A'$ to reproduce $C_2$'s behavior on $X_0'$. No single fixed region reproduces $C_2$ across all inputs, which is precisely why $C_2$ is state-dependent rather than static.
+\end{proof}
+
+This proposition gives the sharpest available statement of what a state-dependent narrowing operator is, in recoverability terms: it is an operator that behaves, on each particular input, exactly like some static narrowing operator, but the identity of that static operator, and hence which region of $\mathcal{S}_0$ will retain recoverable membership, is itself an output of the computation rather than a fixed parameter of it. Composing two such operators couples their effective regions to one another's inputs in a way that composing two genuinely static operators never does, since a static operator's region is fixed before either operator acts and is therefore unaffected by what the other operator does. This is the recoverability-theoretic reason behind the non-commutativity of state-dependent narrowing established in the companion analysis: order matters because which region of $\mathcal{S}_0$ retains recoverable membership is not known until after the preceding operator has already acted, so applying the operators in a different order changes not merely the elements retained but which region was retaining recoverable membership when they were retained.
+
+\begin{remark}
+Persistence, treated in the companion analysis, does not fit into this classification as a fourth degree of loss alongside lossless, projective, and destructive, because it is not fundamentally a claim about what a single operator preserves or destroys from its own input. A persistent operator with region $A^{\ast}$ repeatedly intersects the space with $A^{\ast}$ at every step of a chain, regardless of what other narrowing or overriding occurs alongside it. Its function is to keep a fixed piece of information, membership in $A^{\ast}$, continuously enforced throughout the chain rather than to preserve or erase information about whatever else the chain is doing to $\mathcal{S}_0$. Persistence is accordingly a mechanism of information reinjection rather than a further point on the preservation-to-destruction spectrum the other operators occupy.
+\end{remark}
+
+\section{Composition and the accumulation of loss}
+
+\begin{proposition}
+If $C_1, \ldots, C_n$ are each lossless, then their composition $C_n \circ \cdots \circ C_1$ is lossless.
+\end{proposition}
+
+\begin{proof}
+The composition of injective functions is injective: if $(C_n \circ \cdots \circ C_1)(X) = (C_n \circ \cdots \circ C_1)(X')$, then since $C_n$ is injective, $(C_{n-1} \circ \cdots \circ C_1)(X) = (C_{n-1} \circ \cdots \circ C_1)(X')$, and by induction on $n$, eventually $C_1(X) = C_1(X')$, whence $X = X'$ since $C_1$ is injective.
+\end{proof}
+
+\begin{proposition}
+If $C_1, \ldots, C_n$ are static narrowing operators with regions $A_1, \ldots, A_n$, then an element $x \in \mathcal{S}_0$ has recoverable membership in the original input relative to the composition $C_n \circ \cdots \circ C_1$ if and only if $x \in A_1 \cap A_2 \cap \cdots \cap A_n$.
+\end{proposition}
+
+\begin{proof}
+By Proposition 1 applied inductively, $x$ has recoverable membership after the first operator exactly when $x \in A_1$; among those $x$, recoverable membership survives the second operator exactly when $x \in A_2$ as well, and so on. An element retains recoverable membership through the full chain exactly when it lies in every region along the way, which is $A_1 \cap \cdots \cap A_n$.
+\end{proof}
+
+This is the same region that determines the final admissible space in the static case of the companion analysis, $\mathcal{S}_n = \mathcal{S}_0 \cap A_1 \cap \cdots \cap A_n$, and the coincidence is not superficial: the recoverable core of a chain of static narrowing operators is exactly the region that survives as admissible, and the foreclosure result proved there, that a region excluded early can never be recovered later by further narrowing, is precisely the statement that recoverability under composition of static operators is monotone non-increasing and never regained. Loss accumulates strictly: each additional static narrowing operator can only shrink the recoverable core, never restore it, in exact correspondence with the shrinking admissible space itself.
+
+\begin{proposition}
+If $C_j$ is an override occurring at position $j$ in a chain $C_1, \ldots, C_n$, then for every $i < j$ and every $x \in \mathcal{S}_0$, $x$ does not have recoverable membership in $\mathcal{S}_i$ relative to the composition $C_n \circ \cdots \circ C_1$.
+\end{proposition}
+
+\begin{proof}
+By Proposition 2, $\mathcal{S}_j = C_j(\mathcal{S}_{j-1})$ is equal to the override's fixed region $A$ regardless of $\mathcal{S}_{j-1}$, and hence regardless of $\mathcal{S}_0, \ldots, \mathcal{S}_{i}, \ldots, \mathcal{S}_{j-1}$ for any $i < j$. Since $\mathcal{S}_j$ is unaffected by any of these earlier spaces, so is everything computed from $\mathcal{S}_j$ by the remaining operators $C_{j+1}, \ldots, C_n$. No aspect of $\mathcal{S}_i$ for $i < j$ can be recovered from $\mathcal{S}_n$.
+\end{proof}
+
+A single override anywhere in a chain therefore does not merely interrupt order-invariance, as the companion analysis showed; it annihilates recoverability of the entire history preceding it, uniformly and without exception, regardless of how carefully constructed or informative the operators before it were. This is a considerably stronger statement than non-commutativity alone: a chain can fail to commute while still preserving a great deal of information about its history, as the state-dependent case shows, but an override guarantees that nothing before it survives in any recoverable form.
+
+\section{Conclusion}
+
+Asking whether a chain of continuation operators is history-dependent, the question addressed in the companion analysis, and asking what a chain of continuation operators preserves are related but distinct questions, and this essay has shown the second to admit exact answers wherever the first does. Static narrowing operators, previously treated as a class distinct from projection, are shown here to be the special case of projection that retains recoverable membership for a single region and destroys it everywhere else completely rather than partially. State-dependent narrowing operators are shown to behave, on any given input, exactly like some static narrowing operator, with the identity of that operator itself an output of the computation rather than a fixed parameter, which is the precise mechanism behind their failure to commute. Override operators are shown to be strictly more destructive than any static narrowing operator, since they destroy recoverability of their input unconditionally rather than merely outside a retained region, and a single override at any position in a chain is shown to annihilate recoverability of everything before it, not merely to break order-invariance. Persistence is shown not to fit this classification at all, being a mechanism for reinjecting fixed information into a chain rather than a further degree of loss. What remains open is whether these results generalize beyond the continuation setting to any process describable as a composition of operators on a space of possibilities, a question this essay leaves for further work, though it is suggestive that a finished artifact, such as this essay itself, is standardly the result of exactly such a composition applied to a much larger space of things it could have been.
+
+\end{document}
+

@@ -1,6 +1,7 @@
 \documentclass[12pt, a4paper]{article}
 
 \usepackage{amsmath, amsthm, amssymb}
+\usepackage{titling}
 \usepackage{geometry}
 \usepackage{setspace}
 \usepackage{titlesec}
@@ -24,9 +25,11 @@
 \newtheorem{proposition}{Proposition}[section]
 \newtheorem{corollary}[proposition]{Corollary}
 \newtheorem{lemma}[proposition]{Lemma}
+\newtheorem{hypothesis}[proposition]{Hypothesis}
 
 \theoremstyle{definition}
 \newtheorem{definition}[proposition]{Definition}
+\newtheorem{assumption}[proposition]{Assumption}
 
 \theoremstyle{remark}
 \newtheorem{remark}[proposition]{Remark}
@@ -34,18 +37,23 @@
 \titleformat{\section}{\large\bfseries}{\thesection.}{0.75em}{}
 \titleformat{\subsection}{\normalsize\bfseries}{\thesubsection.}{0.75em}{}
 
-\title{\textbf{Compression After Expansion:\\
-On Skill, Misattribution, and the Geometry of Work}}
+\title{\Large\textbf{Compression After Expansion:\\
+On Skill, Misattribution, and the Ethics of Visible Structure}}
 \author{Flyxion\\
 \small Independent Researcher}
-\date{\today}
+\date{2026}
+
+\setlength{\droptitle}{-3cm}
+\posttitle{\par\end{center}\vspace{0.3cm}}
+\predate{\begin{center}\normalsize}
+\postdate{\par\end{center}\vspace{0.2cm}}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-This essay develops a unified framework for understanding the systematic misperception of difficulty in human skill, technical production, and social representation. The central thesis is that apparent simplicity in completed artifacts---whether mathematical proofs, constructed objects, software systems, or natural language outputs---is the historical residue of prior expansion, iteration, and structural accumulation, and not an intrinsic property of the artifact itself. Contemporary technological and economic systems compound this misperception by presenting compressed endpoints as primary forms, thereby obscuring the generative processes that produced them. We formalize this asymmetry through two interlocking theoretical structures: a general account of expansion and compression as operations on configuration spaces, grounded in an entropic asymmetry between construction and destruction; and Aspect Relegation Theory, a cognitive model in which skill is understood as compressed structure encoded through the progressive withdrawal of attention from stabilized sub-processes. Together these frameworks explain a range of phenomena spanning cognitive science, labor economics, media theory, and epistemology, and ground a normative critique of representations that sever compressed outputs from their generative histories.
+This essay develops a qualified model of a recurring pattern in human skill, technical production, and social representation: apparent simplicity in a finished artifact---a mathematical proof, a constructed object, a piece of software, a fluent performance---is often the residue of prior exploration, iteration, and structural accumulation that the finished form no longer displays. We formalize a narrow version of this claim under explicit assumptions about a constraint-defined configuration space, rather than asserting it as a universal structural law, and we distinguish the resulting probabilistic result from claims about relative difficulty, which require further argument. We then develop Aspect Relegation Theory, a cognitive model in which a substantial class of expert automatic performance is understood as the residue of previously deliberate procedures that became increasingly autonomous through practice; we present this as one well-supported route to automaticity among others, not as an identity claim about all fast cognition. A candidate neurophysiological correlate---transient hypofrontality in flow states---is discussed as a contested hypothesis rather than an established signature, alongside evidence that complicates a simple prefrontal-withdrawal story. These two frameworks motivate an account of observer misattribution, of the political economy of delegated constraint management, and of the ethics of compressed representation, organized around a narrower and more defensible thesis than the one with which earlier drafts of this argument began: that constructing a reliable representation of a domain generally requires prior exploration of that domain by someone, and that observers who encounter only the compressed result routinely miscalibrate the labor required to produce it.
 \end{abstract}
 
 \tableofcontents
@@ -53,193 +61,209 @@ This essay develops a unified framework for understanding the systematic misperc
 \newpage
 
 \section{Introduction: The Illusion of Effortless Form}
+\label{sec:intro}
 
-There is a persistent structural illusion at work in the way human beings perceive completed artifacts. A finished building, a published proof, a released piece of software, a polished essay---each presents itself as a coherent, apparently simple object whose internal structure invites no particular reflection on the process by which it came to be. Observers encountering such objects tend, with remarkable consistency, to draw inferences about the difficulty of producing them that are calibrated to the apparent simplicity of the result rather than to the generative complexity of the process. This inference is systematically false, and understanding why it is false is the primary aim of this essay.
+There is a persistent pattern in the way human beings perceive completed artifacts. A finished building, a published proof, a released piece of software, a polished essay---each presents itself as a coherent, apparently simple object whose internal structure invites little reflection on the process by which it came to be. Observers encountering such objects tend, with some consistency, to draw inferences about the difficulty of producing them that track the apparent simplicity of the result rather than the generative complexity of the process. This inference is often badly calibrated, and understanding why is the primary aim of this essay. It is not, however, a universal law: some finished objects really were easy to make, and surface simplicity sometimes does correlate with low production cost. The claim developed here is about a common and consequential bias, not an exceptionless regularity.
 
-The illusion has several reinforcing sources. Compression is a constitutive feature of representation: the point of producing a final form is precisely to eliminate from view the intermediate steps, failed attempts, and structural discoveries that preceded it. This is not a contingent feature of bad communication but a functional requirement of efficient representation. A proof that displayed every exploratory conjecture, failed lemma, and notational revision through which it was produced would be unreadable. A building that preserved every scaffolding stage would be uninhabitable. Compression is, in this sense, necessary. But it is also epistemically misleading when the compressed form is mistaken for the primary form, and when the prior expansion is forgotten or invisible.
+The illusion has several reinforcing sources. Compression is a constitutive feature of representation: the point of producing a final form is often precisely to eliminate from view the intermediate steps, failed attempts, and structural discoveries that preceded it. This is not a contingent feature of bad communication but a functional requirement of efficient representation. A proof that displayed every exploratory conjecture, failed lemma, and notational revision through which it was produced would be unreadable. A building that preserved every scaffolding stage would be uninhabitable. Compression is, in this sense, often necessary. But it can also be epistemically misleading when the compressed form is mistaken for the primary form, and when the prior expansion is forgotten or invisible.
 
-A second reinforcing source is cognitive. Human beings develop skills through a process that renders previously effortful operations automatic, relocating them beneath the threshold of conscious attention. Expert performance therefore appears effortless because it is effortless---but this effortlessness is the product of accumulated labor, not its absence. The experienced constructor who walks through a derelict building and immediately perceives a tractable sequence of operations is not seeing something simple; she is perceiving a high-entropy configuration through a lens of internalized low-entropy structure. The novice who sees chaos is, in a precise sense, correct about the current state of the building. What they lack is the generative pathway.
+A second reinforcing source is cognitive. Human beings develop many skills through a process that renders previously effortful operations increasingly automatic, relocating them beneath the threshold of conscious attention. Expert performance can therefore appear effortless because, for the expert, much of it is---but this effortlessness is frequently the product of accumulated practice, not evidence of an absence of underlying complexity. The experienced builder who walks through a derelict structure and immediately perceives a tractable sequence of operations has a learned decomposition that converts visible disorder into a sequence of workable steps; the novice who sees only disorder is not mistaken about the building's current state, only about how it might be reached from here.
 
-A third source is institutional and economic. Modern media and commercial systems are organized around the representation of outcomes rather than processes. Startup narratives, viral content, minimalist design aesthetics, and compressed pedagogical formats all function by presenting relegated forms while suppressing the construction histories that produced them. This is not always deliberate deception, but it reliably produces systematic distortions in how difficulty, effort, and value are perceived and distributed.
+A third source is institutional and economic. Modern media and commercial systems are organized substantially around the representation of outcomes rather than processes. Startup narratives, viral content, minimalist design aesthetics, and compressed pedagogical formats often function by presenting relegated forms while suppressing the construction histories that produced them. This is not always deliberate deception, but it can reliably produce distortions in how difficulty, effort, and value are perceived and distributed.
 
-The core claim of this essay may be stated directly: \textit{simplicity is not primitive but derived}. What appears simple is typically the result of prior, invisible complexity that has been successfully compressed. This compression has a structure---it presupposes expansion, it is achieved through stabilization, and it is fragile in ways that the compressed form does not reveal. Understanding this structure is not merely an epistemological exercise. It has consequences for how we understand labor, pedagogy, creativity, and the ethics of representation.
+The core claim of this essay may be stated directly, with the qualification the rest of the essay will maintain: \textit{much of what appears simple is the result of prior, invisible complexity that has been compressed}, and this compression presupposes some prior exploration, is achieved through stabilization, and is fragile in ways the compressed form does not reveal on its own. This is a claim about a common structural pattern with real consequences for labor, pedagogy, and the ethics of representation---not a claim that every simple-looking thing has a hidden history, or that all forms of ease are equally deceptive.
 
-\section{Expansion Before Compression: A Formal Treatment}
+\section{Expansion, Compression, and a Qualified Formal Model}
+\label{sec:formal}
 
 \subsection{Preliminaries}
+\label{subsec:preliminaries}
 
-We introduce a minimal formal vocabulary sufficient to capture the structural asymmetry between construction and compression.
+We introduce a minimal formal vocabulary sufficient to state a narrow, conditional version of the structural asymmetry between construction and compression. The vocabulary is offered as a model under explicit assumptions, not as a description that automatically holds of every constrained system.
 
 \begin{definition}
-Let a \emph{system} $\mathcal{S}$ be defined as a configuration of components subject to a constraint set $\mathcal{C}$. A configuration $s$ is said to be \emph{coherent} if and only if $s \models \mathcal{C}$.
+Let a \emph{system} $\mathcal{S}$ be a configuration of components subject to a constraint set $\mathcal{C}$. A configuration $s$ is \emph{coherent} if and only if $s \models \mathcal{C}$.
 \end{definition}
 
-Let $\Omega$ denote the space of all possible configurations of $\mathcal{S}$. Define the subset of valid configurations:
+Let $\Omega$ denote the space of possible configurations of $\mathcal{S}$, and let
 \[
-\Omega_{\mathrm{valid}} = \{ s \in \Omega \mid s \models \mathcal{C} \}
-\]
-and its complement:
-\[
-\Omega_{\mathrm{invalid}} = \Omega \setminus \Omega_{\mathrm{valid}}.
+\Omega_{\mathrm{valid}} = \{ s \in \Omega \mid s \models \mathcal{C} \}, \qquad \Omega_{\mathrm{invalid}} = \Omega \setminus \Omega_{\mathrm{valid}}.
 \]
 
-In all nontrivial systems of interest, the valid subset is vanishingly small relative to the full configuration space:
+Cardinality is the wrong instrument for comparing these sets whenever $\Omega$ is infinite, since a low-measure subset and its ambient space can share the same cardinality, and the raw statement $|\Omega_{\mathrm{valid}}| \ll |\Omega|$ is not a structural truth about constrained systems in general: a constraint set can be weak, redundant, or highly correlated, and can leave a large valid region even when numerous. We therefore fix a measure $\mu$ on $\Omega$ appropriate to the system under discussion---counting measure for finite discrete configuration spaces, a natural probability or volume measure otherwise---and state the assumption this essay actually needs explicitly.
+
+\begin{assumption}[Sparse validity]
+\label{ass:sparse}
+For the systems considered in this essay,
 \[
-|\Omega_{\mathrm{valid}}| \ll |\Omega|.
+\frac{\mu(\Omega_{\mathrm{valid}})}{\mu(\Omega)} \ll 1.
 \]
-This inequality encodes the fundamental rarity of coherent structure. It is not a contingent empirical fact but a structural feature of constrained systems: the more constraints a system must satisfy, the smaller the fraction of configurations that qualify as valid.
+\end{assumption}
+
+This is not asserted as a law governing all constrained systems; it is a condition satisfied by many of the domains the essay discusses---working software, load-bearing structures, valid proofs---and the results that follow are conditioned on it holding. Where it fails, the arguments of this section do not apply, and that is a substantive limitation rather than a technicality.
 
 \subsection{Expansion as Exploration}
+\label{subsec:expansion}
 
 \begin{definition}
-\emph{Expansion} is a process $E$ acting on an initial configuration $s_0 \in \Omega$, generating a sequence:
-\[
-E(s_0) = \{ s_1, s_2, \dots, s_n \}
-\]
-where each $s_i$ is obtained through transformation, trial, or variation.
+\emph{Expansion} is a process $E$ acting on an initial configuration $s_0 \in \Omega$, generating a sequence $E(s_0) = \{s_1, s_2, \dots, s_n\}$ where each $s_i$ is obtained through transformation, trial, or variation.
 \end{definition}
 
-Expansion is characterized by traversal of configuration space, explicit evaluation of constraint satisfaction, discovery of failure modes, and articulation of dependencies. It is therefore not merely generative but epistemic: expansion reveals the structure of $\Omega_{\mathrm{valid}}$ through systematic interaction with $\mathcal{C}$. This is the process through which invariants are discovered, dependency structures are mapped, and failure modes are identified and resolved.
+Expansion is characterized by traversal of configuration space, evaluation of constraint satisfaction, discovery of failure modes, and articulation of dependencies. It is therefore not merely generative but epistemic: expansion reveals structure in $\Omega_{\mathrm{valid}}$ through interaction with $\mathcal{C}$. This is the process through which invariants are discovered, dependency structures are mapped, and failure modes are identified and resolved. Expansion need not be performed by the agent who later benefits from it; it can be carried out by another person, an institution, a culture, an evolutionary process, or an earlier generation of a system, and its results transmitted rather than rediscovered.
 
 \subsection{Compression as Projection}
+\label{subsec:compression}
+
+A bare mapping $C: \Omega_{\mathrm{valid}} \to \Sigma$ is too weak to capture what is meant by compression, since a constant function satisfies it while preserving nothing, and ``lower-dimensional'' is not a defined property of an arbitrary representational space $\Sigma$. We instead require a decoder and a preservation condition.
 
 \begin{definition}
-\emph{Compression} is a mapping:
+\emph{Compression} is a triple $(C, D, \sim)$ consisting of an encoder $C: \Omega_{\mathrm{valid}} \to \Sigma$, a decoder $D: \Sigma \to \Omega$, and a task-relevant equivalence relation $\sim$ on $\Omega_{\mathrm{valid}}$, such that for all $s \in \Omega_{\mathrm{valid}}$,
 \[
-C: \Omega_{\mathrm{valid}} \rightarrow \Sigma
+D(C(s)) \sim s,
 \]
-where $\Sigma$ is a lower-dimensional representational space.
+possibly subject to a bounded distortion condition rather than exact equivalence.
 \end{definition}
 
-Compression eliminates redundancy while preserving constraint satisfaction. It encodes the invariants discovered during expansion and suppresses intermediate derivations. Typical instances include refactored code, minimal mathematical proofs, concise explanatory prose, and completed architectural forms. Compression is therefore not discovery but representation: it presupposes that the structure it encodes has already been found.
+Compression under this definition eliminates redundancy while preserving task-relevant structure, encoding invariants discovered during expansion and suppressing intermediate derivations that are not required to reconstruct behavior up to $\sim$. Typical instances include refactored code, minimal mathematical proofs, concise explanatory prose, and completed architectural forms. In the cases this essay considers, compression chiefly represents structure discovered or acquired elsewhere, although the act of compressing something can itself expose further invariants---dimensionality reduction and model selection are genuine forms of discovery, not merely encoding, and nothing here denies that.
 
-\subsection{The Dependency of Compression on Expansion}
+\subsection{The Dependency of Compression on Prior Exploration}
+\label{subsec:dependency}
 
-\begin{proposition}
+A universal claim that no valid compression can be constructed without expansion does not hold: a mapping might be inherited from another agent, derived analytically from already-known constraints, or discovered by accident without systematic traversal. The defensible version of the claim is epistemic and conditional.
+
+\begin{proposition}[Conditional dependency of compression]
 \label{prop:compression-requires-expansion}
-No valid compression mapping $C: \Omega_{\mathrm{valid}} \rightarrow \Sigma$ can be constructed without prior identification of the invariant structure of $\Omega_{\mathrm{valid}}$, which in turn requires expansion.
+In an initially unknown task domain, constructing a reliable representation $(C, D, \sim)$ generally requires information about which variations preserve $\sim$-relevant validity. Absent an external source of this information---prior search by the agent, observation, instruction, or an inherited body of structural knowledge from elsewhere---such information must be acquired through exploration of $\Omega$ near the boundary of $\Omega_{\mathrm{valid}}$.
 \end{proposition}
 
-\begin{proof}[Proof sketch]
-A compression mapping removes components deemed redundant while preserving correctness. Determining redundancy requires knowledge of which elements are invariant under permissible transformations---that is, which structural features are necessary for constraint satisfaction and which are incidental.
-
-Such invariants are not given a priori. They are identified through comparison of multiple candidate configurations, observation of which variations produce constraint violations, and stabilization of the recurring structural features that survive this variation.
-
-All of these operations require traversal of $\Omega$, with particular attention to the boundary between $\Omega_{\mathrm{valid}}$ and $\Omega_{\mathrm{invalid}}$. This traversal constitutes expansion. Therefore, compression presupposes expansion.
+\begin{proof}[Sketch]
+A compression that removes components while preserving $\sim$ requires knowing which components are invariant under $\sim$ and which are incidental. Where this knowledge is not supplied externally, it can only be established by observing which variations preserve validity and which do not, which is exploration of the boundary between $\Omega_{\mathrm{valid}}$ and $\Omega_{\mathrm{invalid}}$ in the sense of Section~\ref{subsec:expansion}.
 \end{proof}
 
-The practical corollary is direct: one cannot produce a valid compressed representation of something one has not first explored at greater length. This applies equally to mathematical exposition, software architecture, physical construction, and written argument. The simplified final form is not a starting point but an achievement.
+The practical corollary this essay relies on is narrower than the earlier, stronger claim: one cannot, without access to some prior exploration---one's own or someone else's, transmitted through instruction, culture, or inherited design---produce a reliable compressed representation of a domain one does not yet understand. This applies to mathematical exposition, software architecture, physical construction, and written argument, though the exploration in question need not have been performed personally or recently by the person producing the final form.
 
-\subsection{Entropic Asymmetry}
+\subsection{Compression Without Relegation: A Limiting Case}
+\label{subsec:compression-without-relegation}
 
-We now formalize the asymmetry between construction and disruption that underlies much of the argument of this essay.
+Proposition~\ref{prop:compression-requires-expansion} already licenses the possibility that the expansion behind a compression was performed by an agent other than the one presenting it. It is worth pushing this to its limit, because the limiting case clarifies a distinction the rest of this essay depends on: between an artifact's observable fluency and the developmental process, if any, that an agent using that artifact has itself undergone.
 
-\begin{definition}
-Let \emph{entropy} be defined informally as:
-\[
-H(s) \propto \log |\Omega_{\mathrm{reachable}}(s)|
-\]
-where $\Omega_{\mathrm{reachable}}(s)$ is the set of configurations accessible from state $s$ under the available operations.
-\end{definition}
+Consider an agent whose entire competence in a domain consists of an inherited representation $(C, D, \sim)$, where the agent performed none of the exploration in Section~\ref{subsec:expansion} that produced it. Large language models are the clean paradigm case. A model's fluent, low-latency completions are a compression over regularities discovered through the effortful, iterative, error-correcting production of the human text on which it was trained---genuine expansion, performed by many agents over a long history, near the boundary between $\Omega_{\mathrm{valid}}$ and $\Omega_{\mathrm{invalid}}$ for countless task domains. The model's forward pass exhibits the surface signature of relegated performance---speed, fluency, the absence of visible deliberation---but nothing in that forward pass corresponds to an agent's own trajectory from deliberate monitoring to earned stabilization, because no such trajectory occurred for the system producing the output. We will call this \emph{inherited compression}: a representation transmitted to an agent that performed none of the exploration behind it, as opposed to relegation, where the agent that now executes automatically is the same agent that once explored deliberately.
 
-Then construction corresponds to the transition $\Omega \rightarrow \Omega_{\mathrm{valid}}$, a movement toward lower entropy, while destruction corresponds to $\Omega_{\mathrm{valid}} \rightarrow \Omega$, a movement toward higher entropy.
+This distinction reframes a question that recurs whenever dual-process language is applied to AI systems: whether a model has ``System 1'' processing without a well-developed ``System 2.'' Posed that way, the question asks only about behavioral signature---is the output fast and non-deliberative---and answers built on that framing tend to list what the system lacks (emotional grounding, contextual understanding) without engaging the structural question underneath. Section~\ref{subsec:art-formal}'s model supplies that question directly: not whether behavior looks automatic, but whose trajectory produced its stabilization. Inherited compression can reproduce the behavioral signature of relegation---speed, fluency, apparent effortlessness---without instantiating the process the signature is usually taken to indicate. Treating fast, fluent output as evidence of relegated System 1 processing therefore risks a category error: it mistakes a property of the artifact's presentation for a property of the process that generated it, precisely the conflation Section~\ref{sec:invisibility} diagnoses in other contexts.
 
-\begin{proposition}[Asymmetry of Operations]
+Inherited compression is not the only mechanism that can produce automaticity without the agent's own deliberate exploration. A shorter, contrasting case is instructive. When an advertiser transforms a brand into characters and repeats the pairing until consumers respond to the brand automatically, the consumer does possess the attentional machinery relegation requires---an active attention set, a capacity for stabilization. But the stabilization was not produced by the consumer's own deliberate practice at solving a task of theirs; it was produced by an external actor engineering the consumer's exposure history toward a fixed association, for that actor's objective rather than the consumer's own. We will call this \emph{conditioning}: stabilization that is genuinely the agent's own, but whose triggering exposure was authored by someone else. Section~\ref{subsec:type1type2} returns to this contrast with the full apparatus of Section~\ref{subsec:art-formal} once that apparatus has been introduced.
+
+Together, the two cases sharpen the diagnostic question this essay's model is built to ask. It is not enough to observe that behavior is fast, fluent, or free of visible deliberation. The relevant questions are whose trajectory produced the underlying stabilization, by what mechanism it was produced, and for whose objective---the agent's own task, in the case of genuine relegation; another agent's prior task, transmitted rather than repeated, in the case of inherited compression; or a third party's objective, imposed on the agent's own stabilization machinery, in the case of conditioning.
+
+\subsection{A Probabilistic Asymmetry Between Construction and Disruption}
+\label{subsec:asymmetry}
+
+An earlier formulation of this section defined a pseudo-entropy $H(s) \propto \log|\Omega_{\mathrm{reachable}}(s)|$ and claimed that the number of entropy-increasing operations exceeds the number of entropy-decreasing operations under any fixed constraint set. Neither claim survives scrutiny: $\Omega_{\mathrm{reachable}}(s)$ depends on an arbitrary choice of operations and horizon, and the counting claim is false as stated, since an operation repertoire consisting entirely of repair moves, or one in which every destructive operation is paired with a constructive inverse, is a live counterexample. What the argument of this essay actually needs is a probabilistic statement about perturbations, not a claim about the cardinality of an operation set.
+
+\begin{proposition}[Perturbation asymmetry under sparse validity]
 \label{prop:asymmetry}
-The number of operations that increase entropy exceeds the number of operations that decrease it under any fixed constraint set $\mathcal{C}$.
+Suppose Assumption~\ref{ass:sparse} holds, and let perturbations of a valid state be drawn from a distribution over $\Omega$ that is not concentrated on validity-preserving transformations. Then a randomly sampled perturbation of a valid configuration $s \in \Omega_{\mathrm{valid}}$ is more likely to leave $\Omega_{\mathrm{valid}}$ than to remain within it.
 \end{proposition}
 
-\begin{corollary}
-Destructive and evaluative processes are generically easier than constructive ones.
-\end{corollary}
+This is a genuine probabilistic consequence of sparse validity together with a stated assumption about the perturbation distribution; it is not, by itself, a claim that evaluation is easier than construction, and the two should not be run together. Detecting that a constraint has failed can itself be expensive---requiring measurement, proof, or diagnosis that is far from trivial in domains such as distributed systems or formal verification. Breaking a system, detecting that it has broken, explaining why, and repairing it are four distinct operations with different cost profiles, and collapsing them into an undifferentiated category of ``destructive and evaluative processes'' overstates what follows from Proposition~\ref{prop:asymmetry}.
 
-The interpretation is direct. A coherent system occupies a narrow region of configuration space. Any perturbation that violates even a single constraint suffices to exit this region. By contrast, constructing or maintaining coherence requires selecting from a highly constrained subset of operations---those that preserve satisfaction of all constraints in $\mathcal{C}$ simultaneously. The combinatorial asymmetry is not a matter of degree but of structural geometry: valid configurations form a low-dimensional manifold within a vastly higher-dimensional ambient space.
+What the proposition does support is narrower and still useful: under sparse validity and a perturbation distribution not aimed at preserving coherence, maintaining a system in $\Omega_{\mathrm{valid}}$ requires selecting from a comparatively small set of validity-preserving operations, while an unstructured perturbation is likely to exit that set. We will refer to $\Omega_{\mathrm{valid}}$ as a \emph{narrow admissible region} within $\Omega$ rather than describing it geometrically as a low-dimensional manifold, since a constraint-defined subset can be discrete, disconnected, fractal, combinatorial, or full-dimensional but small in measure; the geometric language of manifolds is not established by anything argued here.
 
 \subsection{Fragility of Compressed Representations}
+\label{subsec:fragility}
 
-Since compression encodes a narrow basin within $\Omega$, compressed representations are structurally fragile in a precise sense. Small perturbations can produce invalid states; omitted intermediate structure prevents reconstruction; and interpretability depends on prior familiarity with the expansion process that generated the compressed form.
+Because compression under Definition~\ref{subsec:compression} encodes a system's behavior only up to the equivalence relation $\sim$, compressed representations are fragile in a specific sense: perturbations that move a configuration outside the region the encoder was calibrated against can produce invalid decodings; omitted intermediate structure can prevent reconstruction of the generative pathway; and interpretability of the compressed form depends on the receiver's prior familiarity with the domain from which it was extracted.
 
-We may therefore state the central structural principle of this section:
+This fragility grounds a further point about evaluative ease that recurs throughout this essay. Agents whose primary interaction with a system is evaluative---critics, reviewers, inspectors, users---typically interact with a system already inside $\Omega_{\mathrm{valid}}$, and their task is comparatively local: identify some perturbation that would move the system into $\Omega_{\mathrm{invalid}}$, or notice that it already has. Under Assumption~\ref{ass:sparse} and Proposition~\ref{prop:asymmetry}, this local task samples from a different, and typically larger, region of possibility space than the task of constructing or maintaining the system in the first place. The apparent ease of finding a flaw is therefore not, by itself, evidence that avoiding that flaw during construction was equally easy; the two tasks are not drawing from the same distribution of operations, though how much easier evaluation is remains an empirical question that varies by domain and is not settled by the formal result alone.
 
 \begin{quote}
-\itshape Expansion is required to discover coherence; compression encodes it. Construction is constrained entropy reduction, while destruction is unconstrained entropy increase. The asymmetry between these two processes is not contingent but structural, and it underlies the systematic misperception of difficulty wherever compressed artifacts are encountered without their generative histories.
+\itshape Under sparse validity, exploration is required to locate coherent structure, and compression encodes what exploration has found. Constructing or maintaining a valid configuration is movement into and continued occupancy of a narrow admissible region; a validity-breaking perturbation, by contrast, need only exit that region by any available route. This asymmetry is conditional on the assumptions stated above, not a universal law, but where those assumptions hold it helps explain why compressed artifacts, encountered without their generative histories, are so often misjudged.
 \end{quote}
 
 \section{Skill as Internalized Structure}
+\label{sec:relegation}
 
 \subsection{The Standard Account and Its Inadequacy}
 
-The standard account of expertise treats skill as a matter of accumulated knowledge and trained performance. This is not wrong, but it is underspecified in a way that prevents it from explaining the most important features of expert cognition: the disappearance of effort, the compression of explanation, and the systematic gap between expert and novice perception of the same situation.
+The standard account of expertise treats skill as accumulated knowledge and trained performance. This is not wrong, but it is underspecified in a way that limits its ability to explain some of the most striking features of expert cognition: the disappearance of felt effort, the compression of explanation, and the gap between expert and novice perception of the same situation. A more adequate account requires attention to what happens to the structure of a task as it is learned, not merely to the content of what is known.
 
-A more adequate account requires attention to what happens to the structure of a task as it is learned, not merely to the content of what is known.
+\subsection{Aspect Relegation Theory: A Revised Formal Model}
+\label{subsec:art-formal}
 
-\subsection{Aspect Relegation Theory: A Formal Model of Cognitive Compression}
-
-We introduce Aspect Relegation Theory as a cognitive analogue of the expansion--compression framework developed in the previous section.
+An earlier version of this model set $|A(t)| \leq k$ for a bounded active attention set while also setting $A(0) = T$, the full task; these are jointly inconsistent unless $|T| \leq k$, and for a novice this is typically false---the novice's characteristic difficulty is precisely that the task has more aspects than can be simultaneously attended to. The revised model separates three things the earlier version conflated: the full task structure, what the agent has come to represent about it, and what the agent is currently attending to.
 
 \begin{definition}
-Let a \emph{task} $T$ be decomposable into a finite set of aspects:
-\[
-T = \{a_1, a_2, \dots, a_n\}
-\]
-where each aspect $a_i$ corresponds to a constraint, sub-operation, or dependency required for successful execution of $T$.
+Let a \emph{task} $T = \{a_1, \dots, a_n\}$ be a finite set of aspects, each corresponding to a constraint, sub-operation, or dependency relevant to successful execution. Let $K(t) \subseteq T$ be the \emph{known aspects}: those the agent has represented at time $t$, whether or not currently monitored. Let the \emph{active attention set} $A(t) \subseteq K(t)$ be the aspects under conscious monitoring at time $t$, subject to a bounded capacity $|A(t)| \leq k$.
 \end{definition}
 
 \begin{definition}
-At any time $t$, the \emph{active attention set} is:
+An aspect $a_i$ is \emph{stabilized to level $1-\varepsilon$ under policy $\pi$ and environment class $\mathcal{E}$} if
 \[
-A(t) \subseteq T
+\Pr(\text{constraint satisfied} \mid a_i, \pi, \mathcal{E}) \geq 1 - \varepsilon.
 \]
-representing the subset of aspects currently under conscious monitoring. We assume a bounded attentional capacity: $|A(t)| \leq k$ for some fixed cognitive limit $k$.
 \end{definition}
+
+Stabilization is thus probabilistic and context-relative rather than a binary property. This is what makes it possible for a stabilized aspect to fail outside the environment class in which it was learned, and it is why expert automaticity transfers unevenly across contexts: a routine reliable under $\mathcal{E}$ carries no guarantee under $\mathcal{E}'$.
 
 \begin{definition}
-An aspect $a_i$ is said to be \emph{stabilized} if repeated execution satisfies its associated constraints without requiring explicit monitoring.
+The \emph{attention update rule} is
+\[
+A(t+1) = \bigl(A(t) \setminus R_t\bigr) \cup N_t \cup Q_t,
+\]
+where $R_t \subseteq A(t)$ is the set of aspects that have met their stabilization threshold and are relegated out of active attention; $N_t \subseteq K(t) \setminus A(t)$ is a set of newly attended higher-order aspects that become tractable once capacity is freed by $R_t$; and $Q_t$ is a set of aspects---possibly previously relegated---reactivated by uncertainty, novelty, unfamiliar context, or detected error.
 \end{definition}
 
-\begin{definition}
-The \emph{relegation operator} $R$ is defined as:
-\[
-R: A(t) \rightarrow A(t+1)
-\]
-such that:
-\[
-A(t+1) = A(t) \setminus \{ a_i \in A(t) \mid a_i \text{ is stabilized} \}
-\]
-\end{definition}
+This rule replaces the earlier purely subtractive operator. Learning is not monotonic in this model: as lower-level operations stabilize, new higher-order aspects can enter $A(t)$ via $N_t$; previously stabilized routines can be recruited back into active attention via $Q_t$ when they fail outside their training distribution or when the agent detects an anomaly. We correspondingly drop the earlier limit claim $A(t) \to \emptyset$. Skilled performance typically retains nonzero attention at some level---goal selection, anomaly monitoring, strategic coordination, environmental feedback---and is better modeled as a change in \emph{what} is monitored than as the disappearance of monitoring altogether.
 
-Relegation is thus the progressive withdrawal of attention from aspects that have achieved reliable, constraint-satisfying execution. The process defines learning as a trajectory:
-\[
-A(0) = T \xrightarrow{\text{practice, correction, stabilization}} A(t) \rightarrow \emptyset.
-\]
-Initial performance of a task requires maximal attentional engagement: $A(0) = T$. Over time, through repetition and correction, $A(t)$ contracts toward a minimal residual, which may approach the empty set or a small subset corresponding to higher-level coordination.
+\subsection{Automaticity as a Class of Relegation Outcomes, Not a Universal Identity}
+\label{subsec:type1type2}
 
-\subsection{System 1 as Relegated System 2}
+The dual-process literature distinguishes \emph{Type 1} processing---rapid, autonomous, low-working-memory-load---from \emph{Type 2} processing, which supports hypothetical reasoning and loads working memory \cite{evans2013}. We use ``Type 1'' and ``Type 2'' rather than the popular ``System 1'' and ``System 2'' labels except when referring to that popular framing directly. This is more than a terminological nicety. Bargh's review of the automaticity literature found no single process that satisfies all of the criteria---unintentional, unconscious, efficient, uncontrollable---popularly bundled into ``automatic,'' undermining any picture of automaticity as one unified, box-checkable state that a system either has or lacks \cite{bargh1992}. Kahneman himself was explicit that System 1 and System 2 name types of processing rather than locations or literal systems, that ``there is no part of the brain that either of the systems would call home,'' and that the two are typically interleaved rather than strictly sequential \cite{kahneman2011}. Popular treatments routinely lose this qualification, treating the systems as anatomically real and asking whether a given process ``has'' one or the other as though that were a binary fact about the process rather than a claim about its history.
 
-This framework yields a direct reinterpretation of the distinction between deliberative and intuitive cognition.
+An earlier version of this essay claimed that ``System 1 is not a different kind of thinking; it is System 2 at a later stage of its own development''---an identity claim that the evidence does not support. Three distinct claims need to be separated.
 
-\begin{proposition}
+\begin{enumerate}
+\item[(i)] Controlled procedures can, through repetition and correction, become increasingly autonomous.
+\item[(ii)] All expert intuition has controlled, deliberative origins.
+\item[(iii)] All Type 1 cognition is compiled Type 2 cognition.
+\end{enumerate}
+
+Claim (i) is well supported: it is the content of the revised relegation model above, and it accounts for a large and important class of expert automaticity. Claim (ii) is doubtful, and claim (iii) is false. Automaticity research finds that automatic higher-cognitive processes do not arise exclusively from a history of conscious skill acquisition; some automatic processes have evolved substrates or are established through early childhood learning mechanisms that were never consciously decomposed by the individual who now exhibits them \cite{bargh2012}. Motor-learning research on explicit and implicit training finds that both routes can lead toward automatic, dual-task-robust performance, with the balance of evidence in some paradigms actually favoring implicit acquisition---routines that were never represented explicitly enough to be called relegated System 2 procedures in the first place \cite{kal2018}.
+
+\begin{proposition}[Relegation as one route to Type 1 automaticity]
 \label{prop:s1-as-s2}
-What is commonly described as fast, intuitive cognition (System 1) is the residual execution of previously stabilized and relegated aspects of slow, deliberative cognition (System 2).
+A substantial class of expert Type 1 performances consists of procedures that once required controlled attention---were represented in $A(t)$ and governed by explicit monitoring---and became increasingly autonomous through the practice, chunking, and probabilistic stabilization described in Section~\ref{subsec:art-formal}. This class does not exhaust Type 1 cognition, which also includes innate, perceptual, affective, associative, and implicitly acquired processes with no comparable history of explicit control.
 \end{proposition}
 
-The argument follows directly from the definitions. Early execution requires full decomposition and conscious monitoring of the task. Stabilized aspects are removed from attention via the relegation operator. Execution persists despite reduced attentional involvement because the stabilized aspects continue to run, governed by internalized constraint structures rather than explicit monitoring.
-
-The standard account, which treats System 1 and System 2 as distinct cognitive systems with different functional architectures, is therefore misleading. System 1 is not a different kind of thinking; it is System 2 at a later stage of its own development. The difference is temporal, not architectural.
-
 \begin{corollary}
-System 1 cognition is not primitive but derived. What appears as immediate intuition is the residue of prior deliberation.
+Where an expert Type 1 performance does belong to the relegation class, what appears as immediate intuition is, for that performance specifically, the residue of prior deliberation. The corollary does not generalize to Type 1 cognition as a category.
 \end{corollary}
+
+\subsubsection*{Three mechanisms, restated formally}
+
+Section~\ref{subsec:compression-without-relegation} distinguished inherited compression and conditioning from genuine relegation informally, before the apparatus of Section~\ref{subsec:art-formal} was available. With $K(t)$, $A(t)$, $R_t$, and the stabilization condition $\Pr(\text{constraint satisfied} \mid a_i, \pi, \mathcal{E}) \geq 1-\varepsilon$ now in hand, the three mechanisms can be stated on common ground.
+
+\emph{Genuine relegation} holds when the stabilization probability is estimated over the agent's own trajectory through $K(t) \to A(t) \to R_t$: the same agent that once represented $a_i$ under active monitoring is the one whose repeated attempts, under its own policy $\pi$, drove the constraint-satisfaction probability above threshold. \emph{Inherited compression} holds when a receiving agent is given $(C, D, \sim)$ directly, without ever instantiating a trajectory through $\mathcal{E}$ of its own; there is no $A(t)$ from which anything was relegated, only an artifact whose stabilization---if the term even applies---was earned by a different agent entirely. \emph{Conditioning} holds when the stabilization probability is genuinely estimated over the receiving agent's own responses, but the policy $\pi$ and the distribution of exposures constituting $\mathcal{E}$ were selected by an external actor for that actor's objective rather than emerging from the agent's own deliberate attempts to solve a task. All three can produce output that is fast, fluent, and free of visible deliberation; only the first is relegation in the sense this essay uses the term, and the differences among the three concern reliability, transfer, and whose interests the resulting automaticity actually serves.
+
+\subsection{Neural Correlates: A Contested Hypothesis, Not an Established Signature}
+\label{subsec:hypofrontality}
+
+If a substantial class of skilled automatic execution really does correspond to withdrawal of active monitoring from stabilized aspects, and if the prefrontal cortex is centrally implicated in that monitoring function, then some forms of flow-like performance might be expected to show reduced prefrontal engagement relative to the same task under full deliberative load. This is essentially the \emph{transient hypofrontality hypothesis}, proposed by Dietrich as a mechanism for the flow state and for altered states of consciousness more generally \cite{dietrich2003,dietrich2004}. It is important to be precise about its status: Dietrich's own papers present it as a hypothesis, not as an established finding, and later experimental work complicates the simple prefrontal-withdrawal story considerably.
+
+\begin{hypothesis}[Qualified hypofrontality hypothesis]
+\label{hyp:hypofrontality}
+If flow involves reduced explicit supervision of well-stabilized sub-operations, some forms of flow may exhibit reduced activity in neural systems associated with self-monitoring or executive intervention, alongside preserved or increased activity in task-relevant control systems.
+\end{hypothesis}
+
+The qualification in Hypothesis~\ref{hyp:hypofrontality} is doing real work. Using perfusion and BOLD imaging during experimentally induced flow, Ulrich and colleagues found that flow was associated with \emph{decreased} activity in the medial prefrontal cortex and amygdala, but with \emph{increased} activity in the inferior frontal gyri, the anterior insula, the basal ganglia, and the midbrain \cite{ulrich2014,ulrich2016}---a pattern of selective reallocation among frontal regions rather than uniform prefrontal withdrawal. Contemporary reviews of the neuroscience of flow emphasize network-level reorganization, involving arousal and reward circuitry alongside frontal regions, over any single mechanism of blanket prefrontal deactivation \cite{vanderlinden2021}. The earlier draft of this essay stated the neural claim as a corollary that followed directly from the formal model; that was an overreach. The formal model in Section~\ref{subsec:art-formal} entails nothing about neural localization on its own; at most it motivates Hypothesis~\ref{hyp:hypofrontality} as a research question.
+
+A related distinction from the earlier draft is worth keeping at the functional level rather than restating as an established neural equivalence. Reduced deliberative supervision can arise because supervision is no longer needed---a stabilized aspect continues to satisfy its constraints unattended, in the sense of Section~\ref{subsec:art-formal}---or because supervision is impaired while it is still needed, as under acute stress or threat arousal. The claim that these two conditions produce ``indistinguishable'' reductions in prefrontal activity is not supported: acute-stress effects on executive function vary with severity, timing, and task, and a meta-analysis finds that acute stress reliably impairs working memory and cognitive flexibility while producing more mixed, direction-dependent effects on inhibition \cite{shields2016}---a pattern that is not simply interchangeable with the frontal reallocation reported for flow. The functional distinction remains useful even without a claim of neural equivalence: supervision withdrawn because it is no longer needed, versus supervision impaired while it is still needed, is a difference in reliability and origin, not a difference that current neuroimaging demonstrates as a single shared signature.
 
 \subsection{Hierarchical Attention and Compositional Depth}
 
-Because attention is bounded, relegation does more than make tasks feel easier. It enables increasing compositional complexity by freeing attentional capacity for higher-level structure.
-
-As lower-level aspects are removed from $A(t)$, capacity becomes available for higher-order coordination, abstraction, and integration across sub-tasks. This produces a hierarchical attentional structure: low-level operations become automated, mid-level structures are partially attended, and high-level planning is actively monitored. Skill is therefore not merely efficiency but depth of compositional control---the capacity to operate at a higher level of abstraction because lower levels have been successfully relegated.
+Because attention is bounded, relegation does more than reduce felt effort. Under the revised update rule, freeing capacity in $A(t)$ via $R_t$ makes room for higher-order aspects to enter via $N_t$: coordination, abstraction, and integration across sub-tasks that were not representable while lower-level aspects still required monitoring. This produces a hierarchical attentional structure in which lower-level operations become largely automatic, mid-level structures are intermittently attended, and higher-level planning remains actively monitored, subject to $Q_t$ reactivating any level when context demands it. Skill, on this account, is not merely efficiency but depth of compositional control: the capacity to operate at a higher level of abstraction because lower levels have been sufficiently, though not irrevocably, stabilized.
 
 \subsection{Skill as Compressed Structure}
-
-The parallel with the formal framework of the previous section is now explicit.
 
 \medskip
 \begin{center}
@@ -248,242 +272,148 @@ The parallel with the formal framework of the previous section is now explicit.
 \textbf{Structural Process} & \textbf{Cognitive Process} \\
 \midrule
 Expansion & Learning and exploration \\
-Compression & Relegation \\
+Compression & Relegation ($R_t$) \\
 Invariants & Stabilized aspects \\
-Minimal form & Automatic execution \\
+Re-expansion & Reactivation ($Q_t$) \\
 \bottomrule
 \end{tabular}
 \end{center}
 \medskip
 
-Relegation is cognitive compression. The stabilized aspects that have been relegated encode the structural invariants discovered through prior expansion. Skill is compressed structure encoded through stabilized execution. And the phenomenological experience of ease corresponds precisely to $|A(t)| \ll |T|$---not to any reduction in the underlying complexity of the task, but to the successful internalization of that complexity beneath the threshold of attention.
-
-This has an important implication. Ease is a function of attentional load, not structural complexity. The fact that a task feels easy to an expert is not evidence that the task is simple. It is evidence that the expert has successfully completed the expansion phase, identified the structural invariants, and relegated them to automatic execution. The complexity has not disappeared; it has been internalized.
+Relegated aspects encode structural invariants discovered through prior practice, and the felt ease of expert performance corresponds to a small active attention set relative to the full task, $|A(t)| \ll |T|$, rather than to any reduction in the task's underlying complexity. This has a direct implication for how ease should be read: that a task feels easy to an expert is evidence that the expert has performed enough exploration to stabilize its recurring structure, not evidence that the task is simple. The complexity has not disappeared; it has been internalized, and $Q_t$ is the model's reminder that this internalization is conditional, not permanent.
 
 \subsection{Irreversibility and Reconstructive Loss}
 
-Relegation introduces a partial loss of reconstructability. Once aspects have been removed from attention, intermediate steps may no longer be explicitly representable, explanations may become compressed or incomplete, and reconstruction of the full expansion history requires re-expansion. Expert knowledge is often operationally accessible but descriptively compressed: the expert can do the thing but may struggle to explain how.
+Relegation introduces a partial loss of reconstructability. Once aspects have left $A(t)$, intermediate steps may no longer be explicitly representable, explanations may become compressed or incomplete, and reconstructing the full expansion history may require deliberate re-expansion. Expert knowledge is often operationally accessible but descriptively compressed: the expert can perform the task while struggling to narrate how. This is not a failure but a structural feature, and it explains why expert advice is so often correct for the expert and useless for the novice---the relegated aspects are no longer visible to the advisor, so the advice skips steps that are not yet stabilized for the listener. The compressed explanation presupposes an exploration the novice has not yet performed.
 
-This irreversibility is not a failure but a structural feature. It explains why experts often give advice that is correct for them but useless for novices---the relegated aspects are no longer visible to the expert, so their advice skips steps that are not yet automated for the novice. The compressed explanation presupposes an expansion the novice has not yet performed.
+\subsection{An Extended Example: Expert and Novice Perception}
+\label{subsec:expert-novice}
 
-\section{The Misreading of Outputs}
+The divergence between expert and novice perception of a disordered system illustrates the model concretely. An expert surveying a derelict building perceives a tractable sequence of operations: assess structural integrity, identify constraint violations, decompose into sequenced sub-tasks, estimate materials and labor. A novice surveying the same building perceives disorder whose resolution is not apparent. Both perceptions are, in a precise sense, accurate about the building's current state; what differs is not information about $\Omega$ but the availability of a generative pathway toward $\Omega_{\mathrm{valid}}$. The expert's $K(t)$ already contains stabilized decompositions for this class of problem, so the perceived task is tractable rather than complete; the novice's $K(t)$ does not, and the system is, from the novice's own epistemic position, genuinely difficult to see a path through---not irrationally so, but appropriately so, given what has and has not yet been explored.
+
+\subsection{An Extended Example: Writing as Expansion}
+\label{subsec:writing}
+
+Writing is a second useful illustration, because it makes the dependency argument of Section~\ref{subsec:dependency} concrete. A writer who attempts to produce the compressed form directly---the elegant, concise, finalized argument---without first performing the exploratory work will typically fail to produce it, not for want of talent but because compression under Definition~\ref{subsec:compression} presupposes having identified what is invariant. Drafting functions as expansion: articulating candidate structures, discovering dependencies, identifying failure modes in an argument. Revision functions as stabilization: correcting constraint violations, consolidating surviving structure, reducing redundancy. The final form is compression proper: encoding what expansion and stabilization have found. The common advice to ``write simply'' is not wrong as a description of a desirable endpoint, but it says little about the process by which that endpoint is ordinarily reached; for most writers, on most subjects, there is no shortcut through the exploratory phase, though a writer working in territory someone else has already mapped can sometimes begin closer to the compressed form by relying on that inherited exploration.
+
+\section{Process Invisibility, Attribution, and Selection}
+\label{sec:invisibility}
 
 \subsection{Compressed Outputs and Shifted Burden}
 
-The structural analysis of the previous sections has a direct implication for the interpretation of compressed outputs in any domain. When a compressed representation is presented without its generative history, the interpretive burden shifts from the producer to the receiver. The producer has internalized the expansion; the receiver has not. The result is a systematic asymmetry in accessibility.
+The analysis of Sections~\ref{sec:formal}--\ref{sec:relegation} has a direct implication for how compressed outputs are interpreted in any domain. When a compressed representation is presented without its generative history, the interpretive burden shifts from producer to receiver: the producer has internalized the relevant exploration, and the receiver has not. This asymmetry has different consequences depending on context. In mathematics, an elegant proof may be genuinely illuminating for a reader who has worked in the domain, because the compression encodes structure that reader can reconstruct; the same proof may be opaque to a reader who lacks that background. The compression has not failed there; it has simply been addressed to a different receiver than the one encountering it.
 
-This asymmetry has different consequences depending on context. In mathematics, an elegant proof may be genuinely illuminating for a reader who has worked through the domain, because the compression encodes structure the reader can reconstruct. The same proof may be opaque to a reader who lacks this background. The compression has not failed; it has simply been misaddressed.
+In commercial and media contexts the situation is more troubling, because compressed outputs are frequently presented as though no prior exploration were required to reach them, when the audience's lack of background is precisely what the compression depends on to look effortless. The genre of compressed instruction---``just learn to code,'' ``just start writing,'' ``just build the product''---presents a relegated form as if it required no prior expansion, describing a valid terminal state while omitting the trajectory required to reach it.
 
-In commercial and media contexts, the situation is more troubling. Compressed outputs are frequently presented as primary forms, not because the audience has the background to reconstruct them, but because the compression serves a rhetorical function: it makes production appear simple, and simplicity signals accessibility. Consider the genre of compressed instruction---``just learn to code,'' ``just start writing,'' ``just build the product''---which presents relegated forms as if they required no prior expansion. Each of these phrases describes a valid terminal state while suppressing the entire trajectory required to reach it.
+There is a useful distinction between compression that is reconstructible by a prepared receiver and compression that is parasitic on undisclosed prior knowledge. Valid compression encodes structure an appropriately prepared receiver can, in principle, reconstruct; a minimal proof or a well-refactored codebase are examples, since the invariants they encode are recoverable given sufficient background. What might be called \emph{epistemic outsourcing} instead achieves an appearance of simplicity not by encoding structure efficiently but by silently delegating the exploratory work to a receiver who is not equipped to perform it and is not told they must. Where this pattern holds, observers can come to infer that production is as easy as consumption, feeding the attribution failures discussed next.
 
-\subsection{Valid and Invalid Compression}
+\subsection{Fundamental Attribution Error and the Erasure of Process}
 
-There is an important distinction to be drawn between compression that is reconstructible and compression that is parasitic on undisclosed prior knowledge.
+This misperception is amplified by a well-established feature of social cognition. Ross's account of the fundamental attribution error describes a systematic tendency to attribute observed outcomes to dispositional properties of agents---talent, intelligence, character---while underweighting situational and processual factors \cite{ross1977}. Applied to skill and production, a successful outcome tends to be attributed to the producer's intrinsic qualities rather than to the structural conditions and accumulated exploration that made it possible; a failed attempt tends to be attributed to the producer's inadequacy rather than to genuine task difficulty. This pattern is not irrational given the available evidence---outcomes are visible, processes typically are not, and dispositional attribution is a reasonable response to a systematically incomplete information environment. But the environment is incomplete, and the resulting attributions inherit that incompleteness.
 
-Valid compression encodes structure that an appropriately prepared receiver can, in principle, reconstruct. A minimal proof, a well-refactored codebase, a concise argument---these are examples of valid compression because the structural invariants they encode are recoverable, given sufficient background. The compression serves efficiency without destroying accessibility.
+Media ecosystems can amplify this bias. Selection effects favor circulating outcomes that appear dramatically discontinuous with ordinary effort---the overnight success, the effortlessly productive artist---and narrative conventions tend to frame these as expressions of individual quality rather than structural process, while compression strips away the exploration history that would reveal the underlying structure. The sample of outcomes that reaches public attention is consequently not a representative sample of the underlying process, and treating it as such can produce miscalibrated expectations.
 
-Invalid compression, by contrast, presents a compressed form that depends on unexplicated prior knowledge and is presented as if it required none. This is the structure of what might be called \textit{epistemic outsourcing}: the appearance of simplicity is achieved not by encoding structural invariants efficiently but by silently delegating the expansion work to the receiver, who is not equipped to perform it and is not told that they must.
+\subsection{Probabilistic Asymmetry and Survivor Narratives}
 
-The distinction matters because invalid compression produces false impressions of difficulty distributions. If the production of something is presented in its relegated form, observers infer that production is as easy as consumption. This inference drives systematic misattributions of effort, value, and competence.
-
-\section{Fundamental Attribution Error and the Erasure of Process}
-
-\subsection{The Attribution Framework}
-
-The misperception analyzed in the previous section is amplified by a well-documented feature of social cognition. Lee Ross's fundamental attribution error describes the systematic tendency to attribute observed outcomes to dispositional properties of agents---their talent, intelligence, or character---while underweighting situational and processual factors that contributed to those outcomes.
-
-Applied to the domain of skill and production, the error takes a specific form. When we observe a successful outcome, we attribute it to the intrinsic qualities of the producer rather than to the structural conditions, accumulated labor, and sequential expansion that made the outcome possible. When we observe a failed or difficult attempt, we attribute it to the producer's inadequacy rather than to the genuine structural difficulty of the task.
-
-This attribution pattern is not random. It is driven by the availability of information. Outcomes are visible; processes are not. The compressed artifact is present; the expansion history has been suppressed. Given this informational asymmetry, dispositional attribution is not irrational---it is a reasonable response to the available evidence. But the evidence is systematically incomplete, and the resulting attributions are systematically distorted.
-
-\subsection{Media Amplification}
-
-Modern media ecosystems amplify this bias in several reinforcing ways. Selection effects ensure that the outcomes most widely circulated are those that appear most dramatically discontinuous with ordinary effort---the overnight success, the brilliant solution, the effortlessly productive artist. Narrative conventions frame these outcomes as expressions of individual quality rather than structural process. And the compression inherent in all media representation strips away the expansion histories that would reveal the underlying structure.
-
-The result is a collectively maintained illusion about the distribution of effort. Observed successes appear to require little work; invisible failures disappear from the distribution entirely. The sample of outcomes that reaches public attention is not a representative sample of the underlying process, and treating it as such produces badly miscalibrated expectations.
-
-\section{Probabilistic Asymmetry and Survivor Narratives}
-
-\subsection{The Structure of Success Distributions}
-
-A related distortion operates at the level of population-level inference. In many domains of skilled production---entertainment, athletics, entrepreneurship, academic research, artistic practice---outcome distributions are heavily right-skewed. A small number of participants achieve highly visible success; the large majority do not achieve comparable recognition, regardless of comparable effort.
-
-This structure has a straightforward consequence for inference from observed outcomes. The successes that are visible are a non-representative sample of the underlying population of attempts. They are selected precisely because they are extreme, and they are circulated precisely because they are legible as success. The process of selection and circulation ensures that what is visible is not what is typical.
-
-\subsection{Narrative Selection Bias}
-
-Philip K. Dick, whose eventual canonical status belies a career of economic precarity and repeated rejection, is one illustration of this structure among many. The canonical form of such a life, reconstructed retrospectively, reads as a narrative of difficult genius eventually recognized. This reconstruction suppresses the contingency, the selection effects, and the many equally capable individuals for whom recognition never arrived. The survivor's story is not a guide to the distribution from which it was selected.
-
-The practical consequence is a form of visibility filtering that makes success appear more accessible and more meritocratic than it is. This is not simply an epistemological inconvenience. It functions as a structural mechanism for undervaluing labor that does not produce visible, scalable, or circulated outputs.
-
-\section{Labor, Essential Work, and Recognition Failure}
-
-\subsection{The Visibility Gap}
-
-The preceding analysis converges on a structural asymmetry in how different categories of labor are perceived and rewarded. We may distinguish two broad categories.
-
-Essential work is labor that is infrastructural, repeatable, and stabilizing. It includes teaching, maintenance, care, construction, food production, and the countless forms of activity that sustain the conditions under which visible production becomes possible. This work is typically invisible in the sense that its outputs are the absence of failure rather than the presence of success. Clean buildings, functioning infrastructure, educated children, maintained systems---these do not announce themselves as achievements. They are the background against which other achievements occur.
-
-Visible work, by contrast, is rare, amplified, and rewarded in proportion to its visibility. It includes performances, publications, launches, and other events whose outputs are legible as discrete, attributable achievements. This work benefits from all the amplification mechanisms described in previous sections.
-
-\subsection{Temporal Misalignment}
-
-Recognition is also subject to a temporal misalignment that compounds the visibility gap. The labor that stabilizes conditions for future achievement may be recognized---if at all---long after it was performed, and often only after some visible subsequent event makes its structural role legible. The teacher whose student later achieves prominence is recognized, if at all, through the lens of that student's success. The posthumous recognition of artists, theorists, and inventors follows the same structure: the expansion work is recognized only once its compression has become visible in subsequent outputs.
-
-This temporal misalignment is not merely unfair. It is structurally distorting, because it feeds back into the attribution errors described earlier. If recognition consistently arrives late and derivatively, the cultural model of how achievement is produced is systematically biased toward the visible compression and away from the prior expansion.
-
-\section{Wealth, Abstraction, and Constraint Blindness}
-
-\subsection{Delegation and Loss of Constraint Visibility}
-
-Wealth confers the capacity to delegate constraint management. The wealthy individual does not personally manage the supply chains, maintenance schedules, infrastructure dependencies, and coordination problems that structure everyday life; these are managed by others, on their behalf, and rendered invisible. This delegation is one of the primary functional benefits of wealth, and it is not inherently problematic. What is problematic is its epistemic consequence.
-
-When constraint management is delegated, the experience of constraints disappears. The delegating agent interacts with a world that appears to present itself in already-compressed form: problems that appear to have simple solutions, processes that appear to require only a decision, systems that appear to be responsive to intention alone. The expansion phase has been performed by others and is invisible.
-
-\subsection{Constraint Blindness and Compressed Advice}
-
-The consequence is what we might call \textit{constraint blindness}: a systematic incapacity to perceive the structural conditions that would make apparent solutions non-trivial. This produces the familiar genre of compressed advice from those who have not personally performed the expansion: ``just do this,'' ``simply approach it differently,'' ``the solution is obvious.'' These statements are not always dishonest. They reflect a genuine perceptual state in which the constraints that make the task difficult are not visible to the speaker.
-
-The advice is nonetheless harmful when treated as actionable guidance, because it presents a compressed form that presupposes an expansion the listener must perform but is not told about. The speaker has access to a world in which the constraints are managed; the listener does not.
-
-\section{Deontological Stability Under Skewed Distributions}
-
-\subsection{Consequentialism and Distributional Distortion}
-
-The probabilistic asymmetries described in Section~6 create a specific problem for consequentialist ethics. If outcomes are distributed across heavily right-skewed distributions, and if only the extreme successes are visible, then the expected value calculation an agent might perform using observed outcomes is badly miscalibrated. The actions that appear, from the observed distribution, to produce the best outcomes are not the actions that produce the best expected outcomes across the full distribution.
-
-This distortion is not a contingent feature of imperfect information. It is structural: the selection mechanisms that make certain outcomes visible are precisely the mechanisms that produce the distortion. A consequentialist agent reasoning from visible outcomes is therefore systematically misled by the very information environment that consequentialism requires them to use.
-
-\subsection{Kantian Stability}
-
-Immanuel Kant's categorical imperative---the requirement that one act only on maxims one could consistently will to be universal laws---provides a different foundation for practical decision-making, one that is structurally robust to the distributional distortions described above. Actions are evaluated not by their consequences in a skewed observable distribution but by their compatibility with universal principles that abstract over distribution.
-
-Applied to the domains of labor and practice, this produces a different orientation. Cleaning, studying, building, maintaining, and teaching are justified not because they produce visible rewards in the observed distribution but because they satisfy principles that one can consistently endorse regardless of where they fall in that distribution. This is not an ascetic recommendation but a structural observation: deontological commitments stabilize behavior under conditions where consequentialist reasoning is corrupted by selection effects.
-
-\section{Incomplete Systems and the Perception of Potential}
-
-\subsection{Expert and Novice Perception}
-
-The divergence between expert and novice perception of incomplete or disordered systems is one of the most striking practical implications of the framework developed here. An expert surveying a derelict building perceives not chaos but a tractable sequence of operations: assess structural integrity, identify constraint violations, decompose into sequenced sub-tasks, estimate materials and labor, project a path to coherence. A novice surveying the same building perceives undifferentiated disorder whose resolution is not apparent.
-
-Both perceptions are, in a precise sense, accurate. The building is disordered; the novice is correct that its current configuration is far from valid. What the novice lacks is not information about the building's current state but a generative pathway---a sequence of operations that traces a trajectory from the current configuration to one in $\Omega_{\mathrm{valid}}$.
-
-\subsection{Tractability versus Coherence}
-
-The divergence can be clarified through the entropy asymmetry introduced in Section~2. The observer who lacks a decomposition of the system encounters a high-entropy configuration: undifferentiated disorder, ambiguous dependencies, and indeterminate pathways to completion. The expert observer implicitly maps this configuration onto a sequence of entropy-reducing operations. What appears as chaos to one is already partially ordered to the other.
-
-Crucially, the expert does not perceive the system as complete but as tractable. The difference lies not in optimism but in the availability of a generative pathway. The novice lacks such a pathway and therefore experiences the system as irrecoverable. From the novice's perspective, this experience is not irrational---without a pathway, the system is practically irrecoverable, for them.
-
-\section{Construction, Destruction, and Entropic Asymmetry}
-
-\subsection{A General Principle}
-
-The analysis of expert and novice perception leads naturally to a general principle that has been implicit throughout this essay but deserves explicit statement.
-
-\begin{proposition}[Asymmetry of Construction and Destruction]
-\label{prop:construction-destruction}
-To construct a coherent system is to locate and maintain a low-entropy configuration within a high-dimensional space of possibilities. To break or evaluate a system is to identify any perturbation that moves it out of this narrow basin of stability. These two activities operate under fundamentally different constraints.
-\end{proposition}
-
-Construction requires anticipating interactions, resolving dependencies, and preserving coherence across time. It must satisfy global coherence conditions. Destruction, by contrast, need only satisfy local failure conditions: identify any perturbation that moves the system from $\Omega_{\mathrm{valid}}$ to $\Omega_{\mathrm{invalid}}$.
-
-\begin{corollary}
-The ease of breaking or criticizing a system is not evidence of the ease of constructing it. The two activities sample from different regions of the space of operations.
-\end{corollary}
+A related distortion operates at the level of population inference. In many domains of skilled production---entertainment, athletics, entrepreneurship, research, artistic practice---outcome distributions are heavily right-skewed: a small number of participants achieve highly visible success, and a large majority do not achieve comparable recognition regardless of comparable effort. The successes that circulate are consequently a non-representative sample of the underlying population of attempts, selected and amplified precisely because they are extreme. Canonization narratives constructed retrospectively around a small number of eventually-recognized figures tend to read as stories of difficult genius eventually rewarded; this reconstruction can suppress the contingency and selection effects that separated the canonized case from equally capable contemporaries whose recognition never arrived. This is offered as a structural pattern in how success narratives are typically assembled, not as a documented claim about any specific individual's biography, since establishing the latter would require evidence this essay does not undertake to marshal.
 
 \subsection{Misattribution from Evaluative Ease}
 
-The persistent misattribution described throughout this essay has a precise source in this asymmetry. Agents whose primary interaction with systems is evaluative---critics, reviewers, inspectors, users---encounter systems in their already-compressed forms and interact with them through the low-dimensional task of identifying failures. The apparent ease of this task is mistaken for evidence that the construction task was correspondingly easy. But construction sampled from the constrained manifold of coherence, while evaluation samples from the effectively unbounded space of disorder.
+The asymmetry formalized in Proposition~\ref{prop:asymmetry} and Section~\ref{subsec:fragility} has a direct bearing on this pattern of misattribution. Agents whose primary interaction with a system is evaluative encounter it already inside $\Omega_{\mathrm{valid}}$ and interact with it through the comparatively local task of locating a flaw. Where the apparent ease of that task is read as evidence that avoiding the flaw during construction was equally easy, the inference overreaches what Proposition~\ref{prop:asymmetry} actually supports---since, as noted in Section~\ref{subsec:asymmetry}, detecting or explaining a failure is not always cheap, and reviewing a proof or diagnosing a distributed system can be more demanding than producing a locally plausible artifact. What the formal result does support is narrower: construction and evaluation typically sample from different, and often differently sized, regions of the space of possible operations, so evaluative ease is not on its own strong evidence about constructive difficulty, in either direction.
 
-The experiential consequence is that evaluative agents may systematically underestimate the difficulty of generative work. This misalignment is not a moral failing but a structural consequence of the epistemic position from which evaluation is conducted. Understanding it does not eliminate it, but it does enable a more accurate model of the distribution of labor.
+\section{Labor and the Political Economy of Delegated Constraint Management}
+\label{sec:labor}
 
-\section{Writing, Resistance, and the Generative Necessity of Expansion}
+\subsection{The Visibility Gap}
 
-\subsection{Writing as Expansion}
+The preceding analysis converges on an asymmetry in how different categories of labor tend to be perceived and rewarded. Essential work---infrastructural, repeatable, stabilizing labor such as maintenance, care, teaching, and construction---often manifests as the absence of failure rather than the presence of a discrete success, and can therefore go relatively unnoticed even when it sustains the conditions under which other, more visible production becomes possible. Visible work, by contrast, tends to be rewarded roughly in proportion to its visibility, benefiting from the amplification mechanisms described in Section~\ref{sec:invisibility}. Recognition of essential work is also often temporally displaced, arriving---if it arrives at all---after some later, more visible event makes the earlier contribution retrospectively legible; a teacher may be recognized only through the lens of a student's later prominence. This displacement can feed back into the attribution pattern of Section~\ref{sec:invisibility}, biasing the cultural model of achievement toward visible compression and away from the labor that preceded it.
 
-The analysis of this essay is not merely a theoretical observation about cognition and labor in general. It applies with particular directness to the activity of writing. A writer who attempts to produce the compressed form---the elegant, concise, finalized argument---without first performing the expansion will consistently fail to produce it, not because they lack talent but because compression is structurally dependent on prior expansion.
+\subsection{Delegation, Constraint Blindness, and Compressed Advice}
 
-Drafting is expansion: the articulation of candidate structures, the discovery of dependencies, the identification of failure modes in an argument, the establishment of which elements are invariant and which are redundant. Revision is stabilization: the correction of constraint violations, the consolidation of surviving structure, the reduction of redundancy. The final form is compression: the encoding of invariants discovered through expansion and stabilization.
-
-The common advice to ``write simply'' or to ``get to the point'' is not wrong as a description of the desirable endpoint, but it is misleading as an account of the process by which that endpoint is reached. One cannot begin with simplicity; one can only arrive at it.
-
-\subsection{The Time Dimension of Work}
-
-This has a general implication about the time dimension of generative work. There is no shortcut through expansion. The dependencies must be discovered, and discovery requires traversal. The constraints must be stabilized, and stabilization requires repetition and correction. The compression can only encode what expansion has found.
-
-This is why work that appears to have been produced effortlessly almost never was. The effortlessness is a property of the final representation, not of the process that produced it. And this is why the instruction to ``just do it'' fails systematically as practical guidance: it describes a terminal state while providing no pathway through the expansion required to reach it.
+Wealth confers, among other things, the capacity to delegate constraint management: supply chains, maintenance schedules, coordination problems that structure everyday life can be handled by others and rendered invisible to the person delegating them. This delegation is not inherently problematic, and its epistemic consequence is a tendency rather than a certainty: delegation \emph{can} produce a kind of constraint blindness, a reduced capacity to perceive the structural conditions that make an apparent solution non-trivial, though it need not, and the degree to which it does varies with how the delegating agent remains engaged with the delegated domain. Where it does occur, it tends to produce a familiar genre of compressed advice---``just do this,'' ``simply approach it differently''---that is not always dishonest so much as reflective of a genuine perceptual gap between a speaker whose constraints are managed and a listener whose are not. Such advice can be harmful when treated as actionable guidance, since it presents a compressed form that presupposes an exploration the listener must still perform but has not been told about.
 
 \section{The Ethics of Compression}
+\label{sec:ethics}
 
-\subsection{Representations and Reconstructibility}
+\subsection{Three Distinct Standards}
 
-The arguments developed in previous sections ground a normative conclusion about the ethics of representation. Compression is not inherently problematic; it is functionally necessary and often genuinely clarifying. The problem arises when compression is deployed in ways that suppress the expansion history in ways that mislead observers about the nature of the underlying work.
+The arguments developed above ground a normative point about the ethics of representation, but the earlier draft's standard---that an ethically compliant compressed representation must preserve, in principle, the reconstructibility of its actual generative pathway---is too demanding and in some cases incoherent. A finished mathematical proof need not preserve the psychological history of its discovery; a reader who independently reconstructs a valid derivation has not thereby recovered the author's actual genesis, and does not need to. Three distinct standards should be kept apart.
 
-A compressed representation severs the output from its generative pathway. This severance is sometimes appropriate: the reader of a finished proof does not need a complete record of every exploratory conjecture. But it becomes ethically problematic when the severance is used to misrepresent the difficulty of the generative process, to obscure the labor of those who performed the expansion, or to create the impression that the compressed form could be produced without prior expansion.
+\emph{Logical reconstructibility} asks whether a prepared receiver could, in principle, derive or verify the compressed content from stated premises, independent of how it was actually produced. \emph{Practical teachability} asks whether the compressed form, or some accompanying material, gives an unprepared receiver a workable path toward the competence the compression represents. \emph{Historical provenance} asks whether the compressed form accurately represents the actual process---whose labor, how much exploration, over what period---that produced it.
+
+\subsection{Non-Deception as the Working Standard}
+
+Requiring all three uniformly is too strong: mathematics regularly and legitimately satisfies logical reconstructibility while providing neither teachability nor provenance, and this is not an ethical defect in a proof. What the arguments of this essay actually support is narrower: a compressed representation becomes ethically problematic when it is used to \emph{misrepresent} the labor or prerequisites behind it---when a producer or distributor actively implies that the compressed form required no meaningful exploration, when it obscures whose labor performed that exploration, or when it is marketed as teachable when it is not.
 
 \begin{definition}
-A compressed representation is \emph{ethically compliant} if it preserves, in principle, the reconstructibility of the generative pathway that produced it, or if it accurately represents the expansion process that preceded the compression.
+A compressed representation is \emph{non-deceptive} if it does not affirmatively misrepresent the exploration, labor, or prerequisites that produced it, whether or not it also satisfies logical reconstructibility or practical teachability.
 \end{definition}
-
-\subsection{Entropic Misrepresentation}
-
-An additional normative constraint emerges from the entropic asymmetry of construction and destruction. Representations that foreground ease while omitting the entropy-reducing processes required to achieve it systematically mislead observers about the nature of work. Such representations conflate the accessibility of failure---which is high, because valid configurations are a small subset of the full configuration space---with the accessibility of success.
-
-Ethical compression must therefore preserve not only semantic content but processual recoverability. A compressed representation should, in principle, allow reconstruction of the generative pathway that produced it. Where this is not possible, compression functions not as clarification but as obfuscation: it presents the low-entropy output of constrained construction as if it were a natural or effortless state.
 
 \subsection{Criteria for Ethical Representation}
 
-We may summarize the normative position in three criteria. First, transparency of process: representations of skilled output should, where possible, disclose or gesture toward the expansion processes that preceded them, rather than presenting only the compressed endpoint. Second, recoverability of structure: compressed representations should preserve the structural invariants they encode in a form that allows, at least in principle, reconstruction by an appropriately prepared receiver. Third, accuracy of effort distribution: representations should not systematically misrepresent the probability distribution over effort required to produce similar outcomes.
+Three working criteria follow from this narrower standard. First, non-deception about labor: representations of skilled output should not imply, where it is false, that no meaningful prior exploration was required. Second, appropriate matching of standard to context: a representation should be evaluated against the standard---logical, pedagogical, or historical---that it actually claims to meet, not against all three at once. Third, accuracy of effort distribution: representations should not systematically imply that the observed outcome is more typical of the underlying attempt distribution than it is. These criteria are context-dependent rather than absolute, but they ground a substantive critique of representational practices in marketing, pedagogy, and media that violate them, without requiring the stronger and less defensible claim that every compressed artifact owes its receiver a full account of its own history.
 
-These criteria are not absolute; context matters. But they provide a framework for evaluating the ethics of compression in specific cases, and they ground a substantive critique of the many representational practices---in marketing, pedagogy, media, and technology---that systematically violate them.
+\section{Conclusion: Toward a Narrower and More Defensible Claim}
+\label{sec:conclusion}
 
-\section{Conclusion: Toward a Theory of Visible Structure}
+The argument of this essay can be summarized in a form more modest than its opening thesis, and correspondingly harder to refute. Under a stated sparse-validity assumption and a stated assumption about perturbation distributions, maintaining coherence in a system requires selecting from a comparatively narrow set of operations, while an unstructured perturbation is likely to leave that set by an easier route; this is a conditional probabilistic result, not a universal entropy law. In human skill, a substantial and well-evidenced class of expert automaticity arises from procedures that were once deliberately controlled and became increasingly autonomous through practice, chunking, and probabilistic stabilization, though this class does not exhaust automatic cognition, much of which has other origins entirely. Observers who encounter only a compressed result, without its generative history, are consequently prone---not certain, but prone---to underestimate the exploration that produced it, and this misattribution has downstream consequences for how labor is valued, how advice is given, and how expectations are formed.
 
-The argument of this essay may be summarized in four related claims.
-
-First, simplicity is earned, not given. What appears simple in any artifact---mathematical, architectural, written, computational, or social---is the result of prior expansion, iteration, and structural accumulation. The expansion phase discovers invariants; the compression phase encodes them. Neither can substitute for the other, and the compressed form does not reveal the process that produced it.
-
-Second, difficulty is relational, not intrinsic. A task is difficult relative to the expansion work that has or has not been performed, the aspects that have or have not been stabilized, and the attentional resources that are or are not available. What is effortless for an expert is effortless because they have already performed the expansion; it is not effortless because it is simple.
-
-Third, misattribution arises from compressed representations. When artifacts are encountered in their compressed forms, without access to their generative histories, observers systematically misattribute the difficulty of production. This misattribution is not a moral failing but a structural consequence of the epistemic position from which compressed outputs are encountered.
-
-Fourth, the misattribution has consequences. It distorts how labor is valued, how advice is given, how achievement is attributed, and how expectations are formed. It generates a class of representations---commercial, pedagogical, and journalistic---that present compressed endpoints as primary forms and systematically mislead about the effort distributions from which they were produced.
-
-The correction proposed here is not a recommendation to make things more complicated or to celebrate difficulty for its own sake. It is a recommendation for epistemic honesty about the structure of generative processes: an acknowledgment that what appears simple is the result of prior, invisible complexity that has been successfully relegated; that construction is constrained entropy reduction while destruction is unconstrained entropy increase; and that the compressed artifact, presented without its expansion history, is always a partial and potentially misleading representation of the work that produced it.
-
-Understanding this structure does not make expansion easier. But it does make the misperception of it harder to sustain.
+The correction proposed here is not a recommendation to make things more complicated, nor a claim that difficulty is always hidden or that ease is always suspect. It is a recommendation for epistemic caution about the structure of generative processes: an acknowledgment that a compressed artifact, presented without its exploration history, is frequently a partial and potentially misleading representation of the work that produced it, conditional on the assumptions this essay has tried to state rather than assume. Understanding this structure does not make exploration easier. It does make its erasure a little harder to take at face value.
 
 \newpage
 \appendix
 
 \section{Summary of Formal Results}
 
-For convenience, we collect the principal formal results established in the body of the essay.
-
 \begin{description}
-\item[Proposition~\ref{prop:compression-requires-expansion}] No valid compression mapping can be constructed without prior identification of the invariant structure of the valid configuration space, which in turn requires expansion.
-\item[Proposition~\ref{prop:asymmetry}] The number of operations that increase entropy exceeds those that decrease it under any fixed constraint set. Consequently, destructive and evaluative processes are generically easier than constructive ones.
-\item[Proposition~\ref{prop:s1-as-s2}] What is described as intuitive cognition (System 1) is the residual execution of previously stabilized and relegated aspects of deliberative cognition (System 2).
-\item[Proposition~\ref{prop:construction-destruction}] Construction satisfies global coherence conditions while destruction satisfies only local failure conditions. The two activities operate under fundamentally different constraints, and the ease of the latter is not evidence of the ease of the former.
+\item[Proposition~\ref{prop:compression-requires-expansion}] (Conditional, epistemic.) In an unknown domain, a reliable compressed representation generally requires prior exploration by some agent, though not necessarily the one presenting the compression.
+\item[Proposition~\ref{prop:asymmetry}] (Conditional on Assumption~\ref{ass:sparse} and a stated perturbation-distribution assumption.) A random perturbation of a valid configuration is more likely to leave the valid region than to remain within it. This does not by itself establish that evaluation is easier than construction.
+\item[Proposition~\ref{prop:s1-as-s2}] (Restricted scope.) A substantial class, not the entirety, of expert Type 1 performance derives from relegated, formerly deliberate procedures.
+\item[Hypothesis~\ref{hyp:hypofrontality}] (Contested, not established.) Some forms of flow may involve reduced activity in self-monitoring systems alongside preserved or increased task-relevant control activity; the empirical picture is one of selective reallocation, not uniform prefrontal withdrawal, and is actively debated.
 \end{description}
 
 \section{Glossary of Key Terms}
 
 \begin{description}
 \item[Aspect] A constraint, sub-operation, or dependency constituting part of a task.
-\item[Active attention set $A(t)$] The subset of aspects under conscious monitoring at time $t$.
+\item[Active attention set $A(t)$] The subset of known aspects under conscious monitoring at time $t$, bounded by capacity $k$.
+\item[Known aspects $K(t)$] The subset of a task's aspects an agent has represented, whether or not currently attended.
 \item[Coherent configuration] A configuration satisfying all constraints in $\mathcal{C}$.
-\item[Compression] A mapping from the valid configuration space to a lower-dimensional representational space.
-\item[Entropic asymmetry] The structural fact that configurations in $\Omega_{\mathrm{invalid}}$ vastly outnumber those in $\Omega_{\mathrm{valid}}$, making construction harder than destruction.
-\item[Expansion] A process of configuration-space traversal through which invariant structure is discovered.
-\item[Relegation] The withdrawal of attention from stabilized aspects via the relegation operator $R$.
-\item[Stabilization] The condition of an aspect when repeated execution satisfies its constraints without explicit monitoring.
+\item[Compression $(C, D, \sim)$] An encoder, decoder, and task-relevant equivalence relation such that decoding an encoding recovers the original up to $\sim$.
+\item[Sparse validity] The stated assumption that valid configurations occupy small measure within the full configuration space, for the systems this essay discusses.
+\item[Expansion] A process of configuration-space traversal through which invariant structure is discovered or transmitted.
+\item[Relegation ($R_t$)] The subset of the active attention set withdrawn at time $t$ because it has met a stabilization threshold.
+\item[Reactivation ($Q_t$)] Aspects, possibly previously relegated, returned to active attention by novelty, error, or unfamiliar context.
+\item[Stabilization] A probabilistic, context-relative condition: an aspect satisfies its constraint with probability at least $1-\varepsilon$ under a given policy and environment class.
 \end{description}
 
-\section{Note on Related Theoretical Frameworks}
+\begin{thebibliography}{99}
 
-The formal structures developed in this essay intersect with several established frameworks. The expansion--compression distinction bears structural resemblance to the \textit{minimum description length} principle in statistical learning theory, which formalizes the trade-off between model complexity and data fit. The entropic asymmetry is closely related to the second law of thermodynamics and to the statistical mechanics of constrained systems. The attention-bounded model of relegation connects to resource-rational accounts of cognition in contemporary cognitive science.
+\bibitem{bargh1992} Bargh, J. A. (1992). The ecology of automaticity: Toward establishing the conditions needed to produce automatic processing effects. \textit{American Journal of Psychology}, 105(2), 181--199.
 
-The broader theoretical program of which this essay forms a part---the Relativistic Scalar--Vector Plenum framework and associated work---provides a field-theoretic account of constraint, flow, and irreversibility that may eventually supply a more rigorous mathematical foundation for the arguments developed here. The present essay is intended as a conceptually accessible treatment of the core ideas, preceding rather than assuming that more technical apparatus.
+\bibitem{bargh2012} Bargh, J. A., Schwader, K. L., Hailey, S. E., Dyer, R. L., \& Boothby, E. J. (2012). Automaticity in social-cognitive processes. \textit{Trends in Cognitive Sciences}, 16(12), 593--605.
+
+\bibitem{dietrich2003} Dietrich, A. (2003). Functional neuroanatomy of altered states of consciousness: The transient hypofrontality hypothesis. \textit{Consciousness and Cognition}, 12(2), 231--256.
+
+\bibitem{dietrich2004} Dietrich, A. (2004). Neurocognitive mechanisms underlying the experience of flow. \textit{Consciousness and Cognition}, 13(4), 746--761.
+
+\bibitem{evans2013} Evans, J. St. B. T., \& Stanovich, K. E. (2013). Dual-process theories of higher cognition: Advancing the debate. \textit{Perspectives on Psychological Science}, 8(3), 223--241.
+
+\bibitem{kal2018} Kal, E., Prosée, R., Winters, M., \& van der Kamp, J. (2018). Does implicit motor learning lead to greater automatization of motor skills compared to explicit motor learning? A systematic review. \textit{PLOS ONE}, 13(9), e0203591.
+
+\bibitem{kahneman2011} Kahneman, D. (2011). \textit{Thinking, Fast and Slow}. Farrar, Straus and Giroux.
+
+\bibitem{ross1977} Ross, L. (1977). The intuitive psychologist and his shortcomings: Distortions in the attribution process. In L. Berkowitz (Ed.), \textit{Advances in Experimental Social Psychology} (Vol. 10, pp. 173--220). Academic Press.
+
+\bibitem{shields2016} Shields, G. S., Sazma, M. A., \& Yonelinas, A. P. (2016). The effects of acute stress on core executive functions: A meta-analysis and comparison with cortisol. \textit{Neuroscience \& Biobehavioral Reviews}, 68, 651--668.
+
+\bibitem{ulrich2014} Ulrich, M., Keller, J., Hoenig, K., Waller, C., \& Grön, G. (2014). Neural correlates of experimentally induced flow experiences. \textit{NeuroImage}, 86, 194--202.
+
+\bibitem{ulrich2016} Ulrich, M., Keller, J., \& Grön, G. (2016). Neural signatures of experimentally induced flow experiences identified in a typical fMRI block design with BOLD imaging. \textit{Social Cognitive and Affective Neuroscience}, 11(3), 496--507.
+
+\bibitem{vanderlinden2021} Van der Linden, D., Tops, M., \& Bakker, A. B. (2021). Go with the flow: A neuroscientific view on being fully engaged. \textit{European Journal of Neuroscience}, 53(4), 947--963.
+
+\end{thebibliography}
 
 \end{document}
+

@@ -1,5 +1,9 @@
 # Cosmology
 
+[Admissible Histories and the Structure of Physical Theory](https://standardgalactic.github.io/alphabet/cosmology/admissible-histories.pdf)
+
+* [The Physics of Missing Information](https://standardgalactic.github.io/alphabet/cosmology/missing-information.html) — *Audio Overview*
+
 [Multiscale Constraint Flow](https://standardgalactic.github.io/alphabet/cosmology/multiscale-constraint-flow.pdf)
 
 * [The Geometry of Possibility](https://standardgalactic.github.io/alphabet/cosmology/The_Geometry_of_Possibility.pdf) — *Notes*

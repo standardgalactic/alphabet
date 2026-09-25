@@ -1,0 +1,50 @@
+\section{Scripts in Contact: Latin, Arabic and Standard Galactic}\label{sec:arabic}
+
+\subsection{Terminology}
+
+Experiments that move text between writing systems invite loose speech, and the distinctions deserve to be fixed before any claim is made about hybrids. Several different operations can be applied to a text, and they change different components of an edition. \emph{Translation} changes the language, replacing words by words of another language that mean the same. \emph{Transliteration} changes the script, rewriting the words of one language in the letters of another script so as to preserve pronunciation. \emph{Substitution}, as in Section~\ref{sec:cipher}, changes the stored characters by a bijection of the alphabet and need not respect pronunciation at all. \emph{Re-glyphing} changes the shapes drawn for stored characters and nothing else. \emph{Interpolation} is re-glyphing carried out progressively along routes by a schedule. \emph{Re-sequencing} changes the direction or arrangement of text on the page. Table~\ref{tab:ops} summarises the effect of each on the components of an edition.
+
+\begin{table}[ht]
+\centering
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{3.9cm}>{\raggedright\arraybackslash}p{4.4cm}}
+\toprule
+Operation & Changes & Example\\
+\midrule
+Translation & language and its words & English text rendered in Spanish\\
+Transliteration & script and stored characters, aiming at pronunciation & Arabic words written in Latin letters\\
+Substitution & stored characters, by a bijection & PUBLIC stored as BVPLIC\\
+Re-glyphing & glyph shapes only & Latin letters redrawn with Arabic-inspired strokes\\
+Interpolation & glyph shapes, progressively & Latin drifting towards Standard Galactic\\
+Re-sequencing & direction or arrangement of text & Latin text set right to left\\
+\bottomrule
+\end{tabular}
+\caption{Operations on a text and what each changes.}\label{tab:ops}
+\end{table}
+
+With the terms fixed, the descriptions used informally in the project can be stated exactly. A typeface with Arabic-inspired features applied to Latin letters is a re-glyphing of Latin-script text: the language is unchanged, the script is unchanged, and so is the reading direction, unless a re-sequencing is added. An Arabic-script text drawn with Latin-inspired forms retains its linguistic assignments if the assignments are preserved, and is again a re-glyphing, subject to the constraints of Arabic that are discussed below. Writing English words in Arabic letters is a transliteration, and writing Arabic words in a Latin-letter chat orthography with digits for the sounds that Latin lacks is likewise a transliteration, in which visual resemblance has been used as the principle of assignment. Interpolations between Latin and Standard Galactic are a different and especially clean case, since Standard Galactic is a letter-for-letter substitution of the Latin alphabet that appeared in video games of the early 1990s, so that the correspondences are given in advance and the whole of the design effort goes into the route between the shapes.
+
+\subsection{What Arabic adds}
+
+Arabic cannot be treated as a Latin alphabet with different shapes, and a hybrid design that ignores the differences will fail as a reading system. The script is written from right to left, is cursive, and joins most of its letters to their neighbours. A letter has up to four forms depending on whether it joins to the letter before it, the letter after it, both, or neither, conventionally called the isolated, initial, medial and final forms. Not all letters join in both directions: six letters join to a preceding letter but not to a following one, and a word containing one of them is broken into several connected pieces, so that the joining behaviour of a letter is a property of the letter and not only of the typeface \citep{unicode}. Some letter sequences, most famously the sequence of lam and alif, are written as obligatory ligatures. In digital typography these behaviours are implemented by shaping, which assigns forms to letters from their context, and by glyph substitution features that realise the isolated, initial, medial and final forms and ligatures \citep{opentype}. Finally, many Arabic letters share a skeletal shape and differ in the number and placement of dots, which, as noted in Section~\ref{sec:drift}, is the system that the detour mimics.
+
+These facts have three consequences for the present project. The first is that for scripts of this kind the display function cannot be a map from stored characters to shapes applied one character at a time, and the model of Section~\ref{sec:edition} has to be read in its general form, in which display is a function of the string. The second is that the joining structure offers resources for design that the Latin alphabet lacks, and also constraints: a hybrid that draws Arabic letters with Latin-inspired outlines has to decide whether and how joining is retained, and a hybrid that gives Latin letters connecting strokes has changed the orthographic behaviour of the Latin script and not merely its decoration. The third is a matter of respect for a living writing system. Imitation of Arabic lettering in other scripts has often been produced by designers who cannot read the script, with results that are illegible to those who can, and a project that treats Arabic as a resource and not as an ornament should involve Arabic readers in the design and testing of any hybrid forms.
+
+\subsection{When substitution and rendering commute}
+
+The context dependence of Arabic gives a precise sense to a question that is trivial in the Latin case. In the letterwise model it does not matter whether one first substitutes characters and then renders them with a glyph map $g$, or renders the original text with the glyph map $g\circ\pi$: the glyph sequences are identical. Under shaping this need not hold. Let each letter $x$ have a joining class $J(x)\in\{\mathrm D,\mathrm R,\mathrm N\}$, dual-joining, right-joining or non-joining, and let the form of the letter at position $i$ of a string $X$ be a function of $J(x_{i-1})$, $J(x_i)$ and $J(x_{i+1})$ only: a letter is joined to its predecessor if the predecessor is dual-joining and the letter is dual- or right-joining, and joined to its successor if the letter is dual-joining and the successor is dual- or right-joining, and its form is isolated, final, initial or medial according as it is joined to neither, the predecessor only, the successor only, or both. Write $\sh_g(X)$ for the glyph sequence obtained by giving position $i$ the glyph $g(x_i,\mathrm{form}_i(X))$.
+
+\begin{proposition}[Commuting under shaping]\label{prop:commute}
+If $\pi$ is a substitution that preserves joining classes, $J(\pi(x))=J(x)$ for all $x$, then for every string $X$ and every glyph map $g$, $\sh_g(\pi(X))=\sh_{g\circ\pi}(X)$, where $(g\circ\pi)(x,f)=g(\pi(x),f)$.
+\end{proposition}
+
+\begin{proof}
+The form of position $i$ depends only on the joining classes of $x_{i-1}$, $x_i$ and $x_{i+1}$, and replacing each letter by its image under $\pi$ leaves these classes unchanged by hypothesis, so $\mathrm{form}_i(\pi(X))=\mathrm{form}_i(X)$. Then position $i$ of $\sh_g(\pi(X))$ is $g(\pi(x_i),\mathrm{form}_i(X))=(g\circ\pi)(x_i,\mathrm{form}_i(X))$, which is position $i$ of $\sh_{g\circ\pi}(X)$.
+\end{proof}
+
+The hypothesis is not idle. A substitution that exchanges a dual-joining letter such as nun with a right-joining letter such as ra, two shapes that share a descending curve, changes the joining of the letter that follows, so that a letter that was in final form becomes isolated, and the two routes to a page produce different pages. For Latin letters the question does not arise, since all letters belong to the single non-joining class and every substitution therefore preserves it. The proposition shows that a visual substitution for Arabic is not merely a matter of finding resembling shapes: the joining classes must be matched, or the equivalence of the two routes to a page is lost. It also illustrates a general moral about the formal treatment of editions, developed in Section~\ref{sec:formal}: the property that two routes give the same page is a property to be proved under stated hypotheses, and the hypotheses carry design content.
+
+\subsection{Interpolation between Latin and Standard Galactic}
+
+Standard Galactic has no distinction of case, so the Latin-to-Galactic correspondence sends both the upper-case and the lower-case form of a letter to one shape, and the map on forms is not injective. Under the stored-text principle this does no harm, since the stored text retains the case and the glyph assignment merely ignores it, but a reader of the final script loses capitalisation as a cue and the design should note this. The shape spaces of the two alphabets are otherwise unrelated, and straight interpolation of unrelated outlines yields forms that belong to neither. A more promising route is a sequence of hand-designed keyframes, with Latin at one end, Standard Galactic at the other, and between them one or two hybrid forms each of which shares a feature with each neighbour, and with interpolation only between adjacent keyframes. The route is then piecewise, the margins can be checked at each keyframe by the build-time test described in Section~\ref{sec:formal}, and the hybrid forms can be tested separately for recognisability. Because the endpoint shapes are new, the interference problem discussed at the end of Section~\ref{sec:drift} does not arise in the same form, and the empirical comparison of the two kinds of endpoint is among the first experiments proposed in Section~\ref{sec:empirical}.

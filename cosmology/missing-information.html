@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Physics of Missing Information</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;
+  background:#000;color:#7cff7c;font-family:monospace;
+  touch-action:manipulation;
+}
+
+body{
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;cursor:pointer;
+}
+
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:500;
+  background:repeating-linear-gradient(to bottom,
+    rgba(255,255,255,.03) 0px,
+    rgba(255,255,255,.03) 1px,
+    transparent 2px,
+    transparent 5px);
+  opacity:.13;
+}
+
+.title{
+  position:fixed;top:16px;width:94vw;text-align:center;
+  font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+  color:#00ff88;text-shadow:0 0 10px #00ff66;z-index:100;
+}
+
+.status{
+  position:fixed;top:52px;opacity:.45;font-size:10px;
+  letter-spacing:.14em;z-index:120;
+}
+
+canvas{
+  width:min(430px,80vw);height:min(430px,80vw);
+  border-radius:50%;border:3px solid rgba(0,255,120,.46);
+  background:#000;
+  box-shadow:0 0 60px rgba(0,255,120,.16) inset,
+             0 0 24px rgba(0,255,0,.55);
+  z-index:40;
+}
+
+.subs{
+  position:fixed;bottom:24px;width:min(690px,92vw);
+  min-height:2.5em;padding:8px 12px;text-align:center;
+  font-size:14px;line-height:1.45;color:#aaffaa;
+  text-shadow:0 0 6px #00ff66;background:rgba(0,20,0,.36);
+  border:1px solid rgba(0,255,0,.22);border-radius:6px;
+  pointer-events:none;z-index:80;
+}
+
+@media(max-width:700px){
+  .title{top:13px;font-size:10px}
+  .status{top:48px;font-size:9px}
+  .subs{bottom:18px;font-size:13px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="title" id="title">The Physics of Missing Information</div>
+<div class="status" id="status">TOUCH / CLICK ANYWHERE TO PLAY OR PAUSE</div>
+<canvas id="viz"></canvas>
+<div id="subs" class="subs"></div>
+
+<audio id="audio" preload="auto"></audio>
+
+<script>
+const audio = document.getElementById("audio");
+const subs = document.getElementById("subs");
+const status = document.getElementById("status");
+audio.src = "The_Physics_of_Missing_Information.mp3";
+
+let audioCtx;
+let analyser;
+let freqData;
+let timeData;
+
+function initAudio(){
+  if(audioCtx) return;
+
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  analyser.smoothingTimeConstant = .88;
+
+  freqData = new Uint8Array(analyser.frequencyBinCount);
+  timeData = new Uint8Array(analyser.fftSize);
+
+  const source = audioCtx.createMediaElementSource(audio);
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
+}
+
+document.body.onclick = async ()=>{
+  try{
+    initAudio();
+    if(audioCtx.state === "suspended") await audioCtx.resume();
+    if(audio.paused) await audio.play();
+    else audio.pause();
+  }catch(error){
+    status.textContent = "UNABLE TO PLAY AUDIO — CHECK THE MP3 FILE";
+  }
+};
+document.addEventListener("keydown",event=>{
+  if(event.code === "Space"){
+    event.preventDefault();
+    document.body.click();
+  }
+});
+audio.addEventListener("play",()=>status.textContent="PLAYING · CLICK OR PRESS SPACE TO PAUSE");
+audio.addEventListener("pause",()=>status.textContent="PAUSED · CLICK OR PRESS SPACE TO PLAY");
+audio.addEventListener("ended",()=>{
+  subs.textContent="";
+  status.textContent="FINISHED · CLICK OR PRESS SPACE TO REPLAY";
+});
+audio.addEventListener("error",()=>status.textContent="AUDIO NOT FOUND · CHECK THE MP3 FILE");
+
+/* subtitles */
+
+let cues = [];
+
+async function loadVTT(url){
+  cues = [];
+  subs.textContent = "";
+
+  try{
+    const res = await fetch(url);
+
+    if(!res.ok){
+      console.warn("Missing VTT:",url);
+      return;
+    }
+
+    cues = parseVTT(await res.text());
+
+  }catch(e){
+    console.warn("VTT load failed:",e);
+  }
+}
+
+function parseVTT(text){
+  const blocks = text.replace(/\r/g,"").split(/\n{2,}/);
+  const out = [];
+
+  for(const block of blocks){
+    const lines = block.trim().split("\n");
+    const ts = lines.find(line=>line.includes("-->"));
+    if(!ts) continue;
+
+    const tsIndex = lines.indexOf(ts);
+    const [start,end] = ts.split("-->").map(x=>x.trim());
+
+    out.push({
+      start:parseTime(start),
+      end:parseTime(end),
+      text:lines.slice(tsIndex+1).join(" ").replace(/<[^>]*>/g, "")
+    });
+  }
+
+  return out;
+}
+
+function parseTime(t){
+  t = t.split(" ")[0].replace(",",".");
+  const p = t.split(":");
+
+  if(p.length === 3)
+    return (+p[0])*3600 + (+p[1])*60 + parseFloat(p[2]);
+
+  return (+p[0])*60 + parseFloat(p[1]);
+}
+
+audio.ontimeupdate = ()=>{
+  const t = audio.currentTime;
+  const cue = cues.find(c=>t>=c.start && t<c.end+.2);
+  subs.textContent = cue ? cue.text : "";
+};
+
+/* canvas */
+
+const canvas = document.getElementById("viz");
+const ctx = canvas.getContext("2d");
+
+const W = 480;
+const H = 480;
+const cx = W/2;
+const cy = H/2;
+const R = W*.39;
+
+canvas.width = W;
+canvas.height = H;
+
+let frame = 0;
+let bass = 0;
+let mid = 0;
+let high = 0;
+
+function updateEnergy(){
+  if(!analyser) return;
+
+  analyser.getByteFrequencyData(freqData);
+
+  let b=0,m=0,h=0;
+
+  for(let i=0;i<40;i++) b += freqData[i];
+  for(let i=40;i<180;i++) m += freqData[i];
+  for(let i=180;i<freqData.length;i++) h += freqData[i];
+
+  bass += (b/(40*255)-bass)*.08;
+  mid += (m/(140*255)-mid)*.06;
+  high += (h/((freqData.length-180)*255)-high)*.05;
+}
+
+function clearPortal(){
+  ctx.fillStyle = "rgba(0,5,0,.09)";
+  ctx.fillRect(0,0,W,H);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.clip();
+
+  const g = ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+  g.addColorStop(0,"rgba(0,34,14,.25)");
+  g.addColorStop(.70,"rgba(0,10,0,.42)");
+  g.addColorStop(1,"rgba(0,0,0,.96)");
+
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,W,H);
+
+  drawStars();
+
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.strokeStyle = "rgba(124,255,196,.34)";
+  ctx.lineWidth = 3;
+  ctx.shadowBlur = 14;
+  ctx.shadowColor = "#00ff66";
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function drawStars(){
+  ctx.fillStyle = "rgba(180,255,210,.14)";
+
+  for(let i=0;i<54;i++){
+    const x = ((Math.sin(i*91.7)*43758.5453)%1+1)%1;
+    const y = ((Math.sin(i*47.3+2)*19341.13)%1+1)%1;
+    const px = x*W;
+    const py = y*H;
+    const dx = px-cx;
+    const dy = py-cy;
+
+    if(dx*dx+dy*dy < R*R)
+      ctx.fillRect(px,py,1.35,1.35);
+  }
+}
+
+function drawProjection(){
+  drawContourField(.85);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.clip();
+
+  const slice = (Math.sin(frame*.010)+1)*.5;
+  const x = cx - R*.78 + slice*R*1.56;
+
+  ctx.fillStyle = "rgba(180,255,210,.10)";
+  ctx.fillRect(x-24,cy-R,48,R*2);
+
+  ctx.beginPath();
+  ctx.moveTo(x,cy-R*.86);
+  ctx.lineTo(x,cy+R*.86);
+  ctx.strokeStyle = "rgba(220,255,230,.88)";
+  ctx.lineWidth = 6;
+  ctx.lineCap = "round";
+  ctx.shadowBlur = 20;
+  ctx.shadowColor = "#00ff88";
+  ctx.stroke();
+
+  ctx.restore();
+  drawWaveTrace(.14);
+}
+
+function drawContourField(alphaBoost=1){
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.clip();
+
+  for(let k=0;k<16;k++){
+    const r = R*(.13+k*.05);
+
+    ctx.beginPath();
+
+    for(let a=0;a<=Math.PI*2+.04;a+=.05){
+      const elevation =
+        Math.sin(a*4 + frame*.004 + k) *
+        (3 + high*12);
+
+      const x =
+        cx +
+        Math.cos(a) *
+        (r+elevation);
+
+      const y =
+        cy +
+        Math.sin(a) *
+        (r+elevation*.7);
+
+      if(a===0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+
+    ctx.strokeStyle =
+      `rgba(124,255,196,${(.014+k*.008)*alphaBoost})`;
+
+    ctx.lineWidth = 2.2;
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function drawWaveTrace(lagBase){
+  if(!analyser) return;
+
+  analyser.getByteTimeDomainData(timeData);
+
+  const lag = Math.floor(timeData.length*(lagBase+mid*.08));
+
+  ctx.beginPath();
+
+  for(let i=0;i<timeData.length;i+=3){
+    const a = (timeData[i]-128)/128;
+    const b = (timeData[(i+lag)%timeData.length]-128)/128;
+
+    const x = cx + a*R*.54 + Math.sin(frame*.008)*10;
+    const y = cy + b*R*.45 + Math.cos(frame*.006)*8;
+
+    if(i===0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  }
+
+  ctx.strokeStyle = "rgba(124,255,196,.72)";
+  ctx.lineWidth = 5;
+  ctx.lineCap = "round";
+  ctx.shadowBlur = 16;
+  ctx.shadowColor = "#00ff66";
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+
+function draw(){
+  frame++;
+  updateEnergy();
+  clearPortal();
+
+  drawProjection();
+
+  requestAnimationFrame(draw);
+}
+
+loadVTT("The_Physics_of_Missing_Information.vtt");
+draw();
+</script>
+
+</body>
+</html>
+

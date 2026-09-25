@@ -1,0 +1,67 @@
+\section{Counting Derivations}\label{app:counting}
+
+\paragraph{Involutions.}
+Let $I(n)$ be the number of involutions on $\{1,\dots,n\}$. Classify an involution by what it does to the element $n$. If $n$ is fixed, the rest is an involution on $n-1$ elements, giving $I(n-1)$ possibilities. If $n$ is exchanged with $j\ne n$, there are $n-1$ choices of $j$ and the remaining $n-2$ elements carry an involution, giving $(n-1)I(n-2)$. Hence $I(n)=I(n-1)+(n-1)I(n-2)$ with $I(0)=I(1)=1$. Iterating to $n=26$ gives $I(26)=532{,}985{,}208{,}200{,}576$.
+
+\paragraph{Involutions with exactly $k$ exchanges.}
+Choose the $2k$ moved letters in $\binom{26}{2k}$ ways. A fixed-point-free involution on $2k$ letters is a perfect matching; the number of these is $(2k-1)!!$, since the smallest letter can be matched with any of $2k-1$ others and the remaining $2k-2$ letters matched in $(2k-3)!!$ ways. Summing $\binom{26}{2k}(2k-1)!!$ over $k=0,\dots,13$ reproduces $I(26)$ exactly, which was checked by computer. The values for $k=4,6,7,9,11,12$, omitted from Table~\ref{tab:counting}, are $164{,}038{,}875$; $100{,}391{,}791{,}500$; $1{,}305{,}093{,}289{,}500$; $53{,}835{,}098{,}191{,}875$; $205{,}552{,}193{,}096{,}250$; and $102{,}776{,}096{,}548{,}125$. The largest single term is at $k=11$, so most reciprocal alphabets change 22 of the 26 letters.
+
+\paragraph{Derangements.}
+The number $D(n)$ of permutations of $n$ elements without fixed points satisfies $D(n)=(n-1)\bigl(D(n-1)+D(n-2)\bigr)$ with $D(0)=1$ and $D(1)=0$, and $D(26)=148{,}362{,}637{,}348{,}470{,}135{,}821{,}287{,}825$. The ratio $26!/I(26)\approx7.57\times10^{11}$.
+
+\section{Optimal Pairings by Typeface}\label{app:pairings}
+
+\begin{table}[ht]
+\centering
+\small
+\input{tables/pairings}
+\caption{Maximum-weight reciprocal pairings of the 26 capitals under the pixel-overlap measure, with the overlap of each pair in parentheses.}
+\end{table}
+
+Pairs present in all four optimal pairings are A/W, C/G, D/U, H/N, M/V and O/Q. B/S, I/J and T/Y occur in three of four, E/L, F/P, K/R and X/Z in two, and the remaining pairs in one. The weight matrices were computed from bitmaps rendered with PIL at an em size of 160 pixels on a $200\times200$ canvas, with the baseline at 75 per cent of the canvas height and glyphs centred by advance width, and the pairing was found with the maximum-weight matching routine of NetworkX with maximum cardinality enforced.
+
+\section{Code}\label{app:code}
+
+The programs below produced the computed results of the essay. They are reproduced so that the results can be rerun with other fonts, other weights and other parameters.
+
+\paragraph{Glyph overlap and optimal reciprocal pairing.}
+\lstinputlisting[language=Python]{scripts/glyph_similarity.py}
+
+\paragraph{Fluid-model schedules.}
+\lstinputlisting[language=Python]{scripts/schedule_sim.py}
+
+\paragraph{Exposure-driven staging.}
+The script below assigns to each occurrence of an alphabet letter a stage from $0$ to $S$, advancing one stage after each $K$ further occurrences once a letter-specific delay has passed. Run on the text of the working conversation from which this essay was developed (about 9{,}700 letters) with $K=5$ and $S=3$ and the pairs B/P, U/V, C/G, E/F, M/N and O/Q, it reports the character positions at which each of the twelve letters first reaches its final stage: E at 152, O at 247, N at 409, C at 444, U at 496, P at 602, B at 744, M at 762, G at 921, V at 1647, F at 2449 and Q at 8134. The order follows letter frequency, and the rare letter Q, with 21 occurrences in the text, reaches its final stage only after 8{,}134 characters.
+\lstinputlisting[language=Python]{scripts/drift.py}
+
+\section{A Schema for Edition Manifests}\label{app:manifest}
+
+The following schema lists the fields an edition manifest would carry. It is a specification and not a record of any existing edition, and the values shown are symbolic.
+
+\begin{lstlisting}[language={}]
+edition:
+  id:          <hash of the fields below>
+  kind:        authorial | experimental | derivative
+  text:
+    work:      <identifier of the work>
+    version:   <version of the linguistic text>
+    parent:    <identifier of the preceding version, if any>
+  alphabet:    <identifier, e.g. Latin capitals and lower case>
+  substitution:
+    table:     <identifier of the bijection pi>
+    reciprocal: true | false
+  glyphs:
+    masters:   <identifiers of the master outlines>
+    routes:    <per-letter route definitions, endpoints and keyframes>
+    license:   <licence of the outlines>
+  schedule:
+    kind:      uniform | exposure-driven | letter-by-letter | cyclic
+    parameters: {K, S, delays D_l, novelty cap nu}
+    seed:      <recorded if any randomness is used>
+  margin:
+    threshold: theta
+    certificate: <result of the build-time check>
+  builder:
+    version:   <version of the edition builder>
+  evidence:    <links to observations made on this edition, if any>
+\end{lstlisting}

@@ -38,8 +38,19 @@ The live alphabet demonstration can be toggled between Latin and SGA with the `z
 The repository's earliest layer includes the Standard Galactic Alphabet font, Unicode and all-caps experiments, Arabic phonetic English, the Anak and Dvorak keyboards, Logico Philosophicus, Cistercian numbers, Dactyl, and a collection of visual demonstrations. These materials remain part of the project, but they no longer describe its entire scope.
 
 <p align="center">
-  <img src="fun-visualization.png" width="48%" alt="Visualization from the broader Alphabet project"/>
-  <img src="Images/planetary-brake.png" width="48%" alt="Planetary Brake illustration"/>
+  <img src="mindmap-inverted.png" width="749" alt="Mind map of the Standard Galactic Alphabet project"/>
+</p>
+
+The mind map records the early constellation of alphabets, keyboards, ciphers, notation systems, and interface experiments from which the repository grew.
+
+<p align="center">
+  <img src="fun-visualization.png" width="749" alt="Visualization from the broader Alphabet project"/>
+</p>
+
+As the collection expanded, the alphabet became less a single artifact than a point of entry into recurring questions about representation, technical mediation, and the presentation of speculative ideas.
+
+<p align="center">
+  <img src="Images/planetary-brake.png" width="749" alt="Planetary Brake illustration"/>
 </p>
 
 ## Related repositories

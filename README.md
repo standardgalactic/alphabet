@@ -1,5 +1,3 @@
-#   
-
 # Standard Galactic Alphabet
 
 <p align="left">
@@ -39,7 +37,10 @@ The live alphabet demonstration can be toggled between Latin and SGA with the `z
 
 The repository's earliest layer includes the Standard Galactic Alphabet font, Unicode and all-caps experiments, Arabic phonetic English, the Anak and Dvorak keyboards, Logico Philosophicus, Cistercian numbers, Dactyl, and a collection of visual demonstrations. These materials remain part of the project, but they no longer describe its entire scope.
 
-![Standard Galactic Alphabet mind map](mindmap-inverted.png)
+<p align="center">
+  <img src="fun-visualization.png" width="48%" alt="Visualization from the broader Alphabet project"/>
+  <img src="Images/planetary-brake.png" width="48%" alt="Planetary Brake illustration"/>
+</p>
 
 ## Related repositories
 

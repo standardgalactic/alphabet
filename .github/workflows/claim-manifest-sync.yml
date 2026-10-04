@@ -1,0 +1,42 @@
+name: claim-manifest-sync
+
+# Validate theorem claim manifests against the canonical registry in
+# central-theorem/SPEC.md. Implementations may reference only claim IDs
+# defined by the registry. This check detects undeclared claims and
+# manifest drift across implementations.
+
+on:
+  push:
+    branches: [core, central-theorem]
+  pull_request:
+    branches: [core]
+  workflow_dispatch: {}
+  schedule:
+    - cron: "17 6 * * *"
+
+jobs:
+  manifest-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate claim manifests
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+          # Optional read-only token for sources not accessible with the
+          # default workflow token. Inaccessible optional sources are
+          # skipped with a warning when this secret is not configured.
+          SYNC_ENGINE_TOKEN: ${{ secrets.SYNC_ENGINE_TOKEN }}
+
+          # Branches containing implementations of the registered claims.
+          CLAIMSHIFT_BRANCH: central-theorem
+          ENGINE_BRANCH: central-theorem/admissibility
+          KIT_BRANCH: central-theorem/admissibility-mapping
+
+        run: python3 .github/claim_manifest_sync.py

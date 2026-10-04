@@ -1,0 +1,1653 @@
+\documentclass[11pt]{article}
+
+% LuaLaTeX
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{Latin Modern Roman}
+\setmathfont{Latin Modern Math}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\setstretch{1.15}
+
+\usepackage{amsmath,amsthm,mathtools}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\histories}{\mathcal{H}}
+\newcommand{\valuation}{V}
+\newcommand{\worlds}{W}
+\newcommand{\acts}{\mathcal{A}}
+\newcommand{\obs}{\mathcal{O}}
+\newcommand{\admissible}{\mathrm{Adm}}
+\newcommand{\manifold}{\mathcal{M}}
+
+\title{\textbf{The Central Theorem: Epistemic Overlap}\\
+Admissible Continuation, Information, and Local-to-Global Consistency}
+\author{Flyxion}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This paper develops a common formal structure for several problems involving
+admissible continuation under incomplete information. The central result,
+Epistemic Overlap (CT-000), characterizes when a deterministic policy based
+only on observations can guarantee an admissible action. Such a policy exists
+precisely when every observational equivalence class has a nonempty common
+admissible-action set.
+
+The result is elementary but useful because it separates two questions:
+whether each possible world admits some action, and whether the information
+available to an agent is sufficient to select an action admissible in every
+world compatible with that information.
+
+Subsequent sections relate this structure to admissible histories,
+local-to-global geometric models, bounded-correction models, minimal
+decision-relevant history, and durable adjudication. These later
+correspondences have different logical status. Standard mathematical results,
+conditional propositions, modeling assumptions, and implementation principles
+are distinguished rather than treated as interchangeable forms of proof.
+
+Stable identifiers CT-000 through CT-016 correspond to the claim registry in
+\texttt{SPEC.md}.
+\end{abstract}
+
+% =====================================================================
+\section{Specification}
+
+
+The notation, claim identifiers, status terminology, and scope conventions used throughout the paper are defined below. Mathematical results are distinguished from statements conditional on model assumptions and from requirements pertaining to implementation.
+
+\subsection{Claim identifiers}
+
+Claims are assigned stable identifiers of the form
+\[
+  \texttt{CT-000},\texttt{ CT-001},\ldots,\texttt{ CT-016}.
+\]
+The identifier denotes a claim, not a particular proof, implementation,
+formalization, file, or revision. Multiple artifacts may therefore refer to
+the same identifier without being treated as equivalent evidence for it.
+
+The canonical registry is maintained in \texttt{SPEC.md}. The present paper
+contains the mathematical statements and their qualifications.
+
+\subsection{Evidence and status}
+
+The following distinctions are used throughout.
+
+\begin{description}
+  \item[Proved.]
+  A mathematical statement is established from explicitly stated assumptions.
+
+  \item[Conditional.]
+  A mathematical conclusion follows within a specified model or under
+  additional hypotheses that are not asserted universally.
+
+  \item[Standard result.]
+  The mathematical statement is a standard result used as part of the model;
+  its interpretation in the present setting is separate from the theorem
+  itself.
+
+  \item[Modeling correspondence.]
+  A mathematical structure is proposed as a useful representation of some
+  computational or semantic structure. The correspondence is not itself
+  asserted as a mathematical theorem.
+
+  \item[Qualitative.]
+  The claim is motivated by the source model but has not been reduced to a
+  sufficiently explicit mathematical statement for a general proof.
+
+  \item[Implementation principle.]
+  The claim constrains or motivates system design. An implementation can
+  satisfy or test the constraint, but doing so is not a proof of a general
+  mathematical proposition.
+
+  \item[Formalized.]
+  A stated proposition has been represented and checked in a proof assistant.
+  Formalization establishes the encoded proposition relative to its
+  definitions and assumptions; it does not automatically establish broader
+  interpretations attached to the claim.
+
+  \item[Implemented.]
+  Software exhibits behavior corresponding to a claim or design principle.
+  Implementation correspondence is distinct from mathematical proof.
+\end{description}
+
+These categories may overlap. For example, a proved mathematical statement
+may also have a machine-checked formalization and an implementation that
+satisfies a corresponding invariant.
+
+\subsection{Claim registry}
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{1.4cm}p{7.3cm}p{4.7cm}@{}}
+\toprule
+ID & Claim & Status \\
+\midrule
+CT-000 &
+Epistemic Overlap and the No-Safe-Action corollary &
+proved \\
+
+CT-001 &
+Admissibility is independent of valuation when admissibility is defined
+structurally &
+established within the stated model \\
+
+CT-002 &
+Prefix closure of admissible histories &
+established under the prefix-closure assumption \\
+
+CT-003 &
+Unique continuation under a committed prefix &
+established within the stated model \\
+
+CT-004 &
+Persistence of disfavored admissible trajectories &
+qualitative \\
+
+CT-005 &
+Pruning excludes continuations rather than repairing prior states &
+established within the stated model \\
+
+CT-006 &
+Tangent-normal decomposition and its use as a model of admissible
+transformation &
+standard result plus modeling correspondence \\
+
+CT-007 &
+Off-manifold generation may enlarge effective output support under additional
+regularity assumptions &
+conditional \\
+
+CT-008 &
+Local-chart coherence and tangent-flow interpretation &
+modeling correspondence \\
+
+CT-009 &
+Local admissibility does not by itself imply global coherence &
+general structural observation; geometric form model-dependent \\
+
+CT-010 &
+Bounded correction cannot uniformly offset the modeled production term under
+A1--A4 &
+conditional \\
+
+CT-011 &
+Finite safe regime under bounded protective capacity and the additional
+monotonicity assumptions &
+conditional \\
+
+CT-012 &
+Increasing marginal risk under the specified visibility scaling model &
+model-dependent \\
+
+CT-013 &
+Local stress criterion for semantic stability &
+model-dependent \\
+
+CT-014 &
+Scaling formulation of visibility-induced instability &
+model-dependent \\
+
+CT-015 &
+Admissibility may factor through a reduced decision-relevant history &
+proved as a factorization result \\
+
+CT-016 &
+Adjudications affecting future admissibility must survive authoritative
+reconstruction &
+implementation principle \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Source correspondence}
+
+The claims consolidate material developed in several related texts. The
+correspondence is:
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{5.3cm}p{5.0cm}p{2.7cm}@{}}
+\toprule
+Source & Relevant material & Claims \\
+\midrule
+\texttt{Admissible Histories.tex} &
+History, prefix, continuation, pruning &
+CT-001--CT-005 \\
+
+\texttt{Never-Predict-Noise.tex} &
+Tangent-normal decomposition, off-manifold analysis, local coherence,
+curvature &
+CT-006--CT-009 \\
+
+\texttt{Against\_Indiscriminate\_Visibility.tex} &
+Visibility, bounded correction, stress, scaling &
+CT-010--CT-014 \\
+
+\texttt{resources/admissible-continuation.tex} &
+Admissible continuation &
+CT-000, CT-003 \\
+
+\texttt{physics/cosmology/admissible-geometry.tex} &
+Geometric formulation of admissibility &
+CT-006 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+These correspondences identify intellectual provenance within the corpus.
+They do not imply that every source uses exactly the definitions adopted in
+this consolidated treatment.
+
+\subsection{Formal structure of CT-000}
+
+The central theorem uses the following objects:
+
+\begin{itemize}
+  \item a set of possible worlds $\worlds$;
+  \item a set of observations $\obs$;
+  \item a set of actions $\acts$;
+  \item an observation map
+    \[
+      O:\worlds\to\obs;
+    \]
+  \item an admissible-action map
+    \[
+      \admissible:\worlds\to\mathcal{P}(\acts);
+    \]
+  \item a deterministic observation-based policy
+    \[
+      \pi:\obs\to\acts.
+    \]
+\end{itemize}
+
+For $o\in O(\worlds)$, the observation class is
+\[
+  [o]=\{w\in\worlds:O(w)=o\}.
+\]
+
+The common admissible-action set associated with $o$ is
+\[
+  C(o)
+  =
+  \bigcap_{w\in[o]}\admissible(w).
+\]
+
+The theorem concerns the equivalence between
+
+\[
+  \exists\pi:\obs\to\acts
+  \quad
+  \forall w\in\worlds,\;
+  \pi(O(w))\in\admissible(w)
+\]
+and
+\[
+  \forall o\in O(\worlds),\;
+  C(o)\neq\varnothing,
+\]
+subject to the totality and selection conditions stated below.
+
+This is stronger than requiring pairwise overlap among admissible-action
+sets. In general,
+\[
+  \admissible(w_i)\cap\admissible(w_j)\neq\varnothing
+  \qquad\text{for every }i,j
+\]
+does not imply
+\[
+  \bigcap_i\admissible(w_i)\neq\varnothing.
+\]
+The theorem therefore uses the intersection of the entire observation class.
+
+\subsection{Totality and choice}
+
+Two logically distinct issues arise when constructing a policy.
+
+First, the paper defines a policy on all of $\obs$, although only values in
+$O(\worlds)$ are used to determine actions in possible worlds. If
+\[
+  \obs\setminus O(\worlds)\neq\varnothing,
+\]
+then a total policy $\pi:\obs\to\acts$ must assign actions to unrealized
+observations as well. Thus $\acts$ must be nonempty, or the policy domain must
+instead be restricted to $O(\worlds)$.
+
+Second, the forward construction selects one action from every nonempty set
+$C(o)$ defined above.
+A simultaneous selection from an arbitrary family of such sets requires an
+appropriate choice principle or an explicit selection rule.
+
+For finitely many relevant observation classes, finite choice suffices.
+If the action sets carry an ordering or another rule that canonically selects
+an element, that rule can replace abstract choice.
+
+Restricting the policy to
+\[
+  \pi:O(\worlds)\to\acts
+\]
+eliminates the need to assign arbitrary actions to unrealized observations.
+It does not, in general, eliminate the selection problem among the nonempty
+sets $C(o)$.
+
+Accordingly, two versions of CT-000 may be distinguished:
+
+\begin{description}
+  \item[Total-policy version.]
+  $\pi:\obs\to\acts$, requiring values outside $O(\worlds)$ when such
+  observations exist.
+
+  \item[Realized-observation version.]
+  $\pi:O(\worlds)\to\acts$, requiring values only for observations actually
+  produced by worlds in $\worlds$.
+\end{description}
+
+The substantive overlap condition is identical in both versions.
+
+\subsection{Deterministic scope}
+
+CT-000 concerns deterministic policies. Randomization does not automatically
+remove the obstruction identified by the theorem.
+
+If admissibility requires the selected action itself to belong to
+$\admissible(w)$ with certainty, then a randomized policy supported on actions
+outside the common intersection fails in at least one compatible world,
+provided the observation class is countable. The uncountable case is treated
+in the subsection on randomized policies.
+A randomized analogue would therefore require an explicitly defined
+probabilistic admissibility criterion.
+
+No such criterion is assumed here.
+
+Likewise, CT-000 is a static existence result. It does not by itself specify
+learning, exploration, belief revision, communication between agents, or
+sequential information acquisition. Those extensions require additional
+structure.
+
+\subsection{Admissibility}
+
+The abstract theorem places no intrinsic restriction on the origin of
+$\admissible(w)$. It may represent legal actions, continuation constraints,
+safety conditions, protocol states, physical feasibility, or another
+world-dependent admissibility relation.
+
+In the applications developed in this paper, admissibility is usually
+interpreted structurally: an action is admissible when it constitutes a legal
+continuation of the relevant attested history.
+
+That interpretation belongs to the admissible-history model. CT-000 itself
+requires only the set-valued map
+\[
+  \admissible:\worlds\to\mathcal{P}(\acts).
+\]
+
+This distinction matters because the central theorem does not depend on
+CT-001--CT-016 for its validity. Those claims provide applications,
+interpretations, and related structures rather than premises required to
+prove CT-000.
+
+\subsection{Information partitions}
+
+The observation map $O$ induces an equivalence relation
+\[
+  w\sim_O w'
+  \quad\Longleftrightarrow\quad
+  O(w)=O(w').
+\]
+
+The equivalence classes of $\sim_O$ are precisely the information sets on
+which an observation-based deterministic policy must be constant.
+
+CT-000 can therefore be stated without explicit reference to observations:
+a policy constant on each information class is globally admissible if and
+only if each information class has a common admissible action.
+
+This formulation makes clear that the theorem concerns information loss
+induced by a partition of the world space. The particular representation of
+the observations is secondary.
+
+\subsection{Refinement of information}
+
+Suppose two observation maps
+\[
+  O_1:\worlds\to\obs_1,
+  \qquad
+  O_2:\worlds\to\obs_2
+\]
+satisfy
+\[
+  O_1=f\circ O_2
+\]
+for some function $f$. Then $O_2$ is at least as informative as $O_1$:
+every $O_2$-class is contained in an $O_1$-class.
+
+This immediately yields a useful monotonicity property.
+
+\begin{proposition}[Information refinement]
+If a globally admissible policy exists under $O_1$, then a globally
+admissible policy exists under any refinement $O_2$ of $O_1$.
+\end{proposition}
+
+\begin{proof}
+Every $O_2$-class is a subset of an $O_1$-class. If
+\[
+  \bigcap_{w:O_1(w)=o_1}\admissible(w)
+  \neq\varnothing,
+\]
+then removing worlds from that intersection cannot make it smaller.
+Consequently every refined class also has a nonempty common admissible-action
+set. CT-000 then supplies a globally admissible policy for $O_2$.
+\end{proof}
+
+\begin{remark}
+The converse does not hold. Coarsening observations can merge classes whose
+admissible-action sets have no common element.
+
+Thus, in the abstract CT-000 model, additional information cannot destroy the
+\emph{existence} of an admissible policy. Claims elsewhere in the paper about
+costs associated with increased visibility concern additional mechanisms and
+must not be identified with refinement of $O$ alone.
+\end{remark}
+
+\subsection{Refinement order}
+
+Observation maps can be partially ordered by informational refinement. Write
+\[
+  O_2 \succeq O_1
+\]
+when there exists a function $f$ such that
+\[
+  O_1=f\circ O_2.
+\]
+Equivalently, every equivalence class induced by $O_2$ is contained in an
+equivalence class induced by $O_1$.
+
+Call an observation map \emph{admissibility-sufficient} when it admits a
+globally admissible observation-based policy.
+
+\begin{proposition}[Upward closure under refinement]
+The class of admissibility-sufficient observation maps is upward closed under
+informational refinement. If
+\[
+  O_2\succeq O_1
+\]
+and $O_1$ is admissibility-sufficient, then $O_2$ is
+admissibility-sufficient.
+\end{proposition}
+
+\begin{proof}
+Let
+\[
+  O_1=f\circ O_2
+\]
+and let
+\[
+  \pi_1:\obs_1\to\acts
+\]
+be globally admissible under $O_1$. Define
+\[
+  \pi_2=\pi_1\circ f.
+\]
+Then for every $w\in\worlds$,
+\[
+  \pi_2(O_2(w))
+  =
+  \pi_1(f(O_2(w)))
+  =
+  \pi_1(O_1(w))
+  \in
+  \admissible(w).
+\]
+Hence $\pi_2$ is globally admissible under $O_2$.
+\end{proof}
+
+\begin{corollary}[Common refinements]
+If $O_1$ is admissibility-sufficient and $O_2$ is any observation map, then
+the joint observation
+\[
+  O_{12}(w)
+  =
+  \bigl(O_1(w),O_2(w)\bigr)
+\]
+is admissibility-sufficient.
+\end{corollary}
+
+\begin{proof}
+The projection
+\[
+  \operatorname{pr}_1:
+  \obs_1\times\obs_2\to\obs_1
+\]
+satisfies
+\[
+  O_1
+  =
+  \operatorname{pr}_1\circ O_{12}.
+\]
+Thus $O_{12}$ refines $O_1$, and the result follows from refinement
+monotonicity.
+\end{proof}
+
+\begin{remark}
+Admissibility-sufficiency is not generally preserved by coarsening. A
+coarsening may merge two previously distinguishable classes whose
+admissible-action sets have empty common intersection.
+
+Consequently, the admissibility-sufficient information structures form an
+upper set in the refinement order, not in general a lower set.
+\end{remark}
+
+\subsection{Finite obstruction certificates}
+
+When the action space is finite, failure of epistemic overlap always has a
+finite witness whose size is bounded by the number of available actions.
+
+\begin{theorem}[Finite obstruction certificate]
+Suppose
+\[
+  |\acts|=m<\infty.
+\]
+If for some realized observation $o$
+\[
+  \bigcap_{w\in[o]}\admissible(w)
+  =
+  \varnothing,
+\]
+then there exist worlds
+\[
+  w_1,\ldots,w_k\in[o],
+  \qquad
+  k\leq m,
+\]
+such that
+\[
+  \bigcap_{i=1}^{k}\admissible(w_i)
+  =
+  \varnothing.
+\]
+\end{theorem}
+
+\begin{proof}
+For every action $a\in\acts$, the assumption
+\[
+  \bigcap_{w\in[o]}\admissible(w)=\varnothing
+\]
+implies that $a$ fails to belong to at least one admissible-action set in the
+observation class. Choose a world $w_a\in[o]$ such that
+\[
+  a\notin\admissible(w_a).
+\]
+The family
+\[
+  \{w_a:a\in\acts\}
+\]
+contains at most $m$ distinct worlds.
+
+Suppose, toward a contradiction, that some action $b$ belongs to every
+$\admissible(w_a)$. In particular,
+\[
+  b\in\admissible(w_b),
+\]
+contradicting the choice of $w_b$. Therefore
+\[
+  \bigcap_{a\in\acts}\admissible(w_a)
+  =
+  \varnothing.
+\]
+Removing duplicate worlds gives the required collection of at most $m$
+worlds.
+\end{proof}
+
+\begin{corollary}[Bounded witness to policy failure]
+For a finite action space of cardinality $m$, nonexistence of a globally
+admissible policy can always be certified within a single observation class
+by at most $m$ worlds in that class.
+\end{corollary}
+
+\begin{remark}
+This strengthens the two-world obstruction without replacing it. When
+$m>2$, policy failure need not be witnessed by a pair of worlds. For example,
+three admissible-action sets may intersect pairwise while having empty total
+intersection. The theorem nevertheless guarantees a finite obstruction whose
+size is controlled by the action space rather than by the number of possible
+worlds.
+\end{remark}
+
+\subsection{Convex admissibility and Helly reduction}
+
+A different finite-witness result follows when the action space is geometric.
+
+Suppose
+\[
+  \acts=\mathbb{R}^d
+\]
+and every $\admissible(w)$ is convex.
+
+\begin{theorem}[Helly reduction for finite observation classes]
+Let $[o]$ be a finite observation class. Then
+\[
+  \bigcap_{w\in[o]}\admissible(w)\neq\varnothing
+\]
+if and only if every subfamily of at most $d+1$ admissible-action sets has
+nonempty intersection.
+\end{theorem}
+
+\begin{proof}
+The forward implication is immediate. For the converse, the family
+\[
+  \{\admissible(w):w\in[o]\}
+\]
+is a finite family of convex subsets of $\mathbb{R}^d$. If every subfamily of
+at most $d+1$ members has nonempty intersection, Helly's theorem implies
+\[
+  \bigcap_{w\in[o]}\admissible(w)
+  \neq
+  \varnothing.
+\]
+\end{proof}
+
+\begin{corollary}[Low-dimensional obstruction]
+For convex admissible-action sets in $\mathbb{R}^d$, failure of CT-000 on a
+finite observation class has a witness involving at most $d+1$ worlds.
+\end{corollary}
+
+\begin{remark}
+The finite-action and convex-action results bound obstruction size for
+different reasons. The former depends on the cardinality of the action space;
+the latter depends on its geometric dimension.
+
+Neither result is required by CT-000. They identify settings in which the
+potentially large intersection appearing in the theorem can be tested through
+bounded subfamilies.
+\end{remark}
+
+\begin{remark}[Infinite families]
+The finiteness of the observation class is essential to the stated form of
+Helly's theorem. For infinite families of convex sets, nonempty intersection
+of every subfamily of at most $d+1$ members does not by itself yield a
+nonempty total intersection: the sets $[n,\infty)\subset\mathbb{R}$,
+$n\in\mathbb{N}$, have every finite subfamily intersecting and empty total
+intersection.
+
+If all the sets are closed, at least one is compact, and every subfamily of at
+most $d+1$ members has nonempty intersection, then Helly's theorem gives the
+finite-intersection property, and compactness yields a nonempty total
+intersection. Any extension of the Helly reduction to infinite observation
+classes must state such conditions explicitly.
+\end{remark}
+
+\subsection{Randomized policies}
+
+Let $(\acts,\Sigma)$ be a measurable space, assume every $\admissible(w)$
+belongs to $\Sigma$, and let $\Delta(\acts)$ denote the probability measures
+on $(\acts,\Sigma)$. A randomized observation-based policy is a map
+\[
+  \rho:\obs\to\Delta(\acts).
+\]
+
+Two notions of almost-sure admissibility must be distinguished. A policy
+$\rho$ is \emph{pointwise almost-surely admissible} when
+\[
+  \rho(O(w))\bigl(\admissible(w)\bigr)=1
+  \qquad
+  \text{for every }w\in\worlds.
+\]
+It is \emph{robustly almost-surely admissible} when, for every realized
+observation $o$, the set $C(o)$ belongs to $\Sigma$ and
+\[
+  \rho(o)\bigl(C(o)\bigr)=1.
+\]
+Robust admissibility implies pointwise admissibility. The converse can fail,
+as shown below.
+
+\begin{proposition}[Robust admissibility]
+A robustly almost-surely admissible randomized policy exists only if
+$C(o)\neq\varnothing$ for every realized observation $o$. Conversely, if every
+$C(o)$ is nonempty and measurable and a selection from the sets $C(o)$ is
+available, then a robustly almost-surely admissible randomized policy exists.
+\end{proposition}
+
+\begin{proof}
+If $\rho(o)(C(o))=1$, then $C(o)\neq\varnothing$, since every probability
+measure assigns measure $0$ to the empty set. Conversely, choose $a_o\in C(o)$
+and let $\rho(o)$ be the point mass at $a_o$; then $\rho(o)(C(o))=1$.
+\end{proof}
+
+\begin{proposition}[Countable observation classes]
+Suppose every observation class $[o]$ is countable. Then pointwise
+almost-sure admissibility implies robust almost-sure admissibility. In
+particular, if $C(o)=\varnothing$ for some realized $o$, no pointwise
+almost-surely admissible randomized policy exists.
+\end{proposition}
+
+\begin{proof}
+Fix a realized observation $o$ and enumerate $[o]=\{w_1,w_2,\ldots\}$, the
+finite case being included. Then $C(o)=\bigcap_i\admissible(w_i)$ is
+measurable. Pointwise admissibility gives
+$\rho(o)(\acts\setminus\admissible(w_i))=0$ for every $i$. By countable
+subadditivity,
+\[
+  \rho(o)\Bigl(\bigcup_i\bigl(\acts\setminus\admissible(w_i)\bigr)\Bigr)=0,
+\]
+and taking complements gives $\rho(o)(C(o))=1$.
+\end{proof}
+
+\begin{remark}[Uncountable classes]
+The countability hypothesis cannot be dropped. Let $\acts=\worlds=[0,1]$
+with a single observation and $\admissible(w)=[0,1]\setminus\{w\}$. Lebesgue
+measure $\mu$ satisfies $\mu(\admissible(w))=1$ for every $w$, so the constant
+policy $\rho(o)=\mu$ is pointwise almost-surely admissible. Nevertheless
+$\bigcap_{w\in[0,1]}\admissible(w)=\varnothing$.
+\end{remark}
+
+\begin{remark}
+Randomization therefore marks a boundary of CT-000. Deterministic admissibility
+and robust almost-sure admissibility are both governed by the literal
+common intersection $C(o)$. Pointwise almost-sure admissibility over
+uncountable observation classes is not: a probability measure can give
+measure one to each member of an uncountable family whose total intersection
+is empty.
+
+Randomization can also matter under weaker objectives. If failure with
+positive probability is permitted, one may instead optimize
+\[
+  \sup_{\rho}
+  \inf_{w\in[o]}
+  \rho(o)\bigl(\admissible(w)\bigr).
+\]
+That is a different decision problem. CT-000 concerns guaranteed
+admissibility and therefore corresponds to the value $1$ rather than to
+maximization of expected or worst-case success probability.
+\end{remark}
+
+\subsection{Policy equivalence}
+
+The existence theorem determines whether some globally admissible policy
+exists, but such a policy need not be unique.
+
+For each realized observation $o$, define
+\[
+  C(o)
+  =
+  \bigcap_{w\in[o]}\admissible(w).
+\]
+
+\begin{proposition}[Policy space]
+For policies restricted to realized observations, the set of globally
+admissible deterministic policies is naturally identified with
+\[
+  \prod_{o\in O(\worlds)} C(o).
+\]
+\end{proposition}
+
+\begin{proof}
+A policy is globally admissible precisely when, independently for every
+realized observation $o$,
+\[
+  \pi(o)\in C(o).
+\]
+Thus specifying a globally admissible policy is equivalent to selecting one
+element of each factor $C(o)$, which is exactly an element of the displayed
+Cartesian product.
+\end{proof}
+
+\begin{corollary}[Uniqueness]
+Suppose $C(o)\neq\varnothing$ for every $o\in O(\worlds)$, so that a globally
+admissible realized-observation policy exists. Then it is unique if and only
+if
+\[
+  |C(o)|=1
+\]
+for every $o\in O(\worlds)$.
+\end{corollary}
+
+\begin{remark}
+The nonemptiness hypothesis is necessary. If some $C(o)$ is empty and another
+has two elements, there are no globally admissible policies, so ``all
+admissible policies coincide'' holds vacuously while $|C(o)|=1$ fails for
+some $o$.
+\end{remark}
+
+\begin{corollary}[Finite policy count]
+If $O(\worlds)$ and all $C(o)$ are finite, then the number of globally
+admissible realized-observation policies is
+\[
+  \prod_{o\in O(\worlds)} |C(o)|.
+\]
+\end{corollary}
+
+\begin{remark}
+CT-000 is therefore equivalently a nonemptiness theorem for a product of
+common admissible-action sets. The choice issue in the forward direction is
+the set-theoretic issue of selecting an element of this product.
+\end{remark}
+
+
+\subsection{Manifest correspondence}
+
+Formalizations, implementations, or tests may contain a \texttt{MANIFEST:}
+header listing the claim identifiers to which they correspond.
+
+Manifest membership asserts only correspondence. It does not assert that an
+artifact proves every interpretation associated with the identifier.
+
+The registry imposes the following consistency condition:
+
+\begin{quote}
+Every \texttt{CT-\#\#\#} identifier declared by a manifest must exist in the
+canonical claim registry.
+\end{quote}
+
+The converse is intentionally false: a mathematical or expository claim need
+not have an implementation artifact.
+
+Revision identity, timestamps, authorship information, and content hashes are
+provided by Git and the repository hosting system. The claim registry does
+not define a second provenance mechanism.
+
+\subsection{Scope of formal verification}
+
+A proof-assistant formalization should state exactly which mathematical
+proposition it verifies.
+
+For CT-000, a direct formalization requires only sets, functions,
+observation classes, admissible-action sets, and a suitable selection
+principle. It need not formalize CT-001--CT-016.
+
+In particular, formal verification of CT-000 does not establish:
+
+\begin{itemize}
+  \item the qualitative dynamical claim CT-004;
+  \item a universal dimensionality result for CT-007;
+  \item a literal sheaf or Transformer interpretation for CT-008;
+  \item the field-model assumptions of CT-010--CT-014; or
+  \item a particular software architecture for CT-016.
+\end{itemize}
+
+Those claims require their own definitions and assumptions if they are to be
+formalized.
+
+Conversely, an implementation satisfying CT-016 does not constitute a proof
+of CT-000. The connection is structural: both concern preservation of
+distinctions relevant to admissible action.
+
+\subsection{Compatibility}
+
+Adoption of this claim registry does not require existing formalizations,
+experiments, or implementations to be rewritten.
+
+An artifact may correspond to a subset of the claims. It should identify that
+subset explicitly rather than being described as an implementation of the
+entire theory.
+
+Likewise, adoption of the registry does not authorize changes to established
+serialization formats, transition semantics, replay behavior, or experimental
+fixtures. Those are independent compatibility constraints.
+
+The purpose of the identifiers is therefore limited and technical: they
+provide stable references between mathematical statements and artifacts
+without collapsing those artifacts into a single evidential category.
+
+% =====================================================================
+\section{Epistemic Overlap}
+%% CT-000
+
+\begin{definition}[Admissible-action structure]
+Let $\worlds$ be a set of worlds, $\obs$ a set of observations, and
+$\acts$ a nonempty set of actions. Let
+\[
+  O : \worlds \to \obs
+\]
+be an observation map and let
+\[
+  \admissible : \worlds \to \mathcal{P}(\acts)
+\]
+assign to each world its set of admissible actions.
+
+For $o \in O(\worlds)$, define
+\[
+  [o]
+  =
+  \{w \in \worlds : O(w)=o\}.
+\]
+\end{definition}
+
+\begin{definition}[Observation-based policy]
+A deterministic observation-based policy is a function
+\[
+  \pi : \obs \to \acts.
+\]
+It is \emph{globally admissible} when
+\[
+  \pi(O(w)) \in \admissible(w)
+  \qquad
+  \text{for every }w\in\worlds.
+\]
+\end{definition}
+
+\begin{theorem}[Epistemic Overlap --- CT-000]
+Assume a selection can be made from each nonempty common admissible-action
+set. Then a globally admissible observation-based policy exists if and only if
+\[
+  \bigcap_{w\in[o]}\admissible(w)
+  \neq\varnothing
+  \qquad
+  \text{for every }o\in O(\worlds).
+\]
+\end{theorem}
+
+\begin{proof}
+Suppose first that every observation class has a nonempty common
+admissible-action set. For each $o\in O(\worlds)$ choose
+\[
+  a_o
+  \in
+  \bigcap_{w\in[o]}\admissible(w).
+\]
+Because $\acts$ is nonempty, extend this assignment arbitrarily to
+observations in $\obs\setminus O(\worlds)$ and thereby define
+\[
+  \pi:\obs\to\acts.
+\]
+For every $w\in\worlds$,
+\[
+  \pi(O(w))
+  \in
+  \admissible(w),
+\]
+so $\pi$ is globally admissible.
+
+Conversely, suppose a globally admissible policy $\pi$ exists. Fix
+$o\in O(\worlds)$. For every $w\in[o]$,
+\[
+  \pi(o)
+  =
+  \pi(O(w))
+  \in
+  \admissible(w).
+\]
+Hence
+\[
+  \pi(o)
+  \in
+  \bigcap_{w\in[o]}\admissible(w),
+\]
+so the intersection is nonempty.
+\end{proof}
+
+\begin{corollary}[No Safe Action]
+If some realized observation satisfies
+\[
+  \bigcap_{w\in[o]}\admissible(w)
+  =
+  \varnothing,
+\]
+then no deterministic observation-based policy can guarantee an admissible
+action in every world.
+\end{corollary}
+
+\begin{corollary}[Two-world obstruction]
+If there exist $w,w'\in\worlds$ such that
+\[
+  O(w)=O(w')
+\]
+and
+\[
+  \admissible(w)\cap\admissible(w')
+  =
+  \varnothing,
+\]
+then no globally admissible observation-based policy exists.
+\end{corollary}
+
+\begin{remark}
+The two-world obstruction is sufficient but not necessary. With three or more
+worlds, every pair of admissible-action sets may intersect while their total
+intersection is empty. The full observation-class intersection in CT-000 is
+therefore the appropriate condition.
+\end{remark}
+
+\begin{remark}
+CT-000 is deliberately elementary. Its role is to isolate an information
+constraint: per-world feasibility does not imply information-relative
+controllability.
+
+The subsequent claims investigate particular ways in which admissibility,
+information, local consistency, and reconstruction can acquire additional
+structure. They are applications and extensions of this distinction, not
+premises required for CT-000.
+\end{remark}
+
+% =====================================================================
+\section{Admissible Histories}
+%% CT-001 -- CT-005
+
+Let a history be a finite sequence
+\[
+  h=(x_0,x_1,\ldots,x_T)
+\]
+and let $\histories$ denote the set of histories permitted by the transition
+structure of a system. Let
+\[
+  \valuation:\histories\to\mathbb{R}
+\]
+be a valuation defined on those histories.
+
+\begin{proposition}[Admissibility and valuation --- CT-001]
+If admissibility is defined solely by membership in $\histories$, then
+membership is independent of the valuation:
+\[
+  h\in\histories
+\]
+does not depend on the value of $\valuation(h)$.
+\end{proposition}
+
+\begin{proof}
+This follows directly from the definition. The transition structure determines
+membership in $\histories$, whereas $\valuation$ is a function defined on the
+resulting histories. Changing $\valuation$ without changing the transition
+structure therefore leaves $\histories$ unchanged.
+\end{proof}
+
+\begin{remark}
+The proposition distinguishes structural possibility from preference. An
+admissible history may be undesirable, unrewarded, or unintended.
+\end{remark}
+
+\noindent\emph{Source:} \texttt{Admissible Histories.tex}, \S3.
+
+\begin{proposition}[Prefix closure --- CT-002]
+Assume $\histories$ is prefix-closed. Then
+\[
+  (x_0,\ldots,x_T)\in\histories
+  \quad\Longrightarrow\quad
+  (x_0,\ldots,x_t)\in\histories
+\]
+for every $0\leq t\leq T$.
+\end{proposition}
+
+\begin{remark}
+Prefix closure is an assumption on the admissible-history model, not a
+property of arbitrary sets of trajectories.
+\end{remark}
+
+\noindent\emph{Source:} \texttt{Admissible Histories.tex}, \S2.
+
+\begin{proposition}[Unique continuation --- CT-003]
+Let $p=h_{\leq t}$ be an admissible prefix. Suppose $h$ is the unique
+admissible history extending $p$ through a specified horizon. If another
+extension $h'$ shares the prefix $p$ but differs from $h$ after $t$, then
+\[
+  h'\notin\histories.
+\]
+\end{proposition}
+
+\begin{proof}
+By hypothesis, $h$ is the unique member of $\histories$ extending $p$ through
+the relevant horizon. Any distinct extension therefore lies outside
+$\histories$.
+\end{proof}
+
+\begin{remark}
+A prefix of this kind can be interpreted as a commitment because it reduces
+the admissible continuation set to a singleton. More generally, commitment
+can be represented by a reduction in the continuation set without requiring
+uniqueness.
+\end{remark}
+
+\noindent\emph{Source:} \texttt{Admissible Histories.tex}, \S2.
+
+\begin{claim}[Persistence of disfavored admissible trajectories --- CT-004]
+In models with sparse connectivity, competitive dynamics, and incremental
+weight adjustment, unfavorable valuation need not eliminate all structurally
+admissible trajectories leading to unfavorable outcomes.
+\end{claim}
+
+\begin{remark}
+The stronger assertion that every sufficiently complex system must retain such
+trajectories requires a specified dynamical and weight-space model. CT-004 is
+therefore treated here as a qualitative hypothesis rather than a general
+theorem.
+\end{remark}
+
+\noindent\emph{Source:} \texttt{Admissible Histories.tex}, \S4.
+
+\begin{proposition}[Pruning intervention --- CT-005]
+Let
+\[
+  D:\{\text{prefixes}\}\to\{0,1\}
+\]
+be a detection rule and define
+\[
+  \histories'
+  =
+  \{h\in\histories : D(h_{\leq t})=0\}.
+\]
+Then pruning changes the admissible-history set by excluding continuations. It
+does not retroactively modify the prefix on which the decision was made.
+\end{proposition}
+
+Suppose additionally that $\histories$ is finite and that $\histories'$ is
+nonempty. Define
+\[
+  \operatorname{Acc}(\mathcal{S})
+  =
+  \frac{
+    |\{h\in\mathcal{S}:\valuation(h)>0\}|
+  }{
+    |\mathcal{S}|
+  },
+  \qquad
+  P=|\{h\in\histories:\valuation(h)>0\}|,
+  \quad
+  N=|\{h\in\histories:\valuation(h)\leq0\}|,
+\]
+and assume $P,N>0$. Let $r_P$ and $r_N$ be the numbers of positive- and
+nonpositive-valuation histories removed by $D$. Then
+\[
+  \operatorname{Acc}(\histories)=\frac{P}{P+N},
+  \qquad
+  \operatorname{Acc}(\histories')=\frac{P-r_P}{P+N-r_P-r_N},
+\]
+and
+\[
+  \operatorname{Acc}(\histories')>\operatorname{Acc}(\histories)
+  \iff
+  \frac{r_N}{N}>\frac{r_P}{P}.
+\]
+Indeed, since both denominators are positive, cross-multiplication gives
+$(P-r_P)(P+N)>P(P+N-r_P-r_N)$, which simplifies to $P\,r_N>N\,r_P$.
+Pruning therefore increases the positive-history proportion precisely when the
+proportional removal rate among nonpositive histories exceeds that among
+positive histories.
+
+The structural content of CT-005 is independent of this inequality: pruning
+operates by restricting continuation, not by modifying the prefix on which the
+decision was made.
+
+\noindent\emph{Source:} \texttt{Admissible Histories.tex}, \S5.
+
+% =====================================================================
+\section{Local and Global Geometry}
+%% CT-006 -- CT-009
+
+Let $M\subset\mathbb{R}^n$ be a smooth embedded $d$-dimensional submanifold.
+
+\begin{theorem}[Tangent-normal decomposition --- CT-006]
+For every $x\in M$,
+\[
+  \mathbb{R}^n
+  =
+  T_xM\oplus N_xM,
+\]
+where
+\[
+  N_xM=(T_xM)^\perp.
+\]
+Consequently every ambient vector $v\in\mathbb{R}^n$ admits a unique
+decomposition
+\[
+  v=v_T+v_N
+\]
+with $v_T\in T_xM$ and $v_N\in N_xM$.
+\end{theorem}
+
+\begin{remark}
+The decomposition is a standard result of differential geometry. The
+additional interpretation used here identifies tangent motion with locally
+structure-preserving transformation and normal motion with departure from a
+modeled constraint manifold. That interpretation is a modeling choice rather
+than part of the geometric theorem.
+\end{remark}
+
+\noindent\emph{Source:} \texttt{Never-Predict-Noise.tex}, tangent-normal
+decomposition; see also
+\texttt{physics/cosmology/admissible-geometry.tex}.
+
+\begin{claim}[Off-manifold generation --- CT-007]
+Within the geometric model above, persistent nonzero normal components can
+move generated trajectories away from the modeled admissible manifold.
+
+Under additional regularity, rank, and measure assumptions, such departures
+may enlarge the effective support of generated outputs relative to the
+original $d$-dimensional manifold.
+\end{claim}
+
+\begin{remark}
+A nonzero normal component alone does not imply, without further hypotheses,
+that the output support must have Hausdorff dimension greater than $d$.
+Accordingly, no universal dimensionality-increase theorem is asserted here.
+
+Likewise, ``off-manifold'' is used as a mathematical model of a class of
+generation errors. It is not proposed as a universal definition of
+hallucination.
+\end{remark}
+
+\noindent\emph{Source:} \texttt{Never-Predict-Noise.tex}, off-manifold
+analysis.
+
+\begin{claim}[Local-chart coherence --- CT-008]
+Suppose $M$ is covered by local coordinate neighborhoods $U_i$. A global
+description assembled from local representations requires compatibility on
+their overlaps.
+
+This supplies a model for computational systems in which locally produced
+representations must remain mutually consistent where their effective domains
+overlap.
+\end{claim}
+
+A related constrained-optimization model uses projected updates of the form
+\[
+  x_{t+1}
+  =
+  x_t
+  -
+  \eta\,
+  \Pi_{T_{x_t}M}
+  \nabla\mathcal{L}(x_t),
+\]
+where $\Pi_{T_{x_t}M}$ is the orthogonal projection onto the tangent space.
+
+\begin{remark}
+These constructions provide mathematical analogies for local representation
+and constrained update. They do not imply that an arbitrary attention
+mechanism literally implements a sheaf or that an arbitrary Transformer layer
+implements the displayed tangent-flow equation.
+\end{remark}
+
+\noindent\emph{Source:} \texttt{Never-Predict-Noise.tex}, local-chart and
+tangent-flow discussion.
+
+\begin{claim}[Local versus global coherence --- CT-009]
+Local satisfaction of an admissibility criterion does not in general imply
+global satisfaction of the corresponding composed criterion.
+
+In geometric approximations, individually acceptable local steps may
+accumulate projection, discretization, curvature, or chart-transition error
+over a sufficiently long trajectory. A trajectory can therefore depart
+globally from the intended region even though each individual step satisfies
+the chosen local approximation.
+\end{claim}
+
+\begin{remark}
+The connection with CT-000 is structural. CT-000 requires compatibility across
+all worlds represented by an observation. CT-009 emphasizes the analogous
+fact that locally acceptable choices require an additional compatibility
+condition before they can be composed into a globally acceptable trajectory.
+\end{remark}
+
+% =====================================================================
+\section{Visibility and Bounded Correction}
+%% CT-010 -- CT-014
+
+The following results belong to a particular field model. They are conditional
+on its assumptions and should not be interpreted as universal laws of
+communication or visibility.
+
+Let $\Phi(x,t)$ denote visibility, $\mathbf{v}(x,t)$ an interpretive-flow
+field, $S(x,t)$ a disorder variable, and $\mathcal{C}(x,t)$ a corrective term
+over a finite-measure domain $\manifold$. Let
+\[
+  \alpha>0,\qquad \beta>0,\qquad c_1>0,
+\]
+and let protective capacity satisfy
+\[
+  0<P(x,t)\leq P_{\max}<\infty.
+\]
+
+We consider the following assumptions.
+
+\begin{description}
+  \item[A1. Entropy production.]
+  \[
+    \frac{\partial S}{\partial t}
+    \geq
+    \alpha|\mathbf{v}|^2
+    -
+    \beta\mathcal{C},
+    \qquad
+    \alpha>0.
+  \]
+
+  \item[A2. Flow coupling.]
+  \[
+    |\mathbf{v}|
+    \geq
+    c_1|\nabla\Phi|.
+  \]
+
+  \item[A3. Increasing interaction density along a scaling family.]
+  Let $\{\Phi_\lambda\}_{\lambda\in\Lambda}$ be the scaling family under
+  consideration, with associated fields $\mathbf{v}_\lambda$ and $S_\lambda$
+  satisfying A1, A2 and A4 with constants $\alpha,\beta,c_1,C_{\max}$
+  independent of $\lambda$. Along a directed regime $\lambda\to\lambda_*$,
+  \[
+    \int_{\manifold}|\nabla\Phi_\lambda|^2\,dx
+    \longrightarrow\infty.
+  \]
+  This scaling limit is distinct from temporal evolution in $t$.
+
+  \item[A4. Bounded correction.]
+  \[
+    \mathcal{C}(x,t)
+    \leq
+    C_{\max}<\infty.
+  \]
+\end{description}
+
+\begin{proposition}[Bounded correction under increasing visibility --- CT-010]
+Under A1--A4, the positive production term can become arbitrarily large
+relative to the bounded correction term along the assumed scaling regime.
+Consequently, a fixed bounded protective envelope cannot in general be
+guaranteed for arbitrarily increasing visibility.
+\end{proposition}
+
+\begin{proof}
+Fix a member $\Phi_\lambda$ of the scaling family and write $\Phi$,
+$\mathbf{v}$, $S$ for $\Phi_\lambda$, $\mathbf{v}_\lambda$, $S_\lambda$. By A2,
+\[
+  |\mathbf{v}|^2
+  \geq
+  c_1^2|\nabla\Phi|^2.
+\]
+Substitution into A1 gives
+\[
+  \frac{\partial S}{\partial t}
+  \geq
+  \alpha c_1^2|\nabla\Phi|^2
+  -
+  \beta\mathcal{C}.
+\]
+Integrating over $\manifold$ yields
+\[
+  \frac{d}{dt}
+  \int_{\manifold}S\,dx
+  \geq
+  \alpha c_1^2
+  \int_{\manifold}|\nabla\Phi|^2\,dx
+  -
+  \beta
+  \int_{\manifold}\mathcal{C}\,dx.
+\]
+When $\manifold$ has finite measure, A4 bounds the second integral by
+\[
+  C_{\max}|\manifold|.
+\]
+The constants $\alpha,\beta,c_1,C_{\max}$ and $|\manifold|$ do not depend on
+$\lambda$, so by A3 the lower bound
+\[
+  \alpha c_1^2\int_{\manifold}|\nabla\Phi_\lambda|^2\,dx
+  -\beta C_{\max}|\manifold|
+\]
+tends to infinity along the scaling regime. Thus bounded correction cannot
+uniformly offset the modeled production term.
+
+Additional assumptions relating integrated growth of $S$ to the pointwise
+protective bound $P$ determine the precise threshold at which
+$S(x,t)>P(x,t)$ must occur.
+\end{proof}
+
+\begin{corollary}[Finite safe regime --- CT-011]
+If the additional assumptions of the model yield a monotone relation between
+visibility and accumulated disorder, while protective capacity remains
+bounded, then the regime in which
+\[
+  S(x,t)\leq P(x,t)
+\]
+can extend only to a finite range of the corresponding visibility parameter.
+\end{corollary}
+
+\begin{remark}
+The result does not define a universal numerical visibility threshold. Any
+threshold depends on the parameters, domain, initial conditions, and scaling
+relations of the model.
+\end{remark}
+
+\begin{claim}[Risk growth --- CT-012]
+If the visibility model is supplemented by scaling relations under which the
+disorder-producing term grows faster than the available corrective term, then
+marginal modeled risk may increase with visibility over that regime.
+\end{claim}
+
+\begin{remark}
+Superlinear risk growth is therefore model-dependent. It is not asserted as a
+general property of visibility, communication, popularity, or information
+flow.
+\end{remark}
+
+\begin{claim}[Local stress criterion --- CT-013]
+A field formulation may decompose local semantic stress into a
+coherence-preserving contribution $\Theta_\phi$ and a
+contradiction-producing contribution $\Theta_{S,\Phi}$.
+
+Within such a model, a sufficient local stability condition can take the form
+\[
+  \left|
+    \nabla\cdot\Theta_\phi
+  \right|
+  \geq
+  \left|
+    \nabla\cdot\Theta_{S,\Phi}
+  \right|.
+\]
+\end{claim}
+
+\begin{remark}
+The displayed inequality is a criterion internal to the field model. It is
+not asserted to be a general physical stress law.
+\end{remark}
+
+\begin{claim}[Scaling formulation --- CT-014]
+Suppose a model has scale-dependent visibility
+\[
+  \Phi_\ell
+  \sim
+  \ell^{\Delta_\Phi},
+  \qquad
+  \Delta_\Phi>0,
+\]
+and suppose the associated disorder term grows more rapidly with $\ell$ than
+the stabilizing contribution. Then a dimensionless stability ratio may
+decrease as scale increases.
+\end{claim}
+
+\begin{remark}
+Renormalization terminology is used here as a scaling framework. The claim
+does not require interpreting visibility as a literal physical
+renormalization-group operator. Its content depends on the specified scaling
+relations.
+\end{remark}
+
+\noindent\emph{Source for CT-010--CT-014:}
+\texttt{Against\_Indiscriminate\_Visibility.tex}.
+
+% =====================================================================
+\section{Decision-Relevant History and Durable Adjudication}
+%% CT-015 -- CT-016
+
+\begin{definition}[Decision-relevant factorization]
+Let $H$ be a space of complete histories and suppose
+\[
+  q:H\to M
+\]
+maps histories to a reduced decision state. The admissibility predicate
+\emph{factors through} $q$ when there exists
+\[
+  \admissible_M:M\to\mathcal{P}(\acts)
+\]
+such that
+\[
+  \admissible(h)
+  =
+  \admissible_M(q(h))
+\]
+for every relevant history $h$.
+\end{definition}
+
+\begin{proposition}[Decision-relevant history --- CT-015]
+When admissibility factors through $q$, complete history is unnecessary for
+the admissibility decision itself: histories $h$ and $h'$ satisfying
+\[
+  q(h)=q(h')
+\]
+have the same admissible-action set.
+\end{proposition}
+
+\begin{proof}
+By factorization,
+\[
+  \admissible(h)
+  =
+  \admissible_M(q(h))
+  =
+  \admissible_M(q(h'))
+  =
+  \admissible(h').
+\]
+\end{proof}
+
+\begin{remark}
+The proposition establishes sufficiency, not minimality. Showing that $M$ is
+a \emph{minimal} decision-relevant representation requires a separate
+minimality criterion.
+
+In an operational system, $M$ might contain the last attested state, a
+monotone sequence position, and any other information required to determine
+legal continuation.
+\end{remark}
+
+\noindent\emph{Source:} \texttt{Admissible Histories.tex}, \S\S2--3.
+
+\begin{claim}[Durable adjudication --- CT-016]
+Suppose an adjudication changes the set of legal future continuations. If
+authoritative state must be reconstructible after restart, information
+necessary to reproduce that adjudication must survive reconstruction.
+
+In particular, when a refusal affects subsequent admissibility, recording only
+successful state transitions is insufficient. The refusal itself must be
+represented in whatever durable state is used to reconstruct future legal
+continuations.
+\end{claim}
+
+\begin{remark}
+One implementation strategy is an append-only adjudication log in which both
+admissions and refusals receive monotone positions. Submitted client sequence
+information can remain distinct from authoritative committed sequence
+information, allowing drift or replay to be detected.
+
+This is an implementation principle derived from the continuation model, not
+an independent mathematical theorem.
+\end{remark}
+
+\begin{proposition}[Reconstruction invariant]
+Let $L$ be a durable adjudication log and let
+\[
+  F(s_0,L)
+\]
+reconstruct authoritative state from an initial state $s_0$. If future
+admissibility depends on an adjudication $e$, then any durable representation
+claimed to preserve authoritative behavior across restart must retain enough
+information about $e$ that reconstruction yields the same future
+admissibility relation.
+\end{proposition}
+
+\begin{proof}
+Otherwise there exist two histories differing in the relevant adjudication
+but reconstructing to states indistinguishable to the future admissibility
+procedure. If the adjudication changes legal continuation, those reconstructed
+states require different admissible-action sets. The reconstruction has
+therefore erased an admissibility-relevant distinction, producing exactly the
+kind of information loss identified by CT-000.
+\end{proof}
+
+% =====================================================================
+\section{Logical Status of the Claims}
+
+The claim identifiers provide stable references, but they do not imply that
+all claims have the same epistemic or mathematical status.
+
+CT-000 is the central abstract theorem. CT-001--CT-005 describe the
+admissible-history model; several follow from explicit structural assumptions.
+CT-004 remains qualitative.
+
+CT-006 contains a standard geometric theorem together with an explicitly
+separate modeling interpretation. CT-007--CT-009 concern the use of geometric
+structures as models of local and global computational consistency and require
+the hypotheses stated in their respective formulations.
+
+CT-010--CT-014 belong to a conditional visibility-and-correction model. Their
+applicability depends on the definitions, field equations, and scaling
+assumptions of that model.
+
+CT-015 is a factorization result. CT-016 is principally an implementation
+constraint motivated by the continuation model.
+
+A machine-checked formalization of one of these claims establishes only the
+formal statement encoded there. An implementation corresponding to a claim
+demonstrates implementation behavior, not a proof of the unrestricted
+mathematical proposition. Conversely, a mathematical theorem does not by
+itself establish that a particular implementation satisfies its hypotheses.
+
+This separation is intentional. The claim registry provides correspondence
+without collapsing proof, formalization, modeling, and implementation into a
+single category.
+
+% =====================================================================
+\section*{Claim Index}
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{1.5cm}p{6.4cm}p{5.2cm}@{}}
+\toprule
+Identifier & Description & Status \\
+\midrule
+CT-000 & Epistemic Overlap & proved \\
+CT-001 & Admissibility and valuation & established within the stated model \\
+CT-002 & Prefix closure & established under the prefix-closure assumption \\
+CT-003 & Unique continuation & established within the stated model \\
+CT-004 & Persistence of disfavored admissible trajectories & qualitative \\
+CT-005 & Pruning intervention & established within the stated model \\
+CT-006 & Tangent-normal decomposition & standard result plus modeling correspondence \\
+CT-007 & Off-manifold generation & conditional \\
+CT-008 & Local-chart coherence & modeling correspondence \\
+CT-009 & Local versus global coherence & general structural observation; geometric form model-dependent \\
+CT-010 & Bounded correction under increasing visibility & conditional \\
+CT-011 & Finite safe regime & conditional \\
+CT-012 & Risk growth & model-dependent \\
+CT-013 & Local stress criterion & model-dependent \\
+CT-014 & Scaling formulation & model-dependent \\
+CT-015 & Decision-relevant history & proved as a factorization result \\
+CT-016 & Durable adjudication & implementation principle \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\bigskip
+
+\noindent
+The canonical definitions and status of these identifiers are maintained in
+\texttt{SPEC.md}.
+
+\end{document}
+
